@@ -51,7 +51,8 @@ class DockGestureLifecycleQA(unittest.TestCase):
         dock._key_of_class = str
         dock._thumbs = {}
         dock._pixbuf = Mock(return_value=None)
-        dock.motion = test_dock.DockMotion(test_dock.spring_step)
+        from glass_motion import spring_step
+        dock.motion = test_dock.DockMotion(spring_step)
         dock._refresh_id = None
         timer = Mock(side_effect=[42, 43])
         with patch.dict(test_dock.namespace, GLib=SimpleNamespace(timeout_add=timer),

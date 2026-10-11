@@ -15,19 +15,19 @@ from dock_geometry import DockMetrics
 from dock_model import build_items, needs_refresh, reorder_pinned
 from dock_motion import DockMotion
 from dock_drop import open_documents, supports_documents
+from glass_motion import spring_step
 
 
 # Carrega os métodos reais sem inicializar GTK, D-Bus ou um segundo shell.
 source = Path(os.environ.get("HYPRMAC_DOCK_SOURCE", Path(__file__).resolve().parents[1] / "shell" / "hyprmac-shell"))
 tree = ast.parse(source.read_text())
 nodes = [node for node in tree.body
-         if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name in ("spring_step", "Dock")]
+         if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name in ("Dock",)]
 namespace = dict(math=math, dock_items=build_items, dock_needs_refresh=needs_refresh,
                  reorder_pinned=reorder_pinned, DOCK_SIDE=120,
                  dock_supports_documents=supports_documents, dock_open_documents=open_documents)
 exec(compile(ast.Module(body=nodes, type_ignores=[]), str(source), "exec"), namespace)
 Dock = namespace["Dock"]
-spring_step = namespace["spring_step"]
 
 
 def client(cls, address, focus=0, workspace="1", mapped=True):
