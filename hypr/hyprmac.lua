@@ -134,6 +134,21 @@ local function reduce_motion()
     return v:find("false") ~= nil
 end
 local RM = reduce_motion()
+
+-- Ajustes ▸ Mouse grava "Tracking speed" e "Natural scrolling" no config.json; reaplica a
+-- cada carga (o hyprctl keyword dos Ajustes some no próximo hyprctl reload). Sem a
+-- chave, vale o que o hyprland.lua do usuário definiu.
+do
+    local f = io.open(os.getenv("HOME") .. "/.config/hyprmac/config.json", "r")
+    local conf = f and f:read("*a") or ""
+    if f then f:close() end
+    local input = {}
+    local nat = conf:match('"mouse_natural_scroll"%s*:%s*(%a+)')
+    if nat == "true" or nat == "false" then input.natural_scroll = (nat == "true") end
+    local sens = tonumber(conf:match('"mouse_sensitivity"%s*:%s*(%-?[%d%.]+)'))
+    if sens then input.sensitivity = math.max(-1, math.min(1, sens)) end
+    if next(input) then hl.config({ input = input }) end
+end
 local function pop(style) return RM and "fade" or style end
 
 -- Spaces deslizam lateralmente, como no Mission Control

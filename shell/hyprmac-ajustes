@@ -3258,10 +3258,13 @@ class Settings(Gtk.Window):
                      .group(1)) if "float" in run("hyprctl getoption input:sensitivity") else 0.0
         nat = "int: 1" in run("hyprctl getoption input:natural_scroll")
         f = Form()
-        f.add_row(row("Tracking speed", trailing=slider((sens + 1) * 50, lambda v: spawn(
-            f"hyprctl keyword input:sensitivity {v / 50 - 1:.2f}"), "Slow", "Fast", (0, 100), 1, 180)))
+        # hyprctl keyword aplica já; o config.json faz valer depois do próximo reload
+        f.add_row(row("Tracking speed", trailing=slider((sens + 1) * 50, lambda v: (spawn(
+            f"hyprctl keyword input:sensitivity {v / 50 - 1:.2f}"),
+            set_clock_conf("mouse_sensitivity", round(v / 50 - 1, 2))), "Slow", "Fast", (0, 100), 1, 180)))
         f.add_row(row("Natural scrolling", sub="Content tracks finger movement", trailing=switch(
-            nat, lambda v: spawn(f"hyprctl keyword input:natural_scroll {int(v)}"))))
+            nat, lambda v: (spawn(f"hyprctl keyword input:natural_scroll {int(v)}"),
+                            set_clock_conf("mouse_natural_scroll", bool(v))))))
         f.add_row(row("Secondary click", trailing=popup_button(
             [("right", "Click Right Side"), ("left", "Click Left Side")], "right", lambda v: None)))
         f.add_row(row("Double-click speed", trailing=slider(
