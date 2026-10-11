@@ -23,7 +23,7 @@ source = Path(os.environ.get("HYPRMAC_DOCK_SOURCE", Path(__file__).resolve().par
 tree = ast.parse(source.read_text())
 nodes = [node for node in tree.body
          if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name in ("Dock",)]
-namespace = dict(math=math, dock_items=build_items, dock_needs_refresh=needs_refresh,
+namespace = dict(math=math, spring_step=spring_step, dock_items=build_items, dock_needs_refresh=needs_refresh,
                  reorder_pinned=reorder_pinned, DOCK_SIDE=120,
                  dock_supports_documents=supports_documents, dock_open_documents=open_documents)
 exec(compile(ast.Module(body=nodes, type_ignores=[]), str(source), "exec"), namespace)
