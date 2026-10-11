@@ -72,6 +72,13 @@ for c in cs:
     ;;
 esac
 
+# som do obturador com "Play user interface sound effects" ligado (Ajustes ▸ Som)
+if [ -s "$file" ] && python3 -c 'import json,os,sys; p=os.path.expanduser("~/.config/hyprmac/config.json")
+try: c=json.load(open(p))
+except Exception: c={}
+sys.exit(0 if c.get("ui_sound_effects", True) else 1)' 2>/dev/null; then
+  setsid -f canberra-gtk-play -i screen-capture -d hyprmac-ui >/dev/null 2>&1
+fi
 if command -v wl-copy >/dev/null; then
   wl-copy --type image/png < "$file"
 fi

@@ -3085,7 +3085,8 @@ class Settings(Gtk.Window):
         f.add_row(row("Play sound on startup", trailing=switch(
             mock("startup_sound", True), lambda v: set_mock("startup_sound", v))))
         f.add_row(row("Play user interface sound effects", trailing=switch(
-            mock("ui_sounds", True), lambda v: set_mock("ui_sounds", v))))
+            load_json(SHELL_CONF, {}).get("ui_sound_effects", True),
+            lambda v: set_clock_conf("ui_sound_effects", bool(v)))))
         f.add_row(row("Play feedback when volume is changed", trailing=switch(
             load_json(SHELL_CONF, {}).get("volume_feedback", True),
             lambda v: set_clock_conf("volume_feedback", bool(v)))))

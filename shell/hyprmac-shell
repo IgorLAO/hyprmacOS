@@ -145,6 +145,13 @@ def open_settings(pane=""):
     spawn(os.path.join(ROOT, "shell", "hyprmac-ajustes") + (f" {pane}" if pane else ""))
 
 
+def ui_sound(event_id):
+    """Ajustes ▸ Som ▸ "Play user interface sound effects" (Tahoe: "sound effects when you
+    perform certain actions, such as dragging an item to the Trash"); sons do tema freedesktop."""
+    if load_config().get("ui_sound_effects", True):
+        spawn(f"canberra-gtk-play -i {event_id} -d hyprmac-ui")
+
+
 def in_thread(fn, *args):
     threading.Thread(target=fn, args=args, daemon=True).start()
 
@@ -9562,7 +9569,8 @@ class Dock:
         elif it["kind"] == "trash":
             item(m, "Open", lambda: self._activate(it))
             sep(m)
-            item(m, "Empty Trash", lambda: spawn("gio trash --empty"), sensitive=self._trash_full())
+            item(m, "Empty Trash", lambda: (spawn("gio trash --empty"), ui_sound("trash-empty")),
+                 sensitive=self._trash_full())
         elif it["kind"] in ("downloads", "apps"):
             item(m, "Open", lambda: self._activate(it))
         elif it["kind"] == "minimized":     # janela minimizada: só Open "nome" (sem Close)

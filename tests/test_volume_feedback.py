@@ -70,5 +70,33 @@ class VolumeFeedback(unittest.TestCase):
         self.assertEqual(spawn.call_count, 2)
 
 
+class InterfaceSounds(unittest.TestCase):
+    """"Play user interface sound effects": "such as dragging an item to the Trash"."""
+
+    def ui_sound(self, config):
+        tree = ast.parse(SOURCE.read_text())
+        fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "ui_sound")
+        spawn = Mock()
+        ns = dict(load_config=lambda: config, spawn=spawn)
+        exec(compile(ast.Module(body=[fn], type_ignores=[]), str(SOURCE), "exec"), ns)
+        return ns["ui_sound"], spawn
+
+    def test_plays_theme_sound_when_enabled(self):
+        ui_sound, spawn = self.ui_sound({})
+        ui_sound("trash-empty")
+        self.assertIn("-i trash-empty", spawn.call_args[0][0])
+
+    def test_silent_when_disabled(self):
+        ui_sound, spawn = self.ui_sound({"ui_sound_effects": False})
+        ui_sound("trash-empty")
+        spawn.assert_not_called()
+
+    def test_empty_trash_and_screenshot_use_it(self):
+        self.assertIn('ui_sound("trash-empty")', SOURCE.read_text())
+        script = (SOURCE.parents[1] / "scripts" / "screenshot").read_text()
+        self.assertIn("ui_sound_effects", script)
+        self.assertIn("-i screen-capture", script)
+
+
 if __name__ == "__main__":
     unittest.main()
