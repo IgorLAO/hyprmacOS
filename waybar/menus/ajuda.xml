@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Help, como no Mac: primeiro "Search" (procura nos itens dos menus — aqui, o
+     modo Ações do Spotlight, que inclui os itens da barra), depois a ajuda do sistema. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="search"><property name="label">Search…</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="help"><property name="label">hyprmac Help</property></object></child>
+    <child><object class="GtkMenuItem" id="hyprwiki"><property name="label">Hyprland Wiki</property></object></child>
+    <child><object class="GtkMenuItem" id="waybarwiki"><property name="label">Waybar Wiki</property></object></child>
+  </object>
+</interface>

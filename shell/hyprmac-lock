@@ -1,0 +1,1409 @@
+#!/usr/bin/env python3
+"""hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock).
+
+Uso:
+  hyprmac-lock                trava a sessão de verdade (protocolo ext-session-lock)
+  hyprmac-lock --preview      a MESMA interface numa janela comum (não trava nada);
+                              a senha digitada é conferida no PAM e, se correta, fecha
+  hyprmac-lock --test-auth    testa a autenticação PAM com uma senha errada aleatória
+                              (tem de FALHAR) e sai com 0 se o resultado for o esperado
+
+Opções:
+  --service NOME   serviço PAM (padrão: /etc/pam.d/hyprmac-lock se existir, senão "login")
+  --monitor NOME   (preview) monitor onde abrir, ex.: HDMI-A-1
+  --secondary      (preview) mostra o visual de um monitor secundário (sem avatar/campo)
+  --wallpaper ARQ  usa outra imagem como fundo
+  --quit-after N   (preview) fecha sozinho depois de N segundos
+  --snapshot ARQ   (testes) desenha a tela numa janela do Broadway e salva o PNG
+                   (rode com GDK_BACKEND=broadway: nada aparece no desktop nem pega o teclado)
+  --size LxA       (preview/snapshot) tamanho da janela em pt, ex.: 1512x982
+  --demo           (preview/snapshot) os textos da tela oficial: "Tue Apr 1", "9:41",
+                   "Erica Souza", "U.S." — para comparar lado a lado com a referência
+  --warm-cache     recorta o papel de parede para cada monitor e guarda em
+                   ~/.cache/hyprmac/lock (imagens enormes levam segundos para abrir)
+
+Como a Apple fez (macOS Tahoe 26/27, tela oficial da WWDC25 e kit "Lock Screen Time"):
+  data pequena em cima, relógio ENORME de vidro (texto que refrata o fundo, aro claro),
+  avatar + nome + "Touch ID or Enter Password" embaixo, e só o essencial no canto superior
+  direito (fonte de entrada, bateria, Wi-Fi). Medidas tiradas da tela oficial em PONTOS
+  (MacBook Pro 14" = 1512×982 pt; na foto 2637 px de largura → 1,744 px/pt) e usadas 1:1
+  (no Mac os tamanhos do bloqueio são fixos em pt, não crescem com a tela).
+"""
+import argparse
+import ctypes
+import ctypes.util
+import fcntl
+import json
+import locale
+import math
+import os
+import pwd
+import secrets
+import subprocess
+import sys
+import threading
+import time
+import warnings
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(HERE)
+RUN = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
+LOCKFILE = os.path.join(RUN, "hyprmac-lock.lock")
+READYFILE = os.path.join(RUN, "hyprmac-lock.ready")
+CONFIG_PATH = os.path.expanduser("~/.config/hyprmac/config.json")
+CSS_PATH = os.path.join(HERE, "lock.css")
+CACHE_DIR = os.path.expanduser("~/.cache/hyprmac/lock")
+DEFAULT_WALLPAPER = os.path.join(ROOT, "wallpapers", "tahoe-light-1080p.jpg")
+LAYER_SHELL_LIB = "libgtk4-layer-shell.so.0"
+
+
+def parse_args():
+    p = argparse.ArgumentParser(prog="hyprmac-lock", description="Tela de bloqueio do hyprmac")
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--preview", action="store_true", help="abre a interface numa janela comum")
+    g.add_argument("--test-auth", action="store_true", help="testa o PAM com senha errada")
+    g.add_argument("--warm-cache", action="store_true",
+                   help="prepara o papel de parede recortado/em cache para todos os monitores")
+    p.add_argument("--service", default=None)
+    p.add_argument("--monitor", default=None)
+    p.add_argument("--secondary", action="store_true")
+    p.add_argument("--wallpaper", default=None)
+    p.add_argument("--quit-after", type=float, default=0)
+    p.add_argument("--snapshot", default=None)
+    p.add_argument("--size", default=None)
+    p.add_argument("--demo", action="store_true")
+    return p.parse_args()
+
+
+ARGS = parse_args()
+if ARGS.snapshot:
+    ARGS.preview = True
+LOCK_MODE = not (ARGS.preview or ARGS.test_auth or ARGS.warm_cache)
+
+# O gtk4-layer-shell (que contém o Gtk4SessionLock) precisa ser carregado ANTES da
+# libwayland-client; em Python o jeito confiável é reexecutar com LD_PRELOAD.
+if LOCK_MODE and LAYER_SHELL_LIB not in os.environ.get("LD_PRELOAD", ""):
+    env = dict(os.environ)
+    env["LD_PRELOAD"] = (LAYER_SHELL_LIB + " " + env.get("LD_PRELOAD", "")).strip()
+    os.execve(sys.executable, [sys.executable, os.path.realpath(__file__)] + sys.argv[1:], env)
+
+
+# ───────────────────────────── PAM (ctypes) ─────────────────────────────
+
+PAM_SUCCESS = 0
+PAM_BUF_ERR = 5
+PAM_PROMPT_ECHO_OFF, PAM_PROMPT_ECHO_ON, PAM_ERROR_MSG, PAM_TEXT_INFO = 1, 2, 3, 4
+PAM_REFRESH_CRED = 0x0010
+
+
+class PamMessage(ctypes.Structure):
+    _fields_ = [("msg_style", ctypes.c_int), ("msg", ctypes.c_char_p)]
+
+
+class PamResponse(ctypes.Structure):
+    _fields_ = [("resp", ctypes.c_void_p), ("resp_retcode", ctypes.c_int)]
+
+
+PAM_CONV_FUNC = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int,
+                                 ctypes.POINTER(ctypes.POINTER(PamMessage)),
+                                 ctypes.POINTER(ctypes.POINTER(PamResponse)),
+                                 ctypes.c_void_p)
+
+
+class PamConv(ctypes.Structure):
+    _fields_ = [("conv", PAM_CONV_FUNC), ("appdata_ptr", ctypes.c_void_p)]
+
+
+class Pam:
+    """Autenticação via libpam (sem depender do módulo python-pam)."""
+
+    def __init__(self):
+        self.lib = ctypes.CDLL(ctypes.util.find_library("pam") or "libpam.so.0")
+        self.libc = ctypes.CDLL(ctypes.util.find_library("c") or "libc.so.6")
+        self.libc.calloc.restype = ctypes.c_void_p
+        self.libc.calloc.argtypes = [ctypes.c_size_t, ctypes.c_size_t]
+        self.libc.strdup.restype = ctypes.c_void_p
+        self.libc.strdup.argtypes = [ctypes.c_char_p]
+        L = self.lib
+        L.pam_start.restype = ctypes.c_int
+        L.pam_start.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(PamConv),
+                                ctypes.POINTER(ctypes.c_void_p)]
+        for fn in ("pam_authenticate", "pam_setcred"):
+            getattr(L, fn).restype = ctypes.c_int
+            getattr(L, fn).argtypes = [ctypes.c_void_p, ctypes.c_int]
+        L.pam_end.restype = ctypes.c_int
+        L.pam_end.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        L.pam_strerror.restype = ctypes.c_char_p
+        L.pam_strerror.argtypes = [ctypes.c_void_p, ctypes.c_int]
+
+    def can_start(self, service, user):
+        """Confere se o serviço abre (antes de travar a tela — segurança)."""
+        conv = PamConv(PAM_CONV_FUNC(lambda *a: PAM_BUF_ERR), None)
+        h = ctypes.c_void_p()
+        rc = self.lib.pam_start(service.encode(), user.encode(), ctypes.byref(conv), ctypes.byref(h))
+        if rc == PAM_SUCCESS:
+            self.lib.pam_end(h, rc)
+        return rc == PAM_SUCCESS
+
+    def authenticate(self, service, user, password):
+        """→ (ok, texto_do_erro, [mensagens do PAM])"""
+        pw, usr = password.encode(), user.encode()
+        messages = []
+        libc = self.libc
+
+        def conv_cb(n, msgs, resp_out, _data):
+            arr = libc.calloc(n, ctypes.sizeof(PamResponse))
+            if not arr:
+                return PAM_BUF_ERR
+            resps = ctypes.cast(arr, ctypes.POINTER(PamResponse))
+            for i in range(n):
+                m = msgs[i].contents
+                text = (m.msg or b"").decode(errors="replace").strip()
+                if m.msg_style == PAM_PROMPT_ECHO_OFF:
+                    resps[i].resp = libc.strdup(pw)
+                elif m.msg_style == PAM_PROMPT_ECHO_ON:
+                    resps[i].resp = libc.strdup(usr)
+                elif text:
+                    messages.append(text)
+            resp_out[0] = resps
+            return PAM_SUCCESS
+
+        cb = PAM_CONV_FUNC(conv_cb)     # referência viva enquanto o PAM roda
+        conv = PamConv(cb, None)
+        h = ctypes.c_void_p()
+        rc = self.lib.pam_start(service.encode(), usr, ctypes.byref(conv), ctypes.byref(h))
+        if rc != PAM_SUCCESS:
+            return False, f"pam_start: {rc}", messages
+        rc = self.lib.pam_authenticate(h, 0)
+        err = (self.lib.pam_strerror(h, rc) or b"").decode(errors="replace")
+        if rc == PAM_SUCCESS:
+            self.lib.pam_setcred(h, PAM_REFRESH_CRED)   # renova credenciais (ex.: kerberos)
+        self.lib.pam_end(h, rc)
+        return rc == PAM_SUCCESS, err, messages
+
+
+def default_service():
+    if ARGS.service:
+        return ARGS.service
+    return "hyprmac-lock" if os.path.exists("/etc/pam.d/hyprmac-lock") else "login"
+
+
+USER = pwd.getpwuid(os.getuid()).pw_name
+
+
+def faillock_count(user):
+    """Número de falhas registradas pelo pam_faillock (Arch: 3 falhas = 10 min bloqueado)."""
+    try:
+        out = subprocess.run(["faillock", "--user", user], capture_output=True, text=True,
+                             timeout=3).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return sum(1 for ln in out.splitlines() if ln[:4].isdigit())
+
+
+def test_auth():
+    service = default_service()
+    pam = Pam()
+    print(f"serviço PAM: {service}  usuário: {USER}")
+    if not pam.can_start(service, USER):
+        print("FALHA: pam_start não abriu o serviço")
+        return 2
+    before = faillock_count(USER)
+    wrong = "hyprmac-wrong-" + secrets.token_hex(8)
+    t0 = time.monotonic()
+    ok, err, msgs = pam.authenticate(service, USER, wrong)
+    dt = time.monotonic() - t0
+    print(f"senha errada → {'ACEITA (ERRO!)' if ok else 'recusada'}  ({err}; {dt:.1f}s)")
+    for m in msgs:
+        print("  PAM:", m)
+    after = faillock_count(USER)
+    if before == 0 and after and after > 0:
+        # desfaz só a falha que este teste criou (para não somar no limite do faillock)
+        subprocess.run(["faillock", "--user", USER, "--reset"], capture_output=True)
+        print(f"faillock: {after} falha(s) registrada(s) pelo teste → zerado")
+    elif after is not None:
+        print(f"faillock: {before} → {after} falha(s)")
+    return 1 if ok else 0
+
+
+if ARGS.test_auth:
+    sys.exit(test_auth())
+
+
+# ───────────────────────────── GTK ─────────────────────────────
+
+import cairo  # noqa: E402
+import gi  # noqa: E402
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Gdk", "4.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("Pango", "1.0")
+gi.require_version("PangoCairo", "1.0")
+if LOCK_MODE:
+    gi.require_version("Gtk4SessionLock", "1.0")
+gi.require_version("Graphene", "1.0")
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Graphene, Gtk, Pango, PangoCairo  # noqa: E402
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+try:
+    locale.setlocale(locale.LC_ALL, "")
+except locale.Error:
+    pass
+
+
+def load_config():
+    try:
+        with open(CONFIG_PATH) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+CFG = load_config()
+LANG = (os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or "en").lower()
+PT = LANG.startswith("pt")
+T = {
+    "placeholder": "Digite a senha" if PT else "Enter Password",
+    # dica em repouso; a foto oficial (Mac com Touch ID) diz "Touch ID or Enter Password"
+    "hint": "Touch ID or Enter Password" if ARGS.demo else "Digite a senha" if PT else "Enter Password",
+    "wrong": "Senha incorreta" if PT else "Incorrect password",
+}
+
+
+def G(code):
+    """Glifo da Symbols Nerd Font (mesma convenção do hyprmac-shell)."""
+    return chr(int(code, 16))
+
+
+ICON = {
+    "keyboard": G("f097b"), "wifi": G("f05a9"), "ethernet": G("f0200"), "arrow": G("f0054"),
+    "bat": [G(c) for c in ("f008e", "f007a", "f007b", "f007c", "f007d", "f007e",
+                           "f007f", "f0080", "f0081", "f0082", "f0079")],
+    "bat_charging": G("f0084"),
+}
+
+# Medidas da tela oficial (WWDC25, MacBook Pro 14" = 1512 pt de largura) em PONTOS:
+# no Mac o relógio do bloqueio tem tamanho fixo em pt, e um monitor de 1920 px no
+# Mac mostra 1 pt = 1 px — então os números valem direto aqui (antes eram esticados
+# para 1920 px, o que deixava o relógio ~27 % maior que o do Mac).
+# Data e relógio casados por contorno com a foto (SF Pro variável; tracking = tabela do
+# HIG para macOS no tamanho, como o sistema aplica; opsz = tamanho, como o macOS faz):
+M = {
+    "date_size": 27,      # "Tue Apr 1": 108,4 pt de largura, maiúsculas de 19,0 pt
+    "date_weight": 560,   # entre Medium (510) e Semibold (590) — o que casou com a foto
+    "date_track": 0.29,   # HIG, macOS 27 pt: +11/1000 em
+    "date_top": 95.3,     # topo das maiúsculas da data
+    "clock_size": 138,    # relógio: algarismos de ≈ 97 pt de altura, "9:41" com 235 pt
+    "clock_weight": 647,
+    "clock_track": -5.9,  # algarismos mais juntos que o padrão (casado com a foto)
+    "clock_top": 132.2,   # topo da tinta (a barriga do 9 passa um pouco do topo do 4/1)
+}
+
+
+# ───────────────────────────── dados do sistema ─────────────────────────────
+
+CLOCK_FAMILIES = {"sf": "SF Pro", "rounded": "SF Pro Rounded", "serif": "New York"}
+
+
+def clock_conf():
+    """Relógio grande: ~/.config/hyprmac/config.json (lock_clock, lock_clock_style,
+    lock_clock_weight), gravado pelos Ajustes. Estilo sem fonte instalada → SF Pro."""
+    try:
+        c = json.load(open(CONFIG_PATH))
+    except (OSError, ValueError):
+        c = {}
+    fam = CLOCK_FAMILIES.get(c.get("lock_clock_style", "sf"), "SF Pro")
+    fams = {f.get_name() for f in PangoCairo.FontMap.get_default().list_families()}
+    if fam not in fams:
+        fam = "SF Pro"
+    try:
+        weight = max(100, min(900, int(c.get("lock_clock_weight", M["clock_weight"]))))
+    except (TypeError, ValueError):
+        weight = M["clock_weight"]
+    return {"show": c.get("lock_clock", "lock"), "family": fam, "weight": weight}
+
+
+def run(cmd, timeout=2):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def resolve_wallpaper():
+    """Mesma lógica do hyprmac-shell: caminho do config.json, ou "gnome" para seguir
+    org.gnome.desktop.background (picture-uri-dark se o esquema for escuro)."""
+    if ARGS.wallpaper:
+        return os.path.expanduser(ARGS.wallpaper)
+    wp = str(CFG.get("wallpaper", DEFAULT_WALLPAPER))
+    if wp.lower() != "gnome":
+        return os.path.expanduser(wp)
+    try:
+        src = Gio.SettingsSchemaSource.get_default()
+        if not src or not src.lookup("org.gnome.desktop.background", True):
+            return DEFAULT_WALLPAPER
+        bg = Gio.Settings.new("org.gnome.desktop.background")
+        dark = Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme") == "prefer-dark"
+        uri = bg.get_string("picture-uri-dark" if dark else "picture-uri") or bg.get_string("picture-uri")
+        path = Gio.File.new_for_uri(uri).get_path() if uri else None
+        if path and path.endswith(".xml"):
+            import xml.etree.ElementTree as ET
+            node = ET.parse(path).getroot().find(".//file")
+            path = node.text.strip() if node is not None and node.text else None
+        return path or DEFAULT_WALLPAPER
+    except Exception:  # noqa: BLE001 — fundo nunca pode impedir o bloqueio
+        return DEFAULT_WALLPAPER
+
+
+def load_cover(path, w, h):
+    """Carrega a imagem já no tamanho que cobre w×h (rápido mesmo com imagens enormes)."""
+    for p in (path, DEFAULT_WALLPAPER):
+        try:
+            _fmt, pw, ph = GdkPixbuf.Pixbuf.get_file_info(p)
+            if not pw:
+                continue
+            k = max(w / pw, h / ph)
+            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(p, max(1, round(pw * k)),
+                                                         max(1, round(ph * k)), False)
+            x, y = (pb.get_width() - w) // 2, (pb.get_height() - h) // 2
+            return pb.new_subpixbuf(max(0, x), max(0, y), min(w, pb.get_width()),
+                                    min(h, pb.get_height())).copy()
+        except (GLib.Error, TypeError):
+            continue
+    return None
+
+
+def cache_path(path, w, h):
+    """~/.cache/hyprmac/lock/<hash>-WxH.jpg — papel de parede já recortado no tamanho."""
+    try:
+        st = os.stat(path)
+    except OSError:
+        return None
+    import hashlib
+    key = hashlib.sha1(f"{os.path.realpath(path)}|{st.st_mtime_ns}|{st.st_size}".encode()).hexdigest()[:16]
+    return os.path.join(CACHE_DIR, f"{key}-{w}x{h}.jpg")
+
+
+def cached_cover(path, w, h):
+    pb = load_cover(path, w, h)
+    out = cache_path(path, w, h)
+    if pb is not None and out and pb.get_width() == w and pb.get_height() == h:
+        try:
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            tmp = out + ".tmp"
+            pb.savev(tmp, "jpeg", ["quality"], ["94"])
+            os.replace(tmp, out)
+        except (OSError, GLib.Error) as e:
+            print("cache do papel de parede:", e, file=sys.stderr)
+    return pb
+
+
+def make_surfaces(pb, w, h):
+    """→ (fundo levemente desfocado, fundo bem desfocado p/ a refração, luminância 0–1
+    da faixa do relógio — o véu do vidro se adapta: mais claro sobre fundo escuro)."""
+    light = blurred(pb, 6) if pb is not None else None       # "desfocado levemente"
+    strong = blurred(pb, 28) if pb is not None else None     # o que o vidro refrata
+    lum = 0.5
+    if pb is not None:
+        sub = pb.new_subpixbuf(int(w * 0.3), int(h * 0.12), int(w * 0.4), int(h * 0.18))
+        px = sub.scale_simple(1, 1, GdkPixbuf.InterpType.HYPER).get_pixels()
+        lum = (0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2]) / 255
+    return to_surface(light, w, h), to_surface(strong, w, h), lum
+
+
+def warm_cache():
+    """Prepara o cache para todos os monitores (rodar no início da sessão)."""
+    path = resolve_wallpaper()
+    try:
+        mons = json.loads(run(["hyprctl", "monitors", "-j"]) or "[]")
+    except ValueError:
+        mons = []
+    sizes = {(round(m["width"] / m.get("scale", 1)), round(m["height"] / m.get("scale", 1)))
+             for m in mons if m.get("transform", 0) % 2 == 0} | \
+            {(round(m["height"] / m.get("scale", 1)), round(m["width"] / m.get("scale", 1)))
+             for m in mons if m.get("transform", 0) % 2 == 1}
+    for w, h in sorted(sizes):
+        cp = cache_path(path, w, h)
+        if cp and os.path.exists(cp):
+            print(f"{w}x{h}: já em cache")
+            continue
+        t0 = time.monotonic()
+        cached_cover(path, w, h)
+        print(f"{w}x{h}: {cp} ({time.monotonic() - t0:.1f}s)")
+    return 0
+
+
+def blurred(pb, factor):
+    """Desfoque barato: reduz (média de área) e amplia de novo, em duas etapas."""
+    w, h = pb.get_width(), pb.get_height()
+    small = pb.scale_simple(max(1, w // factor), max(1, h // factor), GdkPixbuf.InterpType.HYPER)
+    mid = small.scale_simple(max(1, w // 2), max(1, h // 2), GdkPixbuf.InterpType.BILINEAR)
+    return mid.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
+
+
+def to_surface(pb, w, h):
+    surf = cairo.ImageSurface(cairo.FORMAT_RGB24, w, h)
+    cr = cairo.Context(surf)
+    cr.set_source_rgb(0.1, 0.12, 0.18)
+    cr.paint()
+    if pb is not None:
+        Gdk.cairo_set_source_pixbuf(cr, pb, 0, 0)
+        cr.paint()
+    return surf
+
+
+def user_info():
+    if ARGS.demo:
+        return "Erica Souza", None
+    pw = pwd.getpwuid(os.getuid())
+    name = (pw.pw_gecos or "").split(",")[0].strip()
+    if not name:
+        name = pw.pw_name[:1].upper() + pw.pw_name[1:]
+    avatar = None
+    for p in (os.path.expanduser("~/.face"), os.path.expanduser("~/.face.icon"),
+              f"/var/lib/AccountsService/icons/{pw.pw_name}"):
+        if os.path.isfile(p) and os.access(p, os.R_OK):
+            avatar = p
+            break
+    return name, avatar
+
+
+def keyboard_layout():
+    if ARGS.demo:
+        return "U.S."
+    try:
+        kbs = json.loads(run(["hyprctl", "devices", "-j"]) or "{}").get("keyboards", [])
+    except ValueError:
+        return ""
+    kb = next((k for k in kbs if k.get("main")), kbs[0] if kbs else None)
+    km = (kb or {}).get("active_keymap", "")
+    # "English (US)" → "US", "Portuguese (Brazil)" → "Brazil" (o macOS mostra "U.S.", "Brazilian")
+    if "(" in km and km.endswith(")"):
+        km = km[km.index("(") + 1:-1]
+    return {"US": "U.S."}.get(km, km)       # "U.S." como na foto oficial
+
+
+def battery():
+    if ARGS.demo:
+        return 100, "Full"
+    base = "/sys/class/power_supply"
+    try:
+        names = sorted(n for n in os.listdir(base) if n.startswith("BAT"))
+    except OSError:
+        return None
+    for n in names:
+        try:
+            cap = int(open(f"{base}/{n}/capacity").read().strip())
+            status = open(f"{base}/{n}/status").read().strip()
+            return cap, status
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def network_kind():
+    if ARGS.demo:
+        return "wifi"
+    out = run(["nmcli", "-t", "-f", "TYPE,STATE", "device"])
+    types = {ln.split(":")[0] for ln in out.splitlines() if ln.endswith(":connected")}
+    if "wifi" in types:
+        return "wifi"
+    if "ethernet" in types:
+        return "ethernet"
+    return None
+
+
+def focused_connector():
+    try:
+        mons = json.loads(run(["hyprctl", "monitors", "-j"]) or "[]")
+        return next((m["name"] for m in mons if m.get("focused")), None)
+    except (ValueError, KeyError):
+        return None
+
+
+def date_text():
+    if ARGS.demo:
+        return "Tue Apr 1"
+    lt = time.localtime()
+    if locale.setlocale(locale.LC_TIME).lower().startswith("pt") or PT:
+        dias = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira",
+                "sábado", "domingo"]
+        meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto",
+                 "setembro", "outubro", "novembro", "dezembro"]
+        return f"{dias[lt.tm_wday]}, {lt.tm_mday} de {meses[lt.tm_mon - 1]}"
+    return time.strftime("%a %b %-d", lt)       # "Thu Oct 2", como na tela da Apple
+
+
+def clock_text():
+    if ARGS.demo:
+        return "9:41"
+    return time.strftime("%-H:%M")              # sem zero à esquerda: "9:41"
+
+
+if ARGS.warm_cache:
+    sys.exit(warm_cache())
+
+
+# ───────────────────────────── desenho ─────────────────────────────
+
+def font(size, weight=600, family="SF Pro"):
+    """SF Pro é variável: o peso vai como eixo "wght" (aceita 650, entre Semibold e Bold) e o
+    tamanho óptico como "opsz" (17 = Text … 28 = Display), que o macOS segue pelo tamanho."""
+    d = Pango.FontDescription()
+    d.set_family(family)
+    d.set_weight(Pango.Weight.BOLD if weight >= 700 else Pango.Weight.SEMIBOLD
+                 if weight >= 590 else Pango.Weight.MEDIUM if weight >= 500 else Pango.Weight.NORMAL)
+    d.set_variations(f"wght={weight},opsz={min(28, max(17, round(size)))}")
+    d.set_absolute_size(size * Pango.SCALE)
+    return d
+
+
+def text_path(cr, text, desc, cx, top, track=0.0):
+    """Caminho do texto centrado em cx, com o topo da TINTA (não da caixa) em `top`;
+    `track` = espaçamento entre letras em pt."""
+    layout = PangoCairo.create_layout(cr)
+    layout.set_font_description(desc)
+    layout.set_text(text, -1)
+    if track:
+        attrs = Pango.AttrList()
+        attrs.insert(Pango.attr_letter_spacing_new(round(track * Pango.SCALE)))
+        layout.set_attributes(attrs)
+    ink, _logical = layout.get_pixel_extents()
+    x = cx - ink.width / 2 - ink.x
+    y = top - ink.y
+    cr.move_to(x, y)
+    PangoCairo.layout_path(cr, layout)
+    path = cr.copy_path()
+    cr.new_path()
+    return path, (cx - ink.width / 2, top, ink.width, ink.height)
+
+
+def draw_glass_text(cr, path, box, bg_strong, s, lum=0.5):
+    """Texto de vidro (estilo do kit "Lock Screen Time": #F8F8F8/0.25 luminosity +
+    #1A1A1A plus-lighter, vidro raio 3, saturação 1.4, distorção 0.2, aros claros)."""
+    x, y, w, h = box
+    cx, cy = x + w / 2, y + h / 2
+    # 1) sombra difusa bem leve (#000/0.02 0 8 15 no kit) — halos sobrepostos
+    cr.save()
+    cr.translate(0, 6 * s)
+    for lw, a in ((26, 0.012), (16, 0.016), (8, 0.022)):
+        cr.append_path(path)
+        cr.set_line_width(lw * s)
+        cr.set_line_join(cairo.LINE_JOIN_ROUND)
+        cr.set_source_rgba(0, 0, 0, a)
+        cr.stroke()
+    cr.restore()
+
+    cr.save()
+    cr.append_path(path)
+    cr.clip()
+    # 2) refração: o fundo (mais desfocado) ampliado ~5% a partir do centro do relógio
+    cr.save()
+    cr.translate(cx, cy)
+    cr.scale(1.05, 1.05)
+    cr.translate(-cx, -cy)
+    cr.set_source_surface(bg_strong, 0, 0)
+    cr.paint()
+    cr.restore()
+    # 3) preenchimento claro (luminosity + plus-lighter ≈ véu branco translúcido)
+    cr.set_source_rgba(0.973, 0.973, 0.973, max(0.36, min(0.64, 0.66 - 0.32 * lum)))
+    cr.paint()
+    cr.set_operator(cairo.OPERATOR_ADD)          # "plus-lighter" #1A1A1A
+    cr.set_source_rgba(0.08, 0.08, 0.08, 1)
+    cr.paint()
+    cr.set_operator(cairo.OPERATOR_OVER)
+    g = cairo.LinearGradient(0, y, 0, y + h)
+    g.add_color_stop_rgba(0.0, 1, 1, 1, 0.22)
+    g.add_color_stop_rgba(0.55, 1, 1, 1, 0.04)
+    g.add_color_stop_rgba(1.0, 1, 1, 1, 0.12)
+    cr.set_source(g)
+    cr.paint()
+    # 4) aro interno claro em volta (realce especular), mais forte em cima.
+    #    Feito por "texto menos texto deslocado" (e não com stroke), porque a SF Pro
+    #    variável tem contornos sobrepostos e o stroke desenharia as emendas internas.
+    rim(cr, path, 1.6 * s, 0.55, dirs=8)
+    rim(cr, path, 2.4 * s, 0.40, dirs=((0, 1),))
+    cr.restore()
+    # 6) filete externo (#D9D9D9 0.5 no kit)
+    cr.push_group()
+    for dx, dy in circle_dirs(8):
+        cr.save()
+        cr.translate(dx * 0.9 * s, dy * 0.9 * s)
+        cr.append_path(path)
+        cr.restore()
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.fill()
+    cr.set_operator(cairo.OPERATOR_DEST_OUT)
+    cr.append_path(path)
+    cr.fill()
+    cr.pop_group_to_source()
+    cr.paint_with_alpha(0.28)
+
+
+def circle_dirs(n):
+    return [(math.cos(2 * math.pi * i / n), math.sin(2 * math.pi * i / n)) for i in range(n)]
+
+
+def rim(cr, path, width, alpha, dirs=8):
+    """Faixa interna junto à borda: (texto) − (texto deslocado), na direção `dirs`."""
+    cr.push_group()
+    for dx, dy in (circle_dirs(dirs) if isinstance(dirs, int) else dirs):
+        cr.push_group()
+        cr.append_path(path)
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.fill()
+        cr.set_operator(cairo.OPERATOR_DEST_OUT)
+        cr.save()
+        cr.translate(dx * width, dy * width)
+        cr.append_path(path)
+        cr.restore()
+        cr.fill()
+        cr.pop_group_to_source()
+        cr.paint()
+    cr.pop_group_to_source()
+    cr.paint_with_alpha(alpha)
+
+
+BACKDROP_VEIL = 0.06     # véu mínimo para o branco ler bem sobre fundos claros
+DATE_ADD = (100 / 255,) * 3   # data: plus-lighter #646464
+
+
+class Backdrop:
+    """Fundo + data + relógio de um monitor (tudo em cairo, para o vidro poder
+    "enxergar" o papel de parede que está atrás dele)."""
+
+    def __init__(self, wallpaper_path, on_ready=None):
+        self.path = wallpaper_path
+        self.on_ready = on_ready
+        self.surfaces = {}
+        self.loading = set()
+        self.area = Gtk.DrawingArea()
+        self.area.set_hexpand(True)
+        self.area.set_vexpand(True)
+        self.area.set_draw_func(self._draw)
+
+    def _surfaces(self, w, h):
+        """Fundo pronto, ou None enquanto carrega numa thread (imagens enormes levam
+        segundos; a tela de bloqueio tem de aparecer na hora)."""
+        key = (w, h)
+        if key in self.surfaces:
+            return self.surfaces[key]
+        cached = cache_path(self.path, w, h)
+        if cached and os.path.exists(cached):
+            self.surfaces[key] = make_surfaces(load_cover(cached, w, h), w, h)
+            return self.surfaces[key]
+        if key not in self.loading:
+            self.loading.add(key)
+
+            def work():
+                pb = cached_cover(self.path, w, h)
+                GLib.idle_add(done, pb)
+
+            def done(pb):
+                self.surfaces[key] = make_surfaces(pb, w, h)
+                self.loading.discard(key)
+                self.area.queue_draw()
+                if self.on_ready:
+                    self.on_ready()
+                return False
+
+            threading.Thread(target=work, daemon=True).start()
+        return None
+
+    def _draw(self, _area, cr, w, h):
+        surf = self._surfaces(w, h)
+        if surf is None:            # ainda carregando: gradiente neutro escuro
+            g = cairo.LinearGradient(0, 0, 0, h)
+            g.add_color_stop_rgb(0, 0.20, 0.26, 0.38)
+            g.add_color_stop_rgb(1, 0.06, 0.08, 0.14)
+            cr.set_source(g)
+            cr.paint()
+            strong = cairo.ImageSurface(cairo.FORMAT_RGB24, 1, 1)
+            ctx = cairo.Context(strong)
+            ctx.set_source_rgb(0.3, 0.35, 0.45)
+            ctx.paint()
+            lum = 0.3
+        else:
+            bg, strong, lum = surf
+            cr.set_source_surface(bg, 0, 0)
+            cr.paint()
+        # véu mínimo para o branco ler bem sobre fundos claros (a Apple quase não escurece)
+        cr.set_source_rgba(0, 0, 0, BACKDROP_VEIL)
+        cr.paint()
+        s = 1.0     # tamanhos fixos em pt (1 pt = 1 px lógico), como no Mac
+        # data (SF Pro entre Medium e Semibold, branco levemente translúcido)
+        dpath, _ = text_path(cr, date_text(), font(M["date_size"] * s, M["date_weight"]), w / 2,
+                             M["date_top"] * s, M["date_track"] * s)
+        # cor vibrante: SOMA ≈ 100 ao fundo em cada canal (plus-lighter #646464) — medido em
+        # três telas (WWDC +99, 26.0 final +95, praia +102/+107): sobre céu azul sai
+        # azul-claro, não branco; sem sombra
+        cr.append_path(dpath)
+        cr.set_operator(cairo.OPERATOR_ADD)
+        cr.set_source_rgb(*DATE_ADD)
+        cr.fill()
+        cr.set_operator(cairo.OPERATOR_OVER)
+        # relógio de vidro (Ajustes ▸ Wallpaper ▸ Clock Appearance…: mostrar, estilo, peso)
+        cc = clock_conf()
+        if cc["show"] == "never":
+            return
+        cpath, box = text_path(cr, clock_text(), font(M["clock_size"] * s, cc["weight"], cc["family"]),
+                               w / 2, M["clock_top"] * s, M["clock_track"] * s)
+        draw_glass_text(cr, cpath, box, strong, s, lum)
+
+
+class Avatar(Gtk.DrawingArea):
+    SIZE = 49       # medido na foto oficial: 49,2 pt de diâmetro
+
+    def __init__(self, path, name):
+        super().__init__()
+        self.set_content_width(self.SIZE)
+        self.set_content_height(self.SIZE)
+        self.set_halign(Gtk.Align.CENTER)
+        self.initial = (name.strip()[:1] or "?").upper()
+        self.pb = None
+        if path:
+            try:
+                self.pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, self.SIZE * 2, self.SIZE * 2, True)
+            except GLib.Error:
+                self.pb = None
+        self.set_draw_func(self._draw)
+
+    def _draw(self, _a, cr, w, h):
+        r = min(w, h) / 2
+        cx, cy = w / 2, h / 2
+        cr.arc(cx, cy, r, 0, 2 * math.pi)
+        if self.pb is not None:
+            cr.save()
+            cr.clip()
+            pw, ph = self.pb.get_width(), self.pb.get_height()
+            k = max(w / pw, h / ph)
+            cr.translate(cx - pw * k / 2, cy - ph * k / 2)
+            cr.scale(k, k)
+            Gdk.cairo_set_source_pixbuf(cr, self.pb, 0, 0)
+            cr.paint()
+            cr.restore()
+            return
+        # monograma num círculo de vidro
+        g = cairo.LinearGradient(0, 0, 0, h)
+        g.add_color_stop_rgba(0, 1, 1, 1, 0.42)
+        g.add_color_stop_rgba(1, 1, 1, 1, 0.22)
+        cr.set_source(g)
+        cr.fill()
+        cr.arc(cx, cy, r - 0.5, 0, 2 * math.pi)
+        cr.set_line_width(1)
+        cr.set_source_rgba(1, 1, 1, 0.45)
+        cr.stroke()
+        # centraliza verticalmente pela tinta
+        layout = PangoCairo.create_layout(cr)
+        layout.set_font_description(font(21))
+        layout.set_text(self.initial, -1)
+        ink, _l = layout.get_pixel_extents()
+        cr.move_to(cx - ink.width / 2 - ink.x, cy - ink.height / 2 - ink.y)
+        PangoCairo.layout_path(cr, layout)
+        cr.set_source_rgba(1, 1, 1, 0.95)
+        cr.fill()
+
+
+class VibrantLabel(Gtk.DrawingArea):
+    """Texto "vibrante" (kit: Labels/Dark - Vibrant, Secondary #999999, mistura plus-lighter):
+    a cor é SOMADA ao fundo, então o texto puxa o tom do papel de parede (na foto oficial,
+    "Touch ID or Enter Password" sai azulado sobre o azul, com o canal azul saturado).
+    O GTK não tem plus-lighter: o widget redesenha o pedaço do fundo que está atrás dele
+    e soma o texto por cima (cairo ADD)."""
+
+    def __init__(self, text, size, weight, color=(0x99 / 255,) * 3):
+        super().__init__()
+        self.text, self.size, self.weight, self.color = text, size, weight, color
+        self.set_halign(Gtk.Align.CENTER)
+        self.set_draw_func(self._draw)
+        self._measure()
+
+    def _layout(self, ctx):
+        layout = PangoCairo.create_layout(ctx) if isinstance(ctx, cairo.Context) else Pango.Layout.new(ctx)
+        layout.set_font_description(font(self.size, self.weight))
+        layout.set_text(self.text, -1)
+        return layout
+
+    def _measure(self):
+        _ink, logical = self._layout(self.get_pango_context()).get_pixel_extents()
+        self.set_content_width(logical.width + 2)
+        self.set_content_height(logical.height)
+
+    def set_text(self, text):
+        self.text = text
+        self._measure()
+        self.queue_draw()
+
+    def _backdrop(self):
+        view = self.get_ancestor(LockView)
+        if view is None:
+            return None, None
+        surf = view.backdrop.surfaces.get((view.get_width(), view.get_height()))
+        return view, surf
+
+    def _draw(self, _a, cr, w, h):
+        layout = self._layout(cr)
+        _ink, logical = layout.get_pixel_extents()
+        x, y = (w - logical.width) / 2 - logical.x, (h - logical.height) / 2 - logical.y
+        view, surf = self._backdrop()
+        ok, pt = (self.compute_point(view, Graphene.Point()) if view else (False, None))
+        if surf is None or not ok:
+            cr.move_to(x, y)
+            cr.set_source_rgba(1, 1, 1, 0.6)
+            PangoCairo.show_layout(cr, layout)
+            return
+        # 1) o mesmo fundo que o Backdrop desenhou aqui (papel de parede + véu)
+        cr.set_source_surface(surf[0], -pt.x, -pt.y)
+        cr.paint()
+        cr.set_source_rgba(0, 0, 0, BACKDROP_VEIL)
+        cr.paint()
+        # 2) texto somado (plus-lighter)
+        cr.set_operator(cairo.OPERATOR_ADD)
+        cr.set_source_rgb(*self.color)
+        cr.move_to(x, y)
+        PangoCairo.show_layout(cr, layout)
+
+
+class AuthPanel(Gtk.Box):
+    """Avatar + nome + campo de senha (cápsula de vidro com seta). Existe UM só e
+    passa para o monitor que estiver com o foco."""
+
+    def __init__(self, on_success):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        self.add_css_class("lock-auth")
+        self.set_halign(Gtk.Align.CENTER)
+        self.set_valign(Gtk.Align.END)
+        self.on_success = on_success
+        self.pam = Pam()
+        self.service = default_service()
+        self.busy = False
+
+        name, avatar = user_info()
+        self.append(Avatar(avatar, name))
+        nm = Gtk.Label(label=name)
+        nm.add_css_class("lock-name")
+        self.append(nm)
+
+        # Em repouso o Mac mostra só a dica (texto vibrante, sem caixa); a cápsula com os
+        # pontos aparece quando se digita. As duas ocupam a mesma linha (Overlay).
+        self.entry = Gtk.Overlay()
+        self.entry.add_css_class("lock-entry")
+        self.entry.set_halign(Gtk.Align.CENTER)
+        self.field = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.field.add_css_class("lock-field")
+        self.field.set_halign(Gtk.Align.CENTER)
+        self.field.set_valign(Gtk.Align.CENTER)
+        self.field.set_opacity(0)
+        self.text = Gtk.Text()
+        self.text.set_visibility(False)
+        self.text.set_placeholder_text(T["placeholder"])
+        self.text.set_hexpand(True)
+        self.text.set_alignment(0.5)          # a dica fica centrada, como na Apple
+        self.text.set_input_purpose(Gtk.InputPurpose.PASSWORD)
+        self.text.connect("activate", lambda *_: self.submit())
+        self.text.connect("changed", self._changed)
+        self.field.append(self.text)
+        self.go = Gtk.Button(label=ICON["arrow"])
+        self.go.add_css_class("lock-go")
+        self.go.set_valign(Gtk.Align.CENTER)
+        self.go.set_focusable(False)
+        self.go.connect("clicked", lambda *_: self.submit())
+        self.go.set_opacity(0)
+        self.field.append(self.go)
+        self.hint = VibrantLabel(T["hint"], 12, 540)
+        self.hint.add_css_class("lock-hint")
+        self.hint.set_can_target(False)
+        self.hint.set_valign(Gtk.Align.CENTER)
+        self.entry.set_child(self.field)
+        self.entry.add_overlay(self.hint)
+        self.entry.set_measure_overlay(self.hint, True)
+        self.append(self.entry)
+
+        self.msg = Gtk.Label(label=" ")
+        self.msg.add_css_class("lock-msg")
+        self.msg.set_wrap(True)
+        self.msg.set_max_width_chars(48)
+        self.msg.set_justify(Gtk.Justification.CENTER)
+        self.msg.set_visible(False)     # só ocupa lugar quando o PAM tem algo a dizer
+        self.append(self.msg)
+
+        keys = Gtk.EventControllerKey()
+        keys.connect("key-pressed", self._key)
+        self.text.add_controller(keys)
+
+    def _changed(self, *_):
+        has = bool(self.text.get_text())
+        self.go.set_opacity(1 if has else 0)
+        self.field.set_opacity(1 if has else 0)
+        self.hint.set_opacity(0 if has else 1)
+        if has and self.msg.get_visible():
+            self.msg.set_visible(False)
+
+    def _key(self, _c, keyval, _code, _state):
+        if keyval == Gdk.KEY_Escape:
+            self.text.set_text("")
+            return True
+        return False
+
+    def focus(self):
+        GLib.idle_add(lambda: (self.text.grab_focus(), False)[1])
+
+    def submit(self):
+        pw = self.text.get_text()
+        if self.busy or not pw:
+            return
+        self.busy = True
+        self.field.set_sensitive(False)
+
+        def work():
+            try:
+                ok, err, msgs = self.pam.authenticate(self.service, USER, pw)
+            except Exception as e:  # noqa: BLE001 — nunca deixar o campo travado
+                ok, err, msgs = False, str(e), []
+            GLib.idle_add(self._done, ok, err, msgs)
+
+        threading.Thread(target=work, daemon=True).start()
+
+    def _done(self, ok, err, msgs):
+        self.busy = False
+        self.field.set_sensitive(True)
+        if ok:
+            self.text.set_text("")
+            self.on_success()
+            return False
+        self.text.set_text("")
+        # PAM costuma explicar o motivo (ex.: faillock: "conta bloqueada por 10 min")
+        info = [m for m in msgs if m and "password" not in m.lower()[:9]]
+        self.msg.set_text("\n".join(info))
+        self.msg.set_visible(bool(info))
+        self.shake()
+        self.focus()
+        return False
+
+    def shake(self):
+        """Errou: o campo treme (≈ 0,45 s, amplitude que decai) e limpa."""
+        t0 = GLib.get_monotonic_time()
+        dur, amp = 450_000, 12
+
+        def step():
+            t = (GLib.get_monotonic_time() - t0) / dur
+            if t >= 1:
+                self.entry.set_margin_start(0)
+                self.entry.set_margin_end(0)
+                return False
+            d = round(amp * math.sin(t * math.pi * 6) * (1 - t)) * 2
+            self.entry.set_margin_start(max(0, d))
+            self.entry.set_margin_end(max(0, -d))
+            return True
+
+        GLib.timeout_add(16, step)
+
+
+class StatusGlyph(Gtk.DrawingArea):
+    """Ícones do canto superior direito desenhados em cairo, com as medidas da foto oficial
+    (pt): teclado 16,2×10, bateria 22,5×11,6 + polo, Wi‑Fi 14,6×10,4 (leque de 90°).
+    `dy` = deslocamento do centro em relação ao centro do texto (13,8 pt do topo)."""
+
+    SPEC = {   # kind: (largura, altura, dy)
+        "keyboard": (16.2, 10.0, 0.0),
+        "battery": (25.4, 11.6, -1.0),
+        "wifi": (14.6, 10.4, -1.0),
+    }
+
+    def __init__(self, kind, level=1.0, charging=False):
+        super().__init__()
+        self.kind, self.level, self.charging = kind, level, charging
+        w, h, _dy = self.SPEC[kind]
+        self.set_content_width(math.ceil(w))
+        self.set_content_height(math.ceil(h))
+        self.set_draw_func(self._draw)
+
+    @staticmethod
+    def _rrect(cr, x, y, w, h, r):
+        cr.new_sub_path()
+        cr.arc(x + w - r, y + r, r, -math.pi / 2, 0)
+        cr.arc(x + w - r, y + h - r, r, 0, math.pi / 2)
+        cr.arc(x + r, y + h - r, r, math.pi / 2, math.pi)
+        cr.arc(x + r, y + r, r, math.pi, 1.5 * math.pi)
+        cr.close_path()
+
+    def _draw(self, _a, cr, w, h):
+        sw, sh, _dy = self.SPEC[self.kind]
+        cr.translate((w - sw) / 2, (h - sh) / 2)
+        getattr(self, "_" + self.kind)(cr, sw, sh)
+
+    def _keyboard(self, cr, w, h):
+        lw = 1.1
+        self._rrect(cr, lw / 2, lw / 2, w - lw, h - lw, 2.2)
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.set_line_width(lw)
+        cr.stroke()
+        # duas fileiras de teclas e a barra de espaço
+        k, cols = 1.0, 7
+        x0, x1 = 2.6, w - 2.6
+        step = (x1 - x0 - k) / (cols - 1)
+        for row_y in (2.6, 4.6):
+            for i in range(cols):
+                cr.rectangle(x0 + i * step, row_y, k, k)
+        cr.rectangle(x0 + 1.2, 6.6, x1 - x0 - 2.4, k)
+        cr.fill()
+
+    def _battery(self, cr, w, h):
+        bw, lw = 22.5, 1.1
+        self._rrect(cr, lw / 2, lw / 2, bw - lw, h - lw, 3.6)
+        cr.set_source_rgba(1, 1, 1, 0.42)        # contorno translúcido, como na foto
+        cr.set_line_width(lw)
+        cr.stroke()
+        self._rrect(cr, bw + 1.6, 3.7, 1.3, 4.2, 0.65)   # polo
+        cr.fill()
+        inner = bw - 2 * 1.9
+        fw = max(1.5, inner * max(0.0, min(1.0, self.level)))
+        self._rrect(cr, 1.9, 2.15, fw, h - 4.3, 1.8)
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.fill()
+
+    def _wifi(self, cr, w, h):
+        # leque de ±45° com o vértice embaixo, no centro: miolo + dois arcos
+        cx, cy = w / 2, h
+        a0, a1 = -math.pi * 3 / 4, -math.pi / 4
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.set_line_cap(cairo.LINE_CAP_ROUND)
+        cr.set_line_join(cairo.LINE_JOIN_ROUND)
+        lw = 2.1
+        for r in (h - lw / 2, h - lw / 2 - 3.5):
+            cr.set_line_width(lw)
+            cr.arc(cx, cy, r, a0 + 0.08, a1 - 0.08)
+            cr.stroke()
+        r = h - 7.1
+        cr.move_to(cx, cy - 0.6)
+        cr.arc(cx, cy, r, a0, a1)
+        cr.close_path()
+        cr.set_line_width(1.0)
+        cr.stroke_preserve()
+        cr.fill()
+
+
+class LockView(Gtk.Overlay):
+    """O conteúdo de um monitor: fundo/data/relógio + status + vaga para o AuthPanel."""
+
+    def __init__(self, wallpaper):
+        super().__init__()
+        self.add_css_class("hyprmac-lock")
+        self.backdrop = Backdrop(wallpaper, on_ready=self._redraw_slot)
+        self.set_child(self.backdrop.area)
+
+        self.status = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        self.status.add_css_class("lock-status")
+        self.status.set_halign(Gtk.Align.END)
+        self.status.set_valign(Gtk.Align.START)
+        self.add_overlay(self.status)
+
+        self.slot = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.slot.add_css_class("lock-slot")
+        self.slot.set_halign(Gtk.Align.CENTER)
+        self.slot.set_valign(Gtk.Align.END)
+        self.add_overlay(self.slot)
+        self.refresh_status()
+
+    def refresh_status(self):
+        while (c := self.status.get_first_child()) is not None:
+            self.status.remove(c)
+
+        def place(widget, dy=0.0):
+            # todos centrados na linha do texto (centro das maiúsculas a 13,8 pt do topo)
+            widget.set_valign(Gtk.Align.CENTER)
+            widget.set_margin_top(max(0, round(2 * dy)))
+            widget.set_margin_bottom(max(0, round(-2 * dy)))
+            return widget
+
+        def item(*widgets):
+            b = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)   # tinta: texto ↔ teclado 6,3
+            b.add_css_class("lock-status-item")
+            for w in widgets:
+                b.append(w)
+            self.status.append(b)
+
+        def glyph(kind, **kw):
+            g = StatusGlyph(kind, **kw)
+            return place(g, StatusGlyph.SPEC[kind][2])
+
+        kb = keyboard_layout()
+        if kb:
+            lb = Gtk.Label(label=kb)
+            lb.add_css_class("lock-status-text")
+            item(place(lb, -0.5), glyph("keyboard"))
+        bat = battery()
+        if bat:
+            cap, st = bat
+            item(glyph("battery", level=cap / 100, charging=st == "Charging"))
+        net = network_kind()
+        if net == "wifi":
+            item(glyph("wifi"))
+        elif net == "ethernet":     # sem referência da Apple para cabo no bloqueio
+            ic = Gtk.Label(label=ICON["ethernet"])
+            ic.add_css_class("lock-status-icon")
+            item(place(ic))
+
+    def _redraw_slot(self):
+        """O fundo ficou pronto: o texto vibrante (que copia o fundo) precisa redesenhar."""
+        def walk(w):
+            while w is not None:
+                if isinstance(w, VibrantLabel):
+                    w.queue_draw()
+                walk(w.get_first_child())
+                w = w.get_next_sibling()
+        walk(self.slot.get_first_child())
+
+    def redraw(self):
+        self.backdrop.area.queue_draw()
+
+
+class PlainView(Gtk.Overlay):
+    """Reserva de segurança se o LockView falhar: fundo liso + vaga do campo."""
+
+    def __init__(self):
+        super().__init__()
+        self.add_css_class("hyprmac-lock")
+        self.set_child(Gtk.Box(hexpand=True, vexpand=True))
+        self.slot = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.slot.add_css_class("lock-slot")
+        self.slot.set_halign(Gtk.Align.CENTER)
+        self.slot.set_valign(Gtk.Align.END)
+        self.add_overlay(self.slot)
+
+    def refresh_status(self):
+        pass
+
+    def redraw(self):
+        pass
+
+
+# ───────────────────────────── aplicação ─────────────────────────────
+
+class LockApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id=None, flags=Gio.ApplicationFlags.NON_UNIQUE)
+        self.views = []
+        self.windows = []
+        self.auth = None
+        self.wallpaper = resolve_wallpaper()
+        self.last_minute = None
+        self.lock = None
+        self.connect("activate", self._activate)
+
+    # ── CSS e relógio ──
+    def _setup(self):
+        prov = Gtk.CssProvider()
+        try:
+            prov.load_from_path(CSS_PATH)
+        except GLib.Error as e:
+            print("lock.css:", e, file=sys.stderr)
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), prov,
+                                                  Gtk.STYLE_PROVIDER_PRIORITY_USER + 10)
+        self.auth = AuthPanel(self._unlock)
+        GLib.timeout_add_seconds(1, self._tick)
+        GLib.timeout_add_seconds(30, self._status_tick)
+
+    def _tick(self):
+        m = time.strftime("%Y%m%d%H%M")
+        if m != self.last_minute:
+            self.last_minute = m
+            for v in self.views:
+                v.redraw()
+        return True
+
+    def _status_tick(self):
+        for v in self.views:
+            v.refresh_status()
+        return True
+
+    def _make_view(self, window):
+        try:
+            view = LockView(self.wallpaper)
+        except Exception as e:  # noqa: BLE001 — sem fundo, mas o campo de senha TEM de existir
+            print("hyprmac-lock: visual simplificado:", e, file=sys.stderr)
+            view = PlainView()
+        window.set_child(view)
+        window.add_css_class("hyprmac-lock-window")
+        self.views.append(view)
+        self.windows.append(window)
+        window.connect("notify::is-active", lambda w, _p, v=view: w.is_active() and self.host_auth(v))
+        click = Gtk.GestureClick()
+        click.connect("pressed", lambda *_a, v=view: self.host_auth(v))
+        view.add_controller(click)
+        # qualquer tecla num monitor sem o campo traz o campo para ele
+        keys = Gtk.EventControllerKey()
+        keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        keys.connect("key-pressed", lambda *_a, v=view: self._key_anywhere(v))
+        window.add_controller(keys)
+        return view
+
+    def _key_anywhere(self, view):
+        if self.auth.get_parent() is not view.slot:
+            self.host_auth(view)
+        elif not self.auth.text.has_focus():
+            self.auth.text.grab_focus()
+        return False
+
+    def host_auth(self, view):
+        if ARGS.preview and ARGS.secondary:
+            return False
+        parent = self.auth.get_parent()
+        if parent is not view.slot:
+            if parent is not None:
+                parent.remove(self.auth)
+            view.slot.append(self.auth)
+        self.auth.focus()
+        return False
+
+    def _unlock(self):
+        if self.lock is not None:
+            self.lock.unlock()
+            GLib.timeout_add(1500, lambda: (self.quit(), False)[1])   # garantia
+        else:
+            print("preview: senha correta — fechando")
+            self.quit()
+
+    # ── modos ──
+    def _activate(self, _app):
+        self._setup()
+        if LOCK_MODE:
+            self._activate_lock()
+        else:
+            self._activate_preview()
+
+    def _activate_preview(self):
+        win = Gtk.ApplicationWindow(application=self, title="hyprmac-lock (preview)")
+        view = self._make_view(win)
+        mons = Gdk.Display.get_default().get_monitors()
+        target = None
+        for i in range(mons.get_n_items()):
+            m = mons.get_item(i)
+            if m.get_connector() == (ARGS.monitor or focused_connector()):
+                target = m
+        if not ARGS.secondary:
+            self.host_auth(view)
+        if ARGS.size:
+            sw, sh = (int(v) for v in ARGS.size.lower().split("x"))
+            win.set_default_size(sw, sh)
+            view.set_size_request(sw, sh)    # o Broadway limita a janela à "tela" dele
+        elif target is not None:
+            win.fullscreen_on_monitor(target)
+        else:
+            win.set_default_size(1920, 1080)
+        win.present()
+        if ARGS.snapshot:
+            if os.environ.get("HYPRMAC_LOCK_TYPED"):    # testes: estado "digitando"
+                self.auth.text.set_text(os.environ["HYPRMAC_LOCK_TYPED"])
+            self._snapshot_when_ready(win, view)
+        if ARGS.quit_after:
+            GLib.timeout_add(int(ARGS.quit_after * 1000), lambda: (self.quit(), False)[1])
+
+    def _snapshot_when_ready(self, win, view):
+        """--snapshot: espera o papel de parede carregar e salva a tela inteira em PNG."""
+        t0 = time.time()
+
+        def save():
+            w, h = view.get_width(), view.get_height()
+            bd = getattr(view, "backdrop", None)
+            ready = w > 0 and (bd is None or bd._surfaces(w, h) is not None)
+            if not ready and time.time() - t0 < 20:
+                return True
+            snap = Gtk.Snapshot()
+            Gtk.WidgetPaintable.new(view).snapshot(snap, w, h)
+            node = snap.to_node()
+            if node is None:            # ainda sem nada desenhado (fundo acabou de carregar)
+                return time.time() - t0 < 20
+            win.get_renderer().render_texture(node, node.get_bounds()).save_to_png(ARGS.snapshot)
+            print(ARGS.snapshot, w, h)
+            self.quit()
+            return False
+
+        GLib.timeout_add(300, save)
+
+    def _activate_lock(self):
+        from gi.repository import Gtk4SessionLock as SL
+        if not SL.is_supported():
+            print("hyprmac-lock: o compositor não suporta ext-session-lock", file=sys.stderr)
+            self.quit()
+            return
+        # segurança: se o PAM não abrir, NÃO trava (senão não haveria como destravar)
+        if not Pam().can_start(default_service(), USER):
+            print(f"hyprmac-lock: serviço PAM '{default_service()}' indisponível — não travo",
+                  file=sys.stderr)
+            self.quit()
+            return
+        self.hold()
+        self.focused = focused_connector()
+        self.lock = SL.Instance.new()
+        self.lock.connect("monitor", self._on_monitor)
+        self.lock.connect("failed", lambda *_: (print("hyprmac-lock: falha ao travar", file=sys.stderr),
+                                                self.release(), self.quit()))
+        self.lock.connect("locked", self._locked)
+        self.lock.connect("unlocked", lambda *_: (self.release(), self.quit()))
+        self.lock.lock()
+
+    def _locked(self, *_):
+        """Advertise readiness only after ext-session-lock confirms the lock."""
+        self._ensure_auth()
+        temporary = READYFILE + f".{os.getpid()}"
+        try:
+            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(fd, "w") as state:
+                state.write(str(os.getpid()))
+            os.replace(temporary, READYFILE)
+        except OSError as e:
+            # The session is locked, but idle must not mistake this for readiness.
+            print(f"hyprmac-lock: não consegui sinalizar bloqueio: {e}", file=sys.stderr)
+        finally:
+            try:
+                os.unlink(temporary)
+            except FileNotFoundError:
+                pass
+
+    def _ensure_auth(self):
+        """Garante que algum monitor tem o campo de senha."""
+        if self.auth.get_parent() is None and self.views:
+            self.host_auth(self.views[0])
+
+    def _on_monitor(self, _lock, monitor):
+        win = Gtk.ApplicationWindow(application=self)
+        self.lock.assign_window_to_monitor(win, monitor)
+        view = self._make_view(win)
+        if self.auth.get_parent() is None and (self.focused is None or monitor.get_connector() == self.focused):
+            self.host_auth(view)
+        win.present()
+
+
+def main():
+    if LOCK_MODE:
+        # uma instância só
+        fd = os.open(LOCKFILE, os.O_RDWR | os.O_CREAT, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            os.close(fd)
+            print("hyprmac-lock: já está travado", file=sys.stderr)
+            return 0
+    try:
+        if LOCK_MODE:
+            try:
+                os.unlink(READYFILE)  # discard stale state after acquiring the instance lock
+            except FileNotFoundError:
+                pass
+        app = LockApp()
+        app.run([sys.argv[0]])
+    finally:
+        if LOCK_MODE:
+            try:
+                os.unlink(READYFILE)
+            except FileNotFoundError:
+                pass
+            os.close(fd)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

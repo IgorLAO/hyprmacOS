@@ -1,0 +1,29 @@
+/* hyprmac — Reduzir Transparência (Acessibilidade ▸ Tela no macOS)
+ * Os vidros viram superfícies sólidas: mesmo tom do vidro, opaco. Carregado
+ * por cima do style.css pelo hyprmac-shell quando a opção está ligada. */
+menu.hyprmac-menu, .hyprmac-menu menu, .xmenu, .notif, .switcher-panel,
+.ccg, .clip-panel, .wg-panel, .spot-panel, .hyprmac tooltip,
+.nc button.nc-x, .nc button.nc-pill {
+  background-color: @shell_surface_opaque;
+  background-image: none;
+}
+.notif-peek   { background-color: @shell_peek; }
+.notif-peek-2 { background-color: @shell_peek_back; }
+.media-panel {
+  background-color: @shell_control_opaque;
+  background-image: none;
+}
+.osd { background-color: @shell_surface_opaque; background-image: none; }
+.osd .osd-title, .osd .osd-icon, .osd .osd-bar { color: @shell_contrast_label; }
+.cc .tile, .cc .circle, .cc .edit-pill {
+  background-color: @shell_control_opaque;
+  background-image: none;
+}
+.cc .tile:hover:not(:disabled), .cc .circle:hover:not(:disabled),
+.cc .edit-pill:hover:not(:disabled) { background-color: @shell_control_hover; }
+.cc .circle.on, .cc .circle.on:hover { background-color: #ffffff; }
+.cc .tile.on { background-color: mix(@shell_control_opaque, @shell_accent, 0.30); }
+.cc .tile.on:hover:not(:disabled) { background-color: mix(@shell_control_opaque, @shell_accent, 0.38); }
+.cc label { text-shadow: none; }
+.shortcuts, .month-widget { background-color: @shell_content_opaque; }
+.weather { background-image: linear-gradient(170deg, rgb(22, 30, 62), rgb(32, 42, 86)); }

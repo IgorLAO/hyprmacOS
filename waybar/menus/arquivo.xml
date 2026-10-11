@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu File. Itens com atalho: GtkMenuItem > GtkBox > rótulo + atalho (classe "shortcut",
+     cinza à direita). A ação continua ligada pelo id do GtkMenuItem. ⌘ = Super; os atalhos
+     que só existem dentro dos apps aparecem com ⌃ (Ctrl), que é a tecla real.
+-->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="newterm"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">New Terminal Window</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌘↩</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="files"><property name="label">Open File Manager</property></object></child>
+    <child><object class="GtkMenuItem" id="launcher"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Open Application…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌘Space</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="close"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Close Window</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌘W</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+  </object>
+</interface>

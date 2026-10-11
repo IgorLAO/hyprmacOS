@@ -1,0 +1,52 @@
+{
+  "id": "dev.hyprmac.Music",
+  "name": "Music",
+  "icon": "shell/icons/tahoe26/factory/Music.png",
+  "layout": "sidebar",
+  "size": [
+    960,
+    680
+  ],
+  "sidebar_items": [],
+  "status": "coming_soon",
+  "layout_evidence": "Tahoe 26 screenshot; geometry unmeasured",
+  "bundle_id": "com.apple.Music",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Music.json",
+    "menu_state": "structured",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Music.app/Contents/Resources/AppIcon.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending",
+    "layout_reference": "BaseConhecimento/referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Apple-Music-250609.jpg"
+  },
+  "backend": null,
+  "toolbar_items": [],
+  "transition_ms": 160,
+  "sidebar_groups": [
+    {
+      "title": "",
+      "items": [
+        "Search",
+        "Home",
+        "New",
+        "Radio"
+      ]
+    },
+    {
+      "title": "Library",
+      "items": [
+        "Recently Added",
+        "Artists",
+        "Albums",
+        "Songs"
+      ]
+    },
+    {
+      "title": "Playlists",
+      "items": [
+        "All Playlists"
+      ]
+    }
+  ],
+  "sidebar_default": "Home"
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# hyprmac — alterna a barra de menus entre transparente e clara fosca
+#   bar-style [toggle|light|transparent]
+set -euo pipefail
+W="$HOME/Projects/hyprmac/waybar"
+mode="${1:-toggle}"
+if [ "$mode" = toggle ]; then
+  [ -s "$W/mode.css" ] && mode=transparent || mode=light
+fi
+case "$mode" in
+  light)       cp "$W/modes/light.css" "$W/mode.css" ;;
+  transparent) : > "$W/mode.css" ;;
+  *) echo "uso: $0 [toggle|light|transparent]" >&2; exit 2 ;;
+esac
+pkill -SIGUSR2 -x waybar || true   # recarrega config + estilo

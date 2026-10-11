@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Calculator
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-calculadora
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/Calculator.png
+StartupWMClass=dev.hyprmac.Calculator
+Terminal=false
+StartupNotify=true
+Categories=GTK;Utility;Calculator;

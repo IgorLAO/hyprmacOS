@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Activity Monitor
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.ActivityMonitor
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/ActivityMonitor.png
+StartupWMClass=dev.hyprmac.ActivityMonitor
+Terminal=false
+Categories=Utility;

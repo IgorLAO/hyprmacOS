@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Magnifier
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Magnifier
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Magnifier.png
+StartupWMClass=dev.hyprmac.Magnifier
+Terminal=false
+Categories=Utility;

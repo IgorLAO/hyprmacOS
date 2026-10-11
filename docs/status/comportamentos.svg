@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="520" height="260" fill="#1f2026"/>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 8.6% (2/113 feitos)</text>
+<g><title>Microinterações — 30%</title>
+<rect x="0.0" y="26.0" width="124.2" height="130.0" fill="#16171c"/>
+<rect x="1.5" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-01: feito</title></rect>
+<rect x="32.1" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-03: feito</title></rect>
+<rect x="62.6" y="27.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-02: parcial testado</title></rect>
+<rect x="93.2" y="27.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-11: parcial testado</title></rect>
+<rect x="1.5" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-14: parcial testado</title></rect>
+<rect x="32.1" y="59.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-04: parcial/relatado</title></rect>
+<rect x="62.6" y="59.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-08: parcial/relatado</title></rect>
+<rect x="93.2" y="59.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-09: parcial/relatado</title></rect>
+<rect x="1.5" y="91.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-10: parcial/relatado</title></rect>
+<rect x="32.1" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-05: a fazer</title></rect>
+<rect x="62.6" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-06: a fazer</title></rect>
+<rect x="93.2" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-07: a fazer</title></rect>
+<rect x="1.5" y="123.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-12: a fazer</title></rect>
+<rect x="32.1" y="123.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-13: a fazer</title></rect>
+<rect x="62.6" y="123.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-15: a fazer</title></rect>
+<text x="3.0" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Microinterações</text>
+</g>
+<g><title>Dock — 15%</title>
+<rect x="0.0" y="156.0" width="124.2" height="104.0" fill="#16171c"/>
+<rect x="1.5" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-01: parcial/relatado</title></rect>
+<rect x="32.1" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-02: parcial/relatado</title></rect>
+<rect x="62.6" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-03: parcial/relatado</title></rect>
+<rect x="93.2" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-04: parcial/relatado</title></rect>
+<rect x="1.5" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-07: parcial/relatado</title></rect>
+<rect x="32.1" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-08: parcial/relatado</title></rect>
+<rect x="62.6" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-10: parcial/relatado</title></rect>
+<rect x="93.2" y="191.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-05: a fazer</title></rect>
+<rect x="1.5" y="225.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-06: a fazer</title></rect>
+<rect x="32.1" y="225.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-09: a fazer</title></rect>
+<rect x="62.6" y="225.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-11: a fazer</title></rect>
+<rect x="93.2" y="225.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-12: a fazer</title></rect>
+<text x="3.0" y="168.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Dock</text>
+</g>
+<g><title>Barra — 6%</title>
+<rect x="124.2" y="26.0" width="110.4" height="117.0" fill="#16171c"/>
+<rect x="125.7" y="27.5" width="35.1" height="27.8" fill="#9bc53d"><title>BAR-06: parcial testado</title></rect>
+<rect x="161.9" y="27.5" width="35.1" height="27.8" fill="#d6a531"><title>BAR-02: parcial/relatado</title></rect>
+<rect x="198.0" y="27.5" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-01: a fazer</title></rect>
+<rect x="125.7" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-03: a fazer</title></rect>
+<rect x="161.9" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-04: a fazer</title></rect>
+<rect x="198.0" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-05: a fazer</title></rect>
+<rect x="125.7" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-07: a fazer</title></rect>
+<rect x="161.9" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-08: a fazer</title></rect>
+<rect x="198.0" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-09: a fazer</title></rect>
+<rect x="125.7" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-10: a fazer</title></rect>
+<rect x="161.9" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-11: a fazer</title></rect>
+<rect x="198.0" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>BAR-12: a fazer</title></rect>
+<text x="127.2" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Barra</text>
+</g>
+<g><title>Janelas — 6%</title>
+<rect x="124.2" y="143.0" width="110.4" height="117.0" fill="#16171c"/>
+<rect x="125.7" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>WIN-04: parcial testado</title></rect>
+<rect x="161.9" y="144.5" width="35.1" height="27.8" fill="#d6a531"><title>WIN-12: parcial/relatado</title></rect>
+<rect x="198.0" y="144.5" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-01: a fazer</title></rect>
+<rect x="125.7" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-02: a fazer</title></rect>
+<rect x="161.9" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-03: a fazer</title></rect>
+<rect x="198.0" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-05: a fazer</title></rect>
+<rect x="125.7" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-06: a fazer</title></rect>
+<rect x="161.9" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-07: a fazer</title></rect>
+<rect x="198.0" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-08: a fazer</title></rect>
+<rect x="125.7" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-09: a fazer</title></rect>
+<rect x="161.9" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-10: a fazer</title></rect>
+<rect x="198.0" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-11: a fazer</title></rect>
+<text x="127.2" y="155.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Janelas</text>
+</g>
+<g><title>Spotlight — 4%</title>
+<rect x="234.7" y="26.0" width="110.4" height="117.0" fill="#16171c"/>
+<rect x="236.2" y="27.5" width="35.1" height="27.8" fill="#d6a531"><title>SPT-05: parcial/relatado</title></rect>
+<rect x="272.3" y="27.5" width="35.1" height="27.8" fill="#d6a531"><title>SPT-12: parcial/relatado</title></rect>
+<rect x="308.5" y="27.5" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-01: a fazer</title></rect>
+<rect x="236.2" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-02: a fazer</title></rect>
+<rect x="272.3" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-03: a fazer</title></rect>
+<rect x="308.5" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-04: a fazer</title></rect>
+<rect x="236.2" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-06: a fazer</title></rect>
+<rect x="272.3" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-07: a fazer</title></rect>
+<rect x="308.5" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-08: a fazer</title></rect>
+<rect x="236.2" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-09: a fazer</title></rect>
+<rect x="272.3" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-10: a fazer</title></rect>
+<rect x="308.5" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-11: a fazer</title></rect>
+<text x="237.7" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Spotlight</text>
+</g>
+<g><title>Central — 8%</title>
+<rect x="234.7" y="143.0" width="110.4" height="117.0" fill="#16171c"/>
+<rect x="236.2" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-03: parcial testado</title></rect>
+<rect x="272.3" y="144.5" width="35.1" height="27.8" fill="#d6a531"><title>CCN-01: parcial/relatado</title></rect>
+<rect x="308.5" y="144.5" width="35.1" height="27.8" fill="#d6a531"><title>CCN-04: parcial/relatado</title></rect>
+<rect x="236.2" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-02: a fazer</title></rect>
+<rect x="272.3" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-05: a fazer</title></rect>
+<rect x="308.5" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-06: a fazer</title></rect>
+<rect x="236.2" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-07: a fazer</title></rect>
+<rect x="272.3" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-08: a fazer</title></rect>
+<rect x="308.5" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-09: a fazer</title></rect>
+<rect x="236.2" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-10: a fazer</title></rect>
+<rect x="272.3" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-11: a fazer</title></rect>
+<rect x="308.5" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-12: a fazer</title></rect>
+<text x="237.7" y="155.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Central</text>
+</g>
+<g><title>Vidro — 0%</title>
+<rect x="345.1" y="26.0" width="87.4" height="123.2" fill="#16171c"/>
+<rect x="346.6" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-01: a fazer</title></rect>
+<rect x="375.1" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-02: a fazer</title></rect>
+<rect x="403.6" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-03: a fazer</title></rect>
+<rect x="346.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-04: a fazer</title></rect>
+<rect x="375.1" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-05: a fazer</title></rect>
+<rect x="403.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-06: a fazer</title></rect>
+<rect x="346.6" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-07: a fazer</title></rect>
+<rect x="375.1" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-08: a fazer</title></rect>
+<rect x="403.6" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-09: a fazer</title></rect>
+<rect x="346.6" y="118.4" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-10: a fazer</title></rect>
+<text x="348.1" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Vidro</text>
+</g>
+<g><title>Mission Ctrl — 5%</title>
+<rect x="432.6" y="26.0" width="87.4" height="123.2" fill="#16171c"/>
+<rect x="434.1" y="27.5" width="27.5" height="29.3" fill="#d6a531"><title>MSC-01: parcial/relatado</title></rect>
+<rect x="462.5" y="27.5" width="27.5" height="29.3" fill="#d6a531"><title>MSC-02: parcial/relatado</title></rect>
+<rect x="491.0" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-03: a fazer</title></rect>
+<rect x="434.1" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-04: a fazer</title></rect>
+<rect x="462.5" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-05: a fazer</title></rect>
+<rect x="491.0" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-06: a fazer</title></rect>
+<rect x="434.1" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-07: a fazer</title></rect>
+<rect x="462.5" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-08: a fazer</title></rect>
+<rect x="491.0" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-09: a fazer</title></rect>
+<rect x="434.1" y="118.4" width="27.5" height="29.3" fill="#7b7d86"><title>MSC-10: a fazer</title></rect>
+<text x="435.6" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Mission Ctrl</text>
+</g>
+<g><title>Finder — 0%</title>
+<rect x="345.1" y="149.2" width="87.4" height="110.8" fill="#16171c"/>
+<rect x="346.6" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-01: a fazer</title></rect>
+<rect x="375.1" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-02: a fazer</title></rect>
+<rect x="403.6" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-03: a fazer</title></rect>
+<rect x="346.6" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-04: a fazer</title></rect>
+<rect x="375.1" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-05: a fazer</title></rect>
+<rect x="403.6" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-06: a fazer</title></rect>
+<rect x="346.6" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-07: a fazer</title></rect>
+<rect x="375.1" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-08: a fazer</title></rect>
+<rect x="403.6" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>FIL-09: a fazer</title></rect>
+<text x="348.1" y="161.2" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Finder</text>
+</g>
+<g><title>Integrações — 0%</title>
+<rect x="432.6" y="149.2" width="87.4" height="110.8" fill="#16171c"/>
+<rect x="434.1" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>INT-01: a fazer</title></rect>
+<rect x="462.5" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>INT-02: a fazer</title></rect>
+<rect x="491.0" y="150.7" width="27.5" height="35.3" fill="#7b7d86"><title>INT-03: a fazer</title></rect>
+<rect x="434.1" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>INT-04: a fazer</title></rect>
+<rect x="462.5" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>INT-05: a fazer</title></rect>
+<rect x="491.0" y="186.9" width="27.5" height="35.3" fill="#7b7d86"><title>INT-06: a fazer</title></rect>
+<rect x="434.1" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>INT-07: a fazer</title></rect>
+<rect x="462.5" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>INT-08: a fazer</title></rect>
+<rect x="491.0" y="223.2" width="27.5" height="35.3" fill="#7b7d86"><title>INT-09: a fazer</title></rect>
+<text x="435.6" y="161.2" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Integrações</text>
+</g>
+</svg>

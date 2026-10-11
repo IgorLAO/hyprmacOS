@@ -1,0 +1,59 @@
+/* hyprmac — paleta GTK 3, modo claro */
+
+/* ───────────── paleta ───────────── */
+
+@define-color mac_window      #ececec;   /* windowBackgroundColor (Aqua.car, 26.6.1) */
+@define-color mac_toolbar     #ffffff;
+@define-color mac_sidebar     #f0f0f2;
+@define-color mac_view        #ffffff;
+@define-color mac_popover     rgba(248, 248, 250, 0.97);
+@define-color mac_control     #ffffff;
+@define-color mac_control_hi  #f4f4f6;
+@define-color mac_control_lo  rgba(0, 0, 0, 0.04);
+@define-color mac_stroke      rgba(0, 0, 0, 0.13);
+@define-color mac_separator   rgba(0, 0, 0, 0.09);
+/* labelColor/secondaryLabelColor/tertiaryLabelColor: Tahoe 26.6.1. */
+@define-color mac_label       rgba(0, 0, 0, 0.847058824);
+@define-color mac_label_2     rgba(0, 0, 0, 0.498039216);
+@define-color mac_label_3     rgba(0, 0, 0, 0.258823529);
+/* Destaque padrão AppKit Tahoe 26.6.1; accent.css sobrescreve a escolha. */
+@define-color mac_accent      #007aff;   /* controlAccentBlueColor (26.6.1); scripts/accent sobrescreve */
+@define-color mac_accent_hi   #3395ff;   /* hover: azul 20% mais claro */
+@define-color mac_selection   #0069f9;   /* seleção de menu/lista do kit */
+@define-color mac_destructive #ff383c;
+@define-color mac_green       #34c759;
+@define-color mac_orange      #ff8d28;
+@define-color mac_yellow      #ffcc00;
+@define-color mac_ink         #000000;   /* base dos brilhos/bordas translúcidos */
+@define-color mac_knob        #ffffff;
+@define-color mac_tooltip     rgba(250, 250, 252, 0.98);
+/* menus: vidro "Menus" do kit (#E6E6E6/0.55 luminosity) — sem blend modes no
+ * GTK3, fica um cinza-claro translúcido; o Hyprland desfoca o popup por trás */
+@define-color mac_menu        rgba(236, 236, 238, 0.78);
+@define-color mac_menu_rim    rgba(102, 102, 102, 0.15);   /* aro interno #666/0.15 */
+@define-color mac_menu_edge   rgba(0, 0, 0, 0.20);         /* filete externo #000/0.20 */
+@define-color mac_scroll      rgba(0, 0, 0, 0.50);         /* barra de rolagem do kit */
+
+/* nomes que o Adwaita usa internamente */
+@define-color theme_bg_color                @mac_window;
+@define-color theme_fg_color                @mac_label;
+@define-color theme_base_color              @mac_view;
+@define-color theme_text_color              @mac_label;
+@define-color theme_selected_bg_color       @mac_accent;
+@define-color theme_selected_fg_color       #ffffff;
+@define-color insensitive_fg_color          @mac_label_3;
+@define-color borders                       @mac_separator;
+@define-color accent_color                  @mac_accent;
+@define-color accent_bg_color               @mac_accent;
+@define-color window_bg_color               @mac_window;
+@define-color view_bg_color                 @mac_view;
+@define-color headerbar_bg_color            @mac_toolbar;
+@define-color popover_bg_color              @mac_popover;
+@define-color error_color                   @mac_destructive;
+@define-color destructive_color             @mac_destructive;
+@define-color success_color                 @mac_green;
+@define-color warning_color                 @mac_orange;
+
+
+/* keyboardFocusIndicatorColor: Aqua.car, Tahoe 26.6.1 (25G76). */
+@define-color mac_focus #3b99fc;

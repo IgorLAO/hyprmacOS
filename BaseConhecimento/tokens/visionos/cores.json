@@ -1,0 +1,87 @@
+[
+ {
+  "nome": "1 Red",
+  "hex": "#FF4245",
+  "css": "rgba(255, 66, 69, 1.00)"
+ },
+ {
+  "nome": "10 Purple",
+  "hex": "#DB34F2",
+  "css": "rgba(219, 52, 242, 1.00)"
+ },
+ {
+  "nome": "11 Pink",
+  "hex": "#FF375F",
+  "css": "rgba(255, 55, 95, 1.00)"
+ },
+ {
+  "nome": "12 Brown",
+  "hex": "#B78A66",
+  "css": "rgba(183, 138, 102, 1.00)"
+ },
+ {
+  "nome": "2 Orange",
+  "hex": "#FF9230",
+  "css": "rgba(255, 146, 48, 1.00)"
+ },
+ {
+  "nome": "3 Yellow",
+  "hex": "#FFD600",
+  "css": "rgba(255, 214, 0, 1.00)"
+ },
+ {
+  "nome": "4 Green",
+  "hex": "#30D158",
+  "css": "rgba(48, 209, 88, 1.00)"
+ },
+ {
+  "nome": "5 Mint",
+  "hex": "#00DAC3",
+  "css": "rgba(0, 218, 195, 1.00)"
+ },
+ {
+  "nome": "6 Teal",
+  "hex": "#00D2E0",
+  "css": "rgba(0, 210, 224, 1.00)"
+ },
+ {
+  "nome": "7 Cyan",
+  "hex": "#3CD3FE",
+  "css": "rgba(60, 211, 254, 1.00)"
+ },
+ {
+  "nome": "8 Blue",
+  "hex": "#0091FF",
+  "css": "rgba(0, 145, 255, 1.00)"
+ },
+ {
+  "nome": "9 Indigo",
+  "hex": "#6B5DFF",
+  "css": "rgba(107, 93, 255, 1.00)"
+ },
+ {
+  "nome": "Black",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "Gray",
+  "hex": "#98989D",
+  "css": "rgba(152, 152, 157, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark - Vibrant/2 Secondary",
+  "hex": "#999999",
+  "css": "rgba(153, 153, 153, 1.00)"
+ },
+ {
+  "nome": "Labels/Light/1 Primary",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "White (Labels)",
+  "hex": "#FFFFFF/0.96",
+  "css": "rgba(255, 255, 255, 0.96)"
+ }
+]

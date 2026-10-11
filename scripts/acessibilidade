@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""hyprmac — Reduzir Transparência e Aumentar Contraste (Acessibilidade ▸ Tela no macOS).
+
+  acessibilidade                         reaplica o estado salvo
+  acessibilidade transparency [on|off|toggle]
+  acessibilidade contrast     [on|off|toggle]
+
+Estado em ~/.config/hyprmac/acessibilidade.json. Gera waybar/a11y.css (barra sólida /
+contorno) e gtk/a11y3.css + gtk/a11y4.css (menus e popovers opacos). O hyprmac-shell
+lê o mesmo arquivo e carrega shell/a11y-transparencia.css / a11y-contraste.css.
+"""
+import json
+import os
+import subprocess
+import sys
+
+H = os.path.expanduser("~/Projects/hyprmac")
+CONF = os.path.expanduser("~/.config/hyprmac/acessibilidade.json")
+CHAVES = {"transparency": "reduce_transparency", "contrast": "increase_contrast"}
+
+
+def carregar():
+    try:
+        with open(CONF) as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        d = {}
+    return {"reduce_transparency": bool(d.get("reduce_transparency")),
+            "increase_contrast": bool(d.get("increase_contrast"))}
+
+
+def escrever(caminho, texto):
+    try:
+        with open(caminho) as f:
+            if f.read() == texto:
+                return
+    except OSError:
+        pass
+    with open(caminho, "w") as f:
+        f.write(texto)
+
+
+def aplicar(o):
+    escuro = "prefer-dark" in subprocess.run(
+        ["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+        capture_output=True, text=True).stdout
+    cab = "/* gerado por scripts/acessibilidade */\n"
+    bar = cab
+    gtk = cab
+    if o["reduce_transparency"]:
+        # barra de menus sólida, como no Mac com Reduzir Transparência
+        fundo, texto = ("rgb(36, 36, 40)", "#ffffff") if escuro else ("rgb(236, 236, 236)", "#000000")
+        bar += (f"window#waybar.top {{ background: {fundo}; }}\n"
+                f"window#waybar.top label {{ color: {texto}; text-shadow: none; }}\n"
+                "window#waybar.top menu, window#waybar.top tooltip "
+                f"{{ background: {'rgb(40, 40, 44)' if escuro else 'rgb(246, 246, 246)'}; }}\n")
+        gtk += ("@define-color mac_menu    " + ("rgb(40, 40, 44)" if escuro else "rgb(246, 246, 246)") + ";\n"
+                "@define-color mac_popover " + ("rgb(40, 40, 43)" if escuro else "rgb(250, 250, 250)") + ";\n"
+                "@define-color mac_tooltip " + ("rgb(44, 44, 47)" if escuro else "rgb(250, 250, 250)") + ";\n")
+    if o["increase_contrast"]:
+        borda = "rgba(255, 255, 255, 0.70)" if escuro else "rgba(0, 0, 0, 0.60)"
+        bar += f"window#waybar.top {{ border-bottom: 1px solid {borda}; }}\n"
+        gtk += (f"@define-color mac_stroke    {borda};\n"
+                f"@define-color mac_separator {borda};\n")
+    escrever(os.path.join(H, "waybar", "a11y.css"), bar)
+    escrever(os.path.join(H, "gtk", "a11y3.css"), gtk)
+    escrever(os.path.join(H, "gtk", "a11y4.css"), gtk)
+    subprocess.run(["pkill", "-SIGUSR2", "-x", "waybar"], stderr=subprocess.DEVNULL)
+
+
+def main():
+    o = carregar()
+    if len(sys.argv) > 1:
+        chave = CHAVES.get(sys.argv[1])
+        if not chave:
+            print(__doc__.strip(), file=sys.stderr)
+            return 2
+        acao = sys.argv[2] if len(sys.argv) > 2 else "toggle"
+        o[chave] = (not o[chave]) if acao == "toggle" else acao == "on"
+        os.makedirs(os.path.dirname(CONF), exist_ok=True)
+        with open(CONF, "w") as f:
+            json.dump(o, f, indent=1)
+    aplicar(o)
+    # o vidro do hyprglass (hypr/vidro-presets.lua) também lê o Reduzir Transparência
+    subprocess.run([os.path.join(H, "scripts", "vidro"), "recarregar"],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

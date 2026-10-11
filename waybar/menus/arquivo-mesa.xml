@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu File do FINDER (mesa em foco, sem janela), como no Mac: New Finder Window,
+     New Folder (cria "untitled folder" na Mesa), Find…; o que depende de seleção fica esmaecido. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="newfinder"><property name="label">New Finder Window</property></object></child>
+    <child><object class="GtkMenuItem" id="newfolder"><property name="label">New Folder</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="open"><property name="sensitive">False</property><property name="label">Open</property></object></child>
+    <child><object class="GtkMenuItem" id="close"><property name="sensitive">False</property><property name="label">Close Window</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="getinfo"><property name="sensitive">False</property><property name="label">Get Info</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep3"/></child>
+    <child><object class="GtkMenuItem" id="find"><property name="label">Find…</property></object></child>
+  </object>
+</interface>

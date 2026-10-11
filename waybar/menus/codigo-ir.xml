@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Go do VS Code (como no Mac: só com o Code em foco). O atalho mostrado é
+     a tecla real do Code no Linux, que a ação envia à janela em foco. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="back"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Back</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⌥-</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="forward"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Forward</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧-</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="file"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Go to File…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃P</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="symbolws"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Go to Symbol in Workspace…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃T</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="symbol"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Go to Symbol in Editor…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧O</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="definition"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Go to Definition</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">F12</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="line"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Go to Line/Column…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃G</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="nextproblem"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Next Problem</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">F8</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+  </object>
+</interface>

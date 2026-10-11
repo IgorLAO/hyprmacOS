@@ -1,0 +1,14 @@
+{"method": "Command", "args": ["normal"]}
+{"method": "Command", "args": ["no-overlay"]}
+{"method": "Command", "args": ["attention"]}
+{"method": "Command", "args": ["attention-icon"]}
+{"method": "Command", "args": ["overlay"]}
+{"method": "Command", "args": ["passive"]}
+{"method": "Command", "args": ["active"]}
+{"method": "Activate", "args": [1626, 17]}
+{"method": "SecondaryActivate", "args": [1626, 17]}
+{"method": "Scroll", "args": [2, "horizontal"]}
+{"method": "Scroll", "args": [-2, "vertical"]}
+{"method": "MenuEvent", "args": ["Test action"]}
+{"method": "Command", "args": ["menu"]}
+{"method": "MenuEvent", "args": ["Test action"]}

@@ -1,0 +1,459 @@
+/* hyprmac — Ajustes do Sistema (System Settings do Tahoe).
+ * Kit macOS 27: janela #1E1E1E (escuro) / #FFFFFF (claro), raio 26; barra lateral
+ * flutuante recuada 8 (raio 18) e de VIDRO (Sidebar/Background/Dark/Active: #0C0C0C/0.85
+ * sobre desfoque 80 e saturação 2; inativa #2E2E2E/0.85; claro #FAFAFA/0.80 e #F4F4F4):
+ * a janela tem alfa só ali (o resto é pintado opaco: .content e o _draw_side_frame).
+ * Itens de 32 com ícone 20 e SF 13; seleção raio 8 na cor de destaque escurecida
+ * (referência mais nova do Tahoe), texto branco; formulários raio 12 com
+ * recuo 10, linhas de 40/48, preenchimento Fills/Tertiary (#FFF/0.05) e filetes
+ * #FFF/0.08; rótulos #FFF/0.96 e secundários #FFF/0.55. */
+
+window.settings {
+  background-color: transparent;
+  font-family: "SF Pro", "SF Pro Text", "Inter Variable", sans-serif;
+  font-size: 13px;
+}
+window.settings.light { background-color: transparent; }
+/* o fundo opaco do conteúdo é pintado em cairo (_draw_content_bg), com a cápsula < > vazada */
+.content { background-color: transparent; }
+
+window.settings label { color: rgba(255, 255, 255, 0.96); text-shadow: none; }
+window.settings.light label { color: rgba(0, 0, 0, 0.85); }
+window.settings .glyph { font-family: "Symbols Nerd Font"; }
+
+window.settings button {
+  background: none;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+}
+
+/* ── barra lateral ── */
+.sidebar {
+  margin: 8px 0 8px 8px;
+  padding: 0 0 8px 0;
+  border-radius: 18px;
+  /* kit: #0C0C0C/0.85 — quase preto; o vidro (lente e aro do compositor, forma
+   * declarada) é só um efeito sob esse preto, não uma janela para o fundo. */
+  background-color: rgba(12, 12, 12, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+/* a mesma cor com e sem foco (pedido do usuário; a inativa do kit, #2E2E2E, não é usada) */
+window.settings.light .sidebar {
+  background-color: rgba(250, 250, 250, 0.80);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+
+/* semáforo do kit: 14, vão 9, anel 0,5 */
+.lights { padding: 18px 0 0 18px; min-height: 20px; }
+window.settings button.light {
+  min-width: 14px;
+  min-height: 14px;
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.18);
+  transition: background-color 100ms ease-out, box-shadow 100ms ease-out;
+}
+window.settings button.light .light-symbol {
+  font-family: "SF Pro", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.58);
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+}
+window.settings .lights:hover button.light .light-symbol,
+window.settings button.light:hover .light-symbol { opacity: 1; }
+window.settings button.light:active {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.38),
+              inset 0 0 0 0.5px rgba(0, 0, 0, 0.22);
+}
+/* Exact DesignLibrary framework traffic light colors from Assets.car (Tahoe 26.6.1 25G76) */
+window.settings button.light.close { background-color: #FF5F56; }
+window.settings button.light.minimize { background-color: #FFBD2E; }
+window.settings button.light.zoom { background-color: #27C93F; }
+/* Mesmo hover do grupo em gtk/gtk4.css: a janela inativa revela as três ações. */
+window.settings:backdrop .lights:not(:hover) button.light { background-color: rgba(255, 255, 255, 0.17); }
+window.settings.light:backdrop .lights:not(:hover) button.light { background-color: rgba(0, 0, 0, 0.12); }
+
+entry.side-search,
+window.settings entry.side-search {
+  margin: 16px 12px 8px 12px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.96);
+}
+window.settings.light entry.side-search { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.85); }
+entry.side-search image { color: rgba(255, 255, 255, 0.5); }
+window.settings.light entry.side-search image { color: rgba(0, 0, 0, 0.45); }
+
+.side-scroll, .side-scroll viewport, list.side-list { background: transparent; border: none; }
+list.side-list { padding: 0 8px; }
+list.side-list row {
+  padding: 0;
+  margin: 0;
+  min-height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+list.side-list row:hover { background: rgba(255, 255, 255, 0.04); }
+window.settings.light list.side-list row:hover { background: rgba(0, 0, 0, 0.03); }
+/* seleção: cor de destaque escurecida, texto branco (Tahoe, ajustes-general-escuro-aguas-
+ * vivas.png: 0,84,196 com o azul) — igual com e sem foco */
+list.side-list row:selected,
+window.settings:backdrop list.side-list row:selected { background-color: @ACCENT_SEL@; }
+list.side-list row:selected label,
+window.settings:backdrop list.side-list row:selected label,
+window.settings.light list.side-list row:selected label { color: #FFFFFF; }
+.side-item { padding: 0 8px; min-height: 32px; }
+.side-title { font-size: 13px; font-weight: 400; }
+.side-gap { min-height: 14px; }
+
+.account { padding: 6px 8px 8px 8px; }
+.acc-name { font-size: 13px; font-weight: 600; }
+.acc-sub { font-size: 11px; }
+window.settings .acc-sub { color: rgba(255, 255, 255, 0.55); }
+window.settings.light .acc-sub { color: rgba(0, 0, 0, 0.50); }
+
+
+/* ── barra de ferramentas ── */
+.toolbar { min-height: 52px; padding: 0 20px 0 12px; }
+/* cápsula < >: Liquid Glass/Dark/Regular - Small (forma declarada pelo app em
+ * _send_glass_shapes). Aro: filete #A6A6A6 de 0,5 do kit. */
+.nav {
+  border-radius: 999px;
+  /* o tom do kit (#999999/0.17 sobre a janela #1E1E1E ≈ 50,50,52), quase opaco: o vidro
+   * (lente e aro do compositor) fica só como efeito, sem mostrar o fundo da mesa */
+  background: rgba(50, 50, 52, 0.88);
+  border: none;
+  box-shadow: inset 0 0 0 1px rgba(166, 166, 166, 0.22);
+  padding: 0 2px;
+}
+window.settings.light .nav {
+  background: rgba(246, 246, 247, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+window.settings button.nav-btn { min-width: 34px; min-height: 30px; border-radius: 999px; }
+/* filete entre ‹ e ›: 1 px, ~55 % da altura (escuro +15 ≈ branco 8 %; claro 243 sobre 253) */
+.nav-sep { min-width: 1px; min-height: 16px; }
+window.settings .nav-sep { background: rgba(255, 255, 255, 0.08); }
+window.settings.light .nav-sep { background: rgba(0, 0, 0, 0.05); }
+button.nav-btn label { font-size: 17px; }
+button.nav-btn:disabled label { opacity: 0.30; }
+window.settings button.nav-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); }
+.page-title { font-size: 15px; font-weight: 700; }
+
+/* ── páginas e formulários ── */
+.page { padding: 4px 20px 24px 20px; }
+.form-block { margin-bottom: 12px; }
+.form-header { font-size: 13px; font-weight: 700; margin: 10px 0 7px 10px; }
+.form-footer { font-size: 11px; margin: 6px 10px 0 10px; }
+window.settings .form-footer { color: rgba(255, 255, 255, 0.55); }
+window.settings.light .form-footer { color: rgba(0, 0, 0, 0.50); }
+
+.form {
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0 10px;
+}
+window.settings.light .form { background-color: rgba(0, 0, 0, 0.035); }
+.form-sep { min-height: 1px; background: rgba(255, 255, 255, 0.08); }
+.form-sep.inset { margin-left: 30px; }
+window.settings.light .form-sep { background: rgba(0, 0, 0, 0.07); }
+
+/* no GTK3 o min-height não conta o padding: 40 e 48 de altura total, como no kit */
+.form-row { min-height: 40px; padding: 0 2px; }
+.form-row.tall { min-height: 32px; padding-top: 8px; padding-bottom: 8px; }
+.form-row.storage { padding-top: 12px; padding-bottom: 12px; }
+.row-title { font-size: 13px; font-weight: 400; }
+.row-sub, .row-value { font-size: 11px; }
+.row-value { font-size: 13px; }
+window.settings .row-sub, window.settings .row-value, window.settings .row-chev,
+window.settings .slider-glyph, window.settings .popup-chev {
+  color: rgba(255, 255, 255, 0.55);
+}
+window.settings.light .row-sub, window.settings.light .row-value, window.settings.light .row-chev,
+window.settings.light .slider-glyph, window.settings.light .popup-chev {
+  color: rgba(0, 0, 0, 0.50);
+}
+.row-chev { font-size: 14px; margin-left: 2px; }
+button.row-button { border-radius: 0; }
+button.row-button:active { background: rgba(255, 255, 255, 0.04); }
+
+.hero { padding: 18px 20px 20px 20px; margin-bottom: 12px; border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.05); }
+window.settings.light .hero { background-color: rgba(0, 0, 0, 0.035); }
+.hero-title { font-size: 26px; font-weight: 700; }
+.hero-text { font-size: 13px; }
+window.settings .hero-text { color: rgba(255, 255, 255, 0.55); }
+window.settings.light .hero-text { color: rgba(0, 0, 0, 0.55); }
+
+.form-actions { margin: 0 0 12px 0; }
+
+/* botões do kit (Bordered Default 3 Rg): 24 de altura, raio 6 contínuo — medido em
+ * ajustes-wallpaper-landscape-claro (2×): círculo equivalente de 6,75 pt; só os tamanhos Lg/XL
+ * (28/36) são cápsula. Também o "Done" das folhas (video/frames-ui/ui_0197) */
+window.settings button.push {
+  min-height: 24px;
+  padding: 0 12px;
+  margin-left: 8px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.10);
+}
+window.settings button.push label { font-size: 13px; font-weight: 500; }
+window.settings button.push:hover { background: rgba(255, 255, 255, 0.17); }
+window.settings.light button.push { background: rgba(0, 0, 0, 0.06); box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.15); }
+window.settings button.push.primary { background: @ACCENT@; }
+window.settings button.push.primary label { color: #FFFFFF; }
+
+/* botão pop-up: valor + ⌃⌄, sem caixa (como nos formulários do Tahoe) */
+window.settings button.popup { padding: 2px 4px 2px 8px; border-radius: 6px; }
+window.settings button.popup:hover { background: rgba(255, 255, 255, 0.07); }
+window.settings.light button.popup:hover { background: rgba(0, 0, 0, 0.05); }
+.popup-value { font-size: 13px; }
+.popup-chev { font-size: 13px; }
+
+.slider-glyph { font-size: 12px; }
+
+/* Aparência: miniaturas e cores */
+button.choice { padding: 0; }
+.choice-frame { border-radius: 9px; padding: 2px; border: 2px solid transparent; }
+button.choice.selected .choice-frame { border-color: @ACCENT@; }
+.choice-cap { font-size: 11px; }
+button.choice.selected .choice-cap { font-weight: 700; }
+window.settings button.accent-dot { padding: 2px; border-radius: 999px; border: 2px solid transparent; }
+window.settings button.accent-dot.selected { border-color: rgba(255, 255, 255, 0.85); }
+window.settings.light button.accent-dot.selected { border-color: rgba(0, 0, 0, 0.45); }
+
+.display-box { padding: 16px; margin-bottom: 12px; }
+.status-dot { font-size: 9px; }
+window.settings .status-dot.green { color: #30D158; }
+window.settings .status-dot.gray { color: rgba(255, 255, 255, 0.3); }
+.legend-dot { font-size: 9px; }
+
+/* Wallpaper (Tahoe, prints 2×): miniatura 107,5×71 raio 6, nome 13 embaixo, anel azul de 3
+ * com folga de 2 na escolhida, 4 por linha com vão de 10 */
+flowbox.wall-grid { margin: 2px 0 14px 0; }
+flowbox.wall-grid flowboxchild { padding: 0; }
+window.settings button.wall-thumb { padding: 0; border: none; background: none; box-shadow: none; }
+.wall-frame { padding: 2px; border-radius: 11px; border: 3px solid transparent; margin: -5px; }
+.wall-frame.selected { border-color: @ACCENT@; }
+.wall-name { font-size: 13px; margin-top: 4px; }
+.wall-add-tile { border-radius: 6px; }
+window.settings .wall-add-tile { background-color: rgba(255, 255, 255, 0.06); }
+window.settings.light .wall-add-tile { background-color: rgba(0, 0, 0, 0.05); }
+.wall-add-icon { font-size: 30px; }
+.wall-add-text { font-size: 11px; }
+window.settings .wall-add-icon, window.settings .wall-add-text { color: rgba(255, 255, 255, 0.40); }
+window.settings.light .wall-add-icon, window.settings.light .wall-add-text { color: rgba(0, 0, 0, 0.40); }
+window.settings button.wall-more { padding: 0 2px; border: none; background: none; box-shadow: none; margin-top: 4px; }
+window.settings button.wall-more label { font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+window.settings.light button.wall-more label { color: rgba(0, 0, 0, 0.50); }
+
+window.settings scrolledwindow, window.settings viewport { background: transparent; border: none; }
+
+/* Tahoe: Arrow Button do pop-up (kit Buttons: 24, círculo #FFF/0.07, ⌃⌄ Semibold branco);
+ * o valor fica na cor do rótulo (medido no Tahoe: tão claro quanto o título da linha) */
+window.settings button.popup { padding: 0; border-radius: 999px; }
+window.settings button.popup:hover { background: none; }
+window.settings .popup-arrow {
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+}
+window.settings button.popup:hover .popup-arrow { background-color: rgba(255, 255, 255, 0.12); }
+window.settings.light .popup-arrow { background-color: rgba(0, 0, 0, 0.05); color: rgba(0, 0, 0, 0.85); }
+
+/* nome da cor de destaque sob a bolinha escolhida (Subheadline 11, secundário) */
+.accent-cap { font-size: 11px; }
+window.settings .accent-cap { color: rgba(255, 255, 255, 0.55); }
+window.settings.light .accent-cap { color: rgba(0, 0, 0, 0.50); }
+
+/* slider com a lente do Tahoe (GlassKnob no hyprmac-ajustes): o GTK desenha só a trilha de 6
+ * (kit "Knob and Track 3 Rg": 120×6) e o preenchimento; o puxador é desenhado por cima */
+window.settings scale.glass-knob trough { min-height: 6px; }
+window.settings scale.glass-knob slider,
+window.settings scale.glass-knob slider:active,
+window.settings.light scale.glass-knob slider,
+window.settings.light scale.glass-knob slider:active {
+  min-width: 33px;
+  min-height: 21px;
+  margin: -8px 0;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+
+/* puxador do slider (kit Sliders/Dark/Content Area/Knob/3 Rg): parado, cápsula 20×16 #DEDEDE
+ * com sombra 0 0.5 6 #000/0.12; ao pegar ("03 - Clicked") cresce para 25×20 e vira vidro
+ * transparente — sem preenchimento, só aros internos, sombra de borda e de queda (a
+ * distorção do kit é 0,04: a trilha aparece por dentro quase sem deformar) */
+window.settings scale slider {
+  min-width: 20px;
+  min-height: 16px;
+  margin: -6px -2px;
+  border-radius: 999px;
+  background: #DEDEDE;
+  box-shadow: 0 0.5px 6px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.18);
+  transition: min-width 160ms ease-out, min-height 160ms ease-out, margin 160ms ease-out,
+              background 160ms ease-out, box-shadow 160ms ease-out;
+}
+window.settings.light scale slider { background: #FFFFFF; }
+window.settings scale slider:active {
+  min-width: 25px;
+  min-height: 20px;
+  margin: -8px -4px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55),
+              inset 0 -1px 0 rgba(255, 255, 255, 0.30),
+              inset 0 -5px 7px -4px rgba(242, 242, 242, 0.45),
+              inset 0 4px 6px -4px rgba(255, 255, 255, 0.25),
+              0 0 0 1px rgba(0, 0, 0, 0.20),
+              0 4px 6px rgba(0, 0, 0, 0.28);
+}
+
+/* ── Wallpaper (topo como no Tahoe) ── */
+.wall-top { margin-bottom: 16px; }
+.wall-info .form-row { min-height: 36px; }
+.wall-info.form-block, .wall-top .form-block { margin-bottom: 0; }
+.wall-sep { min-height: 1px; margin: 0 -16px 4px -16px; }
+window.settings .wall-sep { background: rgba(255, 255, 255, 0.08); }
+window.settings.light .wall-sep { background: rgba(0, 0, 0, 0.08); }
+
+/* ── Clock Appearance… (popover medido a 1×: fundo ≈ #1E1E20, aro claro de 1, raio 20,
+ *    grupo interno com recuo de 11) ── */
+window.settings popover.clock-pop {
+  padding: 11px;
+  border-radius: 20px;
+  background-color: rgba(30, 30, 32, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+}
+window.settings.light popover.clock-pop {
+  background-color: rgba(250, 250, 250, 0.97);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.25);
+}
+popover.clock-pop .form-block { margin-bottom: 0; }
+popover.clock-pop .form { min-width: 397px; }
+popover.clock-pop .form-row { min-height: 41px; }
+.clock-styles { min-height: 74px; margin: 0 -4px; }
+window.settings button.clock-style {
+  padding: 0;
+  min-width: 42px;
+  min-height: 42px;
+  border-radius: 7px;
+  border: 2px solid transparent;
+  background: none;
+  box-shadow: none;
+}
+window.settings button.clock-style.selected { border-color: @ACCENT@; }
+window.settings button.clock-style:disabled { background: none; }
+
+/* ── folhas (sheets): véu sobre a janela + cartão central (print claro a 1×: 520 de
+ *    largura, recuo 21, filete antes do rodapé, "Done" azul) ── */
+window.settings .sheet-veil { background-color: rgba(30, 30, 30, 0.55); }
+window.settings.light .sheet-veil { background-color: rgba(255, 255, 255, 0.55); }
+window.settings .sheet {
+  border-radius: 26px;
+  background-color: #2C2C2E;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+window.settings.light .sheet {
+  background-color: #FFFFFF;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22), 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+.sheet-art { margin: 21px 0 21px 0; }
+.sheet .form-block { margin: 0 21px 22px 21px; }
+.sheet .form-row { min-height: 38px; }
+.sheet-sep { min-height: 1px; }
+window.settings .sheet-sep { background: rgba(255, 255, 255, 0.08); }
+window.settings.light .sheet-sep { background: rgba(0, 0, 0, 0.08); }
+.sheet-foot { padding: 21px 21px 20px 21px; }
+.wall-info .form-row, .wall-info .form-row.tall { min-height: 36px; padding-top: 0; padding-bottom: 0; }
+popover.clock-pop .form-row.tall { min-height: 41px; padding-top: 0; padding-bottom: 0; }
+.sheet .form-row.tall { min-height: 38px; padding-top: 0; padding-bottom: 0; }
+/* só para --snapshot (o popover real não desenha fora da tela) */
+window.settings .clock-pop-test { padding: 11px; border-radius: 20px; background-color: rgba(30, 30, 32, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.45); }
+.clock-pop-test .form-block { margin-bottom: 0; }
+.clock-pop-test .form { min-width: 397px; }
+.clock-pop-test .form-row, .clock-pop-test .form-row.tall { min-height: 41px; padding-top: 0; padding-bottom: 0; }
+
+/* rádio sob os estilos de ícone (Dark: Always/Auto; Clear: Light/Dark/Auto) — rótulos de 12
+ * como em referencias/telas/dark-icons-widgets-macos-1 */
+.style-variant label { font-size: 12px; }
+
+/* folha "Hot Corners…" (referencias/desejos/cantos-ativos-folha.png, 1,3 px/pt): grupo recuado
+ * 15/14 com padding 11; menus 198×21 de canto 6 com o valor à esquerda e ⌃⌄ à direita; 15 do
+ * grupo ao filete; Done a 18 do filete e 17 das bordas */
+.hc-group { margin: 15px 14px 15px 14px; padding: 11px; border-radius: 12px; }
+window.settings .hc-group { background: rgba(255, 255, 255, 0.05); }
+window.settings.light .hc-group { background: rgba(0, 0, 0, 0.04); }
+window.settings button.hc-popup { min-height: 21px; padding: 0 6px 0 10px; border-radius: 6px; }
+window.settings button.hc-popup { background: rgba(255, 255, 255, 0.08); }
+/* claro (video/frames-ui/ui_0194/0197): menu cinza chapado 224 sobre o grupo 245, sem sombra */
+window.settings.light button.hc-popup { background: rgba(0, 0, 0, 0.085); box-shadow: none; }
+.hc-value { font-size: 13px; }
+.hc-arrow { font-size: 11px; }
+window.settings .hc-arrow { color: rgba(255, 255, 255, 0.80); }
+window.settings.light .hc-arrow { color: rgba(0, 0, 0, 0.70); }
+.hc-foot.sheet-foot { padding: 14px 17px 13px 17px; }
+
+/* Ajustes ▸ Menu Bar (video/frames-ui/ui_0002–0005) */
+.mbc-intro { padding: 10px 14px 12px 14px; margin-bottom: 10px; }
+.mbc-intro .mbc-add { margin-left: 0; }
+.mbc-nocheck { min-width: 16px; }
+.mbc-intro .mbc-text { font-size: 12px; }
+window.settings button.push:disabled label { opacity: 0.35; }
+/* controles indisponíveis (ex.: Show AM/PM com 24 horas): mesma opacidade do push */
+window.settings switch:disabled, window.settings button.popup:disabled { opacity: 0.35; }
+
+/* grupos de rádio dentro de um formulário (Aparência ▸ barras de rolagem) */
+.radio-group { padding: 10px 0 10px 0; }
+.radio-group radiobutton label { font-size: 13px; }
+/* "?" do fim dos painéis: círculo de 22 */
+window.settings button.help-btn {
+  min-width: 22px; min-height: 22px; padding: 0; border-radius: 999px; margin-top: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.10);
+}
+window.settings.light button.help-btn { background: rgba(0, 0, 0, 0.05); box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.15); }
+window.settings button.help-btn label { font-size: 13px; font-weight: 600; }
+
+/* interruptor dos Ajustes = kit "Toggles - Switches / 1 Mn" (36×16, botão em cápsula 21×13 a 1,5),
+ * o mesmo medido no macOS 27 (video/frames-ui/ui_0192: 16 de altura); a linha dele tem 40 */
+window.settings switch {
+  min-width: 36px;
+  min-height: 16px;
+  padding: 1px;
+  box-shadow: none;
+}
+window.settings switch slider {
+  min-width: 17px;
+  min-height: 13px;
+  margin: 0.5px;
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.25);
+  transition: margin-left 150ms cubic-bezier(0.3, 0.7, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+.form-row.tall.switch-row { min-height: 24px; padding-top: 8px; padding-bottom: 8px; }
+.mc-desc { margin: -4px 10px 8px 10px; font-size: 11px; }

@@ -1,0 +1,89 @@
+/* hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas —
+ * o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto)
+ * Carregado por cima do style.css pelo hyprmac-shell quando o hyprglass está no
+ * Hyprland. O plugin já desenha lente, chanfro e realce (hypr/vidro-presets.lua):
+ * aqui sai o vidro "pintado" (aro claro no topo, gradiente de brilho) e o
+ * preenchimento afina, como o tingimento do kit (cor = tinta, não tampa).
+ * O preenchimento continua acima do mask_threshold de cada camada (0.04 na
+ * Central, 0.15 nos painéis, 0.35/0.36 no Spotlight e no clipboard), senão o
+ * plugin não põe vidro ali. Com o patch forma-pela-mascara, a borda de cada
+ * peça (lente + aro) é medida por esse mesmo alfa.
+ * Doc: BaseConhecimento/padroes/liquid-glass-hyprland.md */
+
+/* painéis com texto e controles: só um véu branco leve — o vidro (fundo desfocado,
+ * saturado, com a luminância puxada para o meio no preset hyprmac-texto) é que dá o tom.
+ * Medido no Tahoe: o vidro tem ~a luminância do fundo e bem mais saturação; branco por cima
+ * lava a cor — só um véu de 4–5 % (acima do mask_threshold 0.025). */
+.notif, .switcher-panel, .media-panel, .wg-panel, .clip-panel,
+.xmenu, .osd, .nc button.nc-pill, .nc button.nc-x {
+  background-color: @shell_glass_text;
+  background-image: none;
+  border-color: @shell_glass_border;
+  box-shadow: none;
+}
+.spot-panel {
+  background-color: @shell_glass_spotlight;
+  border-color: @shell_glass_border;
+  box-shadow: none;           /* sombra em CSS entraria na máscara do vidro */
+}
+
+/* Central de Controle: cada bloco é uma peça de vidro */
+.cc .tile, .cc .circle, .cc .edit-pill {
+  background-color: @shell_glass_control;
+  background-image: none;
+  /* filete claro quase igual em volta (tahoe-dark: +35 no topo, +37 na base, +30 dos lados);
+   * o chanfro do plugin foi quase zerado no preset hyprmac-central, que pesava no topo */
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: none;
+}
+/* texto da Central sem sombra (na Apple o texto é limpo; o vidro já dá contraste) */
+.cc label { text-shadow: none; }
+/* estados (a prioridade deste arquivo vence a especificidade do style.css, então
+ * cada estado que muda o fundo é repetido aqui; hover/clique = tinta, não tampa) */
+.cc .tile:hover:not(:disabled), .cc .circle:hover:not(:disabled), .cc .edit-pill:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+.cc .tile:active:not(:disabled), .cc .circle:active:not(:disabled), .cc .edit-pill:active:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.34);
+}
+.cc .circle.on, .cc .circle.on:hover {
+  background-color: rgba(255, 255, 255, 0.97);
+  border-color: rgba(255, 255, 255, 0.97);
+}
+.cc .tile.on { background-color: alpha(@shell_accent, 0.30); }
+.cc .tile.on:hover:not(:disabled) { background-color: alpha(@shell_accent, 0.38); }
+
+/* Clear (OSD/player) permanece claro nos dois temas, como a Central.
+ * O provider claro não pode deixar texto preto sobre o véu de 4%. */
+.osd, .media-panel { background-color: rgba(255, 255, 255, 0.04); }
+.osd .osd-icon, .osd .osd-title, .osd .osd-bar { color: @shell_control_ink; }
+
+/* menus GTK do shell (Janela, app, View): popups da camada hyprmac-menu, com vidro
+ * próprio pelo passe de popups do patch ("hyprmac-menu:popups") */
+menu.hyprmac-menu,
+.hyprmac-menu menu {
+  background-color: @shell_glass_text;
+  border-color: @shell_glass_border;
+  box-shadow: none;
+}
+
+/* Galeria de Controles: UM painel de vidro com texto, como no Tahoe (referencias/telas/
+ * cc-edicao-galeria-sobre-azul.png e video/frames-ui/ui_0122: o papel de parede aparece através
+ * da barra lateral e do conteúdo, com o mesmo tom; só um filete separa as colunas). O vidro é o
+ * preset hyprmac-texto (no escuro escurece mantendo o matiz); aqui só o véu. */
+.ccg {
+  background-color: @shell_glass_text;
+  background-image: none;
+  border-color: @shell_glass_border;
+  box-shadow: none;
+}
+.ccg-side {
+  background-color: transparent;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px 0 0 24px;
+}
+.ccg-main {
+  background-color: transparent;
+  border-radius: 0 24px 24px 0;
+}

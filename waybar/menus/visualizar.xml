@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu View. Rótulos fixos: o Waybar carrega o menu uma vez só. Itens com atalho:
+     GtkMenuItem > GtkBox > rótulo + atalho (classe "shortcut", cinza à direita). A ação
+     continua ligada pelo id do GtkMenuItem. ⌘ = Super; os atalhos que só existem dentro dos
+     apps aparecem com ⌃ (Ctrl), que é a tecla real.
+-->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="fullscreen"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Enter Full Screen</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⌘F</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="split"><property name="label">Toggle Split</property></object></child>
+    <child><object class="GtkMenuItem" id="pseudo"><property name="label">Pseudo-tile</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="scratch"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Show Scratchpad</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌘S</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="theme"><property name="label">Toggle Light / Dark Theme</property></object></child>
+    <child><object class="GtkMenuItem" id="barstyle"><property name="label">Menu Bar Light / Transparent</property></object></child>
+    <child><object class="GtkMenuItem" id="wallpaper"><property name="label">Change Wallpaper…</property></object></child>
+  </object>
+</interface>

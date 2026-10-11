@@ -1,0 +1,31 @@
+/* hyprmac — Spotlight (wofi) em vidro claro. Copiado para wofi/theme.css.
+ * #window:not(.x) só dá especificidade sobre o style.css. */
+
+#window:not(.x) #outer-box {
+  background-color: rgba(246, 246, 248, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75),
+              0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+#window:not(.x) #input {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.85);   /* rótulo primário claro */
+  caret-color: #0088ff;         /* azul do macOS 27 (claro) */
+}
+
+#window:not(.x) #input image {
+  color: rgba(0, 0, 0, 0.50);   /* rótulo secundário claro */
+}
+
+#window:not(.x) #entry #text {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+#window:not(.x) #inner-box flowboxchild:selected {
+  background-color: #0088ff;
+}
+
+#window:not(.x) #inner-box flowboxchild:selected #text {
+  color: #ffffff;
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu History (só com um navegador em foco, como no Safari). Gerado com os
+     mesmos moldes de arquivo.xml: rótulo + atalho em cinza; o atalho mostrado é a
+     tecla real do Brave/Chromium, que a ação envia à janela em foco. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="history"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Show All History</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃H</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="back"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Back</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌥←</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="forward"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Forward</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌥→</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="home"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Home</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌥↖</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="reopen"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Reopen Last Closed Tab</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧T</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep3"/></child>
+    <child><object class="GtkMenuItem" id="clear"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Clear History…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧⌫</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+  </object>
+</interface>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Bookmarks (só com um navegador em foco, como no Safari). Gerado com os
+     mesmos moldes de arquivo.xml: rótulo + atalho em cinza; o atalho mostrado é a
+     tecla real do Brave/Chromium, que a ação envia à janela em foco. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="show"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Show Bookmarks</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧O</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="add"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Add Bookmark…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃D</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="addtabs"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Add Bookmarks for These Tabs…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧D</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="bar"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Show Favorites Bar</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⇧B</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+  </object>
+</interface>

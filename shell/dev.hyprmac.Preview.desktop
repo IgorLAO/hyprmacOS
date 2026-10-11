@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Preview
+Name[pt_BR]=Pré-Visualização
+Comment=HyprMac PDF and image viewer
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-preview %F
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/Preview.png
+Categories=Graphics;Viewer;
+MimeType=application/pdf;image/png;image/jpeg;image/webp;image/gif;image/tiff;image/bmp;
+Keywords=pdf;image;preview;viewer;
+StartupNotify=true

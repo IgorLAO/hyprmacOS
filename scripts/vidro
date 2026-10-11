@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# hyprmac — Liquid Glass via plugin hyprglass (refração, realce especular, chanfro)
+#   vidro instalar     compila o hyprglass na tag certa para o Hyprland em uso
+#   vidro carregar     carrega no Hyprland (desligado por padrão) + presets do hyprmac
+#   vidro descarregar  tira o plugin do Hyprland
+#   vidro status       versão, se está carregado, caminho do .so
+#   vidro recarregar   reaplica os presets (tinta/Reduzir Transparência), se carregado
+#   vidro lab          abre o laboratório (carrega antes, se preciso)
+# Nada aqui altera hyprland.lua/hyprmac.lua: tudo vale só até o Hyprland reiniciar.
+set -euo pipefail
+
+H="$HOME/Projects/hyprmac"
+DADOS="${XDG_DATA_HOME:-$HOME/.local/share}/hyprmac/hyprglass"
+FONTE="${XDG_CACHE_HOME:-$HOME/.cache}/hyprmac/hyprglass-src"
+REPO="https://github.com/hyprnux/hyprglass"
+SO="$DADOS/hyprglass.so"
+
+patches() {
+  find "$H/hypr/hyprglass" -maxdepth 1 -type f -name '*.patch' -print 2>/dev/null | sort
+}
+
+build_suffix() {
+  local -a lista=()
+  mapfile -t lista < <(patches)
+  if [ "${#lista[@]}" -eq 0 ]; then
+    printf '%s' '-upstream'
+  else
+    # hash do CONTEÚDO dos patches (não do caminho): é o nome dos .so já compilados
+    cat "${lista[@]}" | sha1sum | cut -c1-7 | sed 's/^/-hm/'
+  fi
+}
+
+# Hyprland → tag do hyprglass compilada contra ele (ver releases do hyprglass)
+tag_para() {
+  case "$1" in
+    0.56.2) echo v0.9.0 ;;
+    0.56.0|0.56.1) echo v0.7.0 ;;
+    0.55.*) echo v0.6.4 ;;
+    *) return 1 ;;
+  esac
+}
+
+versao_hypr() { hyprctl version -j | python3 -c 'import json,sys;print(json.load(sys.stdin)["tag"].lstrip("v"))'; }
+carregado() { hyprctl plugin list 2>/dev/null | grep -q '^Plugin hyprglass'; }
+
+instalar() {
+  local hv tag
+  hv="$(versao_hypr)"
+  tag="$(tag_para "$hv")" || {
+    echo "vidro: sem tag conhecida do hyprglass para o Hyprland $hv; acrescente em tag_para()" >&2
+    exit 1
+  }
+  pkg-config --exists hyprland || { echo "vidro: faltam os headers do Hyprland (pkg-config hyprland)" >&2; exit 1; }
+  [ -d "$FONTE/.git" ] || git clone -q "$REPO" "$FONTE"
+  git -C "$FONTE" fetch -q --tags origin
+  git -C "$FONTE" checkout -q -f "$tag"
+  git -C "$FONTE" clean -fdq   # arquivos novos de patches anteriores (src/Genie.*) impedem o apply
+  # patches do hyprmac (hypr/hyprglass/*.patch), p. ex. a forma de cada peça pelo alfa
+  local p sufixo=""
+  while IFS= read -r p; do
+    [ -n "$p" ] || continue
+    git -C "$FONTE" apply "$p"
+  done < <(patches)
+  sufixo="$(build_suffix)"
+  make -C "$FONTE" clean >/dev/null; make -C "$FONTE" -j"$(nproc)" >/dev/null
+  mkdir -p "$DADOS"
+  cp "$FONTE/hyprglass.so" "$DADOS/hyprglass-$tag-hl$hv$sufixo.so"
+  ln -sfn "hyprglass-$tag-hl$hv$sufixo.so" "$SO"
+  echo "vidro: hyprglass $tag ($sufixo) compilado para Hyprland $hv → $SO"
+}
+
+atualizado() {  # o .so instalado corresponde aos patches atuais?
+  local sufixo
+  sufixo="$(build_suffix)"
+  [[ "$(readlink "$SO" 2>/dev/null)" == *"$sufixo.so" ]]
+}
+
+carregar() {
+  { [ -e "$SO" ] && atualizado; } || instalar
+  # .so novo (patch mudou): troca o carregado
+  if carregado && [ "$(cat "$DADOS/carregado" 2>/dev/null)" != "$(readlink -f "$SO")" ]; then
+    hyprctl plugin unload "$(cat "$DADOS/carregado")" >/dev/null
+  fi
+  # carrega pelo arquivo real (o link pode mudar de alvo) e guarda o caminho: o unload
+  # precisa dele e `hyprctl plugin list` não o informa
+  if ! carregado; then
+    readlink -f "$SO" > "$DADOS/carregado"
+    hyprctl plugin load "$(cat "$DADOS/carregado")" >/dev/null
+  fi
+  # lista branca: só janelas com a tag hyprglass_enabled (vidro.janela)
+  hyprctl eval 'hl.plugin.hyprglass.config({enabled=false, default_preset="default"})' >/dev/null
+  # presets próprios e camadas (hypr/vidro-presets.lua) só valem lendo a config
+  hyprctl reload >/dev/null
+  waybar_css on
+  echo "vidro: hyprglass carregado (camadas do shell com vidro; janelas só via vidro.janela)"
+}
+
+# CSS da barra: com o vidro do compositor, os menus suspensos só tingem (waybar:popups)
+waybar_css() {
+  local alvo="$H/waybar/vidro.css" texto=""
+  if [ "${1:-}" = on ]; then
+    texto='/* gerado por scripts/vidro: menus com Liquid Glass do hyprglass */
+menu:not(.x),
+.menu:not(.x) {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: none;
+}'
+  fi
+  [ "$(cat "$alvo" 2>/dev/null)" = "$texto" ] && return 0
+  printf '%s\n' "$texto" > "$alvo"
+  pkill -SIGUSR2 -x waybar || true
+}
+
+descarregar() {
+  carregado || { echo "vidro: não está carregado"; return 0; }
+  local alvo
+  alvo="$(cat "$DADOS/carregado" 2>/dev/null || readlink -f "$SO")"
+  hyprctl plugin unload "$alvo" && rm -f "$DADOS/carregado"
+  waybar_css off
+}
+
+status() {
+  echo "Hyprland:   $(versao_hypr)"
+  echo "tag:        $(tag_para "$(versao_hypr)" || echo '(desconhecida)')"
+  echo "plugin .so: $( [ -e "$SO" ] && readlink -f "$SO" || echo '(não instalado — vidro instalar)')"
+  echo "carregado:  $(carregado && echo sim || echo não)"
+  if [ -z "$(patches)" ]; then
+    echo "patches:    nenhum (v0.9.0 já fornece máscara alfa para layers; shape por hyprctl indisponível)"
+  else
+    echo "patches:    $(patches | wc -l) local(is)"
+  fi
+}
+
+case "${1:-status}" in
+  instalar)    instalar ;;
+  carregar)    carregar ;;
+  descarregar) descarregar ;;
+  status)      status ;;
+  sync-css)    if carregado; then waybar_css on; else waybar_css off; fi ;;
+  # Ajustes (tinta do Liquid Glass, Reduzir Transparência): presets só mudam relendo a config
+  recarregar)  if carregado; then hyprctl reload >/dev/null; fi ;;
+  lab)         carregado || carregar; exec python3 "$H/BaseConhecimento/ferramentas/lab-glassmorphism.py" ;;
+  *) sed -n 2,8p "$0" >&2; exit 2 ;;
+esac

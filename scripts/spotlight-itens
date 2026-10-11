@@ -1,0 +1,672 @@
+#!/usr/bin/env python3
+"""hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico.
+
+Chamado por scripts/spotlight; não abre janelas (só o "Restart…/Shut Down…/Log Out…"
+pede confirmação num wofi pequeno, e nunca com --dry-run).
+
+  spotlight-itens list files|actions        linhas para o wofi --dmenu (stdout) e guarda
+                                            os itens em $XDG_RUNTIME_DIR para o "run"
+  spotlight-itens run files|actions <i> [--reveal] [--dry-run]
+                                            executa a linha <i> escolhida no wofi
+                                            (--reveal = Ctrl+R: mostrar na pasta;
+                                            --dry-run ou HYPRMAC_SPOTLIGHT_DRY=1 só
+                                            imprime o comando, sem histórico)
+  spotlight-itens record apps <arquivo.desktop>
+                                            guarda a escolha do modo Apps no histórico
+  spotlight-itens drun-cache                gera o cache do wofi drun com o histórico
+                                            primeiro e imprime o caminho dele
+
+Como no Tahoe:
+  - Arquivos: escolhas anteriores (histórico) → recentes do sistema
+    (~/.local/share/recently-used.xbel) → arquivos e pastas das pastas do usuário,
+    mais novos primeiro; ícone pelo tipo (ou a miniatura, se já existir).
+  - Ações: ações do sistema com **teclas rápidas** ("nt", "dm"…) no começo da linha —
+    o fuzzy do wofi dá bônus ao começo, então digitar a tecla rápida põe a ação em
+    primeiro — e os itens da barra de menus (waybar/menus/*.xml + menu-actions do
+    waybar/config.jsonc, lidos na hora).
+  - Histórico (↑ do Tahoe): as últimas 20 escolhas de cada modo aparecem primeiro;
+    fica em ~/.local/state/hyprmac/spotlight-history.json.
+"""
+import hashlib
+import html
+import json
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+from urllib.parse import quote, unquote, urlparse
+
+H = os.path.expanduser("~/Projects/hyprmac")
+HOME = os.path.expanduser("~")
+STATE_DIR = os.environ.get("HYPRMAC_STATE_DIR") or os.path.join(
+    os.environ.get("XDG_STATE_HOME") or os.path.join(HOME, ".local/state"), "hyprmac")
+HISTORY = os.path.join(STATE_DIR, "spotlight-history.json")
+RUNTIME = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
+CACHE_HOME = os.environ.get("XDG_CACHE_HOME") or os.path.join(HOME, ".cache")
+HISTORY_MAX = 20
+
+FILES_MAX = 1200          # total de linhas do modo Arquivos (o wofi cria um widget por linha)
+FILES_PER_ROOT = 400      # por pasta do usuário, para uma pasta enorme não engolir as outras
+FILES_DEPTH = 4
+SKIP_DIRS = {
+    "node_modules", "__pycache__", "site-packages", "venv", "env", "target", "build",
+    "dist", "cache", "Cache", "caches", "CachedData", "tmp", "vendor", "bower_components",
+}
+
+# Cinza do kit (Label 2): #FFF/0.55 no escuro, #000/0.50 no claro. fgalpha mantém a
+# cor do CSS do tema (branco/preto, e branco na linha selecionada) e só reduz a opacidade.
+GRAY = 'fgalpha="55%"'
+
+SHELL_CMD = ("gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell "
+             "--method dev.hyprmac.Shell.Command ")
+
+
+# ───────────────────────────── utilidades ─────────────────────────────
+
+def esc(text):
+    """Texto seguro para o wofi: markup do pango escapado e sem "img:"/"text:"… (o wofi
+    procura essas escapes em qualquer ponto da linha, então "context:" quebraria o
+    rótulo; nesses casos o ':' vira '∶')."""
+    text = html.escape(text.replace("\n", " "), quote=False)
+    return re.sub(r"(?<=img|ext|ale|e64):", "∶", text)
+
+
+def tilde(path):
+    return "~" + path[len(HOME):] if path == HOME or path.startswith(HOME + "/") else path
+
+
+_theme = None
+
+
+def icon_theme():
+    global _theme
+    if _theme is None:
+        try:
+            import gi
+            gi.require_version("Gtk", "3.0")
+            from gi.repository import Gtk
+            _theme = Gtk.IconTheme.new()   # sem display: não depende de Gdk
+            name = None
+            try:
+                out = subprocess.run(["gsettings", "get", "org.gnome.desktop.interface",
+                                      "icon-theme"], capture_output=True, text=True, timeout=2)
+                name = out.stdout.strip().strip("'") or None
+            except Exception:
+                pass
+            if name:
+                _theme.set_custom_theme(name)
+        except Exception:
+            _theme = False
+    return _theme
+
+
+_icon_cache = {}
+
+
+def icon_path(*names):
+    key = names
+    if key in _icon_cache:
+        return _icon_cache[key]
+    path = None
+    theme = icon_theme()
+    if theme:
+        info = theme.choose_icon([n for n in names if n], 32, 0)
+        if info is not None:
+            path = info.get_filename()
+    _icon_cache[key] = path
+    return path
+
+
+def line(label_markup, icon=None):
+    if icon and ":" not in icon:
+        return f"img:{icon}:text:{label_markup}"
+    return label_markup
+
+
+# ───────────────────────────── histórico ─────────────────────────────
+
+def load_history():
+    try:
+        with open(HISTORY) as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def record(mode, item_id, label=""):
+    data = load_history()
+    entries = [e for e in data.get(mode, []) if e.get("id") != item_id]
+    entries.insert(0, {"id": item_id, "label": label, "t": int(time.time())})
+    data[mode] = entries[:HISTORY_MAX]
+    os.makedirs(STATE_DIR, exist_ok=True)
+    tmp = HISTORY + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, HISTORY)
+
+
+def history_ids(mode):
+    return [e["id"] for e in load_history().get(mode, []) if e.get("id")]
+
+
+# ───────────────────────────── Arquivos (⌘2) ─────────────────────────────
+
+def recent_files():
+    """Caminhos locais do recently-used.xbel, mais recentes primeiro."""
+    path = os.path.join(os.environ.get("XDG_DATA_HOME") or os.path.join(HOME, ".local/share"),
+                        "recently-used.xbel")
+    out = []
+    try:
+        root = ET.parse(path).getroot()
+    except (OSError, ET.ParseError):
+        return out
+    for bm in root.iter("bookmark"):
+        href = bm.get("href", "")
+        if not href.startswith("file://"):
+            continue
+        stamp = max(bm.get("visited", ""), bm.get("modified", ""), bm.get("added", ""))
+        out.append((stamp, unquote(urlparse(href).path)))
+    out.sort(reverse=True)
+    return [p for _, p in out]
+
+
+def user_dirs():
+    names = ["DESKTOP", "DOCUMENTS", "DOWNLOAD", "PICTURES", "MUSIC", "VIDEOS", "PROJECTS"]
+    dirs = {}
+    try:
+        with open(os.path.join(os.environ.get("XDG_CONFIG_HOME") or os.path.join(HOME, ".config"),
+                               "user-dirs.dirs")) as f:
+            for raw in f:
+                m = re.match(r'XDG_(\w+)_DIR="(.*)"', raw.strip())
+                if m:
+                    dirs[m.group(1)] = m.group(2).replace("$HOME", HOME)
+    except OSError:
+        pass
+    fallback = {"DESKTOP": "Desktop", "DOCUMENTS": "Documents", "DOWNLOAD": "Downloads",
+                "PICTURES": "Pictures", "MUSIC": "Music", "VIDEOS": "Videos",
+                "PROJECTS": "Projects"}
+    out = []
+    for n in names:
+        d = dirs.get(n) or os.path.join(HOME, fallback[n])
+        if os.path.isdir(d) and os.path.realpath(d) != os.path.realpath(HOME) and d not in out:
+            out.append(d)
+    return out
+
+
+def walk_dir(root):
+    """(mtime, caminho) de arquivos e pastas até FILES_DEPTH níveis, sem ocultos/caches."""
+    found = []
+    base = root.rstrip("/").count("/")
+    for cur, dirs, files in os.walk(root):
+        depth = cur.rstrip("/").count("/") - base
+        dirs[:] = [d for d in dirs if not d.startswith(".") and d not in SKIP_DIRS
+                   and not d.endswith((".egg-info", "_cache"))]
+        if depth >= FILES_DEPTH:
+            entries = dirs[:]
+            dirs[:] = []
+        else:
+            entries = dirs
+        for name in list(entries) + [f for f in files if not f.startswith(".")
+                                     and not f.endswith((".pyc", ".o", "~"))]:
+            p = os.path.join(cur, name)
+            try:
+                found.append((os.lstat(p).st_mtime, p))
+            except OSError:
+                pass
+    found.sort(reverse=True)
+    return found[:FILES_PER_ROOT]
+
+
+def thumbnail(path):
+    try:
+        from gi.repository import Gio
+        uri = Gio.File.new_for_path(path).get_uri()
+    except Exception:
+        return None
+    digest = hashlib.md5(uri.encode()).hexdigest()
+    for size in ("large", "normal"):
+        t = os.path.join(CACHE_HOME, "thumbnails", size, digest + ".png")
+        if os.path.exists(t):
+            return t
+    return None
+
+
+def file_icon(path):
+    if os.path.isdir(path):
+        return icon_path("inode-directory", "folder")
+    try:
+        from gi.repository import Gio
+        ctype, _ = Gio.content_type_guess(os.path.basename(path), None)
+        if ctype.startswith(("image/", "video/")) or ctype == "application/pdf":
+            t = thumbnail(path)
+            if t:
+                return t
+        names = list(Gio.content_type_get_icon(ctype).get_names())
+    except Exception:
+        names = []
+    return icon_path(*names, "text-x-generic", "unknown")
+
+
+def file_items():
+    seen, items = set(), []
+
+    def add(path, source):
+        real = os.path.normpath(path)
+        if real in seen or not os.path.exists(real):
+            return
+        seen.add(real)
+        items.append({"id": real, "source": source})
+
+    for p in history_ids("files"):
+        add(p, "history")
+    for p in recent_files()[:200]:
+        add(p, "recent")
+    found = []
+    for d in user_dirs():
+        found.extend(walk_dir(d))
+    found.sort(reverse=True)
+    for _, p in found:
+        if len(items) >= FILES_MAX:
+            break
+        add(p, "dir")
+    return items[:FILES_MAX]
+
+
+def file_line(item):
+    path = item["id"]
+    name = os.path.basename(path) or path
+    where = tilde(os.path.dirname(path))
+    return line(f"{esc(name)}   <span {GRAY}>{esc(where)}</span>", file_icon(path))
+
+
+# ───────────────────────────── Ações (⌘3) ─────────────────────────────
+
+def exists(cmd):
+    return shutil.which(cmd) is not None
+
+
+def lock_cmd():
+    p = os.path.join(H, "shell/hyprmac-lock")
+    return p if os.access(p, os.X_OK) else None
+
+
+def find_desktop(app_id):
+    dirs = [os.environ.get("XDG_DATA_HOME") or os.path.join(HOME, ".local/share")]
+    dirs += (os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share").split(":")
+    for d in dirs:
+        p = os.path.join(d, "applications", app_id)
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def desktop_name(path):
+    try:
+        with open(path) as f:
+            for raw in f:
+                if raw.startswith("Name="):
+                    return raw[5:].strip()
+    except OSError:
+        pass
+    return ""
+
+
+def calculator_cmd():
+    for app_id in ("org.gnome.Calculator.desktop", "gnome-calculator.desktop",
+                   "org.kde.kcalc.desktop", "qalculate-gtk.desktop",
+                   "io.github.Qalculate.desktop", "galculator.desktop"):
+        p = find_desktop(app_id)
+        if p:
+            return "gio launch " + shlex.quote(p)
+    return None
+
+
+def quick_actions(menu_cmds):
+    """Ações com teclas rápidas. Comandos iguais aos dos menus da barra quando existem."""
+    m = menu_cmds  # (módulo, id) → comando
+    shot = os.path.join(H, "scripts/screenshot")
+    spec = [
+        ("nt", "New Terminal Window", "ghostty", ["utilities-terminal"]),
+        ("sc", "Take Screenshot (Area)", f"{shot} region", ["applets-screenshooter"]),
+        ("ss", "Take Screenshot (Screen)", f"{shot} screen", ["applets-screenshooter"]),
+        ("sw", "Take Screenshot (Window)", f"{shot} window", ["applets-screenshooter"]),
+        ("dm", "Toggle Dark Mode", os.path.join(H, "scripts/theme") + " toggle",
+         ["weather-clear-night"]),
+        ("lk", "Lock Screen", lock_cmd(), ["system-lock-screen"]),
+        ("cc", "Control Center", SHELL_CMD + "toggle-cc", ["preferences-system"]),
+        ("nc", "Notification Center", SHELL_CMD + "toggle-nc",
+         ["preferences-desktop-notification", "notification-symbolic"]),
+        ("cl", "Clipboard History", SHELL_CMD + "toggle-clipboard", ["edit-paste"]),
+        ("bt", "Toggle Bluetooth", m.get(("custom/controlcenter", "bt")), ["bluetooth"]),
+        ("wf", "Toggle Wi‑Fi", m.get(("custom/controlcenter", "wifi")), ["network-wireless"]),
+        ("mu", "Mute", m.get(("custom/controlcenter", "mute")), ["audio-volume-muted"]),
+        ("em", "Emoji & Symbols", "plasma-emojier" if exists("plasma-emojier") else None,
+         ["face-smile"]),
+        ("ws", "Change Wallpaper", m.get(("custom/menu-visualizar", "wallpaper")),
+         ["preferences-desktop-wallpaper"]),
+        ("cf", "Calculator", calculator_cmd(), ["accessories-calculator"]),
+        ("fq", "Force Quit…", m.get(("custom/apple", "forcequit")), ["process-stop", "system-run"]),
+        ("sl", "Sleep", m.get(("custom/apple", "sleep")), ["system-suspend"]),
+        ("rs", "Restart…", m.get(("custom/apple", "reboot")), ["system-reboot"]),
+        ("sd", "Shut Down…", m.get(("custom/apple", "poweroff")), ["system-shutdown"]),
+        ("lo", "Log Out…", m.get(("custom/apple", "logout")), ["system-log-out"]),
+    ]
+    confirm = {"rs": "Restart", "sd": "Shut Down", "lo": "Log Out"}
+    out = []
+    for key, label, cmd, icons in spec:
+        if not cmd:
+            continue   # ação indisponível neste sistema (ex.: sem hyprmac-lock ainda)
+        out.append({"id": "q:" + key, "key": key, "label": label, "cmd": cmd,
+                    "icons": icons, "confirm": confirm.get(key)})
+    return out
+
+
+def strip_jsonc(text):
+    """Remove comentários // e /* */ fora de strings e vírgulas finais."""
+    out, i, n, in_str = [], 0, len(text), False
+    while i < n:
+        c = text[i]
+        if in_str:
+            out.append(c)
+            if c == "\\" and i + 1 < n:
+                out.append(text[i + 1])
+                i += 1
+            elif c == '"':
+                in_str = False
+        elif c == '"':
+            in_str = True
+            out.append(c)
+        elif text.startswith("//", i):
+            while i < n and text[i] != "\n":
+                i += 1
+            continue
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            i = n if end < 0 else end + 2
+            continue
+        else:
+            out.append(c)
+        i += 1
+    return re.sub(r",(\s*[}\]])", r"\1", "".join(out))
+
+
+def waybar_config():
+    path = os.path.join(H, "waybar/config.jsonc")
+    try:
+        with open(path) as f:
+            data = json.loads(strip_jsonc(f.read()))
+    except (OSError, ValueError):
+        return []
+    bars = data if isinstance(data, list) else [data]
+    mods = []
+    for bar in bars:
+        for name, conf in bar.items():
+            if isinstance(conf, dict) and conf.get("menu-file") and conf.get("menu-actions"):
+                mods.append((name, conf))
+    return mods
+
+
+MENU_NAMES = {"custom/apple": "Apple", "hyprland/window": "App",
+              "custom/controlcenter": "Control Center"}
+
+
+def menu_title(name, conf):
+    if name in MENU_NAMES:
+        return MENU_NAMES[name]
+    fmt = conf.get("format", "")
+    if fmt and "{" not in fmt:
+        return fmt
+    return name.split("/")[-1].replace("menu-", "").capitalize()
+
+
+def menu_entries(xml_path):
+    """(id, rótulo, atalho) dos GtkMenuItem do XML, inclusive em submenus."""
+    try:
+        root = ET.parse(os.path.expanduser(xml_path)).getroot()
+    except (OSError, ET.ParseError):
+        return []
+    out = []
+    for obj in root.iter("object"):
+        if obj.get("class") not in ("GtkMenuItem", "GtkCheckMenuItem", "GtkRadioMenuItem"):
+            continue
+        label, shortcut = None, ""
+        for prop in obj.findall("property"):
+            if prop.get("name") == "label":
+                label = prop.text
+        if label is None:
+            for lab in obj.iter("object"):
+                if lab.get("class") != "GtkLabel":
+                    continue
+                text = next((p.text for p in lab.findall("property")
+                             if p.get("name") == "label"), None)
+                classes = [c.get("name") for c in lab.iter("class")]
+                if "shortcut" in classes:
+                    shortcut = text or ""
+                elif label is None:
+                    label = text
+        if label and obj.get("id"):
+            out.append((obj.get("id"), label.replace("_", ""), shortcut))
+    return out
+
+
+def menu_actions():
+    """Itens da barra de menus → [{id, label, menu, shortcut, cmd}] e (módulo, id) → cmd."""
+    items, cmds = [], {}
+    for name, conf in waybar_config():
+        actions = conf.get("menu-actions", {})
+        for item_id, cmd in actions.items():
+            cmds[(name, item_id)] = cmd
+        title = menu_title(name, conf)
+        for item_id, label, shortcut in menu_entries(conf["menu-file"]):
+            cmd = actions.get(item_id)
+            if not cmd or "scripts/spotlight" in cmd:
+                continue   # o próprio Spotlight não entra na lista dele
+            items.append({"id": f"m:{name}:{item_id}", "label": label, "menu": title,
+                          "shortcut": shortcut, "cmd": cmd})
+    return items, cmds
+
+
+def action_items():
+    menus, cmds = menu_actions()
+    quick = quick_actions(cmds)
+    norm = lambda c: c.replace("~/", HOME + "/").strip()
+    quick_cmds = {norm(a["cmd"]) for a in quick}
+    menus = [m for m in menus if norm(m["cmd"]) not in quick_cmds]   # já está como tecla rápida
+    allitems = quick + menus
+    by_id = {a["id"]: a for a in allitems}
+    ordered, seen = [], set()
+    for hid in history_ids("actions"):
+        if hid in by_id and hid not in seen:
+            ordered.append(by_id[hid])
+            seen.add(hid)
+    ordered += [a for a in allitems if a["id"] not in seen]
+    return ordered
+
+
+MENU_ICONS = {
+    "Apple": ["preferences-system"], "App": ["application-x-executable"],
+    "File": ["system-file-manager", "folder"], "Edit": ["edit-copy", "accessories-text-editor"],
+    "View": ["view-fullscreen", "preferences-desktop"], "Help": ["help-browser"],
+    "Control Center": ["preferences-system"],
+}
+
+
+def action_line(item):
+    if item.get("key"):
+        text = (f'<span {GRAY} font_family="SF Mono, JetBrains Mono, monospace">'
+                f'{esc(item["key"])}</span>   {esc(item["label"])}')
+        icon = icon_path(*item["icons"], "system-run")
+    else:
+        extra = item["menu"] + (f"  {item['shortcut']}" if item.get("shortcut") else "")
+        text = f'{esc(item["label"])}   <span {GRAY}>{esc(extra)}</span>'
+        icon = icon_path(*MENU_ICONS.get(item["menu"], []), "system-run")
+    return line(text, icon)
+
+
+# ───────────────────────────── list / run ─────────────────────────────
+
+def payload_path(mode):
+    return os.path.join(RUNTIME, f"hyprmac-spotlight-{mode}.json")
+
+
+def cmd_list(mode):
+    if mode == "files":
+        items = file_items()
+        lines = [file_line(i) for i in items]
+    elif mode == "actions":
+        items = action_items()
+        lines = [action_line(i) for i in items]
+    else:
+        sys.exit(f"modo desconhecido: {mode}")
+    with open(payload_path(mode), "w") as f:
+        json.dump(items, f, ensure_ascii=False)
+    try:
+        for ln in lines:
+            sys.stdout.write(ln + "\n")
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # o wofi fechou antes de ler tudo (Esc ou troca de modo com Super+1…4)
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+
+
+def spawn(cmd, dry):
+    if dry:
+        print(cmd)
+        return 0
+    subprocess.Popen(["sh", "-c", cmd], start_new_session=True,
+                     stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                     stderr=subprocess.DEVNULL)
+    return 0
+
+
+def confirm(verb):
+    """Como o alerta do macOS ("Are you sure you want to restart…?"): botão da ação
+    primeiro (padrão), Cancel depois. Usa o mesmo visual do Spotlight."""
+    cfg = os.path.join(H, "wofi/xdg")
+    q = {"Restart": "Reiniciar o computador agora?", "Shut Down": "Desligar o computador agora?",
+         "Log Out": "Encerrar a sessão agora?"}.get(verb, verb + "?")
+    try:
+        res = subprocess.run(
+            ["wofi", "--dmenu", "--prompt", q, "--define=dmenu-print_line_num=true",
+             "--no-custom-entry", "--lines", "2", "--cache-file=/dev/null"],
+            input=f"{verb}\nCancel\n", capture_output=True, text=True,
+            env={**os.environ, "XDG_CONFIG_HOME": cfg})
+    except OSError:
+        return False
+    return res.stdout.strip() == "0"
+
+
+def cmd_run(mode, index, reveal=False, dry=False):
+    try:
+        with open(payload_path(mode)) as f:
+            items = json.load(f)
+        item = items[int(index)]
+    except (OSError, ValueError, IndexError) as e:
+        sys.exit(f"spotlight-itens: escolha inválida ({e})")
+
+    if mode == "files":
+        path = item["id"]
+        if not dry:
+            record("files", path, os.path.basename(path))
+        if reveal:
+            # ⌘R do Spotlight → "mostrar no Finder": o gerenciador de arquivos abre a
+            # pasta com o item selecionado (org.freedesktop.FileManager1), senão só a pasta
+            uri = "file://" + quote(path)
+            cmd = ("gdbus call --session --dest org.freedesktop.FileManager1 "
+                   "--object-path /org/freedesktop/FileManager1 "
+                   "--method org.freedesktop.FileManager1.ShowItems "
+                   f"{shlex.quote(json.dumps([uri]))} '' >/dev/null 2>&1 || "
+                   f"gio open {shlex.quote(os.path.dirname(path))}")
+        else:
+            cmd = f"gio open {shlex.quote(path)}"
+        return spawn(cmd, dry)
+
+    if mode == "actions":
+        if item.get("confirm"):
+            if dry:
+                print(f"# confirmar: {item['confirm']}")
+            elif not confirm(item["confirm"]):
+                return 0
+        if not dry:
+            record("actions", item["id"], item.get("label", ""))
+        return spawn(item["cmd"], dry)
+    sys.exit(f"modo desconhecido: {mode}")
+
+
+# ───────────────────────────── Apps (drun) ─────────────────────────────
+
+DRUN_CACHE = os.path.join(CACHE_HOME, "wofi-drun")
+
+
+def cmd_record_app(desktop):
+    record("apps", os.path.normpath(desktop), desktop_name(desktop))
+    # o wofi passa a usar o cache gerado; a contagem de uso continua no wofi-drun
+    counts = read_drun_cache(DRUN_CACHE)
+    counts[desktop] = counts.get(desktop, 0) + 1
+    write_drun_cache(DRUN_CACHE, counts)
+
+
+def read_drun_cache(path):
+    counts = {}
+    try:
+        with open(path) as f:
+            for raw in f:
+                num, _, p = raw.rstrip("\n").partition(" ")
+                if p and num.isdigit():
+                    counts[p] = counts.get(p, 0) + int(num)
+    except OSError:
+        pass
+    return counts
+
+
+def write_drun_cache(path, counts):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        for p, n in counts.items():
+            f.write(f"{n} {p}\n")
+    os.replace(tmp, path)
+
+
+def cmd_drun_cache():
+    """Cache do wofi drun com o histórico em cima: o wofi ordena por contagem, então
+    as últimas escolhas recebem contagens acima de qualquer frequência real."""
+    counts = read_drun_cache(DRUN_CACHE)
+    top = max(counts.values(), default=0) + 1
+    hist = [p for p in history_ids("apps") if os.path.exists(p)]
+    for i, p in enumerate(hist):
+        counts[p] = top + len(hist) - i
+    path = os.path.join(CACHE_HOME, "hyprmac", "spotlight-drun")
+    write_drun_cache(path, counts)
+    print(path)
+
+
+def main(argv):
+    if len(argv) < 2:
+        print(__doc__)
+        return 2
+    cmd, args = argv[1], argv[2:]
+    flags = {a for a in args if a.startswith("--")}
+    args = [a for a in args if not a.startswith("--")]
+    if cmd == "list" and args:
+        cmd_list(args[0])
+    elif cmd == "run" and len(args) >= 2:
+        dry = "--dry-run" in flags or os.environ.get("HYPRMAC_SPOTLIGHT_DRY") == "1"
+        return cmd_run(args[0], args[1], "--reveal" in flags, dry)
+    elif cmd == "record" and len(args) >= 2 and args[0] == "apps":
+        cmd_record_app(args[1])
+    elif cmd == "drun-cache":
+        cmd_drun_cache()
+    else:
+        print(__doc__)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

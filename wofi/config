@@ -1,0 +1,17 @@
+# hyprmac — wofi como o Spotlight do macOS Tahoe
+mode=drun
+prompt=Pesquisa Spotlight
+location=top
+yoffset=210
+width=680
+lines=8
+dynamic_lines=true
+allow_images=true
+image_size=30
+insensitive=true
+matching=fuzzy
+hide_scroll=true
+no_actions=true
+key_expand=Tab
+term=ghostty
+gtk_dark=true

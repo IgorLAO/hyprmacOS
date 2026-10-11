@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Format do Notes (Notes.app 26.6.1, MainMenu: Checklist, Mark as Checked, More ▸
+     Check All / Uncheck All / Move Checked to Bottom / Delete Checked). Os itens de More ficam
+     no próprio menu após um filete: submenu no menu da Waybar 0.15 causa segfault (testado).
+     Estilos de texto, tabela e fontes ainda não existem no hyprmac: esmaecidos, como no HIG. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="title"><property name="label">Title</property><property name="sensitive">False</property></object></child>
+    <child><object class="GtkMenuItem" id="heading"><property name="label">Heading</property><property name="sensitive">False</property></object></child>
+    <child><object class="GtkMenuItem" id="body"><property name="label">Body</property><property name="sensitive">False</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="checklist"><property name="label">Checklist</property></object></child>
+    <child><object class="GtkMenuItem" id="markchecked"><property name="label">Mark as Checked</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sepmore"/></child>
+    <child><object class="GtkMenuItem" id="checkall"><property name="label">Check All</property></object></child>
+    <child><object class="GtkMenuItem" id="uncheckall"><property name="label">Uncheck All</property></object></child>
+    <child><object class="GtkMenuItem" id="movechecked"><property name="label">Move Checked to Bottom</property></object></child>
+    <child><object class="GtkMenuItem" id="deletechecked"><property name="label">Delete Checked</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="table"><property name="label">Table</property><property name="sensitive">False</property></object></child>
+    <child><object class="GtkMenuItem" id="font"><property name="label">Font</property><property name="sensitive">False</property></object></child>
+  </object>
+</interface>

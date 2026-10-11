@@ -1,0 +1,130 @@
+/* hyprmac-lock — tela de bloqueio no estilo macOS Tahoe.
+ * Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14" = 1512×982 pt, 1,744 px/pt
+ * na foto), usadas 1:1 (1 pt = 1 px lógico), contadas a partir da borda de baixo:
+ *   avatar 49 (base a 119), nome 15 (linha de base a 88,9), dica 12 (linha de base a 59,0).
+ * Data e relógio de vidro são desenhados em cairo (hyprmac-lock, Backdrop); a dica
+ * vibrante também (VibrantLabel), por causa da mistura plus-lighter. */
+
+.hyprmac-lock-window {
+  background-color: #10141c;
+}
+
+.hyprmac-lock,
+.hyprmac-lock label,
+.hyprmac-lock text {
+  font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable", "Inter", sans-serif;
+  color: #ffffff;
+}
+
+/* ── canto superior direito: fonte de entrada, bateria, rede ──
+ * Foto oficial (pt): centro da linha a 13,8 do topo, Wi‑Fi a 22,4 da borda direita,
+ * texto ↔ teclado 6,3, teclado ↔ bateria 19,6, bateria ↔ Wi‑Fi 19,2.
+ * "U.S." = 13 pt Regular (casado com a foto); ícones desenhados em cairo (StatusGlyph). */
+.lock-status {
+  margin: 0 22px 0 0;
+  min-height: 28px;
+}
+.lock-status-item {
+  margin-left: 19px;
+}
+.lock-status-text {
+  font-size: 13px;
+  font-weight: 400;
+  font-variation-settings: "wght" 400, "opsz" 17;
+  letter-spacing: -0.08px;
+}
+.lock-status-icon {
+  font-family: "Symbols Nerd Font";
+  font-size: 12px;
+}
+
+/* ── parte de baixo: avatar, nome, campo ── */
+.lock-slot {
+  margin-bottom: 56px;
+}
+/* nome: 15 pt, peso ≈ 560 (entre Medium e Semibold), tamanho óptico Text e o tracking
+ * do HIG para 15 pt (−0,23); branco puro e SEM sombra (na foto não há halo) */
+.lock-name {
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: 500;
+  font-variation-settings: "wght" 560, "opsz" 17;
+  letter-spacing: -0.23px;
+}
+.lock-entry {
+  margin-top: 15px;
+}
+/* a cápsula (só visível ao digitar) não pode empurrar o layout: ocupa a mesma linha da
+ * dica — 30 de altura, menos 2×8 de margem negativa = os 14 da linha de texto de 12 pt */
+.lock-entry > .lock-field {
+  margin-top: -8px;
+  margin-bottom: -8px;
+}
+
+/* cápsula de vidro (receita "Regular – Small" do kit: véu claro translúcido,
+ * filete claro, realce no topo, sombra de elevação suave) */
+.lock-field {
+  margin-top: 14px;
+  min-width: 206px;        /* + padding = cápsula de ~240 px */
+  min-height: 30px;
+  padding: 0 4px 0 30px;   /* 30 = 4 + botão de 22 + 4: texto centrado na cápsula */
+  border-radius: 999px;
+  background-color: rgba(248, 248, 248, 0.20);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.40),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10),
+    0 0 0 0.5px rgba(255, 255, 255, 0.30),
+    0 4px 16px rgba(0, 0, 0, 0.12);
+  transition: background-color 160ms ease-out, opacity 160ms ease-out;
+}
+.lock-field:focus-within {
+  background-color: rgba(248, 248, 248, 0.26);
+}
+.lock-field:disabled {
+  opacity: 0.6;
+}
+.lock-field text {
+  background: none;
+  min-height: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  caret-color: #ffffff;
+  color: #ffffff;
+}
+.lock-field text placeholder {
+  color: rgba(255, 255, 255, 0.70);
+}
+.lock-field text selection {
+  background-color: rgba(255, 255, 255, 0.30);
+}
+
+/* botão de seta: círculo de vidro dentro da cápsula */
+.lock-go {
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-family: "Symbols Nerd Font";
+  font-size: 15px;
+  transition: opacity 120ms ease-out, background-color 120ms ease-out;
+}
+.lock-go:hover {
+  background: rgba(255, 255, 255, 0.38);
+}
+.lock-go label {
+  font-family: "Symbols Nerd Font";
+  padding-left: 1px;
+}
+
+.lock-msg {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.80);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+}

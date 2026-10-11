@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# hyprmac — Spotlight do shell GTK. Chamar de novo fecha.
+#   spotlight [apps|files|actions|clipboard]
+#   spotlight mode <modo>             muda o modo com o painel aberto
+# Super+Espaço abre a busca unificada; Super+1…4 selecionam os modos.
+# O shell é iniciado se necessário e o D-Bus aguardado durante reloads.
+# HYPRMAC_SPOTLIGHT_WOFI=1 ativa explicitamente o lançador legado abaixo.
+# Busca, execução e histórico: scripts/spotlight-itens e shell/spotlight_search.py.
+set -uo pipefail
+
+H="$HOME/Projects/hyprmac"
+ITENS="$H/scripts/spotlight-itens"
+NEXT="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-spotlight-next"
+
+norm_mode() {
+  case "${1:-apps}" in
+    files|arquivos|2)               echo files ;;
+    actions|acoes|ações|3)          echo actions ;;
+    clipboard|area|transferencia|4) echo clipboard ;;
+    *)                              echo apps ;;
+  esac
+}
+
+# O atalho normal sempre usa o shell. Uma indisponibilidade momentânea do
+# D-Bus não deve abrir outro lançador durante a inicialização/reload.
+shell_call() {
+  gdbus call --session --timeout 1 --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell \
+    --method dev.hyprmac.Shell.Command "spotlight${*:+ $*}" >/dev/null 2>&1
+}
+if [ "${HYPRMAC_SPOTLIGHT_WOFI:-}" != 1 ]; then
+  shell_call "$@" && exit 0
+  # A verificação de instância fica no próprio shell (PIDFILE/running_pid).
+  "$H/shell/hyprmac-shell" >> "${XDG_RUNTIME_DIR:-/tmp}/hyprmac-shell-launch.log" 2>&1 &
+  for attempt in {1..25}; do
+    sleep 0.2
+    shell_call "$@" && exit 0
+  done
+  printf '%s\n' 'Spotlight: o shell não respondeu; consulte hyprmac-shell-launch.log no diretório de runtime.' >&2
+  exit 1
+fi
+
+if [ "${1:-}" = mode ]; then
+  norm_mode "${2:-apps}" > "$NEXT"
+  pkill -x wofi
+  exit 0
+fi
+
+pkill -x wofi && exit 0
+
+first=1
+[ $# -gt 0 ] && first=0          # ⌘Espaço sem modo = "Pesquisa Spotlight"
+mode=$(norm_mode "${1:-apps}")
+rm -f "$NEXT"
+hyprctl dispatch 'hl.dsp.submap("spotlight")' >/dev/null
+trap 'hyprctl dispatch "hl.dsp.submap(\"reset\")" >/dev/null' EXIT
+
+# wofi --dmenu de um modo do spotlight-itens; Ctrl+R (key_custom_0) muda o código de
+# saída para 10 sem fechar — o Enter seguinte vira "mostrar na pasta"
+pick() {  # pick <files|actions> <prompt>
+  local out rc
+  out=$("$ITENS" list "$1" | XDG_CONFIG_HOME="$H/wofi/xdg" wofi --dmenu \
+          --prompt "$2" --allow-markup --parse-search --no-custom-entry \
+          --cache-file=/dev/null \
+          --define=dmenu-print_line_num=true \
+          --define=key_custom_0=Ctrl-r)
+  rc=$?
+  [ -n "$out" ] || return 0
+  if [ "$rc" -eq 10 ]; then
+    "$ITENS" run "$1" "$out" --reveal
+  else
+    "$ITENS" run "$1" "$out"
+  fi
+}
+
+while :; do
+  case "$mode" in
+    clipboard)
+      "$H/scripts/clipboard" pick    # painel do hyprmac-shell, fora do wofi
+      break
+      ;;
+    files)   pick files "Arquivos" ;;
+    actions) pick actions "Ações" ;;
+    *)
+      prompt="Apps"
+      [ "$first" = 1 ] && prompt="Pesquisa Spotlight"
+      cache=$("$ITENS" drun-cache 2>/dev/null) || cache=""
+      choice=$(XDG_CONFIG_HOME="$H/wofi/xdg" wofi --show drun --prompt "$prompt" \
+                 ${cache:+--cache-file="$cache"} \
+                 --define=drun-print_desktop_file=true)
+      if [ -n "$choice" ]; then
+        desktop="${choice%%.desktop*}.desktop"   # pode vir seguido do nome de uma ação
+        if [ "${HYPRMAC_SPOTLIGHT_DRY:-}" = 1 ]; then
+          echo "gio launch $desktop"
+        else
+          setsid -f gio launch "$desktop" >/dev/null 2>&1
+        fi
+        "$ITENS" record apps "$desktop" >/dev/null 2>&1 &
+      fi
+      ;;
+  esac
+  first=0
+  # fechou para trocar de modo (Super+1…4)? reabre no novo
+  [ -s "$NEXT" ] || break
+  mode=$(norm_mode "$(cat "$NEXT")")
+  rm -f "$NEXT"
+done

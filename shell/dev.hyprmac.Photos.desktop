@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Photos
+Comment=Photos
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-fotos
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/Photos.png
+Categories=Graphics;Photography;
+Keywords=photos;pictures;library;
+StartupWMClass=dev.hyprmac.Photos
+StartupNotify=true

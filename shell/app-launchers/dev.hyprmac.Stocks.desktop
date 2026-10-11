@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Stocks
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Stocks
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Stocks.png
+StartupWMClass=dev.hyprmac.Stocks
+Terminal=false
+Categories=Utility;

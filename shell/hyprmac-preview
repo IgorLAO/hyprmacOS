@@ -1,0 +1,662 @@
+#!/usr/bin/python3
+"""Visualizador local: ações documentadas no Preview 26.6.1, layout experimental."""
+import math
+import os
+import cairo
+from pathlib import Path
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("Poppler", "0.18")
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Poppler
+
+# Medido em BaseConhecimento/referencias/desejos/preview-pdf-escuro-com-central.png:
+# nome 13 bold + "Page N of M" 11 cinza à esquerda; lateral flutuante (margem 8, raio 16)
+# com a miniatura selecionada numa cápsula azul de raio 10 e o número embaixo.
+CSS = b"""
+.preview-name { font-weight: 700; font-size: 13px; }
+.preview-sub { font-size: 11px; color: #98989D; }
+.preview-sidebar { margin: 8px 0 8px 8px; border-radius: 16px; background-color: #2A2A2C; }
+.preview-thumbs, .preview-thumbs row { background: none; }
+.preview-thumbs row { margin: 4px 10px; padding: 4px 0 2px; border-radius: 10px; }
+.preview-thumbs row:selected { background-color: #0A84FF; }
+.thumb-number { font-size: 11px; color: #98989D; }
+.light .preview-sidebar { background-color: #F4FAFE; }
+.preview-area, .preview-area viewport { background-color: #1E1E1E; }
+.light .preview-area, .light .preview-area viewport { background-color: #F2F2F2; }
+.light .preview-sub, .light .thumb-number { color: #86868B; }
+.preview-thumbs row:selected .thumb-number { color: #FFFFFF; }
+/* flat markup bar as in Tahoe (preview-imagem-marcacao.png): icons without background,
+   active tool in soft gray, thin separators; the markup button is a blue circle */
+.preview-markup { padding: 4px 14px; border-bottom: 1px solid alpha(#98989D, 0.25); }
+.preview-markup button, .preview-markup combobox button { background: none; border: none;
+    box-shadow: none; min-width: 26px; min-height: 26px; padding: 2px 6px; border-radius: 6px; }
+.preview-markup button:hover { background-color: alpha(#98989D, 0.18); }
+.preview-markup button:checked { background-color: alpha(#98989D, 0.30); color: inherit; }
+.preview-markup separator { margin: 4px 8px; min-width: 1px; background-color: alpha(#98989D, 0.35); }
+button.preview-markup-toggle { border-radius: 999px; min-width: 32px; min-height: 32px; padding: 0; }
+button.preview-markup-toggle:checked { background-color: #007AFF; color: white; }
+"""
+
+
+MARKUP_COLORS = ("#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#007AFF", "#000000")
+MARKUP_WIDTHS = (2.0, 4.0, 8.0)
+
+
+def image_transform(context, width, height, zoom=1.0, rotation=0):
+    """A mesma transformação para exibição e exportação, em pixels da imagem."""
+    context.scale(zoom, zoom)
+    rotation %= 4
+    if rotation == 1:
+        context.translate(height, 0)
+    elif rotation == 2:
+        context.translate(width, height)
+    elif rotation == 3:
+        context.translate(0, width)
+    context.rotate(rotation * math.pi / 2)
+
+
+def screen_to_image(x, y, width, height, zoom=1.0, rotation=0):
+    x, y = x / zoom, y / zoom
+    return ((x, y), (y, height - x), (width - x, height - y),
+            (width - y, x))[rotation % 4]
+
+
+def markup_output_path(path):
+    """Escolhe uma cópia livre; inclusive quando a entrada já é um PNG marcado."""
+    path = Path(path)
+    candidate = path.with_name(f"{path.stem} (marcado).png")
+    number = 2
+    while candidate.exists() or candidate.is_symlink() or candidate == path:
+        candidate = path.with_name(f"{path.stem} (marcado {number}).png")
+        number += 1
+    return candidate
+
+
+class MarkupModel:
+    """Anotações independentes do GTK; pontos, cor e espessura em pixels originais."""
+    def __init__(self):
+        self.annotations = []
+
+    def add(self, tool, points, color="#FF3B30", width=4.0, text=""):
+        if tool not in ("sketch", "rectangle", "oval", "arrow", "text"):
+            raise ValueError("Unknown markup tool")
+        annotation = dict(tool=tool, points=list(points), color=color, width=width, text=text)
+        self.annotations.append(annotation)
+        return annotation
+
+    def undo(self):
+        return self.annotations.pop() if self.annotations else None
+
+    def draw(self, context, pending=None):
+        context.save()
+        context.set_line_cap(cairo.LINE_CAP_ROUND)
+        context.set_line_join(cairo.LINE_JOIN_ROUND)
+        for annotation in self.annotations + ([pending] if pending else []):
+            points = annotation["points"]
+            if not points:
+                continue
+            color = annotation["color"].lstrip("#")
+            context.set_source_rgb(*(int(color[i:i + 2], 16) / 255 for i in (0, 2, 4)))
+            context.set_line_width(annotation["width"])
+            x, y = points[0]
+            end_x, end_y = points[-1]
+            tool = annotation["tool"]
+            context.new_path()
+            if tool == "text":
+                context.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                context.set_font_size(24)
+                context.move_to(x, y)
+                context.show_text(annotation["text"])
+            elif tool == "rectangle":
+                context.rectangle(min(x, end_x), min(y, end_y), abs(end_x - x), abs(end_y - y))
+            elif tool == "oval":
+                rx, ry = abs(end_x - x) / 2, abs(end_y - y) / 2
+                if rx and ry:
+                    context.save()
+                    context.translate((x + end_x) / 2, (y + end_y) / 2)
+                    context.scale(rx, ry)
+                    context.arc(0, 0, 1, 0, math.tau)
+                    context.restore()
+            elif tool == "arrow":
+                context.move_to(x, y)
+                context.line_to(end_x, end_y)
+                angle = math.atan2(end_y - y, end_x - x)
+                length = min(math.hypot(end_x - x, end_y - y) / 2,
+                             max(12, annotation["width"] * 4))
+                for offset in (-math.pi / 6, math.pi / 6):
+                    context.move_to(end_x - length * math.cos(angle + offset),
+                                    end_y - length * math.sin(angle + offset))
+                    context.line_to(end_x, end_y)
+            else:
+                if len(points) == 1:
+                    context.arc(x, y, annotation["width"] / 2, 0, math.tau)
+                    context.fill()
+                else:
+                    context.move_to(x, y)
+                    for point in points[1:]:
+                        context.line_to(*point)
+            context.stroke()
+        context.restore()
+
+
+class Preview(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id="dev.hyprmac.Preview",
+                         flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        self.document = self.image = self.path = None
+        self.page = self.rotation = 0
+        self.zoom = 1.0
+        self.thumbnail_job = None
+        self.markup = MarkupModel()
+        self.pending_annotation = None
+        self.markup_tool = "sketch"
+        self.markup_color = MARKUP_COLORS[0]
+        self.markup_width = MARKUP_WIDTHS[1]
+
+    def do_activate(self):
+        if not getattr(self, "window", None):
+            self.build()
+        self.window.present()
+
+    def do_open(self, files, _count, _hint):
+        self.do_activate()
+        if files:
+            self.load(files[0])
+
+    def build(self):
+        provider = Gtk.CssProvider()
+        provider.load_from_data(CSS)
+        Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider,
+                                                 Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        escuro = Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme") == "prefer-dark"
+        self.window = Gtk.ApplicationWindow(application=self, title="Preview")
+        self.window.set_default_size(1000, 740)
+        if not escuro:
+            self.window.get_style_context().add_class("light")    # lateral de vidro claro
+        self.window.connect("destroy", self.close)
+        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.window.add(outer)
+        header = Gtk.HeaderBar(show_close_button=True)
+        header.set_custom_title(Gtk.Box())        # sem título centralizado
+        self.window.set_titlebar(header)
+        self.header = header
+        self.sidebar_button = self.button(header, "Thumbnails", self.toggle_sidebar, start=True)
+        titles = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        titles.set_valign(Gtk.Align.CENTER)
+        titles.set_margin_start(6)
+        self.title_name = Gtk.Label(label="Preview", xalign=0)
+        self.title_name.get_style_context().add_class("preview-name")
+        self.title_sub = Gtk.Label(label="", xalign=0)
+        self.title_sub.get_style_context().add_class("preview-sub")
+        titles.pack_start(self.title_name, False, False, 0)
+        titles.pack_start(self.title_sub, False, False, 0)
+        header.pack_start(titles)
+        accel = Gtk.AccelGroup()
+        self.window.add_accel_group(accel)
+        for key, mod, fn in (("o", Gdk.ModifierType.CONTROL_MASK, self.choose),
+                             ("o", Gdk.ModifierType.SUPER_MASK, self.choose)):
+            k, m = Gtk.accelerator_parse(key)
+            accel.connect(k, mod, 0, lambda *_a, f=fn: f() or True)
+        self.window.connect("key-press-event", self.key_press)
+        self.markup_button = Gtk.ToggleButton()
+        self.markup_button.set_image(Gtk.Image.new_from_icon_name("document-edit-symbolic", Gtk.IconSize.BUTTON))
+        self.markup_button.set_tooltip_text("Show Markup Toolbar")
+        self.markup_button.get_accessible().set_name("Markup")
+        self.markup_button.get_style_context().add_class("preview-markup-toggle")
+        self.markup_button.connect("toggled", self.toggle_markup)
+        header.pack_end(self.markup_button)
+        # pack_end: o último fica à esquerda — da esquerda para a direita, "−" e "+"
+        self.button(header, "+", lambda: self.set_zoom(self.zoom * 1.2))
+        self.button(header, "−", lambda: self.set_zoom(self.zoom / 1.2))
+        self.button(header, "Zoom to Fit", lambda: (setattr(self, "auto_fit", True), self.fit()))
+        self.rotate_button = self.button(header, "Rotate Left", self.rotate)
+        self.inspector_button = self.button(header, "Show Inspector", self.inspect)
+        self.build_markup_bar(outer)
+        body = Gtk.Paned()
+        outer.pack_start(body, True, True, 0)
+        self.sidebar = Gtk.ScrolledWindow()
+        self.sidebar.set_size_request(156, -1)
+        self.sidebar.get_style_context().add_class("preview-sidebar")
+        self.sidebar.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.thumbnails = Gtk.ListBox()
+        self.thumbnails.get_style_context().add_class("preview-thumbs")
+        self.thumbnails.connect("row-selected", self.thumbnail_selected)
+        self.sidebar.add(self.thumbnails)
+        body.pack1(self.sidebar, False, False)
+        self.scroll = Gtk.ScrolledWindow()
+        self.scroll.get_style_context().add_class("preview-area")
+        self.canvas = Gtk.DrawingArea()
+        self.canvas.connect("draw", self.draw)
+        self.canvas.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK |
+                               Gdk.EventMask.POINTER_MOTION_MASK)
+        self.canvas.connect("button-press-event", self.markup_press)
+        self.canvas.connect("motion-notify-event", self.markup_motion)
+        self.canvas.connect("button-release-event", self.markup_release)
+        self.canvas.set_halign(Gtk.Align.CENTER)      # página centralizada na área
+        self.canvas.set_valign(Gtk.Align.CENTER)
+        self.auto_fit = True
+        self.scroll.connect("size-allocate", lambda *_: self.auto_fit and self.path and self.fit())
+        self.scroll.add(self.canvas)
+        body.pack2(self.scroll, True, False)
+        self.window.show_all()
+        self.sidebar.hide()
+        self.update()
+
+    def build_markup_bar(self, outer):
+        self.markup_bar = Gtk.Box(spacing=4)
+        self.markup_bar.get_style_context().add_class("preview-markup")
+        self.markup_bar.set_no_show_all(True)
+        outer.pack_start(self.markup_bar, False, False, 0)
+        group = None
+        for tool, glyph, label in (("sketch", "〰", "Sketch"), ("rectangle", "▭", "Rectangle"),
+                                   ("oval", "○", "Oval"), ("arrow", "↗", "Arrow"),
+                                   ("text", "T", "Text")):
+            button = Gtk.RadioButton.new_with_label_from_widget(group, glyph)
+            button.set_mode(False)
+            group = group or button
+            button.set_tooltip_text(label)
+            button.get_accessible().set_name(label)
+            button.connect("toggled", self.select_markup_tool, tool)
+            self.markup_bar.pack_start(button, False, False, 0)
+        self.markup_bar.pack_start(Gtk.Separator(orientation=Gtk.Orientation.VERTICAL), False, False, 0)
+        color_button = Gtk.MenuButton()
+        self.color_swatch = Gtk.DrawingArea()
+        self.color_swatch.set_size_request(20, 20)
+        self.color_swatch.connect("draw", self.draw_color_swatch)
+        color_button.add(self.color_swatch)
+        color_button.set_tooltip_text("Stroke Color")
+        color_button.get_accessible().set_name("Stroke Color")
+        palette = Gtk.Popover.new(color_button)
+        colors = Gtk.Box(spacing=4)
+        colors.set_border_width(8)
+        for color, name in zip(MARKUP_COLORS, ("Red", "Orange", "Yellow", "Green", "Blue", "Black")):
+            button = Gtk.Button()
+            swatch = Gtk.DrawingArea()
+            swatch.set_size_request(22, 22)
+            swatch.connect("draw", self.draw_color_swatch, color)
+            button.add(swatch)
+            button.set_tooltip_text(name)
+            button.get_accessible().set_name(name)
+            button.connect("clicked", self.select_markup_color, color, palette)
+            colors.pack_start(button, False, False, 0)
+        palette.add(colors)
+        colors.show_all()
+        color_button.set_popover(palette)
+        self.markup_bar.pack_start(color_button, False, False, 0)
+        thickness = Gtk.ComboBoxText()
+        for label in ("Thin", "Medium", "Thick"):
+            thickness.append_text(label)
+        thickness.set_active(1)
+        thickness.set_tooltip_text("Stroke Width")
+        thickness.get_accessible().set_name("Stroke Width")
+        thickness.connect("changed", lambda widget: setattr(self, "markup_width", MARKUP_WIDTHS[widget.get_active()]))
+        self.markup_bar.pack_start(thickness, False, False, 0)
+        undo = Gtk.Button.new_from_icon_name("edit-undo-symbolic", Gtk.IconSize.BUTTON)
+        undo.set_tooltip_text("Undo (Ctrl/Super+Z)")
+        undo.get_accessible().set_name("Undo")
+        undo.connect("clicked", lambda _: self.undo_markup())
+        self.markup_bar.pack_start(undo, False, False, 0)
+        done = Gtk.Button(label="Done")
+        done.connect("clicked", lambda _: self.markup_button.set_active(False))
+        self.markup_bar.pack_end(done, False, False, 0)
+        for child in self.markup_bar.get_children():
+            child.show_all()
+
+    def select_markup_tool(self, button, tool):
+        if button.get_active():
+            self.markup_tool = tool
+
+    def draw_color_swatch(self, widget, context, color=None):
+        color = (color or self.markup_color).lstrip("#")
+        context.set_source_rgb(*(int(color[i:i + 2], 16) / 255 for i in (0, 2, 4)))
+        context.arc(widget.get_allocated_width() / 2, widget.get_allocated_height() / 2, 8, 0, math.tau)
+        context.fill_preserve()
+        context.set_source_rgba(0.5, 0.5, 0.5, 0.6)
+        context.set_line_width(1)
+        context.stroke()
+        return False
+
+    def select_markup_color(self, _button, color, palette):
+        self.markup_color = color
+        self.color_swatch.queue_draw()
+        palette.popdown()
+
+    def toggle_markup(self, button):
+        active = button.get_active() and self.image is not None
+        self.markup_bar.set_visible(active)
+        self.pending_annotation = None
+        self.canvas.queue_draw()
+        display = self.canvas.get_window()
+        if display:
+            display.set_cursor(Gdk.Cursor.new_from_name(display.get_display(), "crosshair") if active else None)
+
+    def markup_point(self, event, clamp=False):
+        width, height = self.dimensions()
+        x, y = screen_to_image(event.x, event.y, width, height, self.zoom, self.rotation)
+        if clamp:
+            return min(width, max(0, x)), min(height, max(0, y))
+        return (x, y) if 0 <= x <= width and 0 <= y <= height else None
+
+    def markup_press(self, _widget, event):
+        if event.button != 1 or not self.image or not self.markup_button.get_active():
+            return False
+        point = self.markup_point(event)
+        if point is None:
+            return False
+        if self.markup_tool == "text":
+            dialog = Gtk.Dialog(title="Text", transient_for=self.window, modal=True)
+            dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Add", Gtk.ResponseType.OK)
+            entry = Gtk.Entry()
+            entry.set_activates_default(True)
+            dialog.set_default_response(Gtk.ResponseType.OK)
+            dialog.get_content_area().pack_start(entry, True, True, 12)
+            dialog.show_all()
+            entry.grab_focus()
+            if dialog.run() == Gtk.ResponseType.OK and entry.get_text():
+                self.markup.add("text", [point], self.markup_color, self.markup_width, entry.get_text())
+            dialog.destroy()
+        else:
+            self.pending_annotation = dict(tool=self.markup_tool, points=[point],
+                                           color=self.markup_color, width=self.markup_width, text="")
+        self.canvas.queue_draw()
+        return True
+
+    def markup_motion(self, _widget, event):
+        if not self.pending_annotation:
+            return False
+        point = self.markup_point(event, clamp=True)
+        points = self.pending_annotation["points"]
+        if self.pending_annotation["tool"] == "sketch":
+            if points[-1] != point:
+                points.append(point)
+        elif len(points) == 1:
+            points.append(point)
+        else:
+            points[-1] = point
+        self.canvas.queue_draw()
+        return True
+
+    def markup_release(self, widget, event):
+        if event.button != 1 or not self.pending_annotation:
+            return False
+        self.markup_motion(widget, event)
+        annotation = self.pending_annotation
+        if annotation["tool"] == "sketch" or annotation["points"][0] != annotation["points"][-1]:
+            self.markup.add(**annotation)
+        self.pending_annotation = None
+        self.canvas.queue_draw()
+        return True
+
+    def undo_markup(self):
+        if self.pending_annotation:
+            self.pending_annotation = None
+        else:
+            self.markup.undo()
+        self.canvas.queue_draw()
+
+    def marked_surface(self):
+        width, height = self.dimensions()
+        out_width, out_height = (height, width) if self.rotation % 2 else (width, height)
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, out_width, out_height)
+        context = cairo.Context(surface)
+        image_transform(context, width, height, rotation=self.rotation)
+        Gdk.cairo_set_source_pixbuf(context, self.image, 0, 0)
+        context.paint()
+        self.markup.draw(context)
+        return surface
+
+    def save_markup(self):
+        if not self.image or not self.path:
+            return False
+        try:
+            surface = self.marked_surface()
+            while True:
+                destination = markup_output_path(self.path)
+                try:
+                    stream = destination.open("xb")    # exclusivo: nunca trunca um arquivo existente
+                    break
+                except FileExistsError:
+                    continue
+            try:
+                with stream:
+                    surface.write_to_png(stream)
+            except Exception:
+                destination.unlink()
+                raise
+        except (OSError, cairo.Error) as error:
+            dialog = Gtk.MessageDialog(transient_for=self.window, modal=True,
+                                       message_type=Gtk.MessageType.ERROR,
+                                       buttons=Gtk.ButtonsType.CLOSE, text="Could not save marked image")
+            dialog.format_secondary_text(str(error))
+            dialog.run()
+            dialog.destroy()
+            return False
+        self.title_sub.set_text(f"Saved: {destination.name}")
+        return True
+
+    @staticmethod
+    def button(header, label, callback, start=False):
+        icons = {"Open…": "document-open-symbolic", "Thumbnails": "view-list-symbolic",
+                 "−": "zoom-out-symbolic", "+": "zoom-in-symbolic",
+                 "Zoom to Fit": "zoom-fit-best-symbolic", "Rotate Left": "object-rotate-left-symbolic",
+                 "Show Inspector": "dialog-information-symbolic"}
+        button = Gtk.Button.new_from_icon_name(icons[label], Gtk.IconSize.BUTTON)
+        button.set_tooltip_text(label)
+        button.get_accessible().set_name(label)
+        button.connect("clicked", lambda _: callback())
+        (header.pack_start if start else header.pack_end)(button)
+        return button
+
+    def close(self, *_):
+        self.cancel_thumbnails()
+
+    def cancel_thumbnails(self):
+        if self.thumbnail_job is not None:
+            GLib.source_remove(self.thumbnail_job)
+            self.thumbnail_job = None
+
+    def choose(self):
+        dialog = Gtk.FileChooserDialog(title="Open", transient_for=self.window,
+                                      action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Open", Gtk.ResponseType.OK)
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name("PDF and images")
+        file_filter.add_mime_type("application/pdf")
+        file_filter.add_pixbuf_formats()
+        dialog.add_filter(file_filter)
+        if dialog.run() == Gtk.ResponseType.OK:
+            self.load(dialog.get_file())
+        dialog.destroy()
+
+    def load(self, file):
+        path = file.get_path()
+        try:
+            if path is None:
+                raise ValueError("Open a local file first.")
+            # Validate the replacement before discarding the current document.
+            with open(path, "rb") as stream:
+                is_pdf = b"%PDF-" in stream.read(1024)
+            document = Poppler.Document.new_from_file(file.get_uri(), None) if is_pdf else None
+            image = None if is_pdf else GdkPixbuf.Pixbuf.new_from_file(path)
+            if document and not document.get_n_pages():
+                raise ValueError("The PDF has no pages.")
+        except (GLib.Error, OSError, ValueError) as error:
+            dialog = Gtk.MessageDialog(transient_for=self.window, modal=True,
+                                       message_type=Gtk.MessageType.ERROR,
+                                       buttons=Gtk.ButtonsType.CLOSE,
+                                       text="Could not open the document")
+            dialog.format_secondary_text(str(error))
+            dialog.run()
+            dialog.destroy()
+            return False
+        self.cancel_thumbnails()
+        self.document, self.image, self.path = document, image, Path(path)
+        self.markup = MarkupModel()
+        self.pending_annotation = None
+        self.markup_button.set_active(False)
+        self.page = self.rotation = 0
+        self.zoom = 1.0
+        self.title_name.set_text(self.path.name)
+        self.window.set_title(self.path.name + " — Preview")
+        for row in self.thumbnails.get_children():
+            row.destroy()
+        if document:
+            self.sidebar.show()
+            # Render one thumbnail per idle turn; cancel on replacement/close.
+            self.thumbnail_page = 0
+            self.thumbnail_job = GLib.idle_add(self.add_thumbnail)
+        else:
+            self.sidebar.hide()
+        self.update()
+        self.auto_fit = True                           # abre ajustado, como no Preview
+        GLib.idle_add(lambda: self.fit() and False)
+        if self.image and os.environ.get("HYPRMAC_PREVIEW_MARKUP"):   # testes: abre marcando
+            GLib.idle_add(lambda: self.markup_button.set_active(True) and False)
+        return True
+
+    def add_thumbnail(self):
+        import cairo
+        index = self.thumbnail_page
+        page = self.document.get_page(index)
+        width, height = page.get_size()
+        scale = min(120 / width, 160 / height)
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                     max(1, math.ceil(width * scale)),
+                                     max(1, math.ceil(height * scale)))
+        context = cairo.Context(surface)
+        context.set_source_rgb(1, 1, 1)
+        context.paint()
+        context.scale(scale, scale)
+        page.render(context)
+        pixbuf = Gdk.pixbuf_get_from_surface(surface, 0, 0, surface.get_width(), surface.get_height())
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        box.pack_start(Gtk.Image.new_from_pixbuf(pixbuf), False, False, 8)
+        number = Gtk.Label(label=str(index + 1))
+        number.get_style_context().add_class("thumb-number")
+        box.pack_start(number, False, False, 4)
+        self.thumbnails.add(box)
+        box.show_all()
+        if index == self.page:
+            self.thumbnails.select_row(self.thumbnails.get_row_at_index(index))
+        self.thumbnail_page += 1
+        if self.thumbnail_page >= self.document.get_n_pages():
+            self.thumbnail_job = None
+            return False
+        return True
+
+    def thumbnail_selected(self, _list, row):
+        if row is not None:
+            self.select_page(row.get_index())
+
+    def select_page(self, index):
+        if self.document and 0 <= index < self.document.get_n_pages():
+            self.page = index
+            self.rotation = 0
+            self.update()
+            self.scroll.get_vadjustment().set_value(0)
+            row = self.thumbnails.get_row_at_index(index)
+            if row and self.thumbnails.get_selected_row() != row:
+                self.thumbnails.select_row(row)
+
+    def dimensions(self):
+        if self.document:
+            return self.document.get_page(self.page).get_size()
+        if self.image:
+            return self.image.get_width(), self.image.get_height()
+        return 640, 480
+
+    def update(self):
+        width, height = self.dimensions()
+        if self.rotation % 2:
+            width, height = height, width
+        self.canvas.set_size_request(math.ceil(width * self.zoom), math.ceil(height * self.zoom))
+        self.canvas.queue_draw()
+        count = self.document.get_n_pages() if self.document else 0
+        loaded = self.path is not None
+        self.rotate_button.set_sensitive(loaded)
+        self.inspector_button.set_sensitive(loaded)
+        self.sidebar_button.set_sensitive(bool(self.document))
+        if hasattr(self, "markup_button"):
+            self.markup_button.set_sensitive(self.image is not None)
+        if count:
+            self.title_sub.set_text(f"Page {self.page + 1} of {count}")
+        elif self.image:
+            self.title_sub.set_text(f"{self.image.get_width()} × {self.image.get_height()} pixels")
+        else:
+            self.title_sub.set_text("")
+
+    def key_press(self, _w, event):
+        k = event.keyval
+        if self.image and k in (Gdk.KEY_z, Gdk.KEY_Z, Gdk.KEY_s, Gdk.KEY_S):
+            if event.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK):
+                if k in (Gdk.KEY_z, Gdk.KEY_Z):
+                    self.undo_markup()
+                else:
+                    self.save_markup()
+                return True
+        if k in (Gdk.KEY_Page_Down, Gdk.KEY_Right, Gdk.KEY_Down) and self.document:
+            self.select_page(self.page + 1)
+        elif k in (Gdk.KEY_Page_Up, Gdk.KEY_Left, Gdk.KEY_Up) and self.document:
+            self.select_page(self.page - 1)
+        else:
+            return False
+        return True
+
+    def set_zoom(self, value, manual=True):
+        if manual:
+            self.auto_fit = False    # zoom do usuário: deixa de acompanhar a janela
+        new = min(4.0, max(0.1, value))
+        if abs(new - self.zoom) < 1e-3 and not manual:
+            return
+        self.zoom = new
+        self.pending_annotation = None
+        self.update()
+
+    def fit(self):
+        width, height = self.dimensions()
+        if self.rotation % 2:
+            width, height = height, width
+        self.set_zoom(min(max(1, self.scroll.get_allocated_width() - 48) / width,
+                          max(1, self.scroll.get_allocated_height() - 48) / height), manual=False)
+
+    def rotate(self):
+        self.pending_annotation = None
+        self.rotation = (self.rotation - 1) % 4
+        self.update()
+
+    def toggle_sidebar(self):
+        self.sidebar.set_visible(not self.sidebar.get_visible())
+
+    def inspect(self):
+        width, height = self.dimensions()
+        dialog = Gtk.MessageDialog(transient_for=self.window, modal=True,
+                                   buttons=Gtk.ButtonsType.CLOSE, text=self.path.name)
+        units = "pt" if self.document else "px"
+        dialog.format_secondary_text(f"{width:g} × {height:g} {units}\n{self.path}")
+        dialog.run()
+        dialog.destroy()
+
+    def draw(self, _widget, context):
+        if not self.path:
+            return False
+        width, height = self.dimensions()
+        image_transform(context, width, height, self.zoom, self.rotation)
+        context.rectangle(0, 0, width, height)
+        context.clip_preserve()
+        context.set_source_rgb(1, 1, 1)
+        context.fill()
+        if self.document:
+            self.document.get_page(self.page).render(context)
+        else:
+            Gdk.cairo_set_source_pixbuf(context, self.image, 0, 0)
+            context.paint()
+            self.markup.draw(context, self.pending_annotation)
+        return False
+
+
+if __name__ == "__main__":
+    import sys
+    raise SystemExit(Preview().run(sys.argv))

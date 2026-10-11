@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+"""Generate missing HyprMac app entries from the curated Tahoe package inventory.
+
+Only writes its own generated files. Existing, differing files are reported and
+left intact so regeneration cannot erase local application work.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SHELL = ROOT / "shell"
+sys.path.insert(0, str(SHELL))
+from app_factory_registry import validate_manifest  # noqa: E402
+
+INVENTORY = ROOT / "BaseConhecimento/referencias/tahoe-apps-70.json"
+MOUNT = Path("/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root")
+MANIFESTS = SHELL / "app-manifests"
+ICONS = SHELL / "icons/tahoe26/factory"
+LAUNCHERS = SHELL / "app-launchers"
+CATALOG = ROOT / "BaseConhecimento/referencias/hyprmac-apps-progress.json"
+HYPR_CLASSES = ROOT / "hypr/app-factory-classes.lua"
+
+# Layout and size are provisional presentation choices until Tahoe runtime
+# captures establish window geometry. No sidebar labels are inferred here.
+SIDEBAR = {
+    "Activity Monitor", "App Store", "Books", "Calendar", "Console",
+    "Contacts", "Dictionary", "Disk Utility", "Font Book", "Home",
+    "Mail", "Music", "News", "Podcasts", "Reminders", "Shortcuts",
+    "System Information", "TV", "Weather",
+}
+COMPACT = {"Clock", "Digital Color Meter", "Grapher", "Stickies", "VoiceMemos"}
+WIDE = {"Activity Monitor", "App Store", "Calendar", "Console", "Disk Utility", "Mail", "Music", "System Information", "TV"}
+PARTIAL_FACTORY = {"Clock", "Activity Monitor", "System Information", "Terminal", "Console", "Reminders", "Calendar", "VoiceMemos", "QuickTime Player", "Disk Utility"}
+PANELS = {
+    "Clock": ("app_factory_clock", "ClockPanel"),
+    "Activity Monitor": ("app_factory_activity", "ActivityPanel"),
+    "System Information": ("app_factory_system_info", "SystemInfoPanel"),
+    "Console": ("app_factory_console", "ConsolePanel"),
+    "Reminders": ("app_factory_reminders", "RemindersPanel"),
+    "Calendar": ("app_factory_calendar", "CalendarPanel"),
+    "VoiceMemos": ("app_factory_voice_memos", "VoiceMemosPanel"),
+    "QuickTime Player": ("app_factory_quicktime", "QuickTimePanel"),
+    "Disk Utility": ("app_factory_disk_utility", "DiskUtilityPanel"),
+}
+
+
+def slug(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", name)
+
+
+def write_owned(path: Path, content: bytes) -> str:
+    if path.exists():
+        if path.read_bytes() != content:
+            raise RuntimeError(f"existing file differs; preserved: {path}")
+        return "same"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
+    return "new"
+
+
+def icon_source(app: dict) -> Path:
+    resources = MOUNT / app["pacote"] / "Contents/Resources"
+    for name in ("AppIcon.icns", "AppIconMac.icns", "ApplicationIcon.icns",
+                 "Contacts.icns", "fontbook.icns", "Grapher.icns", "ASP.icns",
+                 "AppIconLoc.icns",
+                 "Terminal.icns", "VoiceMemosApp.icns"):
+        candidate = resources / name
+        if candidate.is_file():
+            return candidate
+    icons = sorted(resources.glob("*.icns"))
+    if icons:
+        return icons[0]
+    raise FileNotFoundError(f"icon missing for {app['nome']}")
+
+
+def export_icon(app: dict, stem: str) -> str:
+    source = icon_source(app)
+    destination = ICONS / f"{stem}.png"
+    if not destination.exists():
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        from PIL import Image
+        with Image.open(source) as image:
+            image.thumbnail((256, 256))
+            image.convert("RGBA").save(destination, format="PNG")
+    return str(destination.relative_to(ROOT))
+
+
+def manifest_for(app: dict) -> dict:
+    name = app["nome"]
+    stem = slug(name)
+    layout = "sidebar" if name in SIDEBAR else "window"
+    size = [960, 680] if name in WIDE else ([560, 520] if name in COMPACT else [800, 600])
+    return {
+        "id": f"dev.hyprmac.{stem}",
+        "name": name,
+        "icon": export_icon(app, stem),
+        "layout": layout,
+        "size": size,
+        "sidebar_items": [],
+        "sidebar_groups": ([
+            {"title": "", "items": ["Search", "Home", "New", "Radio"]},
+            {"title": "Library", "items": ["Recently Added", "Artists", "Albums", "Songs"]},
+            {"title": "Playlists", "items": ["All Playlists"]},
+        ] if name == "Music" else []),
+        "sidebar_default": "Home" if name == "Music" else None,
+        "status": "partial" if name in PARTIAL_FACTORY else "coming_soon",
+        "backend": ({"kind": "python_panel", "module": PANELS[name][0], "class": PANELS[name][1]}
+                    if name in PANELS else
+                    {"kind": "external", "argv": ["ghostty", "--class=dev.hyprmac.Terminal",
+                                                   "--gtk-single-instance=false"]}
+                    if name == "Terminal" else None),
+        "toolbar_items": [],
+        "transition_ms": 160,
+        "layout_evidence": ("Tahoe 26 screenshot; geometry unmeasured" if name == "Music" else "provisional"),
+        "bundle_id": app["bundle_id"],
+        "evidence": {
+            "inventory": str(INVENTORY.relative_to(ROOT)),
+            "menu_extraction": app["fonte_extracao"],
+            "menu_state": app["menu"],
+            "icon_source": str(icon_source(app)),
+            "layout_status": "provisional; runtime Tahoe 26 window reference pending",
+            **({"layout_reference": "BaseConhecimento/referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Apple-Music-250609.jpg"}
+               if name == "Music" else {}),
+        },
+    }
+
+
+def desktop_for(data: dict) -> bytes:
+    app_id = data["id"]
+    icon = ROOT / data["icon"]
+    lines = [
+        "[Desktop Entry]", "Type=Application", f"Name={data['name']}",
+        f"Exec={SHELL / 'hyprmac-app'} {app_id}",
+        f"Icon={icon}", f"StartupWMClass={app_id}",
+        "Terminal=false", "Categories=Utility;", "",
+    ]
+    return "\n".join(lines).encode("utf-8")
+
+
+def main() -> None:
+    inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
+    apps = inventory["apps"]
+    assert len(apps) == 70 and sum(a["implementacao"] == "AUSENTE" for a in apps) == 55
+    ICONS.mkdir(parents=True, exist_ok=True)
+    count = 0
+    catalog = []
+    for app in apps:
+        stem = slug(app["nome"])
+        app_id = f"dev.hyprmac.{stem}"
+        if app["implementacao"] == "AUSENTE":
+            path = MANIFESTS / f"{stem}.json"
+            if path.is_file():
+                data = validate_manifest(json.loads(path.read_text(encoding="utf-8")))
+                if data["id"] != app_id:
+                    raise ValueError(f"unexpected manifest ID: {path}")
+            else:
+                data = validate_manifest(manifest_for(app))
+                write_owned(path, (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+            write_owned(LAUNCHERS / f"{app_id}.desktop", desktop_for(data))
+            count += 1
+            visual = "partial_provisional_scaffold" if app["nome"] in PARTIAL_FACTORY else "coming_soon_scaffold"
+            integration = "launcher_generated_unverified"
+        else:
+            visual = "partial_existing_unverified"
+            integration = "existing_unreviewed"
+        catalog.append({
+            "id": app_id, "name": app["nome"], "bundle_id": app["bundle_id"],
+            "group": app["grupo"], "visual": visual,
+            "functionality": "unverified" if app["implementacao"] == "PARCIAL" else ("partial_unverified" if app["nome"] in PARTIAL_FACTORY else "coming_soon"),
+            "integration": integration, "fidelity": "not_assessed",
+        })
+    result = {"schema": 1, "source": str(INVENTORY.relative_to(ROOT)), "apps": catalog}
+    classes = [slug(a["nome"]) for a in apps if a["implementacao"] == "AUSENTE"]
+    lua = "-- Generated by scripts/generate-app-factory; factory apps only.\nreturn {\n"
+    lua += "".join(f'    "{name}",\n' for name in classes) + "}\n"
+    write_owned(HYPR_CLASSES, lua.encode("utf-8"))
+    # The catalog is persistent validation state; later cycles edit its rows.
+    if CATALOG.is_file():
+        existing = json.loads(CATALOG.read_text(encoding="utf-8"))
+        if {a["id"] for a in existing["apps"]} != {a["id"] for a in catalog}:
+            raise ValueError("catalog IDs differ from Tahoe inventory")
+    else:
+        write_owned(CATALOG, (json.dumps(result, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
+    print(f"generated {count} missing app manifests and launchers; catalog has {len(catalog)} entries")
+
+
+if __name__ == "__main__":
+    main()

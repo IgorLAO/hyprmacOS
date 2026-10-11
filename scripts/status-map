@@ -1,0 +1,292 @@
+#!/usr/bin/env python3
+"""Gera o mapa de status do HyprMac (treemaps SVG + bloco do README).
+
+Fontes (nenhuma é editada aqui):
+  - BaseConhecimento/LISTA-DE-DESEJOS.md        comportamentos por ID (DCK-01…)
+  - BaseConhecimento/comparacao/MATRIZ.md       parâmetros medidos (✅🟡🔴⬜➖)
+  - BaseConhecimento/referencias/hyprmac-apps-progress.json   70 apps Tahoe
+
+Saída: docs/status/*.svg e o trecho entre <!-- status:inicio --> e
+<!-- status:fim --> do README.md. Só biblioteca padrão; roda no hook de
+pre-commit e no GitHub Actions.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from html import escape
+from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parents[1]
+BASE = RAIZ / "BaseConhecimento"
+SAIDA = RAIZ / "docs" / "status"
+
+# Cores no espírito do anyps5: verde = feito, cinza = falta.
+COR = {
+    "feito": "#3fb44b",
+    "parcial": "#9bc53d",
+    "inicio": "#d6a531",
+    "diverge": "#d0583c",
+    "falta": "#7b7d86",
+    "fora": "#4a4c55",
+}
+ORDEM = list(COR)
+ROTULO = {
+    "feito": "feito",
+    "parcial": "parcial testado",
+    "inicio": "parcial/relatado",
+    "diverge": "diverge",
+    "falta": "a fazer",
+    "fora": "não conta",
+}
+PESO = {"feito": 1.0, "parcial": 0.5, "inicio": 0.25, "diverge": 0.0, "falta": 0.0}
+
+AREAS_LISTA = {
+    "DCK": "Dock", "BAR": "Barra", "GLS": "Vidro", "WIN": "Janelas",
+    "SPT": "Spotlight", "MSC": "Mission Ctrl", "CCN": "Central",
+    "FIL": "Finder", "MIC": "Microinterações", "INT": "Integrações",
+}
+GRUPOS_APPS = {"A": "Grupo A", "B": "Grupo B", "C": "Grupo C", "D": "Grupo D"}
+
+
+# ---------------------------------------------------------------- leitura
+
+
+def comportamentos():
+    texto = (BASE / "LISTA-DE-DESEJOS.md").read_text(encoding="utf-8")
+    areas: dict[str, list[tuple[str, str]]] = {}
+    padrao = re.compile(r"^\| ([A-Z]{3})-(\d+) \| P\d \| [^|]*\| ([A-Z_]+) \| ([A-Z_]+) \|", re.M)
+    for prefixo, num, impl, valid in padrao.findall(texto):
+        if prefixo not in AREAS_LISTA:
+            continue
+        if impl == "IMPLEMENTADO" and valid != "NAO_AVALIADO":
+            estado = "feito"
+        elif impl in ("IMPLEMENTADO", "PARCIAL") and valid != "NAO_AVALIADO":
+            estado = "parcial"
+        elif impl in ("IMPLEMENTADO", "PARCIAL", "RELATADO_PARCIAL"):
+            estado = "inicio"
+        elif impl in ("DIVERGE",):
+            estado = "diverge"
+        else:
+            estado = "falta"
+        areas.setdefault(AREAS_LISTA[prefixo], []).append((f"{prefixo}-{num}", estado))
+    return areas
+
+
+def parametros():
+    texto = (BASE / "comparacao" / "MATRIZ.md").read_text(encoding="utf-8")
+    areas: dict[str, list[tuple[str, str]]] = {}
+    area = None
+    simbolos = {"✅": "feito", "🟡": "parcial", "🔴": "diverge", "⬜": "falta", "➖": "fora"}
+    for linha in texto.splitlines():
+        if linha.startswith("## ") and "—" in linha:
+            area = linha[3:].split("—")[0].strip()
+            continue
+        m = re.match(r"^\| ([A-Z]{2,5}-\d+) \|", linha)
+        if not (m and area):
+            continue
+        celulas = [c.strip() for c in linha.strip("|").split("|")]
+        estado = next((simbolos[c] for c in celulas[4:] if c in simbolos), "falta")
+        areas.setdefault(area, []).append((m.group(1), estado))
+    return areas
+
+
+def apps():
+    dados = json.loads((BASE / "referencias" / "hyprmac-apps-progress.json").read_text(encoding="utf-8"))
+    areas: dict[str, list[tuple[str, str]]] = {}
+    for app in dados["apps"]:
+        func = app.get("functionality", "")
+        fid = app.get("fidelity", "")
+        if fid.startswith("verified") or fid == "certified":
+            estado = "feito"
+        elif func == "unverified":
+            estado = "inicio"
+        elif "verified" in func or "tested" in func:
+            estado = "parcial"
+        else:
+            estado = "falta"
+        grupo = GRUPOS_APPS.get(app.get("group"), app.get("group") or "?")
+        areas.setdefault(grupo, []).append((app["name"], estado))
+    return areas
+
+
+# ---------------------------------------------------------------- layout
+
+
+def squarify(pesos, x, y, w, h):
+    """Treemap 'squarified' (Bruls et al.); devolve retângulos na ordem dada."""
+    total = sum(pesos)
+    if not pesos or total <= 0:
+        return []
+    escala = w * h / total
+    restantes = [p * escala for p in pesos]
+    rects = []
+
+    def pior(linha, lado):
+        s = sum(linha)
+        return max(max(lado * lado * r / (s * s), (s * s) / (lado * lado * r)) for r in linha)
+
+    while restantes:
+        lado = min(w, h)
+        linha = [restantes.pop(0)]
+        while restantes and pior(linha + [restantes[0]], lado) <= pior(linha, lado):
+            linha.append(restantes.pop(0))
+        s = sum(linha)
+        if w >= h:  # coluna à esquerda
+            largura = s / h
+            yy = y
+            for r in linha:
+                rects.append((x, yy, largura, r / largura))
+                yy += r / largura
+            x, w = x + largura, w - largura
+        else:  # faixa no topo
+            altura = s / w
+            xx = x
+            for r in linha:
+                rects.append((xx, y, r / altura, altura))
+                xx += r / altura
+            y, h = y + altura, h - altura
+    return rects
+
+
+def grade(n, w, h):
+    """Colunas × linhas de células quase quadradas que cabem n itens."""
+    import math
+    melhor = (1, n)
+    menor = float("inf")
+    for cols in range(1, n + 1):
+        linhas = math.ceil(n / cols)
+        cw, ch = w / cols, h / linhas
+        custo = max(cw / ch, ch / cw) + (cols * linhas - n) * 0.02
+        if custo < menor:
+            menor, melhor = custo, (cols, linhas)
+    return melhor
+
+
+# ---------------------------------------------------------------- SVG
+
+
+def nota(itens):
+    contam = [e for _, e in itens if e != "fora"]
+    if not contam:
+        return 0.0
+    return 100 * sum(PESO[e] for e in contam) / len(contam)
+
+
+def svg_mapa(titulo, areas, largura=520, altura=260):
+    topo = 26
+    itens = [i for v in areas.values() for i in v]
+    pct = nota(itens)
+    feitos = sum(1 for _, e in itens if e == "feito")
+    nomes = sorted(areas, key=lambda a: -len(areas[a]))
+    rects = squarify([len(areas[a]) for a in nomes], 0, topo, largura, altura - topo)
+    partes = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{largura}" height="{altura}" '
+        f'viewBox="0 0 {largura} {altura}" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">',
+        f'<rect width="{largura}" height="{altura}" fill="#1f2026"/>',
+        f'<text x="4" y="17" font-size="13" fill="#e6e6ea">{escape(titulo)}: '
+        f'{pct:.1f}% ({feitos}/{len(itens)} feitos)</text>',
+    ]
+    for nome, (x, y, w, h) in zip(nomes, rects):
+        celulas = sorted(areas[nome], key=lambda i: ORDEM.index(i[1]))
+        cols, linhas = grade(len(celulas), w - 2, h - 2)
+        cw, ch = (w - 2) / cols, (h - 2) / linhas
+        partes.append(f'<g><title>{escape(nome)} — {nota(celulas):.0f}%</title>')
+        partes.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="#16171c"/>')
+        for k, (ident, estado) in enumerate(celulas):
+            cx = x + 1 + (k % cols) * cw
+            cy = y + 1 + (k // cols) * ch
+            partes.append(
+                f'<rect x="{cx + .5:.1f}" y="{cy + .5:.1f}" width="{max(cw - 1, .5):.1f}" '
+                f'height="{max(ch - 1, .5):.1f}" fill="{COR[estado]}"><title>{escape(ident)}: '
+                f'{ROTULO[estado]}</title></rect>')
+        if w > 34 and h > 14:
+            rotulo = nome if len(nome) * 6.2 < w - 6 else nome[: max(int((w - 6) / 6.2), 3)]
+            partes.append(
+                f'<text x="{x + 3:.1f}" y="{y + 12:.1f}" font-size="10.5" fill="#fff" '
+                f'stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">'
+                f'{escape(rotulo)}</text>')
+        partes.append("</g>")
+    partes.append("</svg>")
+    return "\n".join(partes) + "\n", pct
+
+
+def svg_legenda():
+    x = 4
+    partes = []
+    for estado in ORDEM:
+        partes.append(f'<rect x="{x}" y="5" width="12" height="12" fill="{COR[estado]}"/>'
+                      f'<text x="{x + 16}" y="15" font-size="11" fill="#c9c9d0">{ROTULO[estado]}</text>')
+        x += 22 + len(ROTULO[estado]) * 6.3
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{int(x)}" height="22" '
+            f'font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">'
+            f'<rect width="{int(x)}" height="22" fill="#1f2026"/>{"".join(partes)}</svg>\n')
+
+
+def selo(rotulo, pct):
+    cor = "#3fb44b" if pct >= 90 else "#9bc53d" if pct >= 60 else "#d6a531" if pct >= 25 else "#d0583c"
+    v = f"{pct:.1f}%"
+    a, b = 8 + len(rotulo) * 6.6, 10 + len(v) * 7
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{a + b:.0f}" height="20" '
+            f'font-family="Verdana,DejaVu Sans,sans-serif" font-size="11">'
+            f'<rect width="{a:.0f}" height="20" fill="#555"/><rect x="{a:.0f}" width="{b:.0f}" height="20" fill="{cor}"/>'
+            f'<text x="{a / 2:.0f}" y="14" fill="#fff" text-anchor="middle">{escape(rotulo)}</text>'
+            f'<text x="{a + b / 2:.0f}" y="14" fill="#fff" text-anchor="middle">{v}</text></svg>\n')
+
+
+# ---------------------------------------------------------------- main
+
+
+def escrever(caminho: Path, conteudo: str):
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    if not caminho.exists() or caminho.read_text(encoding="utf-8") != conteudo:
+        caminho.write_text(conteudo, encoding="utf-8")
+
+
+def main():
+    mapas = [
+        ("comportamentos", "Comportamentos Tahoe 26", comportamentos()),
+        ("parametros", "Parâmetros medidos", parametros()),
+        ("apps", "Apps do sistema", apps()),
+    ]
+    linhas_selos, linhas_mapas = [], []
+    for chave, titulo, areas in mapas:
+        conteudo, pct = svg_mapa(titulo, areas)
+        escrever(SAIDA / f"{chave}.svg", conteudo)
+        escrever(SAIDA / f"selo-{chave}.svg", selo(chave, pct))
+        linhas_selos.append(f"![{chave}](docs/status/selo-{chave}.svg)")
+        linhas_mapas.append(f'<img src="docs/status/{chave}.svg" width="49%" alt="{escape(titulo)}">')
+    escrever(SAIDA / "legenda.svg", svg_legenda())
+
+    bloco = "\n".join([
+        "<!-- status:inicio -->",
+        " ".join(linhas_selos),
+        "",
+        "<p>",
+        *linhas_mapas,
+        "</p>",
+        "",
+        "![legenda](docs/status/legenda.svg)",
+        "",
+        "Cada célula é um item: um comportamento da "
+        "[lista de desejos](BaseConhecimento/LISTA-DE-DESEJOS.md), um parâmetro da "
+        "[matriz](BaseConhecimento/comparacao/MATRIZ.md) ou um app do inventário Tahoe 26.6.1. "
+        "Nota = feito 1 · parcial testado ½ · parcial/relatado ¼. "
+        "Gerado por `scripts/status-map` a cada commit; mede o que está cadastrado, "
+        "não a fidelidade global ao macOS.",
+        "<!-- status:fim -->",
+    ])
+    readme = RAIZ / "README.md"
+    texto = readme.read_text(encoding="utf-8") if readme.exists() else "# HyprMac\n"
+    if "<!-- status:inicio -->" in texto:
+        texto = re.sub(r"<!-- status:inicio -->.*?<!-- status:fim -->", lambda _: bloco, texto, flags=re.S)
+    else:
+        texto = texto.rstrip("\n") + "\n\n## Status\n\n" + bloco + "\n"
+    escrever(readme, texto)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

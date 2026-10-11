@@ -1,0 +1,982 @@
+[
+ {
+  "nome": "1 XL Title 1/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "1 XL Title 1/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#000000"
+ },
+ {
+  "nome": "1 XL Title 1/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "1 XL Title 1/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "1 XL Title 1/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 48,
+  "entrelinha": 56,
+  "cor": "#000000"
+ },
+ {
+  "nome": "10 Callout/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "10 Callout/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "10 Callout/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "10 Callout/Medium/4 Quaternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "10 Callout/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#000000/0.96"
+ },
+ {
+  "nome": "10 Callout/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "10 Callout/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "10 Callout/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "10 Callout/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "10 Callout/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#000000"
+ },
+ {
+  "nome": "11 Footnote/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "11 Footnote/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Bold/4 Quarternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000"
+ },
+ {
+  "nome": "11 Footnote/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "11 Footnote/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Medium/4 Quaternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000"
+ },
+ {
+  "nome": "11 Footnote/Regular/1 Primary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "11 Footnote/Regular/2 Vibrant Secondary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Regular/3 Vibrant Tertiary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Regular/4 Quarternary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "11 Footnote/Regular/5 Black",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#000000"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Medium/4 Quaternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#000000"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Regular/1 Primary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Regular/2 Vibrant Secondary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Regular/3 Vibrant Tertiary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Regular/4 Quaternary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "12 Caption 1 & 2/Regular/5 Black",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 16,
+  "cor": "#000000"
+ },
+ {
+  "nome": "2 XL Title 2/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "2 XL Title 2/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#000000"
+ },
+ {
+  "nome": "2 XL Title 2/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "2 XL Title 2/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "2 XL Title 2/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 38,
+  "entrelinha": 46,
+  "cor": "#000000"
+ },
+ {
+  "nome": "3 Large Title/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "3 Large Title/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#000000"
+ },
+ {
+  "nome": "3 Large Title/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "3 Large Title/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "3 Large Title/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 29,
+  "entrelinha": 38,
+  "cor": "#000000"
+ },
+ {
+  "nome": "4 Title 1/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "4 Title 1/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#000000"
+ },
+ {
+  "nome": "4 Title 1/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Medium/4 Quarternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#000000"
+ },
+ {
+  "nome": "4 Title 1/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "4 Title 1/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "4 Title 1/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 24,
+  "entrelinha": 32,
+  "cor": "#000000"
+ },
+ {
+  "nome": "5 Title 2/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "5 Title 2/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#000000"
+ },
+ {
+  "nome": "5 Title 2/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Medium/4 Quaternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "5 Title 2/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#000000"
+ },
+ {
+  "nome": "5 Title 2/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "5 Title 2/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "5 Title 2/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#000000"
+ },
+ {
+  "nome": "6 Title 3/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "6 Title 3/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#000000"
+ },
+ {
+  "nome": "6 Title 3/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Medium/4 Quarternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#000000"
+ },
+ {
+  "nome": "6 Title 3/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "6 Title 3/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "6 Title 3/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 19,
+  "entrelinha": 24,
+  "cor": "#000000"
+ },
+ {
+  "nome": "7 Headline/Bold/1 Primary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "7 Headline/Bold/2 Vibrant Secondary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Bold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Bold/4 Quaternary",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Bold/5 Black",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000/0.96"
+ },
+ {
+  "nome": "7 Headline/Semibold/1 Primary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "7 Headline/Semibold/2 Vibrant Secondary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Semibold/3 Vibrant Tertiary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Semibold/4 Quaternary",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "7 Headline/Semibold/5 Black",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000/0.96"
+ },
+ {
+  "nome": "8 Body/Medium/1 Primary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Medium/2 Vibrant Secondary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Medium/3 Vibrant Tertiary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Medium/4 Quaternary",
+  "fonte": "SFPro-Medium",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "8 Body/Medium/5 Black",
+  "fonte": "SFPro-Medium",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000/0.96"
+ },
+ {
+  "nome": "8 Body/Regular/1 Primary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Regular/2 Vibrant Secondary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Regular/3 Vibrant Tertiary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "8 Body/Regular/4 Quaternary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "8 Body/Regular/5 Black",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000"
+ },
+ {
+  "nome": "9 Subheadline/Regular/1 Primary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "9 Subheadline/Regular/2 Vibrant Secondary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "9 Subheadline/Regular/3 Vibrant Tertiary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF/0.96"
+ },
+ {
+  "nome": "9 Subheadline/Regular/4 Quaternary",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#FFFFFF"
+ },
+ {
+  "nome": "9 Subheadline/Regular/5 Black",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#000000"
+ }
+]

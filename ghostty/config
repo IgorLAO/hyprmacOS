@@ -1,0 +1,51 @@
+# hyprmac — ghostty no estilo do Terminal do macOS Tahoe (mesmo visual do kitty.conf)
+
+command = /usr/bin/zsh
+
+# ── fonte ──
+# Hack deriva da Bitstream Vera, a mesma base da Menlo do Terminal.
+font-family = Hack
+font-size = 11.5
+adjust-cell-height = 12%
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+
+# ── janela ──
+# Barra de título como a do Terminal no Mac: semáforo à esquerda e título
+# centrado (o resto do visual em macos.css e no gtk4.css do hyprmac)
+window-decoration = client
+gtk-titlebar = true
+gtk-custom-css = ~/Projects/hyprmac/ghostty/macos.css
+# sem o aviso "Reloaded the configuration" (o Mac não mostra nada ao trocar o tema)
+app-notifications = no-config-reload
+window-padding-x = 14
+window-padding-y = 10
+window-padding-balance = false
+confirm-close-surface = false
+window-save-state = never
+
+# Fundo sólido, como o perfil padrão do Terminal no modo escuro
+background-opacity = 1.0
+
+# ── cursor ──
+cursor-style = block
+cursor-style-blink = true
+custom-shader = ~/.config/ghostty/shaders/cursor_smear_fade.glsl
+custom-shader-animation = true
+
+# ── rolagem / seleção ──
+copy-on-select = false
+link-url = true
+
+# ── cores: themes/dark ou themes/light (trocado por scripts/theme) ──
+config-file = ~/Projects/hyprmac/ghostty/theme
+
+# ── atalhos no estilo macOS (Super = ⌘) ──
+keybind = super+t=new_tab
+keybind = super+w=close_surface
+keybind = super+k=clear_screen
+keybind = super+equal=increase_font_size:1
+keybind = super+plus=increase_font_size:1
+keybind = super+minus=decrease_font_size:1
+keybind = super+0=reset_font_size

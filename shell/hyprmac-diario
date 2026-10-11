@@ -1,0 +1,715 @@
+#!/usr/bin/env python3
+# Rascunho FreeLLM (JRN-01) completado e ajustado pelo orquestrador; CSS em shell/diario.css.
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk, GLib, Gio, Pango
+import os
+import sys
+import time
+import tempfile
+import datetime
+import cairo
+from cocoa_entry import CocoaEntryKeys
+from app_theme import bind_color_scheme
+
+def is_dark():
+    try:
+        settings = Gio.Settings.new("org.gnome.desktop.interface")
+        return "dark" in settings.get_string("color-scheme")
+    except Exception:
+        return True
+
+def load_css(is_dark_theme):
+    css_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "diario.css")
+    if os.path.exists(css_path):
+        with open(css_path, "r") as f:
+            css_data = f.read()
+        provider = Gtk.CssProvider()
+        provider.load_from_data(css_data.encode())
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+class Entry:
+    def __init__(self, path, title, text, mtime):
+        self.path = path
+        self.title = title
+        self.text = text
+        self.mtime = mtime
+
+def get_diario_dir(root=None):
+    if root:
+        d = root
+    else:
+        d = os.path.expanduser("~/.local/share/hyprmac/diario")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+def load_entries(root=None):
+    d = get_diario_dir(root)
+    entries = []
+    for f in os.listdir(d):
+        if f.endswith(".md"):
+            p = os.path.join(d, f)
+            mtime = os.path.getmtime(p)
+            try:
+                with open(p, "r", encoding="utf-8") as file:
+                    lines = file.readlines()
+                title = lines[0].strip() if lines else "Untitled"
+                text = "".join(lines[1:]) if len(lines) > 1 else ""
+                entries.append(Entry(p, title, text, mtime))
+            except Exception:
+                pass
+    entries.sort(key=lambda e: e.mtime, reverse=True)
+    return entries
+
+def count_this_year(entries):
+    current_year = datetime.datetime.now().year
+    count = 0
+    for e in entries:
+        dt = datetime.datetime.fromtimestamp(e.mtime)
+        if dt.year == current_year:
+            count += 1
+    return count
+
+def save_entry(title, text, path=None, root=None):
+    if not path:     # só cria/usa o diretório padrão quando a entrada é nova
+        fd, path = tempfile.mkstemp(prefix="entry_", suffix=".md", dir=get_diario_dir(root))
+        os.close(fd)
+    with open(path, "w", encoding="utf-8") as file:
+        file.write(title + "\n" + text)
+    return path
+
+def entry_streak(entries, today=None):
+    day = today if today is not None else datetime.date.today()
+    days = {datetime.datetime.fromtimestamp(e.mtime).date() for e in entries}
+    count = 0
+    while day in days:
+        count += 1
+        day -= datetime.timedelta(days=1)
+    return count
+
+def filter_entries(entries, query):
+    query = query.casefold()
+    return [e for e in entries if query in e.title.casefold() or query in e.text.casefold()]
+
+def group_entries_by_month(entries):
+    # Nomes ingleses independentes do locale do desktop.
+    months = ("January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December")
+    groups = {}
+    for entry in sorted(entries, key=lambda e: e.mtime, reverse=True):
+        date = datetime.datetime.fromtimestamp(entry.mtime)
+        label = f"{months[date.month - 1]} {date.year}"
+        groups.setdefault(label, []).append(entry)
+    return list(groups.items())
+
+class InsightsCard(Gtk.DrawingArea):
+    def __init__(self, count=0):
+        super().__init__()
+        self.set_size_request(216, 112)
+        self.count = count
+        self.streak = 0
+        self.connect("draw", self.on_draw)
+
+    def set_count(self, count, streak=0):
+        self.count = count
+        self.streak = streak
+        self.set_size_request(216, 136 if streak >= 2 else 112)
+        self.queue_draw()
+
+    def on_draw(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        
+        pat = cairo.LinearGradient(0, 0, w, h)
+        pat.add_color_stop_rgb(0, 0.431, 0.357, 0.831)
+        pat.add_color_stop_rgb(1, 0.557, 0.435, 0.878)
+        
+        cr.set_source(pat)
+        r = 14
+        cr.new_sub_path()
+        cr.arc(w - r, r, r, -1.5708, 0)
+        cr.arc(w - r, h - r, r, 0, 1.5708)
+        cr.arc(r, h - r, r, 1.5708, 3.1416)
+        cr.arc(r, r, r, 3.1416, 4.7124)
+        cr.close_path()
+        cr.fill()
+        
+        cr.set_source_rgb(1, 1, 1)
+        cr.select_font_face("SF Pro Text", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.set_font_size(13)
+        cr.move_to(14, 24)
+        cr.show_text("Insights")
+        
+        cr.set_font_size(34)
+        cr.move_to(14, 68)
+        cr.show_text(str(self.count))
+        
+        cr.select_font_face("SF Pro Text", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        cr.set_font_size(12)
+        cr.move_to(14, 88)
+        cr.show_text("Entries")
+        cr.move_to(14, 100)
+        cr.show_text("This Year")
+        if self.streak >= 2:
+            cr.move_to(14, 122)
+            cr.show_text(f"{self.streak}-day streak")
+
+class PlacesCard(Gtk.DrawingArea):
+    def __init__(self):
+        super().__init__()
+        self.set_size_request(216, 88)
+        self.connect("draw", self.on_draw)
+
+    def on_draw(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        
+        pat = cairo.LinearGradient(0, 0, w, h)
+        pat.add_color_stop_rgb(0, 0.31, 0.82, 0.96)
+        pat.add_color_stop_rgb(1, 0.12, 0.71, 0.93)
+        
+        cr.set_source(pat)
+        r = 14
+        cr.new_sub_path()
+        cr.arc(w - r, r, r, -1.5708, 0)
+        cr.arc(w - r, h - r, r, 0, 1.5708)
+        cr.arc(r, h - r, r, 1.5708, 3.1416)
+        cr.arc(r, r, r, 3.1416, 4.7124)
+        cr.close_path()
+        cr.fill()
+        
+        cr.set_source_rgb(1, 1, 1)
+        cr.select_font_face("SF Pro Text", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.set_font_size(13)
+        cr.move_to(14, 24)
+        cr.show_text("Places")
+
+class ButterflyGlyph(Gtk.DrawingArea):
+    def __init__(self):
+        super().__init__()
+        self.set_size_request(48, 48)
+        self.connect("draw", self.on_draw)
+
+    def on_draw(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        cr.translate((w - 48) / 2, (h - 48) / 2)
+        
+        pat = cairo.LinearGradient(0, 0, 48, 48)
+        pat.add_color_stop_rgb(0, 0.482, 0.424, 0.965)
+        pat.add_color_stop_rgb(1, 0.949, 0.380, 0.478)
+        cr.set_source(pat)
+        
+        cr.save()
+        cr.translate(24, 24)
+        cr.move_to(0, -4)
+        cr.curve_to(-10, -20, -22, -15, -20, -2)
+        cr.curve_to(-18, 8, -8, 10, 0, 2)
+        cr.curve_to(-8, 12, -15, 18, -10, 22)
+        cr.curve_to(-5, 24, -2, 15, 0, 6)
+        cr.fill()
+        cr.restore()
+        
+        cr.save()
+        cr.translate(24, 24)
+        cr.scale(-1, 1)
+        cr.move_to(0, -4)
+        cr.curve_to(-10, -20, -22, -15, -20, -2)
+        cr.curve_to(-18, 8, -8, 10, 0, 2)
+        cr.curve_to(-8, 12, -15, 18, -10, 22)
+        cr.curve_to(-5, 24, -2, 15, 0, 6)
+        cr.fill()
+        cr.restore()
+        
+        cr.set_source_rgb(1, 1, 1)
+        cr.set_line_width(2)
+        cr.move_to(24, 10)
+        cr.line_to(24, 38)
+        cr.stroke()
+
+class EntryRow(Gtk.ListBoxRow):
+    def __init__(self, entry):
+        super().__init__()
+        self.entry = entry
+        self.get_style_context().add_class("entry-row")
+        
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.get_style_context().add_class("entry-card")
+        
+        dt = datetime.datetime.fromtimestamp(entry.mtime)
+        date_str = dt.strftime("%A, %B %d")
+        date_lbl = Gtk.Label(label=date_str)
+        date_lbl.set_halign(Gtk.Align.START)
+        date_lbl.get_style_context().add_class("entry-card-date")
+        
+        title_lbl = Gtk.Label(label=entry.title)
+        title_lbl.set_halign(Gtk.Align.START)
+        title_lbl.get_style_context().add_class("entry-card-title")
+        title_lbl.set_ellipsize(Pango.EllipsizeMode.END)
+        
+        text_lbl = Gtk.Label(label=entry.text)
+        text_lbl.set_halign(Gtk.Align.START)
+        text_lbl.get_style_context().add_class("entry-card-text")
+        text_lbl.set_ellipsize(Pango.EllipsizeMode.END)
+        text_lbl.set_lines(3)
+        
+        box.pack_start(date_lbl, False, False, 0)
+        box.pack_start(title_lbl, False, False, 0)
+        box.pack_start(text_lbl, False, False, 0)
+        
+        self.add(box)
+        self.show_all()
+
+class JournalView(Gtk.Box):
+    def __init__(self, root_dir=None, window=None):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.root_dir = root_dir
+        self.window = window
+        self.current_entry = None
+        
+        self._theme_settings = bind_color_scheme(self)
+        self.build_ui()
+        self.load_and_refresh()
+
+    def build_ui(self):
+        # Lateral FLUTUANTE
+        self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.sidebar.get_style_context().add_class("sidebar-floating")
+        self.sidebar.set_size_request(240, -1)
+        
+        # Barra superior da lateral
+        sidebar_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        sidebar_header.set_size_request(-1, 52)
+        sidebar_header.get_style_context().add_class("sidebar-header")
+        
+        # Semáforos
+        lights = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
+        lights.get_style_context().add_class("lights")
+        lights.set_valign(Gtk.Align.CENTER)
+        lights.set_margin_left(14)
+        
+        for cls, action in [("close", self.on_close_clicked), 
+                            ("minimize", self.on_minimize_clicked), 
+                            ("zoom", self.on_zoom_clicked)]:
+            btn = Gtk.Button()
+            btn.get_style_context().add_class("light-btn")
+            btn.get_style_context().add_class(cls)
+            btn.set_size_request(14, 14)
+            if action:
+                btn.connect("clicked", action)
+            lights.pack_start(btn, False, False, 0)
+            
+        sidebar_header.pack_start(lights, False, False, 0)
+        
+        # Espaçador
+        spacer = Gtk.Box()
+        sidebar_header.pack_start(spacer, True, True, 0)
+        
+        # Botão ocultar lateral
+        self.hide_sidebar_btn = Gtk.Button.new_from_icon_name("sidebar-show-symbolic", Gtk.IconSize.BUTTON)
+        self.hide_sidebar_btn.get_style_context().add_class("hide-sidebar-btn")
+        self.hide_sidebar_btn.set_valign(Gtk.Align.CENTER)
+        self.hide_sidebar_btn.set_margin_right(14)
+        self.hide_sidebar_btn.connect("clicked", self.on_toggle_sidebar)
+        sidebar_header.pack_start(self.hide_sidebar_btn, False, False, 0)
+        
+        self.sidebar.pack_start(sidebar_header, False, False, 0)
+        
+        # Cartões
+        self.insights_card = InsightsCard()
+        self.places_card = PlacesCard()
+        
+        cards_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        cards_box.set_margin_left(12)
+        cards_box.set_margin_right(12)
+        cards_box.pack_start(self.insights_card, False, False, 0)
+        cards_box.pack_start(self.places_card, False, False, 0)
+        self.sidebar.pack_start(cards_box, False, False, 0)
+        
+        # Seção Journals
+        journals_section = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        journals_section.set_margin_left(16)
+        journals_section.set_margin_right(16)
+        journals_section.set_margin_top(10)
+        
+        journals_lbl = Gtk.Label(label="Journals")
+        journals_lbl.get_style_context().add_class("journals-section-title")
+        journals_section.pack_start(journals_lbl, False, False, 0)
+        
+        spacer2 = Gtk.Box()
+        journals_section.pack_start(spacer2, True, True, 0)
+        
+        add_journal_btn = Gtk.Button(label="+")
+        add_journal_btn.get_style_context().add_class("journals-add-btn")
+        add_journal_btn.connect("clicked", lambda _: self.on_new_entry())
+        add_journal_btn.set_valign(Gtk.Align.CENTER)
+        journals_section.pack_start(add_journal_btn, False, False, 0)
+        
+        self.sidebar.pack_start(journals_section, False, False, 0)
+        
+        # Linha All Entries
+        self.all_entries_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self.all_entries_row.get_style_context().add_class("all-entries-row")
+        self.all_entries_row.set_margin_left(12)
+        self.all_entries_row.set_margin_right(12)
+        
+        icon = Gtk.Box()
+        icon.get_style_context().add_class("all-entries-icon")
+        icon.set_size_request(12, 12)
+        icon.set_valign(Gtk.Align.CENTER)
+        
+        lbl = Gtk.Label(label="All Entries")
+        lbl.get_style_context().add_class("all-entries-label")
+        
+        self.count_lbl = Gtk.Label(label="0")
+        self.count_lbl.get_style_context().add_class("all-entries-count")
+        
+        self.all_entries_row.pack_start(icon, False, False, 0)
+        self.all_entries_row.pack_start(lbl, False, False, 0)
+        
+        spacer3 = Gtk.Box()
+        self.all_entries_row.pack_start(spacer3, True, True, 0)
+        self.all_entries_row.pack_start(self.count_lbl, False, False, 0)
+        
+        self.sidebar.pack_start(self.all_entries_row, False, False, 0)
+        
+        self.pack_start(self.sidebar, False, False, 0)
+        
+        # Área Principal
+        self.main_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.main_area.get_style_context().add_class("main-area")
+        self.main_area.set_hexpand(True)
+        
+        # Barra superior da área principal
+        self.main_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.main_header.set_size_request(-1, 52)
+        self.main_header.get_style_context().add_class("main-header")
+        
+        self.header_title = Gtk.Label(label="All Entries")
+        self.header_title.get_style_context().add_class("main-header-title")
+        self.header_title.set_margin_left(16)
+        self.main_header.pack_start(self.header_title, False, False, 0)
+        
+        spacer4 = Gtk.Box()
+        self.main_header.pack_start(spacer4, True, True, 0)
+        
+        # Botões da direita
+        self.header_right_stack = Gtk.Stack()
+        
+        # Modo visualização
+        view_mode_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        view_mode_box.set_margin_right(16)
+        
+        self.search_entry = Gtk.SearchEntry()
+        self._search_cocoa_keys = CocoaEntryKeys(self.search_entry)
+        self.search_entry.set_placeholder_text("Search")
+        self.search_entry.get_style_context().add_class("search-capsule")
+        self.search_entry.set_size_request(260, 32)
+        self.search_entry.connect("search-changed", self.on_search_changed)
+        self.search_entry.set_valign(Gtk.Align.CENTER)
+        
+        add_btn = Gtk.Button(label="+")
+        add_btn.get_style_context().add_class("main-add-btn")
+        add_btn.connect("clicked", lambda _: self.on_new_entry())
+        add_btn.set_valign(Gtk.Align.CENTER)
+        # como no Tahoe: "+" e, à direita, a busca
+        view_mode_box.pack_start(add_btn, False, False, 0)
+        view_mode_box.pack_start(self.search_entry, False, False, 0)
+        
+        self.header_right_stack.add_named(view_mode_box, "view")
+        
+        # Modo edição
+        edit_mode_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        edit_mode_box.set_margin_right(16)
+        
+        done_btn = Gtk.Button(label="Done")
+        done_btn.get_style_context().add_class("done-btn")
+        done_btn.connect("clicked", lambda _: self.on_done_clicked())
+        edit_mode_box.pack_start(done_btn, False, False, 0)
+        
+        self.header_right_stack.add_named(edit_mode_box, "edit")
+        
+        self.main_header.pack_start(self.header_right_stack, False, False, 0)
+        self.main_area.pack_start(self.main_header, False, False, 0)
+        
+        # Stack de conteúdo principal
+        self.content_stack = Gtk.Stack()
+        
+        # 1. Estado Vazio
+        self.empty_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        self.empty_box.set_valign(Gtk.Align.CENTER)
+        self.empty_box.set_halign(Gtk.Align.CENTER)
+        
+        butterfly = ButterflyGlyph()
+        self.empty_box.pack_start(butterfly, False, False, 0)
+        
+        empty_title = Gtk.Label(label="Start Journaling")
+        empty_title.get_style_context().add_class("empty-title")
+        self.empty_box.pack_start(empty_title, False, False, 0)
+        
+        empty_desc1 = Gtk.Label(label="Create your personal journal.")
+        empty_desc1.get_style_context().add_class("empty-desc")
+        self.empty_box.pack_start(empty_desc1, False, False, 0)
+        
+        empty_desc2 = Gtk.Label(label="Tap the plus button to get started.")
+        empty_desc2.get_style_context().add_class("empty-desc")
+        self.empty_box.pack_start(empty_desc2, False, False, 0)
+        
+        self.content_stack.add_named(self.empty_box, "empty")
+        
+        # 2. Lista de Entradas
+        self.scrolled_list = Gtk.ScrolledWindow()
+        self.scrolled_list.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        self.entries_list = Gtk.ListBox()
+        self.entries_list.set_selection_mode(Gtk.SelectionMode.NONE)
+        self.entries_list.set_activate_on_single_click(True)
+        self.entries_list.connect("row-activated", self.on_entry_activated)
+        self.entries_list.set_halign(Gtk.Align.CENTER)
+        self.entries_list.set_size_request(560, -1)
+        self.entries_list.get_style_context().add_class("entries-list")
+        
+        self.scrolled_list.add(self.entries_list)
+        self.content_stack.add_named(self.scrolled_list, "list")
+        
+        # 3. Editor
+        self.editor_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.editor_box.get_style_context().add_class("editor-area")
+        
+        self.textview = Gtk.TextView()
+        self.textview.get_style_context().add_class("editor-textview")
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD)
+        self.textview.set_left_margin(24)
+        self.textview.set_right_margin(24)
+        self.textview.set_top_margin(24)
+        
+        buffer = self.textview.get_buffer()
+        buffer.create_tag("titulo", weight=Pango.Weight.BOLD, size=20 * Pango.SCALE)
+        buffer.connect("changed", self.on_buffer_changed)
+        
+        self.editor_box.pack_start(self.textview, True, True, 0)
+        self.content_stack.add_named(self.editor_box, "edit")
+        
+        self.main_area.pack_start(self.content_stack, True, True, 0)
+        self.pack_start(self.main_area, True, True, 0)
+        
+        # Atalhos
+        self.connect("key-press-event", self.on_key_press)
+
+    def on_close_clicked(self, btn):
+        if self.window:
+            self.window.close()
+
+    def on_minimize_clicked(self, btn):
+        if self.window:
+            self.window.iconify()
+
+    def on_zoom_clicked(self, btn):
+        if self.window:
+            if self.window.is_maximized():
+                self.window.unmaximize()
+            else:
+                self.window.maximize()
+
+    def on_toggle_sidebar(self, btn):
+        visible = self.sidebar.get_visible()
+        self.sidebar.set_visible(not visible)
+
+    def load_and_refresh(self):
+        entries = load_entries(self.root_dir)
+        count = len(entries)
+        this_year_count = count_this_year(entries)
+        
+        self.count_lbl.set_text(str(count))
+        self.insights_card.set_count(this_year_count, entry_streak(entries))
+        
+        # Limpar lista
+        for child in self.entries_list.get_children():
+            self.entries_list.remove(child)
+            
+        filtered = filter_entries(entries, self.search_entry.get_text())
+        for month, month_entries in group_entries_by_month(filtered):
+            header_row = Gtk.ListBoxRow()
+            header_row.set_activatable(False)
+            header_row.set_selectable(False)
+            header = Gtk.Label(label=month)
+            header.set_halign(Gtk.Align.START)
+            header.get_style_context().add_class("month-header")
+            header_row.add(header)
+            self.entries_list.add(header_row)
+            for entry in month_entries:
+                row = EntryRow(entry)
+                row.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+                row.connect("button-press-event", self.on_entry_button_press)
+                self.entries_list.add(row)
+            
+        self.entries_list.show_all()
+        
+        if not entries:
+            self.show_empty_state()
+        else:
+            self.show_entries_list()
+
+    def show_empty_state(self):
+        self.content_stack.set_visible_child_name("empty")
+        self.header_right_stack.set_visible_child_name("view")
+
+    def show_entries_list(self):
+        self.content_stack.set_visible_child_name("list")
+        self.header_right_stack.set_visible_child_name("view")
+
+    def on_new_entry(self):
+        self.current_entry = None
+        self.textview.get_buffer().set_text("")
+        self.content_stack.set_visible_child_name("edit")
+        self.header_right_stack.set_visible_child_name("edit")
+        self.textview.grab_focus()
+
+    def on_entry_activated(self, listbox, row):
+        if not isinstance(row, EntryRow):
+            return
+        self.current_entry = row.entry
+        self.textview.get_buffer().set_text(row.entry.title + "\n" + row.entry.text)
+        self.content_stack.set_visible_child_name("edit")
+        self.header_right_stack.set_visible_child_name("edit")
+        self.textview.grab_focus()
+
+    def on_entry_button_press(self, row, event):
+        if event.button != 3:
+            return False
+        menu = Gtk.Menu()
+        delete_item = Gtk.MenuItem(label="Delete Entry")
+        delete_item.connect("activate", lambda _: self.on_delete_entry(row.entry))
+        menu.append(delete_item)
+        menu.attach_to_widget(row, None)
+        menu.show_all()
+        menu.popup_at_pointer(event)
+        return True
+
+    def on_delete_entry(self, entry):
+        dialog = Gtk.MessageDialog(
+            transient_for=self.window, modal=True,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.NONE, text="Delete this entry?")
+        dialog.add_buttons("Cancel", Gtk.ResponseType.CANCEL, "Delete", Gtk.ResponseType.ACCEPT)
+        dialog.set_default_response(Gtk.ResponseType.CANCEL)
+        response = dialog.run()
+        dialog.destroy()
+        if response != Gtk.ResponseType.ACCEPT:
+            return
+        try:
+            if not Gio.File.new_for_path(entry.path).trash(None):
+                raise OSError("Could not move the entry to Trash.")
+        except (GLib.Error, OSError) as error:
+            dialog = Gtk.MessageDialog(
+                transient_for=self.window, modal=True,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.CLOSE, text="Could not delete entry.")
+            dialog.format_secondary_text(str(error))
+            dialog.run()
+            dialog.destroy()
+            return
+        if self.current_entry and self.current_entry.path == entry.path:
+            self.current_entry = None
+        self.load_and_refresh()
+
+    def on_done_clicked(self):
+        buffer = self.textview.get_buffer()
+        start, end = buffer.get_bounds()
+        full_text = buffer.get_text(start, end, False)
+        
+        if full_text.strip() or self.current_entry is not None:
+            lines = full_text.split("\n")
+            title = lines[0].strip() if lines else "Untitled"
+            text = "\n".join(lines[1:]) if len(lines) > 1 else ""
+            
+            path = self.current_entry.path if self.current_entry else None
+            save_entry(title, text, path, self.root_dir)
+        self.current_entry = None
+        self.load_and_refresh()
+
+    def on_buffer_changed(self, buffer):
+        start = buffer.get_start_iter()
+        end = start.copy()
+        end.forward_to_line_end()
+        
+        buffer.remove_tag_by_name("titulo", buffer.get_start_iter(), buffer.get_end_iter())
+        buffer.apply_tag_by_name("titulo", start, end)
+
+    def on_search_changed(self, entry):
+        self.load_and_refresh()
+
+    def on_key_press(self, widget, event):
+        state = event.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK)
+        keyval = event.keyval
+        
+        if state and (keyval == Gdk.KEY_n or keyval == Gdk.KEY_N):
+            self.on_new_entry()
+            return True
+            
+        if keyval == Gdk.KEY_Escape:
+            if self.content_stack.get_visible_child_name() == "edit":
+                self.load_and_refresh()
+                return True
+                
+        return False
+
+class JournalApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id="dev.hyprmac.Journal", flags=Gio.ApplicationFlags.FLAGS_NONE)
+        
+    def do_activate(self):
+        win = Gtk.ApplicationWindow(application=self)
+        win.set_title("Journal")
+        win.set_decorated(False)
+        win.set_default_size(900, 650)
+        
+        load_css(is_dark())
+        
+        view = JournalView(window=win)
+        win.add(view)
+        win.show_all()
+
+def run_snapshot(output_path, with_entries=False):
+    temp_dir = tempfile.mkdtemp()
+    if with_entries:
+        save_entry("Trip to Tokyo", "It was an amazing day exploring Shibuya and eating delicious ramen.", root=temp_dir)
+        save_entry("Reflections on Tahoe", "The new macOS Tahoe design feels incredibly fluid and clean.", root=temp_dir)
+    
+    load_css(is_dark())
+    off = Gtk.OffscreenWindow()
+    off.set_default_size(900, 650)
+    off.set_size_request(900, 650)
+    
+    view = JournalView(root_dir=temp_dir, window=off)
+    off.add(view)
+    off.show_all()
+    
+    if not with_entries:
+        view.show_empty_state()
+    else:
+        view.show_entries_list()
+        
+    end = time.time() + 2.0
+    while time.time() < end:
+        while Gtk.events_pending():
+            Gtk.main_iteration_do(False)
+        time.sleep(0.02)
+    off.get_pixbuf().savev(output_path, "png", [], [])
+    print(output_path)
+
+def main():
+    GLib.set_prgname("dev.hyprmac.Journal")
+    if len(sys.argv) > 2 and sys.argv[1] == "--snapshot":
+        return run_snapshot(sys.argv[2], with_entries=False)
+    elif len(sys.argv) > 2 and sys.argv[1] == "--snapshot-entries":
+        return run_snapshot(sys.argv[2], with_entries=True)
+    return JournalApp().run(sys.argv[:1])
+
+if __name__ == "__main__":
+    sys.exit(main())

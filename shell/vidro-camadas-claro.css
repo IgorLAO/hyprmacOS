@@ -1,0 +1,25 @@
+/* hyprmac — vidro real no tema CLARO: os painéis com texto (menus, notificações, Spotlight,
+ * Alt+Tab, histórico) levam mais branco por cima e texto escuro, como o menu "Folder color" e
+ * o Spotlight claro das referências (referencias/telas/ajustes-aparencia-claro-cor-pastas.png,
+ * spotlight-controles-*.png). Os controles (Central, OSD) continuam iguais ao escuro.
+ * Carregado por cima do vidro-camadas.css pelo hyprmac-shell. */
+.notif, .switcher-panel, .wg-panel, .clip-panel, .xmenu,
+.nc button.nc-pill, .nc button.nc-x,
+menu.hyprmac-menu, .hyprmac-menu menu {
+  background-color: @shell_glass_text;
+  border-color: @shell_glass_border;
+}
+
+/* Galeria de Controles no claro: vidro claro com véu branco, como os outros painéis com texto
+ * (cc-edicao-galeria-sobre-azul: conteúdo 155,211,240 sobre o azul 32,134,209) */
+.ccg { background-color: @shell_glass_text; border-color: @shell_glass_border; }
+.ccg-side { background-color: transparent; border-right-color: rgba(0, 0, 0, 0.06); }
+.ccg-main { background-color: transparent; }
+.cc entry.ccg-search { background: rgba(255, 255, 255, 0.85); }
+
+/* Spotlight no claro (medido em spotlight-controles-1/abrir-2: cápsula 171,221,253 sobre o
+ * azul 24,65,181 ≈ 60 % de branco tingido; placeholder ardósia ~78,109,132) */
+.spot-panel {
+  background-color: @shell_glass_spotlight;
+  border-color: rgba(255, 255, 255, 0.65);
+}

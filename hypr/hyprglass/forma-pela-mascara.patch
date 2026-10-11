@@ -1,0 +1,654 @@
+diff --git a/src/BackgroundDamageObserver.cpp b/src/BackgroundDamageObserver.cpp
+index 4bf42b1..1f54f5c 100644
+--- a/src/BackgroundDamageObserver.cpp
++++ b/src/BackgroundDamageObserver.cpp
+@@ -229,6 +229,9 @@ namespace {
+                 // region) would never overlap and the stale sample would never
+                 // be marked dirty.
+                 sampleBox.expand(GlassRenderer::SAMPLE_PADDING_PX / monScale);
++            } else if (state->isPopups() && monitor) {
++                sampleBox = CBox{monitor->m_position, monitor->m_size};
++                sampleBox.expand(GlassRenderer::SAMPLE_PADDING_PX / monScale);
+             } else {
+                 sampleBox = CBox{layer->position(Desktop::View::IGeometric::GEOMETRIC_CURRENT),
+                                   layer->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT)};
+diff --git a/src/Diagnostics.cpp b/src/Diagnostics.cpp
+index b224ed6..ed4b205 100644
+--- a/src/Diagnostics.cpp
++++ b/src/Diagnostics.cpp
+@@ -20,6 +20,7 @@
+ #include <hyprland/src/helpers/MiscFunctions.hpp>
+ #include <hyprland/src/render/Renderer.hpp>
+ #include <hyprland/src/state/MonitorState.hpp>
++#include <hyprland/src/desktop/state/ViewState.hpp>
+ 
+ namespace Diagnostics {
+ 
+@@ -476,6 +477,47 @@ void registerHyprCtlCommand(HANDLE handle) {
+             if (rest == "items")
+                 return formatItems(format);
+ 
++            // hyprmac: hyprctl hyprglass shape <address> [x,y,w,h,r ...]  (none = clear)
++            if (rest.starts_with("shape")) {
++                rest.remove_prefix(5);
++                std::vector<std::string> parts;
++                std::string cur;
++                for (char c : rest) {
++                    if (c == ' ') {
++                        if (!cur.empty())
++                            parts.push_back(cur), cur.clear();
++                    } else
++                        cur += c;
++                }
++                if (!cur.empty())
++                    parts.push_back(cur);
++                if (parts.empty())
++                    return "hyprglass: usage: hyprctl hyprglass shape <address> [x,y,w,h,r ...]\n";
++                uintptr_t addr = 0;
++                try {
++                    addr = std::stoull(parts[0], nullptr, 16);
++                } catch (...) { return "hyprglass: bad address\n"; }
++                PHLWINDOW target;
++                for (auto& w : Desktop::viewState()->windows())
++                    if (reinterpret_cast<uintptr_t>(w.get()) == addr)
++                        target = w;
++                if (!target)
++                    return "hyprglass: no such window\n";
++                std::vector<std::array<float, 5>> shapes;
++                for (size_t i = 1; i < parts.size(); i++) {
++                    std::array<float, 5> s{};
++                    if (std::sscanf(parts[i].c_str(), "%f,%f,%f,%f,%f", &s[0], &s[1], &s[2], &s[3], &s[4]) != 5)
++                        return "hyprglass: bad shape " + parts[i] + "\n";
++                    shapes.push_back(s);
++                }
++                if (shapes.empty())
++                    g_pGlobalState->windowShapes.erase(addr);
++                else
++                    g_pGlobalState->windowShapes[addr] = std::move(shapes);
++                g_pHyprRenderer->damageWindow(target, true);
++                return "ok\n";
++            }
++
+             return "hyprglass: usage: hyprctl hyprglass <stats [reset]|items>  (add -j for JSON, e.g. hyprctl -j hyprglass items)\n";
+         },
+     });
+diff --git a/src/GlassDecoration.cpp b/src/GlassDecoration.cpp
+index 0e9a6c5..467a29f 100644
+--- a/src/GlassDecoration.cpp
++++ b/src/GlassDecoration.cpp
+@@ -455,10 +455,20 @@ void CGlassDecoration::renderPass(PHLMONITOR monitor, const float& alpha) {
+         }
+     }
+ 
++    // hyprmac: shapes declared for this window (hyprctl hyprglass shape), in box pixels
++    std::vector<std::array<float, 5>> shapesPx;
++    if (const auto it = g_pGlobalState->windowShapes.find(reinterpret_cast<uintptr_t>(window.get()));
++        it != g_pGlobalState->windowShapes.end() && monitor) {
++        const float sc = monitor->m_scale;
++        for (const auto& s : it->second)
++            shapesPx.push_back({s[0] * sc, s[1] * sc, s[2] * sc, s[3] * sc, s[4] * sc});
++    }
++
+     GlassRenderer::applyGlassEffect(m_sampleFramebuffer, source,
+                                      windowBox, transformBox, glassAlpha,
+                                      std::array<float, 4>{cornerRadius, cornerRadius, cornerRadius, cornerRadius},
+-                                     roundingPower, m_samplePaddingRatio, ctx);
++                                     roundingPower, m_samplePaddingRatio, ctx, nullptr,
++                                     shapesPx.empty() ? nullptr : &shapesPx);
+ }
+ 
+ eDecorationType CGlassDecoration::getDecorationType() {
+diff --git a/src/GlassLayerCompositeElement.cpp b/src/GlassLayerCompositeElement.cpp
+index b885f8e..1ec0234 100644
+--- a/src/GlassLayerCompositeElement.cpp
++++ b/src/GlassLayerCompositeElement.cpp
+@@ -25,7 +25,7 @@ std::optional<CBox> CGlassLayerCompositeElement::boundingBox() {
+     // Same helper as CGlassLayerPassElement::boundingBox(), so the pre- and
+     // post-surface elements never disagree about the layer's box.
+     const auto monitor = g_pHyprRenderer->m_renderData.pMonitor.lock();
+-    return LayerGeometry::computePaddedLogicalLayerBox(layerSurface, monitor, GlassRenderer::SAMPLE_PADDING_PX);
++    return LayerGeometry::computePaddedLogicalLayerBox(layerSurface, monitor, GlassRenderer::SAMPLE_PADDING_PX, m_data.layerState->isPopups());
+ }
+ 
+ bool CGlassLayerCompositeElement::needsLiveBlur() {
+diff --git a/src/GlassLayerPassElement.cpp b/src/GlassLayerPassElement.cpp
+index b36f8b0..53bc211 100644
+--- a/src/GlassLayerPassElement.cpp
++++ b/src/GlassLayerPassElement.cpp
+@@ -29,7 +29,7 @@ std::optional<CBox> CGlassLayerPassElement::paddedLogicalBox() const {
+         return std::nullopt;
+ 
+     const auto monitor = g_pHyprRenderer->m_renderData.pMonitor.lock();
+-    return LayerGeometry::computePaddedLogicalLayerBox(layerSurface, monitor, GlassRenderer::SAMPLE_PADDING_PX);
++    return LayerGeometry::computePaddedLogicalLayerBox(layerSurface, monitor, GlassRenderer::SAMPLE_PADDING_PX, m_data.layerState->isPopups());
+ }
+ 
+ std::optional<CBox> CGlassLayerPassElement::boundingBox() {
+diff --git a/src/GlassLayerSurface.cpp b/src/GlassLayerSurface.cpp
+index 73bc9aa..f68e8d1 100644
+--- a/src/GlassLayerSurface.cpp
++++ b/src/GlassLayerSurface.cpp
+@@ -19,8 +19,15 @@ static CBox transformedLayerBox(CBox pixelBox, PHLMONITOR monitor) {
+     return pixelBox;
+ }
+ 
+-CGlassLayerSurface::CGlassLayerSurface(PHLLS layerSurface)
+-    : m_layerSurface(layerSurface) {
++std::string CGlassLayerSurface::configNamespace() const {
++    const auto layerSurface = m_layerSurface.lock();
++    if (!layerSurface)
++        return "";
++    return m_popups ? layerSurface->m_namespace + ":popups" : layerSurface->m_namespace;
++}
++
++CGlassLayerSurface::CGlassLayerSurface(PHLLS layerSurface, bool popups)
++    : m_layerSurface(layerSurface), m_popups(popups) {
+ }
+ 
+ CGlassLayerSurface::~CGlassLayerSurface() {
+@@ -53,7 +60,7 @@ std::string CGlassLayerSurface::resolvePresetName() const {
+         const auto layerSurface = m_layerSurface.lock();
+         if (layerSurface) {
+             const auto& nsPresets = g_pGlobalState->layerNamespacePresets;
+-            auto it = nsPresets.find(layerSurface->m_namespace);
++            auto it = nsPresets.find(configNamespace());
+             if (it != nsPresets.end())
+                 return it->second;
+         }
+@@ -77,7 +84,7 @@ std::string CGlassLayerSurface::resolvePresetName() const {
+ ELayerMaskMode CGlassLayerSurface::resolveMaskMode() const {
+     if (const auto layerSurface = m_layerSurface.lock()) {
+         const auto& overrides = g_pGlobalState->layerNamespaceMaskModes;
+-        if (auto it = overrides.find(layerSurface->m_namespace); it != overrides.end())
++        if (auto it = overrides.find(configNamespace()); it != overrides.end())
+             return it->second;
+     }
+ 
+@@ -87,6 +94,8 @@ ELayerMaskMode CGlassLayerSurface::resolveMaskMode() const {
+ }
+ 
+ CGlassLayerSurface::EMaskSource CGlassLayerSurface::resolveMaskSource() const {
++    if (m_popups)
++        return EMaskSource::ALPHA_THRESHOLD; // popups never carry the root's blur region
+     const auto layerSurface = m_layerSurface.lock();
+     const auto wlSurface    = layerSurface ? layerSurface->wlSurface() : nullptr; // root surface only
+     const bool hasEffect    = wlSurface && wlSurface->m_hasBackgroundEffect;
+@@ -108,7 +117,7 @@ CGlassLayerSurface::EMaskSource CGlassLayerSurface::resolveMaskSource() const {
+ bool CGlassLayerSurface::liveResampleEnabled() const {
+     if (const auto layerSurface = m_layerSurface.lock()) {
+         const auto& overrides = g_pGlobalState->layerNamespaceLiveResample;
+-        if (auto it = overrides.find(layerSurface->m_namespace); it != overrides.end())
++        if (auto it = overrides.find(configNamespace()); it != overrides.end())
+             return it->second;
+     }
+ 
+@@ -215,6 +224,8 @@ void CGlassLayerSurface::damageSampleRegion() {
+     const float scale = monitor ? monitor->m_scale : 1.0f;
+     auto box = CBox{layerSurface->position(Desktop::View::IGeometric::GEOMETRIC_CURRENT),
+                     layerSurface->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT)};
++    if (m_popups && monitor)
++        box = CBox{monitor->m_position, monitor->m_size};
+     box.expand(GlassRenderer::SAMPLE_PADDING_PX / scale).noNegativeSize();
+     if (box.w > 0.0 && box.h > 0.0 &&
+         std::isfinite(box.x) && std::isfinite(box.y) && std::isfinite(box.w) && std::isfinite(box.h))
+@@ -253,7 +264,7 @@ void CGlassLayerSurface::sampleAndRedirect(PHLMONITOR monitor, float alpha) {
+     if (!source)
+         return;
+ 
+-    auto layerBox = LayerGeometry::computeLayerBox(layerSurface, monitor);
++    auto layerBox = LayerGeometry::computeLayerBox(layerSurface, monitor, m_popups);
+     if (!layerBox)
+         return;
+ 
+@@ -422,7 +433,7 @@ void CGlassLayerSurface::compositeAndRestore(PHLMONITOR monitor, float alpha, EM
+     if (!target)
+         return;
+ 
+-    auto layerBox = LayerGeometry::computeLayerBox(layerSurface, monitor);
++    auto layerBox = LayerGeometry::computeLayerBox(layerSurface, monitor, m_popups);
+     if (!layerBox)
+         return;
+ 
+@@ -459,7 +470,7 @@ void CGlassLayerSurface::compositeAndRestore(PHLMONITOR monitor, float alpha, EM
+     switch (maskSource) {
+         case EMaskSource::ALPHA_THRESHOLD: {
+             float maskThreshold = 0.001f;
+-            auto threshIt = g_pGlobalState->layerNamespaceMaskThresholds.find(layerSurface->m_namespace);
++            auto threshIt = g_pGlobalState->layerNamespaceMaskThresholds.find(configNamespace());
+             if (threshIt != g_pGlobalState->layerNamespaceMaskThresholds.end())
+                 maskThreshold = threshIt->second;
+ 
+diff --git a/src/GlassLayerSurface.hpp b/src/GlassLayerSurface.hpp
+index 7a07699..a8e130e 100644
+--- a/src/GlassLayerSurface.hpp
++++ b/src/GlassLayerSurface.hpp
+@@ -10,7 +10,11 @@
+ 
+ class CGlassLayerSurface {
+   public:
+-    explicit CGlassLayerSurface(PHLLS layerSurface);
++    explicit CGlassLayerSurface(PHLLS layerSurface, bool popups = false);
++
++    // hyprmac: this state glasses the layer's popups (menus), configured as "<namespace>:popups"
++    [[nodiscard]] bool isPopups() const { return m_popups; }
++    [[nodiscard]] std::string configNamespace() const;
+     ~CGlassLayerSurface();
+ 
+     // Where the glass mask for this layer comes from this frame.
+@@ -53,6 +57,7 @@ class CGlassLayerSurface {
+ 
+   private:
+     PHLLSREF     m_layerSurface;
++    bool         m_popups = false;
+     SP<Render::IFramebuffer> m_sampleFramebuffer;
+     SP<Render::IFramebuffer> m_surfaceTempFramebuffer;
+     Vector2D     m_samplePaddingRatio;
+diff --git a/src/GlassRenderer.cpp b/src/GlassRenderer.cpp
+index 134244f..e7cfe62 100644
+--- a/src/GlassRenderer.cpp
++++ b/src/GlassRenderer.cpp
+@@ -411,7 +411,7 @@ void applyGlassEffect(SP<Render::IFramebuffer> sampleFramebuffer, SP<Render::IFr
+                        CBox& rawBox, CBox& transformedBox,
+                        float alpha, const std::array<float, 4>& radii, float roundingPower,
+                        const Vector2D& paddingRatio, const SResolveContext& resolveContext,
+-                       const SMaskInfo* mask) {
++                       const SMaskInfo* mask, const std::vector<std::array<float, 5>>* shapes) {
+     if (!sampleFramebuffer || !targetFramebuffer)
+         return;
+ 
+@@ -474,6 +474,7 @@ void applyGlassEffect(SP<Render::IFramebuffer> sampleFramebuffer, SP<Render::IFr
+     glUniform1f(uniforms.specularStrength,    resolvePresetFloat(resolveContext, &SPresetValues::specularStrength, &SOverridableConfig::specularStrength));
+     glUniform1f(uniforms.specularAngle,       resolvePresetFloat(resolveContext, &SPresetValues::specularAngle, &SOverridableConfig::specularAngle));
+     glUniform1f(uniforms.glassOpacity,        resolvePresetFloat(resolveContext, &SPresetValues::glassOpacity, &SOverridableConfig::glassOpacity) * alpha);
++    glUniform1f(uniforms.appear,              std::clamp(alpha, 0.0f, 1.0f));
+     glUniform1f(uniforms.edgeThickness,       edgeThicknessValue);
+     glUniform1f(uniforms.lensDistortion,      lensDistortionValue);
+     glUniform1f(uniforms.refractionFlow,      resolvePresetFloat(resolveContext, &SPresetValues::refractionFlow, &SOverridableConfig::refractionFlow));
+@@ -554,6 +555,30 @@ void applyGlassEffect(SP<Render::IFramebuffer> sampleFramebuffer, SP<Render::IFr
+     }
+ 
+     glUniform4f(uniforms.radii, radii[0], radii[1], radii[2], radii[3]);
++
++    // hyprmac: declared glass shapes (box-local px, already scaled by the caller)
++    {
++        int n = 0;
++        std::array<float, 16 * 4> rects{};
++        std::array<float, 16>     rr{};
++        if (shapes && !mask) {
++            for (const auto& s : *shapes) {
++                if (n >= 16)
++                    break;
++                rects[n * 4 + 0] = s[0];
++                rects[n * 4 + 1] = s[1];
++                rects[n * 4 + 2] = s[2];
++                rects[n * 4 + 3] = s[3];
++                rr[n]            = s[4];
++                n++;
++            }
++        }
++        glUniform1i(uniforms.shapeCount, n);
++        if (n > 0) {
++            glUniform4fv(uniforms.shapeRects, n, rects.data());
++            glUniform1fv(uniforms.shapeRadii, n, rr.data());
++        }
++    }
+     shader->setUniformFloat(SHADER_ROUNDING_POWER, safeRoundingPower);
+ 
+     // Subsurface items only: SDF sub-rect within the drawn box (see
+diff --git a/src/GlassRenderer.hpp b/src/GlassRenderer.hpp
+index b2e4486..d0e8283 100644
+--- a/src/GlassRenderer.hpp
++++ b/src/GlassRenderer.hpp
+@@ -133,6 +133,7 @@ void applyGlassEffect(SP<Render::IFramebuffer> sampleFramebuffer, SP<Render::IFr
+                        CBox& rawBox, CBox& transformedBox,
+                        float alpha, const std::array<float, 4>& radii, float roundingPower,
+                        const Vector2D& paddingRatio, const SResolveContext& resolveContext,
+-                       const SMaskInfo* mask = nullptr);
++                       const SMaskInfo* mask = nullptr,
++                       const std::vector<std::array<float, 5>>* shapes = nullptr);
+ 
+ } // namespace GlassRenderer
+diff --git a/src/Globals.hpp b/src/Globals.hpp
+index bb5948f..6c4e346 100644
+--- a/src/Globals.hpp
++++ b/src/Globals.hpp
+@@ -53,6 +53,11 @@ struct SGlobalState {
+     // shared_ptr so CGlassLayerPassElement can hold a copy that survives map erasure mid-frame.
+     std::unordered_map<Desktop::View::CLayerSurface*, std::shared_ptr<CGlassLayerSurface>> layerSurfaces;
+ 
++    // hyprmac: glass shapes a window declares through `hyprctl hyprglass shape <address> x,y,w,h,r ...`
++    // (window-local logical px). With shapes, the window's glass is drawn only inside them, and
++    // each rounded rect is its own lens (exact SDF), whatever the window paints on top.
++    std::unordered_map<uintptr_t, std::vector<std::array<float, 5>>> windowShapes;
++
+     // Subsurface item glass state, one per glassed wl_subsurface, keyed by a
+     // weak ref so a destroyed surface's entry is simply unreachable rather
+     // than needing an explicit teardown signal (unlike layers/windows,
+diff --git a/src/LayerGeometry.hpp b/src/LayerGeometry.hpp
+index 5920e5b..d20aeab 100644
+--- a/src/LayerGeometry.hpp
++++ b/src/LayerGeometry.hpp
+@@ -8,10 +8,18 @@
+ 
+ namespace LayerGeometry {
+ 
+-[[nodiscard]] inline std::optional<CBox> computeLayerBox(PHLLS layerSurface, PHLMONITOR monitor) {
++// hyprmac: fullMonitor = the layer's popups pass (menus can be anywhere on the
++// monitor; the per-piece shape then comes from the alpha mask)
++[[nodiscard]] inline std::optional<CBox> computeLayerBox(PHLLS layerSurface, PHLMONITOR monitor, bool fullMonitor = false) {
+     if (!layerSurface || !monitor)
+         return std::nullopt;
+ 
++    if (fullMonitor) {
++        auto full = CBox{{0, 0}, monitor->m_size};
++        full.scale(monitor->m_scale).round().noNegativeSize();
++        return full;
++    }
++
+     // Full animated layer geometry in monitor-local framebuffer pixels.
+     auto box = CBox{layerSurface->position(Desktop::View::IGeometric::GEOMETRIC_CURRENT),
+                     layerSurface->size(Desktop::View::IGeometric::GEOMETRIC_CURRENT)};
+@@ -28,8 +36,8 @@ namespace LayerGeometry {
+ // IPassElement::boundingBox() contract) and padded, shared by both the
+ // pre-surface and post-surface pass elements so they can never disagree on
+ // where the layer's box is.
+-[[nodiscard]] inline std::optional<CBox> computePaddedLogicalLayerBox(PHLLS layerSurface, PHLMONITOR monitor, float paddingPx) {
+-    auto box = computeLayerBox(layerSurface, monitor);
++[[nodiscard]] inline std::optional<CBox> computePaddedLogicalLayerBox(PHLLS layerSurface, PHLMONITOR monitor, float paddingPx, bool fullMonitor = false) {
++    auto box = computeLayerBox(layerSurface, monitor, fullMonitor);
+     if (!box || !monitor)
+         return std::nullopt;
+ 
+diff --git a/src/ShaderManager.cpp b/src/ShaderManager.cpp
+index b297977..6bf1241 100644
+--- a/src/ShaderManager.cpp
++++ b/src/ShaderManager.cpp
+@@ -35,6 +35,10 @@ bool CShaderManager::compileGlassShader() {
+     glassUniforms.fresnelStrength     = glGetUniformLocation(program, "fresnelStrength");
+     glassUniforms.specularStrength    = glGetUniformLocation(program, "specularStrength");
+     glassUniforms.glassOpacity        = glGetUniformLocation(program, "glassOpacity");
++    glassUniforms.appear              = glGetUniformLocation(program, "appear");
++    glassUniforms.shapeCount          = glGetUniformLocation(program, "shapeCount");
++    glassUniforms.shapeRects          = glGetUniformLocation(program, "shapeRects");
++    glassUniforms.shapeRadii          = glGetUniformLocation(program, "shapeRadii");
+     glassUniforms.edgeThickness       = glGetUniformLocation(program, "edgeThickness");
+     glassUniforms.invBezelWidthPx     = glGetUniformLocation(program, "invBezelWidthPx");
+     glassUniforms.uvPadding           = glGetUniformLocation(program, "uvPadding");
+diff --git a/src/ShaderManager.hpp b/src/ShaderManager.hpp
+index 8d98fb7..b130d4d 100644
+--- a/src/ShaderManager.hpp
++++ b/src/ShaderManager.hpp
+@@ -10,6 +10,10 @@ struct SGlassUniforms {
+     GLint fresnelStrength = -1;
+     GLint specularStrength = -1;
+     GLint glassOpacity = -1;
++    GLint appear = -1;           // hyprmac: layer/window fade alpha (materialize)
++    GLint shapeCount = -1;       // hyprmac: declared window glass shapes
++    GLint shapeRects = -1;
++    GLint shapeRadii = -1;
+     GLint edgeThickness = -1;
+     GLint invBezelWidthPx = -1;
+     GLint uvPadding = -1;
+diff --git a/src/Shaders.hpp b/src/Shaders.hpp
+index 1f6a46e..752fccc 100644
+--- a/src/Shaders.hpp
++++ b/src/Shaders.hpp
+@@ -41,6 +41,10 @@ uniform float chromaticAberration;
+ uniform float fresnelStrength;
+ uniform float specularStrength;
+ uniform float glassOpacity;
++uniform float appear;          // hyprmac: 0→1 while the surface fades in/out
++uniform int   shapeCount;      // hyprmac: window glass shapes (box-local px), 0 = whole window
++uniform vec4  shapeRects[16];  // x, y, w, h
++uniform float shapeRadii[16];
+ uniform float edgeThickness;
+ uniform float invBezelWidthPx; // = 1.0 / (edgeThickness * minDim), hoisted per-draw
+ uniform vec3 tintColor;
+@@ -235,6 +239,78 @@ vec2 sdfOutwardNormal(vec2 uv) {
+     return len > 0.0 ? grad / len : vec2(0.0, -1.0);
+ }
+ 
++// ============================================================================
++// MASK SHAPE (hyprmac) — alpha-mask layers: every opaque blob is its own glass
++// piece. Distance to the nearest see-through pixel, marched in 16 directions
++// (+ bisection), stands in for the box SDF, and the weighted directions give
++// the outward normal. Edge band in this mode: edgeThickness * 133 logical px
++// (the 0.15 ceiling = the 20 pt bevel height measured on iOS 27).
++// ============================================================================
++
++float maskAlphaAt(vec2 uv) {
++    vec2 m = uv * maskUVScale + maskUVOffset;
++    if (m.x < 0.0 || m.y < 0.0 || m.x > 1.0 || m.y > 1.0) return 0.0;
++    return texture(maskTex, m).a;
++}
++
++// hyprmac — declared window shapes: union of rounded rects, exact SDF (negative inside)
++float shapesSDF(vec2 p) {
++    float d = 1e5;
++    for (int i = 0; i < 16; i++) {
++        if (i >= shapeCount) break;
++        vec4 r = shapeRects[i];
++        vec2 half_ = r.zw * 0.5;
++        float rad = min(shapeRadii[i], min(half_.x, half_.y));
++        vec2 q = abs(p - (r.xy + half_)) - half_ + rad;
++        d = min(d, length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad);
++    }
++    return d;
++}
++
++vec2 shapesNormal(vec2 p) {
++    vec2 g = vec2(shapesSDF(p + vec2(1.0, 0.0)) - shapesSDF(p - vec2(1.0, 0.0)),
++                  shapesSDF(p + vec2(0.0, 1.0)) - shapesSDF(p - vec2(0.0, 1.0)));
++    float l = length(g);
++    return l > 1e-5 ? g / l : vec2(0.0, -1.0);
++}
++
++// returns (distance px, outward normal xy, thickness px = shortest chord through
++// the pixel, i.e. min over directions of d(dir) + d(-dir))
++vec4 maskShape(vec2 uv, float maxPx) {
++    const int DIRS = 16;
++    float stepPx = max(maxPx / 14.0, 1.5);
++    float dmin = maxPx;
++    float runs[16];
++    vec2 nacc = vec2(0.0);
++    for (int i = 0; i < DIRS; i++) {
++        float a = 6.2831853 * (float(i) + 0.5) / float(DIRS);
++        vec2 dir = vec2(cos(a), sin(a));
++        vec2 duv = dir * invFullSize;
++        float d = maxPx;
++        float prev = 0.0;
++        for (float t = stepPx; t <= maxPx + 0.01; t += stepPx) {
++            if (maskAlphaAt(uv + duv * t) < maskAlphaThreshold) {
++                float lo = prev, hi = t;
++                for (int k = 0; k < 3; k++) {
++                    float mid = 0.5 * (lo + hi);
++                    if (maskAlphaAt(uv + duv * mid) < maskAlphaThreshold) hi = mid; else lo = mid;
++                }
++                d = 0.5 * (lo + hi);
++                break;
++            }
++            prev = t;
++        }
++        dmin = min(dmin, d);
++        runs[i] = d;
++        float w = 1.0 - d / maxPx;
++        nacc += dir * w * w * w * w;
++    }
++    float len = length(nacc);
++    float thick = 2.0 * maxPx;
++    for (int i = 0; i < DIRS / 2; i++) thick = min(thick, runs[i] + runs[i + DIRS / 2]);
++    return vec4(dmin, len > 1e-5 ? nacc / len : vec2(0.0, -1.0), thick);
++}
++
+ // ============================================================================
+ // MAIN — Thick-glass refraction model
+ // ============================================================================
+@@ -271,6 +347,15 @@ void main() {
+     float cornerSdf    = getCornerSDF(uv);
+     float cornerAlpha  = 1.0 - smoothstep(-1.5, 0.5, cornerSdf);
+ 
++    // hyprmac: a window that declared glass shapes gets glass only inside them
++    bool useShapes = !hasMask && shapeCount > 0;
++    float shapeSdf = -1e5;
++    if (useShapes) {
++        shapeSdf = shapesSDF(uv * fullSize);
++        if (shapeSdf > 0.5) discard;
++        cornerAlpha *= 1.0 - smoothstep(-1.0, 0.5, shapeSdf);
++    }
++
+     if (maskMode == 1) {
+         // Subsurface items: the glass box (glassBoxOffsetPx/SizePx) can be
+         // smaller than the item's own drawn box/region — e.g. a capsule glass
+@@ -311,6 +396,29 @@ void main() {
+     vec2 inwardDir = refractionDir(uv);
+     vec2 posPx = (uv - 0.5) * fullSize; // pixel-space position for the edge-flow direction below
+ 
++    // hyprmac: alpha-mask layer → per-blob shape from the mask
++    bool shapeFromMask = (hasMask && maskMode == 0) || useShapes;
++    vec2 maskNormal = vec2(0.0, -1.0);
++    float maskBand = max(edgeThickness * 133.3 * monitorScale, 1.0);
++    float maskDist = 0.0;
++    if (useShapes) {
++        maskDist   = max(-shapeSdf, 0.0);
++        maskNormal = shapesNormal(uv * fullSize);
++    } else if (shapeFromMask) {
++        float maxPx = min(maskBand * 2.5, 60.0 * monitorScale);
++        vec4 ms = maskShape(uv, maxPx);
++        // thin shapes (glyphs and strokes drawn straight on the layer, 1 px lines):
++        // no glass piece fits there, keep the plain surface pixel
++        if (ms.w < 7.0 * monitorScale) { fragColor = surfacePixel; return; }
++        maskDist   = ms.x;
++        maskNormal = ms.yz;
++    }
++    if (shapeFromMask) {
++        bevelSdf = -maskDist;
++        edgeProximity = exp(-maskDist / maskBand);
++        inwardDir = -maskNormal;
++    }
++
+     // ========================================
+     // EDGE REFRACTION
+     // Offset sampling UV inward (toward center) at edges — like looking
+@@ -318,7 +426,10 @@ void main() {
+     // and distorts what's already behind the window, without reaching
+     // beyond the window boundary.
+     // ========================================
+-    float refractionPx = refractionStrength * 50.0;
++    // hyprmac — materialize (WWDC25 "Meet Liquid Glass"): the lens grows in as the surface
++    // appears instead of the glass only fading; light on the rim follows it
++    float materialize = appear * appear * (3.0 - 2.0 * appear);
++    float refractionPx = refractionStrength * 50.0 * materialize;
+     float lensFalloff = edgeProximity;
+     if (refractionSpread < 0.999) {
+         // rim-only lens: window the exponential tail so the centre stays flat
+@@ -326,9 +437,14 @@ void main() {
+         float tailWindow = 1.0 - smoothstep(1.5 * bezelWidthPx, 3.0 * bezelWidthPx, depth);
+         lensFalloff = mix(edgeProximity * tailWindow, edgeProximity, refractionSpread);
+     }
++    if (shapeFromMask) {
++        // iOS 27 measured bevel: offset = amount * (1 - sqrt(1 - x^2)), x = 1 - d/height
++        float x = clamp(1.0 - maskDist / maskBand, 0.0, 1.0);
++        lensFalloff = 1.0 - sqrt(1.0 - x * x);
++    }
+     float refractionMag = lensFalloff * refractionPx;
+     vec2 dir = inwardDir;
+-    if (refractionFlow > 0.001) {
++    if (refractionFlow > 0.001 && !shapeFromMask) {
+         // pull along the edges instead of toward the centre
+         vec2 mixedDir = mix(inwardDir, edgeDir(posPx), refractionFlow);
+         float mixedLen = length(mixedDir);
+@@ -388,7 +504,9 @@ void main() {
+ 
+     // Tight smoothstep range maps the blur-compressed luminance (~0.3-0.7)
+     // to the full [0,1] adaptive range, creating visible per-region differentiation
+-    float lumCurve = smoothstep(0.25, 0.55, blurredLum);
++    // hyprmac: only near-white backgrounds get dimmed (Tahoe, measured: a Control Center tile
++    // over a white window 242 → ~170, over saturated mid blue it keeps the luminance)
++    float lumCurve = smoothstep(0.60, 0.95, blurredLum);
+ 
+     // Dim: multiplicative — effective at darkening bright areas
+     color *= brightness * (1.0 - adaptiveDim * lumCurve);
+@@ -417,10 +535,12 @@ void main() {
+         float sizePx = max(bevelSize * monitorScale, 1.0);   // logical px, uniform across monitor scales
+         float core = 0.25 * sizePx;
+         float tail = sizePx;
+-        float ring = (1.0 - smoothstep(-core, 0.0, cornerSdf)) * smoothstep(-tail, -core, cornerSdf);
++        float ringSdf = shapeFromMask ? -maskDist : cornerSdf;
++        float ring = (1.0 - smoothstep(-core, 0.0, ringSdf)) * smoothstep(-tail, -core, ringSdf);
+ 
+         // lit side faces the light, the far side fades out and can be shadowed
+-        float facing = clamp(dot(sdfOutwardNormal(uv), lightDir(bevelAngle)) * 0.5 + 0.5, 0.0, 1.0);
++        vec2 outN = shapeFromMask ? maskNormal : sdfOutwardNormal(uv);
++        float facing = clamp(dot(outN, lightDir(bevelAngle)) * 0.5 + 0.5, 0.0, 1.0);
+ 
+         vec3 bevelLight = vec3(1.0);
+         if (bevelColorAlpha > 0.001) bevelLight = mix(vec3(1.0), bevelColor, bevelColorAlpha);   // a dark colour gives a dark line
+@@ -460,8 +580,9 @@ void main() {
+             vec2 L = lightDir(specularAngle);
+             specT = clamp(0.5 + dot(uv - 0.5, L), 0.0, 1.0);
+         }
++        if (shapeFromMask) specT = clamp(0.5 + 0.5 * dot(maskNormal, lightDir(specularAngle)), 0.0, 1.0);
+         float topBias = pow(specT, 2.0);
+-        float spec = topBias * edgeProximity * edgeProximity * specularStrength * 0.08;
++        float spec = topBias * edgeProximity * edgeProximity * specularStrength * 0.08 * materialize;
+         color += vec3(1.0, 0.99, 0.97) * spec;
+     }
+ 
+@@ -469,7 +590,7 @@ void main() {
+     // INNER SHADOW (bottom rim)
+     // ========================================
+     {
+-        float bottomBias = pow(uv.y, 2.0);
++        float bottomBias = shapeFromMask ? pow(clamp(0.5 + 0.5 * maskNormal.y, 0.0, 1.0), 2.0) : pow(uv.y, 2.0);
+         float shadow = bottomBias * edgeProximity * edgeProximity * 0.06;
+         color *= 1.0 - shadow;
+     }
+diff --git a/src/main.cpp b/src/main.cpp
+index 111902b..9ec6a7f 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -326,11 +326,14 @@ static void parseLayerNamespaceFilters() {
+     });
+ }
+ 
+-static bool shouldGlassLayer(PHLLS layerSurface) {
++static bool shouldGlassLayer(PHLLS layerSurface, bool popups = false) {
+     if (!layerSurface)
+         return false;
+ 
+-    const auto& ns = layerSurface->m_namespace;
++    // hyprmac: a layer's popups (menus) are opted in separately as "<namespace>:popups"
++    const auto ns = popups ? layerSurface->m_namespace + ":popups" : layerSurface->m_namespace;
++    if (popups && !g_pGlobalState->layerNamespaceFilter.contains(ns))
++        return false;
+ 
+     // Exclusion takes priority
+     if (g_pGlobalState->layerNamespaceExclude.contains(ns))
+@@ -419,17 +422,21 @@ static void hkRenderLayer(Render::IHyprRenderer* thisptr, PHLLS layerSurface, PH
+         return !pair.second->getLayerSurface();
+     });
+ 
+-    // Only inject glass on the main surface pass, not popups
+-    if (!popups && config.layersEnabled && **config.layersEnabled && shouldGlassLayer(layerSurface)) {
++    // Main surface pass; hyprmac: also the popups pass for "<namespace>:popups" (menus),
++    // glassed over the whole monitor with the per-piece shape taken from the alpha mask
++    if ((!popups || layerSurface->popupsCount() > 0) && config.layersEnabled && **config.layersEnabled &&
++        shouldGlassLayer(layerSurface, popups)) {
+         // Lazy-create per-layer state, replacing stale entries whose weak ref died
+-        // (can happen when a new CLayerSurface is allocated at the same address)
+-        auto* rawPtr = layerSurface.get();
++        // (can happen when a new CLayerSurface is allocated at the same address).
++        // The popups state is keyed one byte past the layer pointer (never a real layer).
++        auto* rawPtr = popups ? reinterpret_cast<Desktop::View::CLayerSurface*>(reinterpret_cast<char*>(layerSurface.get()) + 1) :
++                                layerSurface.get();
+         auto& layerStates = g_pGlobalState->layerSurfaces;
+         auto it = layerStates.find(rawPtr);
+         if (it != layerStates.end() && !it->second->getLayerSurface()) {
+-            it->second = std::make_shared<CGlassLayerSurface>(layerSurface);
++            it->second = std::make_shared<CGlassLayerSurface>(layerSurface, popups);
+         } else if (it == layerStates.end()) {
+-            it = layerStates.emplace(rawPtr, std::make_shared<CGlassLayerSurface>(layerSurface)).first;
++            it = layerStates.emplace(rawPtr, std::make_shared<CGlassLayerSurface>(layerSurface, popups)).first;
+         }
+ 
+         if (!layerSurface->m_mapped) {

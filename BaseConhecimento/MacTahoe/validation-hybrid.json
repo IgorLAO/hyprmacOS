@@ -1,0 +1,560 @@
+{
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2@faf4aa4225822f3bc6376869cb1164e8e3feedd0:mean-l2-v2",
+  "load_ms": 1081.49,
+  "queries": [
+    {
+      "query": "control center wifi",
+      "modes": {
+        "fts": {
+          "ms": 1.36,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 68,
+              "component": "Control Center",
+              "title": "WiFiContentView",
+              "score": 8.129495052612228,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 69,
+              "component": "Control Center",
+              "title": "WiFiMenuExtraView",
+              "score": 8.047863573053197,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 70,
+              "component": "Control Center",
+              "title": "WiFiNetworkStatusView",
+              "score": 8.047863573053197,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 6.82,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 70,
+              "component": "Control Center",
+              "title": "WiFiNetworkStatusView",
+              "score": 0.7865705490112305,
+              "cosine": 0.7865705490112305,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 69,
+              "component": "Control Center",
+              "title": "WiFiMenuExtraView",
+              "score": 0.7778924703598022,
+              "cosine": 0.7778924703598022,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 68,
+              "component": "Control Center",
+              "title": "WiFiContentView",
+              "score": 0.7023515105247498,
+              "cosine": 0.7023515105247498,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 5.86,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 70,
+              "component": "Control Center",
+              "title": "WiFiNetworkStatusView",
+              "score": 0.06505334374186833,
+              "cosine": 0.7865705490112305,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 69,
+              "component": "Control Center",
+              "title": "WiFiMenuExtraView",
+              "score": 0.06451612903225806,
+              "cosine": 0.7778924703598022,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 68,
+              "component": "Control Center",
+              "title": "WiFiContentView",
+              "score": 0.06401249024199844,
+              "cosine": 0.7023515105247498,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "dock hover neighboring icons",
+      "modes": {
+        "fts": {
+          "ms": 0.32,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 118,
+              "component": "Notifications",
+              "title": "convergencia-20261008:notification-close-hover",
+              "score": 3.3105182898607426,
+              "cosine": null,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 108,
+              "component": "Top Bar / SystemUIServer",
+              "title": "convergencia-20261007-retomada:submenus-abertos",
+              "score": 2.695649266043872,
+              "cosine": null,
+              "confidence": "ASSET"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 25,
+              "component": "Dock",
+              "title": "CFBundleDisplayName",
+              "score": 2.3940583472492127,
+              "cosine": null,
+              "confidence": "CONFIG"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 6.0,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 114,
+              "component": "Dock",
+              "title": "convergencia-20261008:dock-press-menu",
+              "score": 0.6201404333114624,
+              "cosine": 0.6201404333114624,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 108,
+              "component": "Top Bar / SystemUIServer",
+              "title": "convergencia-20261007-retomada:submenus-abertos",
+              "score": 0.5595886707305908,
+              "cosine": 0.5595886707305908,
+              "confidence": "ASSET"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 81,
+              "component": "Dock",
+              "title": "badge",
+              "score": 0.537507176399231,
+              "cosine": 0.537507176399231,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 6.57,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 114,
+              "component": "Dock",
+              "title": "convergencia-20261008:dock-press-menu",
+              "score": 0.060674580742415676,
+              "cosine": 0.6201404333114624,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 81,
+              "component": "Dock",
+              "title": "badge",
+              "score": 0.06027727546714888,
+              "cosine": 0.537507176399231,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 78,
+              "component": "Dock",
+              "title": "magnification",
+              "score": 0.059375,
+              "cosine": 0.5370178818702698,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "popover spring",
+      "modes": {
+        "fts": {
+          "ms": 0.21,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 93,
+              "component": "Control Center",
+              "title": "SwiftUI Animation",
+              "score": 4.29441783744818,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 107,
+              "component": "Control Center",
+              "title": "convergencia-20261007-retomada:popovers-estaveis",
+              "score": 4.157032287815153,
+              "cosine": null,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 103,
+              "component": "Top Bar / SystemUIServer",
+              "title": "convergencia-20261007:popovers",
+              "score": 4.013131962726059,
+              "cosine": null,
+              "confidence": "DIRETO"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 4.8,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 93,
+              "component": "Control Center",
+              "title": "SwiftUI Animation",
+              "score": 0.35663676261901855,
+              "cosine": 0.35663676261901855,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 4.89,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 93,
+              "component": "Control Center",
+              "title": "SwiftUI Animation",
+              "score": 0.06557377049180328,
+              "cosine": 0.35663676261901855,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 107,
+              "component": "Control Center",
+              "title": "convergencia-20261007-retomada:popovers-estaveis",
+              "score": 0.016129032258064516,
+              "cosine": null,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 103,
+              "component": "Top Bar / SystemUIServer",
+              "title": "convergencia-20261007:popovers",
+              "score": 0.015873015873015872,
+              "cosine": null,
+              "confidence": "DIRETO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "window inactive material",
+      "modes": {
+        "fts": {
+          "ms": 0.17,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 115,
+              "component": "Dock",
+              "title": "convergencia-20261008:dock-popup-material",
+              "score": 4.8157169313127985,
+              "cosine": null,
+              "confidence": "DIRETO"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 5.04,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 117,
+              "component": "System Settings",
+              "title": "convergencia-20261008:settings-stoplights",
+              "score": 0.45828884840011597,
+              "cosine": 0.45828884840011597,
+              "confidence": "DIRETO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 4.96,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 117,
+              "component": "System Settings",
+              "title": "convergencia-20261008:settings-stoplights",
+              "score": 0.04918032786885246,
+              "cosine": 0.45828884840011597,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 115,
+              "component": "Dock",
+              "title": "convergencia-20261008:dock-popup-material",
+              "score": 0.01639344262295082,
+              "cosine": null,
+              "confidence": "DIRETO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "system settings sidebar",
+      "modes": {
+        "fts": {
+          "ms": 0.3,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 76,
+              "component": "System Settings",
+              "title": "Sidebar",
+              "score": 10.717188052956839,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 97,
+              "component": "System Settings",
+              "title": "NavigationSplitView",
+              "score": 8.929984935740531,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "mapeamento_hyprmac",
+              "source_id": 2,
+              "component": "System Settings",
+              "title": "shell/hyprmac-ajustes",
+              "score": 7.803129669321036,
+              "cosine": null,
+              "confidence": "ESTIMADO"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 5.79,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 76,
+              "component": "System Settings",
+              "title": "Sidebar",
+              "score": 0.8314513564109802,
+              "cosine": 0.8314513564109802,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 6.05,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 76,
+              "component": "System Settings",
+              "title": "Sidebar",
+              "score": 0.06557377049180328,
+              "cosine": 0.8314513564109802,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 97,
+              "component": "System Settings",
+              "title": "NavigationSplitView",
+              "score": 0.016129032258064516,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "mapeamento_hyprmac",
+              "source_id": 2,
+              "component": "System Settings",
+              "title": "shell/hyprmac-ajustes",
+              "score": 0.015873015873015872,
+              "cosine": null,
+              "confidence": "ESTIMADO"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "now playing transition",
+      "modes": {
+        "fts": {
+          "ms": 0.28,
+          "results": [
+            {
+              "source": "descobertas",
+              "source_id": 100,
+              "component": "Now Playing",
+              "title": "NowPlayingContentView",
+              "score": 11.011872039731369,
+              "cosine": null,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 110,
+              "component": "Now Playing",
+              "title": "Convergencia 2026-10-07: seek-durante-polling",
+              "score": 8.455346461557035,
+              "cosine": null,
+              "confidence": "DIRETO"
+            },
+            {
+              "source": "mapeamento_hyprmac",
+              "source_id": 9,
+              "component": "Now Playing",
+              "title": "shell/hyprmac-shell",
+              "score": 8.111416245714194,
+              "cosine": null,
+              "confidence": "ESTIMADO"
+            }
+          ]
+        },
+        "vector": {
+          "ms": 5.43,
+          "results": [
+            {
+              "source": "mapeamento_hyprmac",
+              "source_id": 9,
+              "component": "Now Playing",
+              "title": "shell/hyprmac-shell",
+              "score": 0.4061032235622406,
+              "cosine": 0.4061032235622406,
+              "confidence": "ESTIMADO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 105,
+              "component": "Dock",
+              "title": "convergencia-20261007-continuacao:auto-ocultar",
+              "score": 0.36333945393562317,
+              "cosine": 0.36333945393562317,
+              "confidence": "INFERIDO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 100,
+              "component": "Now Playing",
+              "title": "NowPlayingContentView",
+              "score": 0.35771727561950684,
+              "cosine": 0.35771727561950684,
+              "confidence": "SIMBOLO"
+            }
+          ]
+        },
+        "hybrid": {
+          "ms": 5.05,
+          "results": [
+            {
+              "source": "mapeamento_hyprmac",
+              "source_id": 9,
+              "component": "Now Playing",
+              "title": "shell/hyprmac-shell",
+              "score": 0.06505334374186833,
+              "cosine": 0.4061032235622406,
+              "confidence": "ESTIMADO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 100,
+              "component": "Now Playing",
+              "title": "NowPlayingContentView",
+              "score": 0.06401249024199844,
+              "cosine": 0.35771727561950684,
+              "confidence": "SIMBOLO"
+            },
+            {
+              "source": "descobertas",
+              "source_id": 110,
+              "component": "Now Playing",
+              "title": "Convergencia 2026-10-07: seek-durante-polling",
+              "score": 0.06300403225806452,
+              "cosine": 0.3571702539920807,
+              "confidence": "DIRETO"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "note": "Scores dos modos não têm a mesma escala; latência com modelo carregado. Resultados podem ser parciais.",
+  "incremental_noop": {
+    "documents": 145,
+    "changed": 0,
+    "generated": 0,
+    "reused": 0,
+    "near_duplicates": 0
+  },
+  "integrity": "ok",
+  "foreign_key_errors": 0,
+  "counts": {
+    "arquivos": 64457,
+    "descobertas": 118,
+    "knowledge_documents": 145,
+    "knowledge_vectors": 58
+  },
+  "backup": "/home/igor/Projects/hyprmac/BaseConhecimento/MacTahoe/backups/base-pre-hybrid-20261009T030956964017Z.db",
+  "original_tables_preserved": {
+    "meta": true,
+    "componentes": true,
+    "bundles": true,
+    "arquivos": true,
+    "descobertas": true,
+    "relacoes": true,
+    "mapeamento_hyprmac": true,
+    "investigacoes": true,
+    "analises": true,
+    "comparacoes": true
+  }
+}

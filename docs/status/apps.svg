@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="520" height="260" fill="#1f2026"/>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Apps do sistema: 12.5% (0/70 feitos)</text>
+<g><title>Grupo B — 15%</title>
+<rect x="0.0" y="26.0" width="193.1" height="234.0" fill="#16171c"/>
+<rect x="1.5" y="27.5" width="37.2" height="37.7" fill="#9bc53d"><title>Activity Monitor: parcial testado</title></rect>
+<rect x="39.7" y="27.5" width="37.2" height="37.7" fill="#9bc53d"><title>Clock: parcial testado</title></rect>
+<rect x="78.0" y="27.5" width="37.2" height="37.7" fill="#9bc53d"><title>Console: parcial testado</title></rect>
+<rect x="116.2" y="27.5" width="37.2" height="37.7" fill="#9bc53d"><title>Disk Utility: parcial testado</title></rect>
+<rect x="154.4" y="27.5" width="37.2" height="37.7" fill="#9bc53d"><title>QuickTime Player: parcial testado</title></rect>
+<rect x="1.5" y="66.2" width="37.2" height="37.7" fill="#9bc53d"><title>System Information: parcial testado</title></rect>
+<rect x="39.7" y="66.2" width="37.2" height="37.7" fill="#9bc53d"><title>Terminal: parcial testado</title></rect>
+<rect x="78.0" y="66.2" width="37.2" height="37.7" fill="#9bc53d"><title>VoiceMemos: parcial testado</title></rect>
+<rect x="116.2" y="66.2" width="37.2" height="37.7" fill="#7b7d86"><title>Apps: a fazer</title></rect>
+<rect x="154.4" y="66.2" width="37.2" height="37.7" fill="#7b7d86"><title>Audio MIDI Setup: a fazer</title></rect>
+<rect x="1.5" y="104.8" width="37.2" height="37.7" fill="#7b7d86"><title>Automator: a fazer</title></rect>
+<rect x="39.7" y="104.8" width="37.2" height="37.7" fill="#7b7d86"><title>Bluetooth File Exchange: a fazer</title></rect>
+<rect x="78.0" y="104.8" width="37.2" height="37.7" fill="#7b7d86"><title>Chess: a fazer</title></rect>
+<rect x="116.2" y="104.8" width="37.2" height="37.7" fill="#7b7d86"><title>ColorSync Utility: a fazer</title></rect>
+<rect x="154.4" y="104.8" width="37.2" height="37.7" fill="#7b7d86"><title>Dictionary: a fazer</title></rect>
+<rect x="1.5" y="143.5" width="37.2" height="37.7" fill="#7b7d86"><title>Digital Color Meter: a fazer</title></rect>
+<rect x="39.7" y="143.5" width="37.2" height="37.7" fill="#7b7d86"><title>Font Book: a fazer</title></rect>
+<rect x="78.0" y="143.5" width="37.2" height="37.7" fill="#7b7d86"><title>Grapher: a fazer</title></rect>
+<rect x="116.2" y="143.5" width="37.2" height="37.7" fill="#7b7d86"><title>Image Capture: a fazer</title></rect>
+<rect x="154.4" y="143.5" width="37.2" height="37.7" fill="#7b7d86"><title>Magnifier: a fazer</title></rect>
+<rect x="1.5" y="182.2" width="37.2" height="37.7" fill="#7b7d86"><title>Print Center: a fazer</title></rect>
+<rect x="39.7" y="182.2" width="37.2" height="37.7" fill="#7b7d86"><title>Screen Sharing: a fazer</title></rect>
+<rect x="78.0" y="182.2" width="37.2" height="37.7" fill="#7b7d86"><title>Script Editor: a fazer</title></rect>
+<rect x="116.2" y="182.2" width="37.2" height="37.7" fill="#7b7d86"><title>Stickies: a fazer</title></rect>
+<rect x="154.4" y="182.2" width="37.2" height="37.7" fill="#7b7d86"><title>Tips: a fazer</title></rect>
+<rect x="1.5" y="220.8" width="37.2" height="37.7" fill="#7b7d86"><title>VoiceOver Utility: a fazer</title></rect>
+<text x="3.0" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Grupo B</text>
+</g>
+<g><title>Grupo C — 6%</title>
+<rect x="193.1" y="26.0" width="133.7" height="234.0" fill="#16171c"/>
+<rect x="194.6" y="27.5" width="42.9" height="37.7" fill="#9bc53d"><title>Calendar: parcial testado</title></rect>
+<rect x="238.5" y="27.5" width="42.9" height="37.7" fill="#9bc53d"><title>Reminders: parcial testado</title></rect>
+<rect x="282.5" y="27.5" width="42.9" height="37.7" fill="#7b7d86"><title>Books: a fazer</title></rect>
+<rect x="194.6" y="66.2" width="42.9" height="37.7" fill="#7b7d86"><title>Contacts: a fazer</title></rect>
+<rect x="238.5" y="66.2" width="42.9" height="37.7" fill="#7b7d86"><title>Freeform: a fazer</title></rect>
+<rect x="282.5" y="66.2" width="42.9" height="37.7" fill="#7b7d86"><title>Games: a fazer</title></rect>
+<rect x="194.6" y="104.8" width="42.9" height="37.7" fill="#7b7d86"><title>Image Playground: a fazer</title></rect>
+<rect x="238.5" y="104.8" width="42.9" height="37.7" fill="#7b7d86"><title>Mail: a fazer</title></rect>
+<rect x="282.5" y="104.8" width="42.9" height="37.7" fill="#7b7d86"><title>Maps: a fazer</title></rect>
+<rect x="194.6" y="143.5" width="42.9" height="37.7" fill="#7b7d86"><title>Music: a fazer</title></rect>
+<rect x="238.5" y="143.5" width="42.9" height="37.7" fill="#7b7d86"><title>News: a fazer</title></rect>
+<rect x="282.5" y="143.5" width="42.9" height="37.7" fill="#7b7d86"><title>Passwords: a fazer</title></rect>
+<rect x="194.6" y="182.2" width="42.9" height="37.7" fill="#7b7d86"><title>Podcasts: a fazer</title></rect>
+<rect x="238.5" y="182.2" width="42.9" height="37.7" fill="#7b7d86"><title>Shortcuts: a fazer</title></rect>
+<rect x="282.5" y="182.2" width="42.9" height="37.7" fill="#7b7d86"><title>Stocks: a fazer</title></rect>
+<rect x="194.6" y="220.8" width="42.9" height="37.7" fill="#7b7d86"><title>TV: a fazer</title></rect>
+<rect x="238.5" y="220.8" width="42.9" height="37.7" fill="#7b7d86"><title>Time Machine: a fazer</title></rect>
+<rect x="282.5" y="220.8" width="42.9" height="37.7" fill="#7b7d86"><title>Weather: a fazer</title></rect>
+<text x="196.1" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Grupo C</text>
+</g>
+<g><title>Grupo A — 25%</title>
+<rect x="326.9" y="26.0" width="193.1" height="135.0" fill="#16171c"/>
+<rect x="328.4" y="27.5" width="37.2" height="43.3" fill="#d6a531"><title>Calculator: parcial/relatado</title></rect>
+<rect x="366.6" y="27.5" width="37.2" height="43.3" fill="#d6a531"><title>ControlCenter: parcial/relatado</title></rect>
+<rect x="404.8" y="27.5" width="37.2" height="43.3" fill="#d6a531"><title>Dock: parcial/relatado</title></rect>
+<rect x="443.0" y="27.5" width="37.2" height="43.3" fill="#d6a531"><title>Finder: parcial/relatado</title></rect>
+<rect x="481.3" y="27.5" width="37.2" height="43.3" fill="#d6a531"><title>Journal: parcial/relatado</title></rect>
+<rect x="328.4" y="71.8" width="37.2" height="43.3" fill="#d6a531"><title>Mission Control: parcial/relatado</title></rect>
+<rect x="366.6" y="71.8" width="37.2" height="43.3" fill="#d6a531"><title>Notes: parcial/relatado</title></rect>
+<rect x="404.8" y="71.8" width="37.2" height="43.3" fill="#d6a531"><title>NotificationCenter: parcial/relatado</title></rect>
+<rect x="443.0" y="71.8" width="37.2" height="43.3" fill="#d6a531"><title>Photo Booth: parcial/relatado</title></rect>
+<rect x="481.3" y="71.8" width="37.2" height="43.3" fill="#d6a531"><title>Photos: parcial/relatado</title></rect>
+<rect x="328.4" y="116.2" width="37.2" height="43.3" fill="#d6a531"><title>Preview: parcial/relatado</title></rect>
+<rect x="366.6" y="116.2" width="37.2" height="43.3" fill="#d6a531"><title>Screenshot: parcial/relatado</title></rect>
+<rect x="404.8" y="116.2" width="37.2" height="43.3" fill="#d6a531"><title>Spotlight: parcial/relatado</title></rect>
+<rect x="443.0" y="116.2" width="37.2" height="43.3" fill="#d6a531"><title>System Settings: parcial/relatado</title></rect>
+<rect x="481.3" y="116.2" width="37.2" height="43.3" fill="#d6a531"><title>TextEdit: parcial/relatado</title></rect>
+<text x="329.9" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Grupo A</text>
+</g>
+<g><title>Grupo D — 0%</title>
+<rect x="326.9" y="161.0" width="193.1" height="99.0" fill="#16171c"/>
+<rect x="328.4" y="162.5" width="37.2" height="31.3" fill="#7b7d86"><title>AirPort Utility: a fazer</title></rect>
+<rect x="366.6" y="162.5" width="37.2" height="31.3" fill="#7b7d86"><title>App Store: a fazer</title></rect>
+<rect x="404.8" y="162.5" width="37.2" height="31.3" fill="#7b7d86"><title>Boot Camp Assistant: a fazer</title></rect>
+<rect x="443.0" y="162.5" width="37.2" height="31.3" fill="#7b7d86"><title>FaceTime: a fazer</title></rect>
+<rect x="481.3" y="162.5" width="37.2" height="31.3" fill="#7b7d86"><title>FindMy: a fazer</title></rect>
+<rect x="328.4" y="194.8" width="37.2" height="31.3" fill="#7b7d86"><title>Home: a fazer</title></rect>
+<rect x="366.6" y="194.8" width="37.2" height="31.3" fill="#7b7d86"><title>Messages: a fazer</title></rect>
+<rect x="404.8" y="194.8" width="37.2" height="31.3" fill="#7b7d86"><title>Migration Assistant: a fazer</title></rect>
+<rect x="443.0" y="194.8" width="37.2" height="31.3" fill="#7b7d86"><title>Phone: a fazer</title></rect>
+<rect x="481.3" y="194.8" width="37.2" height="31.3" fill="#7b7d86"><title>Siri: a fazer</title></rect>
+<rect x="328.4" y="227.2" width="37.2" height="31.3" fill="#7b7d86"><title>iPhone Mirroring: a fazer</title></rect>
+<text x="329.9" y="173.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Grupo D</text>
+</g>
+</svg>

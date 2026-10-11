@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ColorSync Utility
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.ColorSyncUtility
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/ColorSyncUtility.png
+StartupWMClass=dev.hyprmac.ColorSyncUtility
+Terminal=false
+Categories=Utility;

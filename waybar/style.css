@@ -1,0 +1,493 @@
+/* hyprmac — barra de menus inspirada no macOS Tahoe
+ *
+ * Tahoe deixa a barra totalmente transparente sobre o papel de parede:
+ * texto branco com sombra suave, e um "pill" de vidro claro ao passar o
+ * mouse ou abrir um menu. Os menus suspensos imitam o Liquid Glass escuro.
+ */
+
+/* Modo da barra (transparente = vazio; clara fosca = modes/light.css).
+ * Trocado pelo script scripts/bar-style / menu Visualizar. */
+@import url("mode.css");
+
+/* Barra transparente: conteúdo escuro sobre papel de parede claro (vazio = branco).
+ * Gerado pelo hyprmac-shell a partir de contrast-dark.css. */
+@import url("contrast.css");
+
+/* Cor de destaque (@accent, @menu-selection): gerada por scripts/accent */
+@import url("accent.css");
+
+/* Liquid Glass de verdade (plugin hyprglass): gerado por scripts/vidro — com o plugin
+ * carregado, os menus só tingem (a lente e o aro vêm do compositor); vazio sem ele.
+ * Antes do a11y e do tema claro, que ganham dele. */
+@import url("vidro.css");
+
+/* Reduzir Transparência / Aumentar Contraste: gerado por scripts/acessibilidade
+ * (seletores com window#waybar.top para valer por cima das regras abaixo) */
+@import url("a11y.css");
+
+/* Tema do sistema (escuro = vazio; claro = themes/light.css): menus e dicas.
+ * Trocado pelo script scripts/theme / menu Visualizar. */
+@import url("theme.css");
+/* itens da barra desmarcados em Ajustes ▸ Menu Bar (gerado pelo hyprmac-ajustes; fora do git) */
+@import url("barra-ocultos.css");
+
+@define-color label        rgba(255, 255, 255, 0.96);
+@define-color label-dim    rgba(255, 255, 255, 0.55);
+/* seleção da barra: cápsula branca a 20% (kit: #FFF/0.20 plus-lighter) */
+@define-color glass-hover  rgba(255, 255, 255, 0.20);
+/* item aberto: na referência a cápsula clareia o fundo em ~+87 (plus-lighter
+ * ~34%); sem blend modes no GTK3, branco a 34% chega perto */
+@define-color glass-press  rgba(255, 255, 255, 0.34);
+@define-color menu-bg      rgba(30, 30, 34, 0.74);
+@define-color menu-border  rgba(255, 255, 255, 0.16);
+/* paleta do macOS 27 (Tahoe), variante escura */
+@define-color orange       #FF9230;
+@define-color green        #30D158;
+@define-color red          #FF4245;
+@define-color purple       #DB34F2;
+/* menus: destaque azul mais escuro que o do sistema e atalhos em cinza.
+ * O kit usa #4C4C4C em plus-lighter; sem blend modes no GTK3 o equivalente
+ * visível sobre o vidro escuro é branco com alfa (~#868686 no resultado). */
+@define-color menu-shortcut  rgba(255, 255, 255, 0.40);
+
+* {
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ───────────── barra ───────────── */
+
+/* Fonte definida nos contêineres (não em "*") para que cada módulo
+ * possa sobrescrever tamanho/peso e os rótulos filhos herdem.
+ * Barra: SF Pro Semibold 13, como no kit do macOS 27. */
+window#waybar {
+  font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable",
+               "Inter", "Symbols Nerd Font", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Menus: SF Pro Medium 13; dicas: Medium 11 */
+menu,
+tooltip {
+  font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable",
+               "Inter", "Symbols Nerd Font", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+window#waybar {
+  background: transparent;
+  color: @label;
+}
+
+/* Descomente para uma barra de "vidro" em vez de transparente
+window#waybar {
+  background: rgba(20, 20, 24, 0.28);
+}
+*/
+
+/* Todo item é um "pill" que acende ao passar o mouse, como no Tahoe.
+ * Referência (safari-escuro-barra-de-menus-abas.png, barra de ~34 pt): a
+ * cápsula da seleção tem ~20 de altura, centrada — daí a margem de 7 em cima
+ * e embaixo; títulos de menu com 26 entre os textos. */
+#custom-apple,
+#window,
+#custom-menu-arquivo,
+#custom-menu-editar,
+#custom-menu-arquivo-mesa,
+#custom-menu-editar-mesa,
+#custom-menu-visualizar,
+#custom-menu-selecao,
+#custom-menu-codigo-ir,
+#custom-menu-executar,
+#custom-menu-terminal,
+#custom-menu-reproducao,
+#custom-menu-formatar,
+#custom-menu-ir,
+#custom-menu-historico,
+#custom-menu-favoritos,
+#custom-menu-desenvolver,
+#custom-menu-janela,
+#custom-menu-ajuda,
+#mpris,
+#workspaces,
+#tray,
+#battery,
+#bluetooth,
+#custom-vpn,
+#network,
+#pulseaudio,
+#custom-spotlight,
+#custom-controlcenter,
+#custom-clock,
+#clock {
+  color: @label;
+  background: transparent;
+  padding: 0 10px;
+  margin: 7px 0;
+  border-radius: 999px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: background-color 120ms ease-out;
+}
+
+#window,
+#custom-menu-arquivo,
+#custom-menu-editar,
+#custom-menu-arquivo-mesa,
+#custom-menu-editar-mesa,
+#custom-menu-visualizar,
+#custom-menu-selecao,
+#custom-menu-codigo-ir,
+#custom-menu-executar,
+#custom-menu-terminal,
+#custom-menu-formatar,
+#custom-menu-ir,
+#custom-menu-historico,
+#custom-menu-favoritos,
+#custom-menu-desenvolver,
+#custom-menu-janela,
+#custom-menu-ajuda {
+  padding: 0 11px 0 12px;   /* + as margens do próprio glifo ≈ 26 entre os textos */
+}
+
+#custom-apple:hover,
+#window:hover,
+#custom-menu-arquivo:hover,
+#custom-menu-editar:hover,
+#custom-menu-arquivo-mesa:hover,
+#custom-menu-editar-mesa:hover,
+#custom-menu-visualizar:hover,
+#custom-menu-selecao:hover,
+#custom-menu-codigo-ir:hover,
+#custom-menu-executar:hover,
+#custom-menu-terminal:hover,
+#custom-menu-reproducao:hover,
+#custom-menu-formatar:hover,
+#custom-menu-ir:hover,
+#custom-menu-historico:hover,
+#custom-menu-favoritos:hover,
+#custom-menu-desenvolver:hover,
+#custom-menu-janela:hover,
+#custom-menu-ajuda:hover,
+#mpris:hover,
+#workspaces:hover,
+#battery:hover,
+#bluetooth:hover,
+#custom-vpn:hover,
+#network:hover,
+#pulseaudio:hover,
+#custom-spotlight:hover,
+#clock:hover {
+  background: @glass-hover;
+}
+
+.modules-left  { margin-left: 10px; }
+.modules-right { margin-right: 11px; }   /* relógio a ~22 da borda, como na referência */
+
+/* ───────────── esquerda ───────────── */
+
+/* Logo Apple: na referência o glifo tem ~13×16 e começa a ~23 da borda;
+ * o nome do app começa 24 depois dele */
+#custom-apple {
+  font-family: "Symbols Nerd Font";
+  font-size: 20px;
+  padding: 0 8px 0 13px;
+  margin: 4px 0;            /* o glifo de 20 é mais alto: cápsula de 26 */
+}
+
+/* Nome do app em foco: SF Pro Heavy 13, como no macOS. Clicar abre o menu
+ * do app (About, Settings, Hide, Quit…), como o menu em negrito do Mac. */
+#window {
+  font-weight: 800;
+}
+
+/* sem janela o módulo mostra "Finder" (rewrite no config): mantém o espaçamento */
+
+/* ───────────── direita ───────────── */
+
+/* Extras: na referência os ícones têm ~16 de altura, a cápsula de seleção
+ * 36×20 e o passo entre os centros ~38–39 */
+#bluetooth,
+#custom-vpn,
+#network,
+#pulseaudio,
+#custom-spotlight,
+#custom-controlcenter {
+  font-family: "Symbols Nerd Font";
+  font-size: 18px;
+  padding: 0 10px;
+  margin: 4px 1px;          /* a linha da Nerd Font de 18 tem ~26 */
+  min-width: 16px;
+}
+
+/* a lupa da Nerd Font tem avanço bem maior que a tinta: com o respiro padrão o vão até a
+ * Central dava 31; na referência os vãos entre as tintas dos extras são 20–22 */
+#custom-spotlight { font-size: 17px; padding: 0 5px; margin-right: -4px; }
+
+/* Foco (lua): só aparece com Não Perturbe ligado */
+#custom-focus {
+  font-family: "Symbols Nerd Font";
+  font-size: 17px;
+  padding: 0 10px;
+  margin: 4px 1px;
+  color: @label;
+  border-radius: 999px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+#custom-focus:hover { background: @glass-hover; }
+#custom-focus.off { padding: 0; margin: 0; min-width: 0; }
+
+/* Fonte de entrada: sigla numa cápsula contornada (referência: "BR" numa
+ * pílula de 24×16 com as pontas redondas) */
+#custom-input {
+  font-size: 9px;
+  font-weight: 700;
+  color: @label;
+  padding: 0 4px;
+  margin: 9px 10px;
+  border: 1.5px solid @label;
+  border-radius: 999px;
+}
+
+/* Ícone da Central de Controle (dois interruptores empilhados) em SVG */
+#custom-controlcenter {
+  background-image: url("icons/controlcenter.svg");
+  background-size: 17px 17px;     /* ~16 de altura, como os outros ícones */
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0 10px;
+}
+#custom-controlcenter:hover {
+  background-color: @glass-hover;
+}
+/* Pílula de vidro enquanto a Central de Controle está aberta, como no Tahoe */
+#custom-controlcenter.active {
+  background-color: @glass-press;
+}
+
+/* sem VPN o módulo fica vazio: sem espaço nem realce */
+#custom-vpn.off,
+#bluetooth.off,
+#bluetooth.disabled {
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+#network.disconnected,
+#bluetooth.disabled,
+#pulseaudio.muted {
+  color: @label-dim;
+}
+
+#battery {
+  font-feature-settings: "tnum";
+}
+#battery.charging        { color: @green; }
+#battery.warning:not(.charging)  { color: @orange; }
+#battery.critical:not(.charging) { color: @red; }
+
+/* relógio: "Sun 12:07", a ~23 da borda direita (referência) */
+#custom-clock {
+  font-feature-settings: "tnum";
+  /* sem respiro à esquerda: vão de 21 entre a tinta da Central e a do relógio, como na
+   * referência (com 10 dava 31; o GTK3 ignora margem negativa aqui) */
+  padding: 0 10px 0 0;
+  margin: 7px 0;
+}
+#custom-clock:hover { background: @glass-hover; }
+
+/* Ponto verde: na referência fica colado à direita do ícone da Central de
+ * Controle (~4 de diâmetro, ~6 depois do ícone, centrado na barra), antes do
+ * relógio. Aqui avisa que há notificações; sem elas não ocupa espaço. */
+#custom-notifdot {
+  font-size: 1px;
+  color: transparent;
+  min-width: 5px;
+  min-height: 5px;
+  margin: 14px 6px 15px -9px;  /* entra no respiro da Central (mais que 9 deforma o ponto) */
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+}
+#custom-notifdot:not(.on) {
+  min-width: 0;
+  margin: 0;
+}
+#custom-notifdot.on {
+  background: @green;
+  margin-right: 6px;         /* referência: ponto → relógio 16,2 (6 + os 10 do relógio) */
+}
+
+#mpris {
+  font-family: "Symbols Nerd Font";
+  font-size: 18px;
+  margin: 4px 0;
+  padding: 0 8px;
+}
+#mpris.paused { color: @label-dim; }
+
+/* Tocando Agora (waybar/cffi/nowplaying): o módulo desenha o nome e as
+ * barrinhas com esta cor/sombra; o "pill" aparece ao passar o mouse */
+#hyprmac-nowplaying {
+  color: @label;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+  margin: 0;
+  transition: background-color 120ms ease-out;
+}
+#hyprmac-nowplaying:hover { background-color: @glass-hover; }
+
+/* Spaces como pontinhos discretos */
+#workspaces {
+  padding: 0 5px;
+}
+#workspaces button {
+  font-family: "Symbols Nerd Font";
+  font-size: 9px;
+  color: @label-dim;
+  background: transparent;
+  padding: 0 2px;
+  margin: 0;
+  min-width: 0;
+  border-radius: 999px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+#workspaces button.active   { color: @label; }
+#workspaces button.urgent   { color: @orange; }
+#workspaces button:hover    { background: transparent; color: @label; box-shadow: none; }
+
+/* Cada SNI tem a sua própria cápsula: 16 + 10 + 10 = 36 px,
+ * altura 34 - 7 - 7 = 20 px e passo 38 px. Estimativas da captura
+ * safari-escuro-barra-de-menus-abas.png; não métricas oficiais Apple.
+ * O contêiner não deve acrescentar respiro quando não há itens. */
+#tray { padding: 0; margin: 0; background: transparent; }
+#tray > widget {
+  color: @label;
+  padding: 0;
+  margin: 0;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 120ms ease-out;
+}
+#tray > widget:hover { background-color: @glass-hover; }
+#tray > widget.menu-open { background-color: @glass-press; }
+/* Não recolorir nem clarear NeedsAttention: o aplicativo fornece seu ícone. */
+#tray image { -gtk-icon-effect: none; padding: 0 10px; }
+
+/* Indicador de privacidade: pílula laranja (microfone) / roxa (tela).
+ * Câmera (verde no Tahoe): o módulo privacy do Waybar 0.15 só conhece
+ * screenshare, audio-in e audio-out. */
+#privacy {
+  padding: 0;
+  margin: 9px 4px;
+}
+#privacy-item {
+  padding: 0 7px;
+  border-radius: 999px;
+  color: #000;
+}
+#privacy-item.audio-in    { background: @orange; }
+#privacy-item.screenshare { background: @purple; }
+
+/* câmera em uso: cápsula verde com o ícone em preto */
+#custom-camera.on {
+  font-family: "Symbols Nerd Font";
+  font-size: 12px;
+  color: #000;
+  background: @green;
+  padding: 0 7px;
+  margin: 9px 4px;
+  border-radius: 999px;
+}
+
+/* ───────────── menus suspensos (Liquid Glass escuro) ─────────────
+ * Translúcidos: o Hyprland desfoca o fundo (layer rule "hyprmac-bar-popups"). */
+
+/* Menus: a janela que carrega o menu fica transparente — senão os cantos
+ * arredondados do menu aparecem sobre um quadrado opaco */
+window.popup,
+window.popup.background,
+window.popup decoration {
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* Kit: raio 12, padding 6 topo / 16 lados / 5 base. Aqui os 16 dos lados
+ * se dividem em 5 do contêiner + 11 do item, para o destaque passar 11px
+ * além do texto de cada lado, como no macOS. */
+menu,
+.menu {
+  background: @menu-bg;
+  color: @label;
+  border: 1px solid @menu-border;
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* Itens de 24 de altura; destaque azul #0069F9 com raio 8 */
+menu menuitem {
+  min-height: 24px;
+  padding: 0 11px;
+  margin: 0;
+  border-radius: 8px;
+  color: @label;
+  background: transparent;
+}
+
+menu menuitem label {
+  font-size: 13px;
+  font-weight: 500;
+  color: @label;
+}
+
+/* Atalho à direita do item (XML em waybar/menus): Medium 13 cinza */
+menu menuitem label.shortcut {
+  color: @menu-shortcut;
+}
+
+menu menuitem:hover,
+menu menuitem:focus {
+  background: @menu-selection;
+}
+
+menu menuitem:hover label,
+menu menuitem:hover label.shortcut,
+menu menuitem:focus label,
+menu menuitem:focus label.shortcut {
+  color: #ffffff;
+}
+
+menu menuitem:disabled,
+menu menuitem:disabled:focus { background: transparent; }
+menu menuitem:disabled label {
+  color: @menu-shortcut;
+}
+
+menu separator {
+  min-height: 1px;
+  margin: 5px 10px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ───────────── tooltips ───────────── */
+
+tooltip {
+  background: @menu-bg;
+  border: 1px solid @menu-border;
+  border-radius: 10px;
+  padding: 2px;
+}
+
+tooltip label {
+  color: @label;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 6px;
+}

@@ -1,0 +1,78 @@
+/* hyprmac — barra de título do Ghostty como a do Terminal no Mac:
+ * kit "Windows/Dark/Default + Title": barra de 33, padding 9, semáforo em
+ * (9; 9,5), título Bold 13 no meio, sem filete (só o efeito de borda), sem botões — novo separador e menu ficam na barra
+ * de menus e nos atalhos (⌘T…). O semáforo em si vem do gtk4.css. Carregado
+ * pelo gtk-custom-css (prioridade de usuário): seletores mais específicos
+ * que os do gtk4.css para vencer a barra unificada de 52. */
+
+/* a faixa de cima do toolbarview soma 3 em cima e embaixo da barra */
+window toolbarview > .top-bar,
+window toolbarview > .top-bar > * {
+  padding: 0;
+  margin: 0;
+}
+
+window headerbar,
+window toolbarview headerbar {
+  margin: -3px 0;             /* algo no Ghostty/libadwaita força 39: volta a 33 */
+  min-height: 33px;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* nada na barra pode ter altura mínima própria (os botões escondidos
+ * continuariam esticando a barra) */
+window headerbar * {
+  min-height: 0;
+}
+
+/* o libadwaita põe 6 de padding na caixa interna da barra */
+window headerbar > windowhandle > box,
+window headerbar > windowhandle > box > box,
+window headerbar > windowhandle > box > widget > box {
+  padding: 0;
+}
+
+window headerbar windowcontrols.start {
+  margin: 0 0 0 9px;
+}
+
+window headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action),
+window headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):hover,
+window headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):active,
+window headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):disabled {
+  margin: 9px 0 10px 0;
+}
+
+window headerbar splitbutton,
+window headerbar splitbutton > button,
+window headerbar splitbutton > menubutton > button,
+window headerbar menubutton > button,
+window headerbar button.toggle,
+window headerbar button:not(.suggested-action):not(.destructive-action):not(.close):not(.minimize):not(.maximize) {
+  opacity: 0;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+window headerbar splitbutton image,
+window headerbar menubutton image,
+window headerbar button:not(.close):not(.minimize):not(.maximize) image,
+window headerbar splitbutton arrow {
+  -gtk-icon-size: 0;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+window headerbar .title,
+window windowtitle .title {
+  font-size: 13px;
+  font-weight: 700;
+}

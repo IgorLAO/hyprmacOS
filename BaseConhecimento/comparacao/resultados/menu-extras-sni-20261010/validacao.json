@@ -1,0 +1,74 @@
+{
+  "estado_sni_linux": "verified",
+  "estado_visual_tahoe26": "experimental",
+  "waybar_version": "0.15.0",
+  "patch_sha256": "3890fa4722865ad1bc4221ca0c16fb89336b968d1090296a7180daaec8f40c38",
+  "barra_px": 34,
+  "icone_px": 16,
+  "capsula_px": [
+    36,
+    20
+  ],
+  "passo_px": 38,
+  "ordem_deslocamento_px": 38,
+  "pixels_normais": 256,
+  "pixels_overlay": 36,
+  "pixels_atencao_restantes": 220,
+  "aplicativos_reais": [
+    "NetworkManager Applet (Ayatana AppIndicator)",
+    "VLC (Qt SNI)"
+  ],
+  "testes_automatizados": {
+    "preferencias": 3,
+    "watcher_externo_build_real": 2
+  },
+  "runtime": [
+    "ícones originais ARGB",
+    "NeedsAttention",
+    "NewAttentionIcon",
+    "NewOverlayIcon",
+    "Passive/Active",
+    "Activate",
+    "SecondaryActivate",
+    "Scroll horizontal/vertical",
+    "ação DBusMenu",
+    "ItemIsMenu clique esquerdo",
+    "menu-open persistente",
+    "visibilidade por Id",
+    "ordem com passo 38 px",
+    "mesmo PID para preferências",
+    "singleton start",
+    "três controles GTK de apps registrados",
+    "Central de Controle D-Bus toggle/restaurar",
+    "encerramento do item após três recargas (late-name)",
+    "NetworkManager e VLC encerrados após reload, Waybar viva"
+  ],
+  "fontes_apple": [
+    "https://support.apple.com/guide/mac-help/whats-in-the-menu-bar-mchlp1446/26/mac/26",
+    "https://support.apple.com/guide/mac-help/customize-the-menu-bar-mchl4af84660/26/mac/26"
+  ],
+  "referencia_visual_local": "BaseConhecimento/referencias/telas/safari-escuro-barra-de-menus-abas.png",
+  "limites": [
+    "medidas/hover ainda aproximados, sem runtime independente Tahoe26",
+    "sem Command+drag",
+    "sem AttentionMovieName animado",
+    "sem estado de popup externo hospedado pelo app",
+    "sem ponte XEmbed",
+    "listas de apps em Ajustes atualizadas ao reabrir painel",
+    "outros painéis SNI não são encerrados"
+  ],
+  "validacao_geral": "git diff --check do escopo limpo; check global encontra whitespace pré-existente em outros documentos",
+  "regressao_watcher": {
+    "antes": "SIGSEGV em Watcher::nameVanished; teste falhou",
+    "depois": "watch removida cancelada/liberada; dois testes reais passaram"
+  },
+  "referencia_visual_oficial": {
+    "url": "https://help.apple.com/assets/69DD569682238CF8EC0621E2/69DD569982238CF8EC0621E9/en_US/62a24ce3b2745abaa8344ab3ce1d050f.png",
+    "contexto": "imagem ligada pelo guia oficial versionado /26/mac/26",
+    "pixels": [
+      1146,
+      310
+    ],
+    "escala": "não declarada; não usada para métricas em pt"
+  }
+}

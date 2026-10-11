@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Build isolada do tray nativo 0.15.0; nunca instala sobre /usr/bin/waybar.
+set -euo pipefail
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/hyprmac/waybar-tahoe"
+mkdir -p "$cache"
+exec 9>"$cache/build.lock"
+flock 9
+patch_hash=$(sha256sum "$repo/waybar/patches/tahoe-sni.patch" | cut -d' ' -f1)
+if [[ -x "$cache/waybar" && -f "$cache/patch.sha256" && $(cat "$cache/patch.sha256") == "$patch_hash" ]]; then
+  "$cache/waybar" --version
+  exit 0
+fi
+# Preserve every module used by the current bar; optional modules remain auto.
+for dep in gtkmm-3.0 dbusmenu-gtk3-0.4 jsoncpp fmt spdlog gtk-layer-shell-0 playerctl libnl-3.0 libnl-genl-3.0 libpulse libpipewire-0.3 xkbregistry; do
+  pkg-config --exists "$dep" || { echo "Dependência de build ausente: $dep" >&2; exit 1; }
+done
+for cmd in curl tar patch c++ pkg-config wayland-scanner; do
+  command -v "$cmd" >/dev/null || { echo "Ferramenta ausente: $cmd" >&2; exit 1; }
+done
+if ! command -v meson >/dev/null || ! command -v ninja >/dev/null; then
+  command -v uv >/dev/null || { echo 'Instale meson/ninja ou uv para a build local.' >&2; exit 1; }
+  [[ -x "$cache/tools/bin/python" ]] || uv venv "$cache/tools"
+  uv pip install --python "$cache/tools/bin/python" meson==1.12.1 ninja==1.13.2
+  export PATH="$cache/tools/bin:$PATH"
+fi
+fetch() {
+  local url="$1" file="$2" sha="$3"
+  [[ -f "$file" ]] || curl -fsSL "$url" -o "$file.tmp"
+  [[ ! -f "$file.tmp" ]] || mv "$file.tmp" "$file"
+  printf '%s  %s\n' "$sha" "$file" | sha256sum -c -
+}
+fetch https://github.com/Alexays/Waybar/archive/refs/tags/0.15.0.tar.gz "$cache/waybar.tar.gz" 21c2bbef88c40473c355003582f9331d2f9b8a01efdcce0935edfc5f6b023a3e
+# Arch separa gdbus-codegen de GLib; bootstrap só da ferramenta oficial, sem root.
+if ! command -v gdbus-codegen >/dev/null; then
+  fetch https://github.com/GNOME/glib/archive/refs/tags/2.86.0.tar.gz "$cache/glib.tar.gz" 56aef5791f402fff73a2de0664e573c5d00ef8cb71405eb76b388f44c6d78927
+  tar -xzf "$cache/glib.tar.gz" -C "$cache" glib-2.86.0/gio/gdbus-2.0/codegen
+  codegen="$cache/glib-2.86.0/gio/gdbus-2.0/codegen"
+  sed '1c#!/usr/bin/env python3' "$codegen/gdbus-codegen.in" > "$codegen/gdbus-codegen"
+  sed -e 's/@VERSION@/2.86.0/g' -e 's/@MAJOR_VERSION@/2/g' -e 's/@MINOR_VERSION@/86/g' "$codegen/config.py.in" > "$codegen/config.py"
+  chmod +x "$codegen/gdbus-codegen"
+  export PATH="$codegen:$PATH"
+fi
+# A patch change creates fresh sources/build; previous working binary survives failure.
+tar -xzf "$cache/waybar.tar.gz" -C "$cache"
+patch --batch -d "$cache/Waybar-0.15.0" -p1 < "$repo/waybar/patches/tahoe-sni.patch"
+setup_args=()
+[[ ! -f "$cache/build/meson-private/coredata.dat" ]] || setup_args=(--wipe)
+meson setup "${setup_args[@]}" "$cache/build" "$cache/Waybar-0.15.0" --buildtype=release --wrap-mode=nofallback \
+  -Dtests=disabled -Dman-pages=disabled -Dexperimental=true -Ddbusmenu-gtk=enabled \
+  -Dmpris=enabled -Dlibnl=enabled -Dpulseaudio=enabled -Dpipewire=enabled -Drfkill=enabled
+ninja -C "$cache/build" -j "${HYPRMAC_BUILD_JOBS:-3}"
+cp "$cache/build/waybar" "$cache/waybar.new"
+chmod +x "$cache/waybar.new"
+mv "$cache/waybar.new" "$cache/waybar"
+printf '%s\n' "$patch_hash" > "$cache/patch.sha256"
+"$cache/waybar" --version

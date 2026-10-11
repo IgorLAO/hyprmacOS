@@ -1,0 +1,31 @@
+{
+  "id": "dev.hyprmac.Terminal",
+  "name": "Terminal",
+  "icon": "shell/icons/tahoe26/factory/Terminal.png",
+  "layout": "window",
+  "size": [
+    800,
+    600
+  ],
+  "sidebar_items": [],
+  "status": "partial",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.Terminal",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Terminal.json",
+    "menu_state": "structured",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": {
+    "kind": "external",
+    "argv": [
+      "ghostty",
+      "--class=dev.hyprmac.Terminal",
+      "--gtk-single-instance=false"
+    ]
+  },
+  "toolbar_items": [],
+  "transition_ms": 0
+}

@@ -1,0 +1,1699 @@
+/* hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe).
+ * O desfoque de fundo vem do Hyprland (layer rules "hyprmac-widgets" e "hyprmac-cc");
+ * aqui só pintamos o vidro translúcido por cima. */
+
+/* Papéis compartilhados pelos providers de tema, vidro e acessibilidade.
+ * [TAHOE] CoreMaterial separa materialFiltering de visualstyleset (primary,
+ * secondary, separator); SystemAppearance tem variantes Light/Dark/AX.
+ * [DESIGNLIBRARY] Valores extraídos do DesignLibrary.framework/Assets.car (Tahoe 26.6.1 25G76)
+ * Ver BaseConhecimento/corematerial_mined_output.json e mining_*.json */
+@define-color shell_accent #007AFF;
+/* keyboardFocusIndicatorColor, DarkAqua 26.6.1 (25G76). */
+@define-color shell_focus rgba(37, 173, 255, 0.498039216);
+@define-color shell_selection #0069F9;
+@define-color shell_surface_opaque rgb(40, 40, 44);
+@define-color shell_content_opaque rgb(30, 30, 36);
+@define-color shell_peek rgb(52, 52, 58);
+@define-color shell_peek_back rgb(46, 46, 52);
+@define-color shell_contrast_label rgba(255, 255, 255, 0.92);
+@define-color shell_contrast_border rgba(255, 255, 255, 0.70);
+@define-color shell_contrast_separator rgba(255, 255, 255, 0.45);
+@define-color shell_glass_text rgba(255, 255, 255, 0.04);
+@define-color shell_glass_spotlight @shell_glass_text;
+@define-color shell_glass_border rgba(255, 255, 255, 0.10);
+@define-color shell_glass_control rgba(255, 255, 255, 0.05);
+@define-color shell_control_opaque rgb(58, 58, 64);
+@define-color shell_control_hover rgb(72, 72, 78);
+@define-color shell_control_ink #ffffff;
+@define-color shell_slider_fill #F8F8F8;
+@define-color shell_slider_knob #DEDEDE;
+@define-color shell_slider_track rgba(0, 0, 0, 0.10);
+
+/* DesignLibrary.framework window traffic light colors (exact from Assets.car) */
+@define-color dl_close #FF5F56;
+@define-color dl_minimize #FFBD2E;
+@define-color dl_zoom #27C93F;
+/* DesignLibrary spacing tokens */
+/* inválido no GTK (px não é cor) e sem uso; origem não verificada: @define-color dl_window_control_gap 8px; */
+/* inválido no GTK (px não é cor) e sem uso; origem não verificada: @define-color dl_toolbar_padding 12px; */
+/* DesignLibrary radii */
+/* inválido no GTK (px não é cor) e sem uso; origem não verificada: @define-color dl_window_radius 12px; */
+/* inválido no GTK (px não é cor) e sem uso; origem não verificada: @define-color dl_control_button_radius 6px; */
+
+window.hyprmac {
+  background: transparent;
+}
+
+.hyprmac,
+.hyprmac label {
+  font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable", "Inter", sans-serif;
+  color: #ffffff;
+}
+
+.hyprmac .icon {
+  font-family: "Symbols Nerd Font";
+}
+
+.hyprmac button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+  transition: background-color 140ms ease-out;
+}
+
+/* Foco GTK visível só na navegação por teclado; sem mudar a geometria. */
+.hyprmac button:focus {
+  outline: 2px solid @shell_focus;
+  outline-offset: -2px;
+  -gtk-outline-radius: 8px;
+}
+.cc button.circle:focus, .cc button.edit-pill:focus {
+  -gtk-outline-radius: 999px;
+}
+
+.hyprmac tooltip {
+  background: rgba(36, 36, 40, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+}
+.hyprmac tooltip label { font-size: 12px; padding: 2px 4px; }
+
+/* ───────────── widgets da mesa ───────────── */
+
+/* Liquid Glass escuro: preenchimento translúcido + aro de luz
+ * (mais forte em cima, como vidro iluminado de cima) */
+.card {
+  border-radius: 24px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.24) rgba(255, 255, 255, 0.10)
+                rgba(255, 255, 255, 0.06) rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* Tempo no escuro: vidro neutro (a cor vem do papel de parede, como em tahoe-dark.jpeg) */
+.weather {
+  background-image: linear-gradient(170deg, rgba(34, 34, 44, 0.56), rgba(40, 40, 52, 0.46));
+  padding: 14px 20px 16px 20px;
+}
+.weather label { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.weather .city     { font-size: 17px; font-weight: 700; }
+.weather .temp     { font-size: 48px; font-weight: 300; margin-top: -6px; }
+.weather .now-icon { font-size: 20px; margin-top: 4px; margin-bottom: 8px; }
+.weather .cond     { font-size: 14.5px; font-weight: 600; }
+.weather .hilo     { font-size: 14.5px; font-weight: 600; }
+.weather .hour     { font-size: 12.5px; font-weight: 700; color: rgba(255, 255, 255, 0.86); }
+.weather .hicon    { font-size: 20px; }
+.weather .htemp    { font-size: 15px; font-weight: 700; }
+
+.shortcuts {
+  background-color: rgba(26, 26, 32, 0.58);
+  padding: 18px;
+}
+.shortcuts button {
+  border-radius: 999px;
+}
+.shortcuts button label {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 34px;
+}
+.shortcuts button:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* ───────────── Central de Controle ─────────────
+ * Vidro CLARO ("Clear" do Tahoe): bem translúcido, tingido pelo papel de parede
+ * desfocado pelo Hyprland (layer rule "hyprmac-cc"). Em vez de um cinza escuro
+ * quase opaco, um cinza médio com pouco alfa: sobre fundo escuro o bloco clareia,
+ * sobre fundo claro escurece — como nas telas oficiais, onde o bloco "some" no
+ * papel de parede e só o aro de luz o desenha.
+ * O ignore_alpha da layer rule "hyprmac-cc" foi baixado para 0.06 (hyprmac.lua),
+ * então o vidro pode ter alfa bem baixo (~0.22) e AINDA ser desfocado — fica claro
+ * e tingido pelo papel de parede, como nas telas oficiais, em vez do cinza leitoso
+ * de antes (quando 0.38 era o mínimo para desfocar). O fundo da janela é transparente
+ * (alfa 0, abaixo do limiar) e não desfoca: só os blocos ganham o vidro.
+ * Aro de luz: borda branca mais forte no topo, quase nada embaixo, e um brilho
+ * interno no alto (luz vinda de cima). Texto sempre branco, com sombra leve. */
+.cc .tile,
+.cc .circle,
+.cc .edit-pill {
+  background-color: rgba(128, 128, 142, 0.18);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.16),
+                                    rgba(255, 255, 255, 0.0) 52%);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.55) rgba(255, 255, 255, 0.18)
+                rgba(255, 255, 255, 0.08) rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.22),
+              inset 0 -1px 1px rgba(0, 0, 0, 0.04);
+  color: #ffffff;
+  transition: background-color 160ms ease-out, box-shadow 260ms ease-out;
+}
+
+/* recorte da grade (altura animada na edição): sem fundo nem borda próprios */
+.cc scrolledwindow.cc-clip,
+.cc scrolledwindow.cc-clip viewport,
+.cc scrolledwindow.cc-clip undershoot,
+.cc scrolledwindow.cc-clip overshoot {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* ao passar o mouse o vidro "acende" um pouco */
+.cc .tile:hover,
+.cc .circle:hover,
+.cc .edit-pill:hover {
+  background-color: rgba(152, 152, 166, 0.30);
+}
+
+/* ao clicar, o vidro "acende por dentro" (WWDC25: "illuminates from within"):
+ * brilho interno que aparece na hora e se dissipa em 260 ms ao soltar */
+.cc .tile:active,
+.cc .circle:active,
+.cc .edit-pill:active {
+  background-color: rgba(175, 175, 186, 0.50);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.34),
+              inset 0 1px 1px rgba(255, 255, 255, 0.30);
+  transition: background-color 40ms ease-out, box-shadow 40ms ease-out;
+}
+.cc .circle.on:active {
+  box-shadow: inset 0 0 18px rgba(0, 145, 255, 0.28);
+}
+
+/* texto branco sobre vidro transparente: sombra leve para ler sobre fundos claros */
+.cc label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+/* blocos de 1 linha e círculos são cápsulas completas */
+.cc .tile,
+.cc .circle {
+  border-radius: 999px;
+}
+/* ícone do bloco médio recuado 15 da borda em cima, embaixo e à esquerda
+ * (concêntrico com a cápsula; 1 da borda + 14 de padding) */
+.cc .tile {
+  padding: 0 9px 0 14px;
+}
+
+/* glifo = 0,34–0,39 do círculo (tahoe-dark: Bluetooth 0,35 de altura, Stage Manager 0,36 de
+ * largura, Calculadora 0,39); com a Nerd Font isso pede 31 px */
+.cc .circle label {
+  font-size: 31px;
+}
+
+/* ligado: disco branco sólido com o ícone em azul (nos dois temas) */
+.cc .circle.on,
+.cc .circle.on:hover {
+  background-color: rgba(255, 255, 255, 0.97);
+  background-image: none;
+  border-color: rgba(255, 255, 255, 0.97);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+}
+.cc .circle.on label {
+  color: #0091FF;
+  text-shadow: none;
+}
+
+/* bloco médio LIGADO com tinta azul: só o Foco/Não Perturbe (frame 0020 do Tahoe); os
+ * outros ligados ficam cinza e só o disco vira branco + glifo azul (o shell só põe .on
+ * no bloco do Foco) */
+.cc .tile.on {
+  background-color: rgba(0, 120, 255, 0.30);
+  border-color: rgba(150, 200, 255, 0.60) rgba(120, 170, 255, 0.22)
+                rgba(90, 140, 255, 0.12) rgba(120, 170, 255, 0.22);
+}
+.cc .tile.on:hover {
+  background-color: rgba(0, 130, 255, 0.38);
+}
+
+/* ícone redondo dentro dos blocos largos */
+.cc .dot {
+  background: #ffffff;
+  color: #0091FF;
+  border-radius: 999px;
+  font-size: 24px;      /* glifo ≈ 0,47 do disco (tahoe-dark: lua 0,49; WWDC: Wi‑Fi 0,46) */
+  text-shadow: none;
+}
+.cc .dot.off,
+.cc .dot.soft {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+/* kit: título Body Semibold 13, estado Subheadline Regular 11 (TIP-02) */
+.cc .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+/* título que não cabe no bloco médio a 13 ("Modo Escuro") */
+.cc .title.tight   { font-size: 12px; }
+.cc .title.tighter { font-size: 11.5px; }
+/* estado: kit "Labels/Dark Vibrant Secondary" #8A8A8A plus-lighter — em tahoe-dark soma
+ * ≈ +143 ao fundo do bloco (78,86,129 → 220,228,249); sem blend no GTK, branco a 80 % */
+.cc .subtitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.80);
+}
+
+/* ── Tocando Agora ── */
+/* capa grande no canto superior esquerdo (NP_ART no código), raio 27 − 15 */
+.cc .nowplaying {
+  border-radius: 27px;
+  padding: 14px 13px 6px 14px;
+}
+/* tahoe-dark: título Semibold ~14 (maiúscula 9,7 px), artista ~12,5, controles grandes */
+.cc .nowplaying .title { margin-top: 4px; font-size: 14px; font-weight: 600; }
+.cc .nowplaying .subtitle { font-size: 12.5px; }
+.cc .media {
+  border-radius: 999px;
+  min-height: 24px;
+  margin-top: 1px;
+}
+.cc .media label { font-size: 27px; }      /* ◀◀ ≈ 0,155 da largura do bloco (tahoe-dark) */
+.cc .media.play label { font-size: 32px; }
+.cc .media-glyph { color: #ffffff; }
+.cc .media:disabled { opacity: 0.38; }
+.cc .media:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* ── Tela / Som ── */
+/* Tela/Som — medidos em tahoe-dark.jpeg (Tahoe final; 2 px/pt; bloco 63,5 → aqui 67, ×1,055):
+ * título a 16,5 da borda e centrado a ~22 do topo; linha a 42 do topo; ícones fora da
+ * linha (esquerdo a 14,5 da borda, 5 até a linha; linha até o direito 6,5; direito a 15 da
+ * borda). Cantos 0,38 × altura. */
+.cc .slider-tile {
+  /* canto contínuo da Apple (extensão ~22 pt = 23 px): o GTK só faz arco circular, que
+   * com a mesma extensão parece mais redondo — 21 dá a mesma leitura visual */
+  border-radius: 21px;
+  padding: 12px 16px 9px 15px;
+}
+.cc .slider-tile .title { margin-left: 3px; }
+.cc .slider-row { min-height: 27px; }
+.cc .slider-icon {
+  font-size: 13px;
+  min-width: 15px;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: none;
+}
+/* vãos ícone ↔ linha definidos no código (SliderTile): 5 e 6,5 pt; AirPlay a 10 */
+.cc .slider-tile.with-output { padding-right: 15px; }
+
+/* saída de áudio (AirPlay) à direita do Som: disco branco com o glifo azul,
+ * como os controles ligados (tela tahoe-dark) */
+.cc button.cc-air {
+  min-width: 27px;
+  min-height: 27px;
+  margin-left: 0;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: none;
+}
+.cc button.cc-air:hover { background: #ffffff; }
+.cc button.cc-air label { font-size: 14px; color: @shell_accent; text-shadow: none; }
+.cc .cc-air-glyph { color: @shell_accent; }
+
+/* Slider da Central no Tahoe final: linha de 4 com pontas redondas, preenchimento #F8F8F8,
+ * trilha = ~10 % de preto sobre o vidro (medido: bloco 63,90,143 → trilha 57,81,127), SEM
+ * puxador; com o ponteiro em cima aparece o puxador do kit (Knob 3 Rg: cápsula 20×16
+ * #DEDEDE, sombra 0 0.5 6 #000/0.12) — como no OSD arrastado (osd-volume-arrastando.png).
+ * O mini-player (.media-panel) mantém a linha fina dele. */
+.cc scale,
+.media-panel scale {
+  margin: 0;
+}
+.cc scale {
+  padding: 8px 0;
+}
+.media-panel scale {
+  padding: 8px 0;
+}
+.cc scale trough {
+  min-height: 4px;
+  border-radius: 999px;
+  border: none;
+  background: @shell_slider_track;
+  box-shadow: none;
+}
+.cc scale highlight {
+  min-height: 4px;
+  border-radius: 999px;
+  border: none;
+  background: @shell_slider_fill;
+  box-shadow: none;
+}
+.cc scale slider {
+  min-width: 20px;
+  min-height: 16px;
+  margin: -6px -2px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  transition: background-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+.cc scale slider:active {
+  min-width: 20px;
+  min-height: 20px;
+  margin: -8px -2px;
+  border-radius: 999px;
+  background-color: @shell_slider_knob;
+  box-shadow: 0 0.5px 6px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+/* [TAHOE] ControlCenter/Assets.car distingue fill-disabled e knob-pressed.
+ * [ESTIMATIVA] alpha preserva a hierarquia local (media:disabled = 0.38).
+ * Apagar só o conteúdo mantém a máscara e o material do módulo íntegros. */
+.cc .slider-tile:disabled label, .cc .slider-tile:disabled .slider-icon {
+  opacity: 0.38;
+}
+.cc scale:disabled highlight { background: alpha(@shell_slider_fill, 0.38); }
+.cc scale:disabled slider { background: transparent; box-shadow: none; }
+.cc button:disabled label, .cc button:disabled .cc-air-glyph { opacity: 0.38; }
+
+/* mini-player: linha fina branca, sem botão */
+.media-panel scale trough {
+  min-height: 4px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: none;
+}
+.media-panel scale highlight {
+  min-height: 4px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.94);
+}
+.media-panel scale slider {
+  min-width: 6px;
+  min-height: 6px;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+}
+.media-panel scale:hover trough,
+.media-panel scale:hover highlight {
+  min-height: 6px;
+}
+
+/* ── Editar Controles ── */
+.cc .edit-pill {
+  border-radius: 999px;
+  padding: 3px 13px;      /* tahoe-dark: cápsula de 23,5 de altura */
+  min-height: 0;
+}
+.cc .edit-pill label {
+  font-size: 12.5px;      /* tahoe-dark: maiúscula de 9,2 px → SF 13 */
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ───────────── menu "Janela" (mesmo visual dos menus da barra) ───────────── */
+
+/* Menus: a janela que carrega o menu fica transparente — senão os cantos
+ * arredondados do menu aparecem sobre um quadrado opaco */
+window.popup,
+window.popup.background,
+window.popup decoration {
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* Kit macOS 27 (mesmo visual dos menus do Waybar): raio 12, padding 6/16/5/16
+ * (os 16 dos lados = 5 do contêiner + 11 do item), itens 24, Medium 13,
+ * destaque #0069F9 com raio 8, atalhos Medium 13 em cinza à direita. */
+menu.hyprmac-menu,
+.hyprmac-menu menu {
+  font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable", "Inter", sans-serif;
+  background: rgba(30, 30, 34, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+
+menu.hyprmac-menu menuitem,
+.hyprmac-menu menu menuitem {
+  min-height: 24px;
+  padding: 0 11px;
+  margin: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+
+menu.hyprmac-menu menuitem label,
+.hyprmac-menu menu menuitem label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+/* Kit "Menu with Selection": coluna da marca 4 + vão 8 antes do texto (texto a
+ * 16 + 12 = 28 da borda); o glifo 􀆅 Bold 13 fica centrado no início da coluna.
+ * O GTK3 não aceita margem negativa nem encolhe o rótulo abaixo da largura do
+ * glifo (15, tinta 1…14): o item cede 8 do padding → centro da tinta a 15,5. */
+menu.hyprmac-menu.has-check > menuitem { padding-left: 3px; }
+menu.hyprmac-menu menuitem label.check {
+  min-width: 15px;
+  margin-right: 5px;
+  font-weight: 700;
+}
+
+/* Kit Menus/Header: Bold 13 #8A8A8A plus-lighter (≈ branco a 62% sobre o vidro) */
+menu.hyprmac-menu menuitem.header:disabled > label,
+menu.hyprmac-menu menuitem.header:disabled > box > label {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* atalho à direita (kit: Medium 13 #4C4C4C plus-lighter ≈ branco a 40% no GTK3) */
+menu.hyprmac-menu menuitem label.shortcut,
+.hyprmac-menu menu menuitem label.shortcut {
+  color: rgba(255, 255, 255, 0.40);
+}
+
+menu.hyprmac-menu menuitem:hover,
+menu.hyprmac-menu menuitem:focus,
+.hyprmac-menu menu menuitem:hover,
+.hyprmac-menu menu menuitem:focus {
+  background: @shell_selection;
+}
+menu.hyprmac-menu menuitem:hover > label,
+menu.hyprmac-menu menuitem:hover > box > label,
+menu.hyprmac-menu menuitem:focus > label,
+menu.hyprmac-menu menuitem:focus > box > label,
+.hyprmac-menu menu menuitem:hover > label,
+.hyprmac-menu menu menuitem:hover > box > label,
+.hyprmac-menu menu menuitem:focus > label,
+.hyprmac-menu menu menuitem:focus > box > label,
+menu.hyprmac-menu menuitem:hover > label.shortcut,
+menu.hyprmac-menu menuitem:hover > box > label.shortcut,
+menu.hyprmac-menu menuitem:focus > label.shortcut,
+menu.hyprmac-menu menuitem:focus > box > label.shortcut {
+  color: #ffffff;
+}
+
+menu.hyprmac-menu menuitem:disabled,
+menu.hyprmac-menu menuitem:disabled:focus,
+.hyprmac-menu menu menuitem:disabled,
+.hyprmac-menu menu menuitem:disabled:focus { background: transparent; }
+menu.hyprmac-menu menuitem:disabled > label,
+menu.hyprmac-menu menuitem:disabled > box > label,
+.hyprmac-menu menu menuitem:disabled > label,
+.hyprmac-menu menu menuitem:disabled > box > label {
+  color: rgba(255, 255, 255, 0.32);
+}
+
+/* seta do submenu: o chevron 􀆊 Bold 13 do kit é um rótulo (label.chevron, mesma
+ * cor dos atalhos); a seta do tema GTK (triângulo) não ocupa espaço. */
+menu.hyprmac-menu menuitem arrow,
+.hyprmac-menu menu menuitem arrow {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  -gtk-icon-source: none;
+}
+menu.hyprmac-menu menuitem label.chevron,
+.hyprmac-menu menu menuitem label.chevron { font-weight: 700; }
+menu.hyprmac-menu menuitem:hover > arrow,
+menu.hyprmac-menu menuitem:focus > arrow,
+.hyprmac-menu menu menuitem:hover > arrow,
+.hyprmac-menu menu menuitem:focus > arrow { color: #ffffff; }
+
+/* Kit Menus/Dark/Regular/Items - Submenu/3 - Open: tint branco 8%,
+ * texto normal. O hover anterior à abertura continua usando seleção. */
+menu.hyprmac-menu menuitem.submenu-open,
+.hyprmac-menu menu menuitem.submenu-open {
+  background: rgba(255, 255, 255, 0.08);
+}
+menu.hyprmac-menu menuitem.submenu-open > label,
+menu.hyprmac-menu menuitem.submenu-open > box > label,
+.hyprmac-menu menu menuitem.submenu-open > label,
+.hyprmac-menu menu menuitem.submenu-open > box > label { color: rgba(255, 255, 255, 0.96); }
+menu.hyprmac-menu menuitem.submenu-open > box > label.chevron,
+.hyprmac-menu menu menuitem.submenu-open > box > label.chevron { color: rgba(255, 255, 255, 0.40); }
+
+/* separador: 11 de altura com linha de 1px */
+menu.hyprmac-menu separator,
+.hyprmac-menu menu separator {
+  min-height: 1px;
+  margin: 5px 11px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ───────────── menus dos extras da barra (Wi‑Fi, Bluetooth, Som) ─────────────
+ * Mesmo vidro dos menus (camada "hyprmac-extras", desfocada pelo Hyprland).
+ * Peças: título Bold 13 + interruptor, cabeçalho Bold 13 cinza #8A8A8A,
+ * linhas de dispositivo com círculo de 26 (azul #0091FF = em uso), itens 24
+ * com destaque #0069F9 raio 8, separador de 11. */
+.xmenu {
+  background-color: rgba(30, 30, 34, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.xmenu label { text-shadow: none; }
+
+/* o mesmo menu como vista detalhada de um módulo da Central de Controle: raio de
+ * módulo (24) e itens concêntricos (24 − recuo 10 = 14), a largura da grade */
+.xmenu.cc-detail {
+  border-radius: 24px;
+  padding: 10px 10px 10px 10px;
+}
+.xmenu.cc-detail button.xm-item,
+.xmenu.cc-detail .xm-item { border-radius: 14px; min-height: 28px; }
+.xmenu.cc-detail .xm-title-row { min-height: 34px; }
+
+.xmenu button.xm-item,
+.xmenu .xm-item {
+  min-height: 24px;
+  padding: 0 11px;
+  border-radius: 8px;
+  background: transparent;
+}
+.xmenu button.xm-item:hover { background: #0069F9; }
+.xmenu button.xm-item:hover label { color: #ffffff; }
+/* item escolhido pisca antes do menu fechar (ver BarPanel._button) */
+.xmenu button.xm-item.blink:hover { background: transparent; }
+.xmenu button.xm-item.blink:hover label { color: rgba(255, 255, 255, 0.96); }
+.xmenu button.xm-item:disabled label { color: rgba(255, 255, 255, 0.32); }
+
+.xmenu .xm-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.96);
+}
+.xmenu .xm-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.xmenu .xm-title-row {
+  min-height: 28px;
+  padding: 0 11px;
+}
+.xmenu .xm-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.xmenu .xm-head,
+.xmenu .xm-head-in {
+  font-size: 13px;
+  font-weight: 700;
+  color: #8A8A8A;
+}
+.xmenu .xm-head {
+  min-height: 24px;
+  padding: 0 11px;
+}
+.xmenu .xm-chev {
+  font-size: 13px;
+  color: #8A8A8A;
+}
+
+.xmenu .xm-note {
+  min-height: 24px;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.40);
+}
+
+.xmenu .xm-sep {
+  min-height: 1px;
+  margin: 5px 11px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* linha de dispositivo: 32 de altura (círculo 26 + 3 de cada lado) */
+.xmenu .xm-dev { min-height: 32px; }
+.xmenu .xm-dot {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+}
+.xmenu .xm-dot.on {
+  background: #0091FF;
+  color: #ffffff;
+}
+.xmenu button.xm-item:hover .xm-dot { background: rgba(255, 255, 255, 0.24); }
+.xmenu button.xm-item:hover .xm-dot.on { background: #ffffff; color: #0069F9; }
+.xmenu .xm-right {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.40);
+}
+.xmenu .xm-right-icon {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* interruptor mini do kit: trilho 36×16 em cápsula, azul quando ligado,
+ * puxador em cápsula com 2px de margem */
+.xmenu switch {
+  min-width: 36px;
+  min-height: 16px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+  font-size: 0;
+  color: transparent;
+  transition: background-color 150ms cubic-bezier(0.3, 0.7, 0.3, 1), box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+.xmenu switch:checked { background: #0091FF; }
+.xmenu switch:disabled { opacity: 0.45; }
+.xmenu switch slider {
+  min-width: 14px;
+  min-height: 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+  transition: margin-left 150ms cubic-bezier(0.3, 0.7, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+.xmenu switch image { color: transparent; -gtk-icon-source: none; }
+
+/* slider de volume: trilho 6, cápsula, preenchimento branco (como a Central) */
+.xmenu .xm-slider-row { padding: 2px 11px 4px 11px; }
+.xmenu .xm-slider-icon { font-size: 12px; color: rgba(255, 255, 255, 0.70); }
+.xmenu scale { padding: 8px 0; margin: 0; }
+.xmenu scale trough {
+  min-height: 6px;
+  border-radius: 999px;
+  border: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.22);
+}
+.xmenu scale highlight {
+  min-height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.94);
+}
+.xmenu scale slider {
+  min-width: 22px;
+  min-height: 14px;
+  margin: -4px 0;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ───────────── OSD de volume/brilho (cápsula sob o ícone de som) ───────────── */
+/* medidas em osd-volume-alto-falantes.png (ver LevelOSD): título com a maiúscula a ~16 do
+ * topo e a 19 da esquerda; linha a 47,6 do topo; ícones a ~17/18 das bordas */
+.osd {
+  padding: 11px 18px 12px 17px;
+  border-radius: 24px;
+  background-color: rgba(30, 30, 34, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.osd .osd-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: none;
+  margin-left: 2px;
+}
+.osd .osd-line { margin-top: 11px; }
+.osd .osd-icon { color: #ffffff; }
+.osd .osd-icon {
+  font-size: 15px;
+  color: #ffffff;
+  text-shadow: none;
+}
+/* a cor do texto vira a cor do trilho/preenchimento (desenhados no código) */
+.osd .osd-bar { color: #ffffff; }
+
+/* ───────────── notificações (banners do macOS) ─────────────
+ * Vidro translúcido; o desfoque vem da layer rule "hyprmac-notifications". */
+
+/* kit macOS 27: 344 de largura, padding 12/14/12/10, raio 20 */
+.notif {
+  margin-bottom: 8px;
+  padding: 12px 14px 12px 10px;
+  border-radius: 20px;
+  background-color: rgba(38, 38, 42, 0.74);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* banners na tela: 16 entre um e outro (cada banner é um grupo) */
+.notifications .notif {
+  margin-bottom: 16px;
+}
+
+/* título Bold 13 + texto Regular 13 (sem vão), hora Regular 11 */
+.notif .title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.notif .time {
+  font-size: 11px;
+  font-weight: 400;
+  color: #8A8A8A;
+}
+
+.notif .body {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.notif .actions {
+  margin-top: 8px;
+}
+.notif .actions button {
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+}
+.notif .actions button:hover { background: rgba(255, 255, 255, 0.20); }
+.notif .actions button label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* × no canto superior esquerdo, só ao passar o mouse */
+.hyprmac button.close {
+  min-width: 20px;
+  min-height: 20px;
+  margin: -2px 0 0 -2px;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(62, 62, 66, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+.hyprmac button.close.revealed { opacity: 1; }
+.hyprmac button.close label {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ───────────── Central de Notificações ───────────── */
+
+.nc scrolledwindow,
+.nc viewport {
+  background: transparent;
+  border: none;
+}
+
+.nc-head,
+.nc-group {
+  margin: 2px 4px 8px 6px;
+}
+/* 16 entre grupos de apps (8 da última notificação + 8 aqui) */
+.nc-group {
+  margin-top: 8px;
+}
+/* títulos soltos sobre o fundo: sombra forte para continuar legíveis */
+.nc-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 8px rgba(0, 0, 0, 0.55);
+}
+.nc-app {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75), 0 0 8px rgba(0, 0, 0, 0.55);
+}
+
+/* pílulas de vidro: "Limpar Tudo" e o ✕ de cada app */
+.nc button.nc-pill,
+.nc button.nc-x {
+  min-height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(38, 38, 42, 0.74);
+  box-shadow: none;
+}
+.nc button.nc-x {
+  min-width: 22px;
+  padding: 0;
+}
+.nc button.nc-pill:hover,
+.nc button.nc-x:hover {
+  background: rgba(62, 62, 68, 0.85);
+}
+.nc button.nc-pill label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+.nc button.nc-x label {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nc-empty {
+  padding: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(235, 235, 245, 0.6);
+}
+
+/* widget de calendário */
+.calendar {
+  margin-top: 4px;
+  padding: 12px 14px 12px 14px;
+}
+.hyprmac label.cal-month {
+  font-size: 11px;
+  font-weight: 800;
+  color: #FF4245;
+  margin-left: 4px;
+}
+.hyprmac label.cal-head {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgba(235, 235, 245, 0.5);
+}
+.hyprmac label.cal-day {
+  min-width: 26px;
+  min-height: 24px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+.hyprmac label.cal-today {
+  color: #ffffff;
+  background: #FF4245;
+  border-radius: 999px;
+}
+
+/* janela de senha de rede/VPN */
+.hyprmac-agent .agent-lock  { font-size: 34px; color: #0091FF; }
+.hyprmac-agent .agent-title { font-size: 14px; font-weight: 700; }
+.hyprmac-agent .agent-sub   { font-size: 12px; opacity: 0.65; }
+.hyprmac-agent entry        { min-height: 30px; }
+
+/* selo ao lado do título de um slider ("Em uso" no microfone) */
+.cc .badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #000000;
+  background: #ff9f0a;
+  border-radius: 999px;
+  padding: 0 7px;
+}
+.cc .badge.muted {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ───────────── Alt+Tab (seletor de apps) ───────────── */
+
+.switcher-panel {
+  padding: 14px 16px 10px 16px;
+  border-radius: 30px;
+  background-color: rgba(38, 38, 42, 0.74);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.switcher-cell {
+  padding: 8px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+}
+
+.switcher-cell.selected {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* app oculto com H (continua na fila, esmaecido) */
+.switcher-cell.hidden { opacity: 0.45; }
+
+.switcher-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ───────────── Tocando Agora (player da barra) ─────────────
+ * Mesmo vidro dos cartões; o desfoque vem da layer rule "hyprmac-media". */
+
+.media-panel {
+  padding: 18px;
+  border-radius: 30px;
+  background-color: rgba(38, 38, 42, 0.74);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.media-panel label { text-shadow: none; }
+
+.media-panel .np-source {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.50);
+}
+.media-panel .np-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.media-panel .np-artist {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.66);
+}
+.media-panel .np-time {
+  font-size: 10.5px;
+  font-weight: 600;
+  font-feature-settings: "tnum";
+  color: rgba(255, 255, 255, 0.50);
+}
+
+/* minutagem: linha fina como no iOS */
+.media-panel scale { padding: 6px 0 4px 0; }
+.media-panel scale trough,
+.media-panel scale highlight { min-height: 5px; }
+
+.media-panel button.np-ctrl {
+  min-width: 54px;
+  min-height: 46px;
+  border-radius: 999px;
+}
+.media-panel button.np-ctrl label { font-size: 30px; color: #ffffff; }
+.media-panel button.np-play-pause label { font-size: 38px; }
+.media-panel button.np-ctrl:hover { background: rgba(255, 255, 255, 0.10); }
+.media-panel button.np-ctrl:active { background: rgba(255, 255, 255, 0.18); }
+
+.media-panel button.np-air {
+  border-radius: 999px;
+}
+.media-panel button.np-air label { font-size: 17px; color: rgba(255, 255, 255, 0.85); }
+.media-panel button.np-air:hover { background: rgba(255, 255, 255, 0.12); }
+
+.media-panel .np-vol-icon {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.60);
+}
+
+/* ───────────── Central de Controle: modo de edição ───────────── */
+
+/* "−" no canto de cada controle, como no Tahoe */
+.cc button.ctl-remove {
+  min-width: 20px;
+  min-height: 20px;
+  /* O GtkOverlay reserva 4px acima/à esquerda do controle. Margem CSS negativa
+   * recorta o círculo na janela de entrada do próprio botão. */
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(98, 98, 104, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.cc button.ctl-remove label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: -2px;
+}
+.cc button.ctl-remove:hover { background: #FF4245; }
+
+/* espaços livres da grade ao editar: círculos "fantasmas" de vidro bem fraco,
+ * sem ícone (alfa < 0.3: sem desfoque, só um véu) */
+.cc .ghost {
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+.cc .ghost.drop-target {
+  border-color: #0091FF;
+  background-color: rgba(0, 145, 255, 0.18);
+}
+
+/* controles levemente apagados ao editar; o arrastado some mais, o alvo acende */
+.cc.editing .tile,
+.cc.editing .circle { opacity: 0.88; }
+.cc .dragging { opacity: 0.35; }
+.cc .drop-target .tile,
+.cc .drop-target .circle {
+  border-color: #0091FF;
+  box-shadow: 0 0 0 2px rgba(0, 145, 255, 0.55);
+}
+
+/* ── Galeria de Controles (ao lado da Central, no modo de edição) ──
+ * Painel de vidro Regular raio 24; barra lateral com busca e categorias
+ * (linhas raio 10 = 24 − 14 de recuo: concêntricas), seções com os controles
+ * nos tamanhos possíveis e legenda, rodapé com dica + Done azul #0091FF. */
+.ccg {
+  border-radius: 24px;
+  background-color: rgba(38, 38, 42, 0.80);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.ccg-side label,
+.ccg-main label { text-shadow: none; }
+
+.ccg-side {
+  padding: 14px 12px 12px 14px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 24px 0 0 24px;
+}
+.cc entry.ccg-search {
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  caret-color: #0091FF;
+  font-size: 13px;
+}
+.cc entry.ccg-search image { color: rgba(255, 255, 255, 0.5); }
+
+.cc list.ccg-cats { background: transparent; }
+.cc list.ccg-cats row {
+  padding: 5px 6px;
+  border-radius: 10px;
+  background: transparent;
+  outline: none;
+}
+.cc list.ccg-cats row:hover { background: rgba(255, 255, 255, 0.06); }
+.cc list.ccg-cats row:selected { background: rgba(255, 255, 255, 0.14); }
+.ccg-cat-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+/* quadradinho colorido do ícone (como os de Ajustes do Sistema) */
+.ccg-cat-icon {
+  border-radius: 6px;
+  font-size: 13px;
+  color: #ffffff;
+}
+.ccg-c-all          { background: #8E8E93; }
+.ccg-c-connectivity { background: #0091FF; }
+.ccg-c-display      { background: #FF375F; }
+.ccg-c-focus        { background: #6D7CFF; }
+.ccg-c-media        { background: #FF4245; }
+.ccg-c-apps         { background: #636366; }
+.ccg-c-window       { background: #30D158; }
+
+.cc button.ccg-reset {
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.cc button.ccg-reset:hover { background: rgba(255, 255, 255, 0.08); }
+.cc button.ccg-reset label { font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.55); }
+
+.ccg-main scrolledwindow,
+.ccg-main viewport { background: transparent; border: none; }
+.ccg-section {
+  padding: 14px 18px 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ccg-head {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+}
+.ccg-caption {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.66);
+}
+/* já está na Central nesse tamanho */
+.ccg-added { opacity: 0.38; }
+.ccg-empty {
+  padding: 40px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ccg-foot {
+  padding: 10px 14px 12px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.ccg-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+}
+.cc button.ccg-done {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #0091FF;
+}
+.cc button.ccg-done:hover { background: #1A9BFF; }
+.cc button.ccg-done label { font-size: 13px; font-weight: 600; color: #ffffff; text-shadow: none; }
+
+/* ───────────── Área de Transferência (histórico) ─────────────
+ * Abre como o scratchpad: tela esmaecida + painel de vidro no centro. */
+
+/* Escurecimento de tarefa que interrompe. O padrão Apple é 35%, mas a layer
+ * rule "hyprmac-clipboard" tem ignore_alpha 0.3: acima disso o Hyprland
+ * desfocaria a tela inteira. 0.29 é o máximo sem desfoque (35% exige
+ * ignore_alpha ≥ 0.36 no hypr/hyprmac.lua). */
+window.clip-backdrop { background-color: rgba(0, 0, 0, 0.35); }
+
+.clip-panel {
+  padding: 14px 10px 10px 10px;
+  border-radius: 26px;
+  background-color: rgba(38, 38, 42, 0.80);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.clip-head { margin: 0 6px 10px 8px; }
+.clip-title { font-size: 15px; font-weight: 700; color: #ffffff; }
+
+.hyprmac button.clip-pill {
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+}
+.hyprmac button.clip-pill:hover { background: rgba(255, 255, 255, 0.18); }
+.hyprmac button.clip-pill label { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.9); }
+.hyprmac button.clip-pill:disabled label { color: rgba(255, 255, 255, 0.3); }
+
+entry.clip-search {
+  min-height: 34px;
+  margin: 0 4px 8px 4px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  caret-color: #0091FF;
+  font-size: 13.5px;
+}
+entry.clip-search image { color: rgba(255, 255, 255, 0.5); }
+
+.clip-panel scrolledwindow,
+.clip-panel viewport,
+list.clip-list { background: transparent; border: none; }
+
+/* concêntrico com o painel: raio 26 − margem 10 = 16 */
+list.clip-list row {
+  margin: 1px 0;
+  padding: 7px 10px;
+  border-radius: 16px;
+  background: transparent;
+  outline: none;
+}
+list.clip-list row:hover { background: rgba(255, 255, 255, 0.07); }
+list.clip-list row:selected { background: #0091FF; }
+
+.clip-kind {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 19px;
+}
+.clip-kind-text { font-size: 15px; font-weight: 700; }
+.clip-text { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.92); }
+.clip-time { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.5); }
+list.clip-list row:selected .clip-text,
+list.clip-list row:selected .clip-time { color: #ffffff; }
+list.clip-list row:selected .clip-kind { background: rgba(255, 255, 255, 0.22); color: #ffffff; }
+
+.clip-empty { font-size: 13px; font-weight: 600; color: rgba(235, 235, 245, 0.55); }
+.clip-foot {
+  margin: 8px 8px 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(235, 235, 245, 0.45);
+}
+
+/* ───────────── Spotlight (⌘Espaço) ─────────────
+ * Medido no vídeo do macOS 27 (ver Spotlight no hyprmac-shell): cápsula 588×52 que,
+ * com resultados, vira o topo do painel (raio 26 = metade do campo, concêntrico);
+ * texto 25, linhas de 51 com ícone 28, título 16, subtítulo 13; seleção cinza raio 12
+ * recuada 10. Vidro "Liquid Glass/Dark/Regular - Large" do kit: #1A1A1A ~0.6, aro
+ * #A6A6A6 fino, sombra 0 18 48 #000/0.45. Sem esmaecer a tela (o Spotlight não esmaece). */
+window.spot-backdrop { background: transparent; }
+
+.spot-panel {
+  margin: 0 48px 64px 48px;            /* espaço para a sombra dentro da camada */
+  border-radius: 26px;
+  background-color: rgba(30, 30, 32, 0.62);
+  border: 1px solid rgba(166, 166, 166, 0.30);
+  border-top-color: rgba(200, 200, 200, 0.40);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45),
+              inset 0 1px 1px rgba(103, 103, 103, 0.55),
+              inset 0 -1px 1px rgba(103, 103, 103, 0.35);
+}
+.spot-field { padding: 0 18px 0 16px; }
+.hyprmac .spot-glass {
+  font-size: 22px;
+  min-width: 26px;
+  margin-right: 10px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.hyprmac .spot-mode {
+  margin: 12px 8px 12px 0;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.hyprmac entry.spot-entry,
+.hyprmac entry.spot-entry:focus {
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  outline: none;
+  font-size: 25px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.96);
+  caret-color: #0091FF;
+}
+/* placeholder: o GTK3 o desenha com a cor nomeada placeholder_text_color (padrão: cinza
+ * 128 fixo, que some sobre o vidro). Escuro: rótulo secundário #FFF/0.55 */
+@define-color placeholder_text_color rgba(255, 255, 255, 0.55);
+.hyprmac entry.spot-entry selection { background-color: rgba(0, 145, 255, 0.45); }
+/* a conclusão em linha: o resto do nome numa cápsula clara + "— Abrir" */
+.hyprmac .spot-hint {
+  padding: 2px 10px 2px 2px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.10);
+  font-size: 25px;
+  color: rgba(255, 255, 255, 0.96);
+}
+.spot-top-icon { margin-left: 8px; }
+.spot-sep {
+  min-height: 1px;
+  margin: 0 18px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.spot-panel scrolledwindow,
+.spot-panel viewport,
+list.spot-list { background: transparent; border: none; }
+list.spot-list { padding: 6px 10px 10px 10px; }
+list.spot-list row {
+  margin: 1px 0;
+  padding: 0;
+  border-radius: 12px;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+list.spot-list row:hover { background: rgba(255, 255, 255, 0.05); }
+list.spot-list row:selected { background: rgba(255, 255, 255, 0.14); }
+.spot-row { padding: 0 14px 0 10px; }
+.spot-icon { margin-right: 14px; min-width: 28px; }
+.hyprmac .spot-title { font-size: 16px; font-weight: 400; color: rgba(255, 255, 255, 0.96); }
+.hyprmac .spot-sub { font-size: 13px; font-weight: 400; color: rgba(255, 255, 255, 0.55); }
+.hyprmac .spot-foot {
+  padding: 14px 0 16px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+}
+.hyprmac .spot-foot { margin-left: 52px; }
+
+/* Modo Arquivos vazio (referencias/telas/spotlight-clique-modo-5, medido a 0,83 px/pt):
+ * "⋯" em círculo de ≈ 20 no campo; cápsulas de filtro de 22 com vão 8 e recuo 18 (preenchem a
+ * linha), 11 abaixo do filete; cabeçalhos Semibold 13 a 18 da borda; grade de 5 colunas de 112
+ * (recuo 14), miniatura de 65, 12 até o nome (13, 2 linhas), passo de 121; filete entre seções. */
+.hyprmac .spot-more {
+  min-width: 18px;
+  min-height: 18px;
+  margin-left: 8px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+}
+.spot-grid { padding: 0 0 14px 0; }
+.spot-filters { margin: 11px 18px 0 18px; }
+.hyprmac button.spot-filter {
+  min-height: 22px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+  box-shadow: none;
+}
+.hyprmac button.spot-filter label { font-size: 13px; color: rgba(255, 255, 255, 0.25); }
+.hyprmac button.spot-filter:hover { background: rgba(255, 255, 255, 0.16); }
+.hyprmac button.spot-filter.active { background: rgba(255, 255, 255, 0.24); }
+.hyprmac button.spot-filter.active label { color: rgba(255, 255, 255, 0.85); }
+.hyprmac .spot-grid-hdr {
+  margin: 11px 18px 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+.hyprmac .spot-grid-hdr.first { margin-top: 21px; }
+.spot-cells { margin: 0 14px; }
+.spot-grid-sep { min-height: 1px; margin: 14px 18px 0 18px; background: rgba(255, 255, 255, 0.12); }
+.hyprmac button.spot-cell {
+  padding: 0 0 10px 0;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+.hyprmac button.spot-cell:hover { background: rgba(255, 255, 255, 0.05); }
+.hyprmac button.spot-cell.selected { background: rgba(255, 255, 255, 0.14); }
+.spot-thumb { margin-bottom: 12px; }
+.hyprmac .spot-cell-name { font-size: 13px; color: rgba(255, 255, 255, 0.85); }
+
+/* Modo Apps vazio (spotlight-modo-apps-9, painel = 588 pt): cápsulas de 20 do tamanho do texto,
+ * centradas a 71 do topo e cortadas à direita; 1ª linha de ícones a 21 delas; ícone 58, nome
+ * Medium 12 em 1 linha a 11; filete a 201 do topo e 18 até a linha seguinte; passo de 103. */
+.spot-filters.spot-cats { margin: 8px 0 0 0; }
+.spot-cats > viewport > box { margin: 0 18px; }
+.hyprmac button.spot-filter.spot-cat { min-height: 20px; padding: 0 9px; }
+.hyprmac button.spot-filter.spot-cat label { font-size: 12.5px; }
+.spot-cells.apps.first { margin-top: 21px; }
+.spot-grid-sep.apps { margin: 5px 18px 18px 18px; }
+.spot-thumb.app { margin-bottom: 11px; }
+.hyprmac .spot-cell-name.app { font-size: 12px; font-weight: 500; }
+
+/* Busca (referencias/desejos/spotlight-busca-filtros-tab e -filtro-folders, 0,945 pt/px):
+ * cápsulas de filtro 11 abaixo do filete e 10 acima da 1ª linha; o filtro escolhido vira um
+ * token no campo — ícone 22 + nome no tamanho do texto, cápsula de 28 com canto 8, 10 até o
+ * texto; à direita do resultado selecionado "Search …" cinza 11 e a tecla "tab". */
+.spot-filters.spot-qfilters { margin: 11px 0 4px 0; }
+.hyprmac .spot-token {
+  margin-right: 10px;
+  padding: 0 8px 0 5px;
+  min-height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.hyprmac .spot-token-lbl { font-size: 25px; color: rgba(255, 255, 255, 0.92); }   /* = texto do campo */
+.hyprmac .spot-tab-hint { font-size: 11px; color: rgba(255, 255, 255, 0.50); }
+.hyprmac .spot-key.spot-tab-key:last-child { margin-right: 0; padding: 0 5px; font-size: 11px; }
+
+/* ───────────── Forçar Encerrar Aplicativos (⌥⌘Esc) ─────────────
+ * Janela comum do macOS: texto Regular 13, lista com borda fina e cantos de 8,
+ * linhas de 24 com ícone de 20, seleção azul do kit, dica em cinza e o botão
+ * azul (cápsula de 28, como os botões das janelas do Tahoe). */
+.hyprmac-forcequit .fq-text  { font-size: 13px; }
+.hyprmac-forcequit .fq-frame {
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.hyprmac-forcequit .fq-list,
+.hyprmac-forcequit .fq-list row { background-color: transparent; }
+.hyprmac-forcequit .fq-list { padding: 4px; }
+.hyprmac-forcequit .fq-list row {
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.hyprmac-forcequit .fq-list row:selected { background-color: #0069F9; }
+.hyprmac-forcequit .fq-list row:selected label { color: #ffffff; }
+.hyprmac-forcequit .fq-name  { font-size: 13px; }
+.hyprmac-forcequit .fq-hint  { font-size: 11px; color: rgba(255, 255, 255, 0.55); }
+.hyprmac-forcequit button:not(.titlebutton) {
+  min-height: 28px;
+  padding: 0 14px;
+  border-radius: 999px;
+}
+
+/* ───────────── Widgets da mesa: tamanhos, edição e galeria ─────────────
+ * Mesmo vidro e mesma linguagem da Galeria de Controles: painel raio 24,
+ * categorias em linhas raio 10, "−" cinza no canto de cada widget ao editar
+ * (vermelho ao passar o mouse), "+" nas prévias e Done azul. */
+.weather-small { padding: 14px 16px 14px 16px; }
+.weather-small .temp     { font-size: 40px; }
+.weather-small .now-icon { margin: 2px 0 0 0; }
+.weather-small .cond,
+.weather-small .hilo     { font-size: 13px; }
+
+.month-widget {
+  background-color: rgba(26, 26, 32, 0.58);
+  padding: 14px 12px 12px 12px;
+}
+.month-widget label.cal-month { font-size: 12px; }
+.month-widget label.cal-day   { min-width: 22px; min-height: 21px; font-size: 12px; }
+
+button.widget-remove,
+button.widget-add {
+  min-width: 22px;
+  min-height: 22px;
+  margin: 4px 0 0 4px;      /* dentro do canto: o Overlay do GTK corta o que sai */
+  padding: 0;
+  border-radius: 999px;
+  background: rgba(98, 98, 104, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+button.widget-remove label,
+button.widget-add label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: -2px;
+}
+button.widget-remove:hover { background: #FF4245; }
+button.widget-add          { background: rgba(0, 145, 255, 0.92); }
+button.widget-add:hover    { background: #1A9BFF; }
+
+.wg-panel {
+  border-radius: 24px;
+  background-color: rgba(38, 38, 42, 0.80);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.20) rgba(255, 255, 255, 0.11)
+                rgba(255, 255, 255, 0.07) rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.wg-side {
+  padding: 14px 12px 12px 14px;
+  min-width: 150px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 24px 0 0 24px;
+}
+.wg-title { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, 0.55); margin: 0 0 6px 6px; }
+button.wg-cat {
+  padding: 5px 8px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+button.wg-cat label { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.92); }
+button.wg-cat:hover    { background: rgba(255, 255, 255, 0.06); }
+button.wg-cat.selected { background: rgba(255, 255, 255, 0.14); }
+.wg-content { padding: 14px 18px 14px 22px; }
+.wg-head    { font-size: 13px; font-weight: 700; color: rgba(255, 255, 255, 0.92); }
+.wg-size    { font-size: 11px; color: rgba(255, 255, 255, 0.66); }
+button.wg-done {
+  min-height: 24px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #0091FF;
+}
+button.wg-done:hover { background: #1A9BFF; }
+button.wg-done label { font-size: 13px; font-weight: 600; color: #ffffff; }
+
+/* ───────────── banners empilhados (mesmo app) ─────────────
+ * Cartões de trás aparecem 7 e 6 px embaixo, recuados 16 e 32 px, com o mesmo
+ * vidro um pouco mais escuro e só os cantos de baixo arredondados. */
+.notifications .notif.stacked { margin-bottom: 0; }
+.notif-peek {
+  background-color: rgba(58, 58, 64, 0.70);
+  border-style: solid;
+  border-width: 0 1px 1px 1px;
+  border-color: rgba(255, 255, 255, 0.10);
+  border-radius: 0 0 14px 14px;
+}
+.notif-peek-2 { background-color: rgba(50, 50, 56, 0.58); border-radius: 0 0 12px 12px; margin-bottom: 16px; }
+.notif-peek-1.last { margin-bottom: 16px; }
+
+/* ───────────── Estilo de ícones e widgets (Ajustes ▸ Aparência) ─────────────
+ * Dark: fundo quase preto; Clear: vidro claro sem cor; Tinted: vidro na cor de
+ * destaque (o azul abaixo vira a cor escolhida ao carregar). O relógio e os
+ * ícones do Dock seguem o mesmo estilo no código. */
+.estilo-dark .weather { background-image: linear-gradient(170deg, rgba(8, 8, 10, 0.88), rgba(16, 16, 20, 0.86)); }
+.estilo-dark .shortcuts,
+.estilo-dark .month-widget { background-color: rgba(8, 8, 10, 0.88); }
+
+.estilo-clear .weather,
+.estilo-clear .shortcuts,
+.estilo-clear .month-widget {
+  background-image: none;
+  background-color: rgba(255, 255, 255, 0.10);
+}
+.estilo-clear label.cal-month { color: #ffffff; }
+.estilo-clear label.cal-today { background: rgba(255, 255, 255, 0.88); color: #000000; }
+.estilo-clear .shortcuts button label { color: rgba(255, 255, 255, 0.85); }
+
+.estilo-tinted .weather,
+.estilo-tinted .shortcuts,
+.estilo-tinted .month-widget {
+  background-image: none;
+  background-color: rgba(0, 145, 255, 0.30);
+}
+.estilo-tinted label.cal-month { color: #ffffff; }
+.estilo-tinted label.cal-today { background: #ffffff; color: #0091FF; }
+
+/* ───────────── ícones da Mesa (~/Desktop), como no Finder ─────────────
+ * Ícone 64; nome Regular 12 branco com sombra, até 2 linhas. Selecionado: fundo
+ * cinza translúcido raio 6 no ícone e o nome numa cápsula na cor de destaque. */
+.desktop-icons .di-icon { padding: 3px; border-radius: 6px; }
+.desktop-icons .di-icon.selected { background-color: rgba(0, 0, 0, 0.30); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18); }
+.hyprmac label.di-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  padding: 0 5px;
+  border-radius: 5px;
+}
+.hyprmac label.di-label.selected { background-color: #0069F9; text-shadow: none; }
+
+/* Spotlight num modo (Tahoe): atalho à direita do campo em duas teclinhas "⌘ 2" */
+.hyprmac .spot-key {
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0 3px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.60);
+  font-size: 11px;
+  font-weight: 600;
+}
+.hyprmac .spot-key:last-child { margin-right: 12px; }
+/* filtros da busca: rótulo legível (na referência é um cinza médio, não o quase apagado das
+ * categorias do modo Apps) */
+.hyprmac .spot-qfilters button.spot-filter label { color: rgba(255, 255, 255, 0.55); }
+
+/* Spotlight: cartão da conta (video/frames-ui/ui_0156, 2,395 px/pt) — 554×55 recuado 17, 2
+ * abaixo do campo e 9 acima do filete, canto 12; fundo ~11 % mais escuro que o vidro e borda de
+ * 1,25 a ~20 % quando selecionado; conta 12 cinza, resultado 19; copiar em círculo de 23 */
+.spot-calc {
+  margin: 2px 17px 9px 17px;
+  min-height: 55px;
+  padding: 0 15px 0 17px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.25px solid transparent;
+}
+.spot-calc.selected { background: rgba(255, 255, 255, 0.10); border-color: rgba(255, 255, 255, 0.22); }
+.hyprmac .spot-calc-expr { font-size: 12px; color: rgba(255, 255, 255, 0.60); }
+.hyprmac .spot-calc-val  { font-size: 19px; font-weight: 400; color: rgba(255, 255, 255, 0.96); }
+.hyprmac button.spot-calc-copy {
+  min-width: 23px;
+  min-height: 23px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.hyprmac button.spot-calc-copy label { font-size: 12px; color: rgba(255, 255, 255, 0.80); }
+.hyprmac button.spot-calc-copy:hover { background: rgba(255, 255, 255, 0.20); }
+
+/* "Search Controls" da galeria (rótulo por cima do campo; cor do placeholder) */
+.cc .ccg-ph { font-size: 13px; color: rgba(255, 255, 255, 0.45); }
+
+/* Battery progress uses the existing Tahoe widget/status palette. */
+@define-color battery_full #34C759;
+@define-color battery_low #FF4245;
+@define-color battery_charging #FF9230;
+
+/* Battery: reference widget-bateria-2.png, card 234×111, caption glyphs 9px
+ * high. 20px type at the established 430px medium width preserves that ratio.
+ * Keep this neutral material in light mode; shortcut cards are opaque white.
+ */
+.battery-widget {
+  background-color: rgba(26, 26, 32, 0.58);
+  padding: 18px;
+  color: #FFFFFF;
+  font-family: "SF Pro";
+  font-size: 20px;
+  font-weight: 400;
+}
+.estilo-dark .battery-widget { background-color: rgba(8, 8, 10, 0.88); }
+.estilo-clear .battery-widget { background-color: rgba(255, 255, 255, 0.10); }
+.estilo-tinted .battery-widget { background-color: rgba(0, 145, 255, 0.30); }
+
+/* Dock label, not the smaller standard help tooltip from Tooltips.txt.
+ * dock-rotulo-nome-app.png: 126×35 body; text ink 88×12, side insets 19px.
+ * Keep existing tint/border values while correcting the measured composition.
+ */
+.dock-tooltip {
+  font-family: "SF Pro";
+  font-weight: 500;
+  font-size: 17px;
+  padding: 6px 20px;
+  min-height: 35px;
+  background-color: rgba(43, 43, 48, 0.90);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.96);
+}
+.dock-tooltip.light {
+  background-color: rgba(245, 245, 247, 0.92);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* Central de Notificações: pilha de um app ("N more notifications", NotificationCenter.app 26.6.1)
+ * com o mesmo recuo dos banners empilhados; o texto segue o corpo, um pouco mais apagado. */
+.nc .notif.stacked { margin-bottom: 0; }
+.notif .nc-more { font-size: 12px; opacity: 0.62; margin-top: 2px; }

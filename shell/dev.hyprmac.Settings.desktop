@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=System Settings
+GenericName=Settings
+Comment=hyprmac System Settings (macOS Tahoe)
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-ajustes %U
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/System_Settings.png
+Categories=Settings;System;
+Keywords=settings;preferences;wifi;bluetooth;sound;appearance;display;
+StartupWMClass=dev.hyprmac.Settings
+StartupNotify=false

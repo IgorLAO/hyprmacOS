@@ -1,0 +1,80 @@
+# Estilos de camada — VisionUIs
+
+Extraído de `layerStyles`: materiais, vidro, controles, sombras.
+
+## Materials/Buttons
+
+### Disabled
+- **opacidade**: `0.04`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+### Idle (System Lighter)
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF/0.08", "mistura": "plus-lighter"}]`
+
+### Pinched
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF/0.20"}]`
+
+### System Hover
+- **opacidade**: `0.04`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+### System Light + Blur
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF/0.08"}]`
+- **desfoques**: `[{"tipo": "background", "raio": 112.5, "saturação": 1.2, "brightness": 1, "distortion": 0.6, "depth": 0.5, "chromaticAberrationMultiplier": 0, "isCustomGlass": false}]`
+
+### System Lighter + Specular
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF/0.08"}]`
+- **bordas**: `[{"cor": "#979797", "espessura": 0.5, "posição": "dentro", "gradiente": "linear({0.109297589557926, 0.0616313319052427}→{0.214755184984167, 1.52217421573079}: #FFFFFF/0.40 0.00, #FFFFFF/0.00 0.41, #FFFFFF/0.00 0.57, #FFFFFF/0.10 1.00)"}]`
+- **sombras**: `[{"cor": "#000000/0.10", "x": 0, "y": 2, "desfoque": 4, "espalhamento": 0}]`
+- **desfoques**: `[{"tipo": "background", "raio": 112.5, "saturação": 1.2, "brightness": 1, "distortion": 0.6, "depth": 0.5, "chromaticAberrationMultiplier": 0, "isCustomGlass": false}]`
+
+## Materials/Fills
+
+### Primary
+- **opacidade**: `0.96`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+### Vibrant Secondary
+- **opacidade**: `0.4`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+### Vibrant Tertiary
+- **opacidade**: `0.12`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+## Materials
+
+### Glass Platter
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#959595/0.25"}]`
+- **bordas**: `[{"cor": "#FFFFFF", "espessura": 1.4, "posição": "dentro", "gradiente": "linear({0.109297589557926, 0.0616313319052427}→{0.82893971165516, 0.771863012724743}: #FFFFFF/0.30 0.00, #FFFFFF/0.00 0.41, #FFFFFF/0.00 0.57, #FFFFFF/0.10 1.00)"}]`
+- **desfoques**: `[{"tipo": "background", "raio": 112.5, "saturação": 1.64, "brightness": 1, "distortion": 0.6, "depth": 0.5, "chromaticAberrationMultiplier": 0, "isCustomGlass": false}]`
+
+### Recessed Material View
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#000000/0.10", "mistura": "plus-darker"}]`
+- **sombras**: `[{"cor": "#000000/0.08", "x": 1, "y": 1.5, "desfoque": 4, "espalhamento": 0}, {"cor": "#FFFFFF/0.30", "x": 0, "y": -0.5, "desfoque": 1, "espalhamento": 0}]`
+
+### System Regular
+- **opacidade**: `0.08`
+- **mistura**: `"plus-darker"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#000000"}]`
+
+### System Thick
+- **opacidade**: `0.12`
+- **mistura**: `"plus-darker"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#000000"}]`
+
+### System Thin
+- **opacidade**: `0.08`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`
+
+### Vibrant Separator
+- **opacidade**: `0.08`
+- **mistura**: `"plus-lighter"`
+- **preenchimentos**: `[{"tipo": "cor", "cor": "#FFFFFF"}]`

@@ -1,0 +1,17 @@
+{
+  "component": "Control Center",
+  "state": "aberto",
+  "theme": "dark",
+  "accent": "blue",
+  "scale": 1.0,
+  "wallpaper": "foto-de-monitor",
+  "origin": "Foto de monitor Tahoe já presente em BaseConhecimento/referencias/telas",
+  "region": null,
+  "size": [
+    496,
+    491
+  ],
+  "note": "Referência com perspectiva; somente diagnóstico visual, não screenshot de pixels.",
+  "source_type": "photo",
+  "captured_at": "2026-10-07T02:03:04.336229+00:00"
+}

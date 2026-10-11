@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=News
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.News
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/News.png
+StartupWMClass=dev.hyprmac.News
+Terminal=false
+Categories=Utility;

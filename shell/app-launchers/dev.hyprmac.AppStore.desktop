@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=App Store
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.AppStore
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/AppStore.png
+StartupWMClass=dev.hyprmac.AppStore
+Terminal=false
+Categories=Utility;

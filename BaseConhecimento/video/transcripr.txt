@@ -1,0 +1,1013 @@
+Apple just released macOS 27 Golden Gate
+
+and there are more than 75 new features,
+
+but in this video, I'll be showing you
+
+the first 15 features that you need to
+
+try right away on your Mac. Let's start
+
+with the menu bar because now in macOS
+
+Golden Gate, you have this little arrow
+
+right here if you have too many toggles
+
+up top in the menu bar and it will hide
+
+them automatically. So, what you should
+
+do is feel free to add more controls to
+
+your menu bar than you had before
+
+because now you can hide them with one
+
+simple click if it goes past the little
+
+notch on your MacBook. So, here's
+
+another feature you'll want to try. If
+
+you go into your finder, go up here to
+
+the finder settings and then down here
+
+we'll have a brand new toggle called
+
+suggest file names. And when you enable
+
+this, this is going to give your files a
+
+suggested name when you go in here to
+
+rename it. So, all you have to do is sit
+
+on this screen right here and then you
+
+will see underneath of it it will pop up
+
+some suggestions. So, watermelon
+
+flavored candy for example, if I go
+
+ahead and do that and hit return, it
+
+will automatically rename it and you can
+
+see it was watermelon flavored candy.
+
+Not necessarily candy, but it was close
+
+enough. So, it's going to take what's in
+
+the image and it's going to give you a
+
+suggestion for what you want to title
+
+that file. Now, let's press command
+
+space because you'll notice that we have
+
+a brand new interface here and this is
+
+called search or ask. So, this replaces
+
+Spotlight search because it's now
+
+Spotlight plus Siri. It's a combination
+
+of both of them. So, you can not only
+
+search for some of your applications
+
+like if I search for Audacity, it shows
+
+it up right there, but I can also ask
+
+questions. So, since we have the brand
+
+new Siri AI on all the OS 27s, it's now
+
+much smarter. So, it not only has broad
+
+world knowledge so I can ask something
+
+like what's the best app for editing
+
+audio professionally. I can ask Siri
+
+that. So, this essentially has replaced
+
+Google and ChatGPT for me now because I
+
+can just do this right here and you can
+
+see it will give me an answer to any of
+
+my questions that I have. Plus, Siri is
+
+now smart because it has access to your
+
+personal context, has in-app actions,
+
+and much more. So, I can ask something
+
+like, "Where did I go for dinner
+
+recently?" and it's going to search
+
+through my messages, my photos, my
+
+notes, everything to figure out where I
+
+went recently for dinner. And you can
+
+see here it shows a couple of places
+
+that I've been recently along with a
+
+picture at one of these places. I should
+
+also mention that Spotlight Search is
+
+just way better now. So, the results
+
+come in faster, like you'll see it pop
+
+up quicker, and it's also a lot more
+
+accurate. Like the top hit is always
+
+what I'm searching for now. So, before
+
+sometimes it would be like the second or
+
+third result, but now with macOS Golden
+
+Gate, it pops up pretty much instantly
+
+and it's much quicker. So, that's
+
+definitely something to try out here,
+
+especially if you were not the biggest
+
+fan of Spotlight before in terms of its
+
+speed. Now, here is one of my favorite
+
+features in macOS 27 Golden Gate that
+
+you should absolutely try right away.
+
+And that has to do with iPhone
+
+mirroring. This is a feature I use all
+
+the time, but now it's gotten better
+
+with this new version of macOS. So, by
+
+default, you can see if you're just on
+
+the home screen, you can really only
+
+expand your screen a certain amount. But
+
+now, if you go into an application like
+
+Safari, for example, check this out. I
+
+can resize this. I can make this very
+
+large, much larger than anything I could
+
+do before on previous versions of macOS,
+
+and I can view my iPhone, you know,
+
+mirrored screen right here in a much
+
+larger view than I could ever get on my
+
+actual iPhone. So, that's pretty neat.
+
+So, this update already enhances liquid
+
+glass quite a bit with the new app
+
+icons, with the windows, with the
+
+stoplight menus being a lot more like
+
+liquid glass, but you can also enhance
+
+this even more with a new setting, a new
+
+slider. So, if you go to your settings
+
+and go into appearance, right here we
+
+have a new liquid glass section where
+
+you can tweak how much liquid glass you
+
+want. So, all the way down is fully, you
+
+know, like almost fully transparent
+
+right there, and then the more you go up
+
+on the slider, the more opaque it
+
+becomes and the more like frosted glass
+
+it looks. Now, if you're not a fan of
+
+liquid glass, you're probably going to
+
+put this all the way up right here, but
+
+that may still not be, you know, enough
+
+for you. So, there's actually something
+
+else you might want to change, and that
+
+is if we go down here into the
+
+accessibility settings. Let's go down to
+
+accessibility right here, and then to
+
+display, you want to go to show borders
+
+right here, and turn on show borders.
+
+This is going to give you an effect
+
+where you can basically see, you know,
+
+all the borders. I mean, it's just going
+
+to make it a lot more clear. It's almost
+
+like a stroke on all of these different
+
+menu items. So, it adds a little bit
+
+more depth to these line items here, and
+
+it's going to do that all throughout
+
+macOS as well. All right, so if you're
+
+like me, you've been waiting on this
+
+feature for a long time. So, now with
+
+macOS 27, we can finally record system
+
+audio natively. So, if I go into like
+
+QuickTime, for example, and I go to
+
+options, you can see that we now have
+
+include system audio. So, I'd highly
+
+recommend going ahead and enabling that,
+
+clicking it, to make sure that you
+
+capture your system audio when you are
+
+doing a screen recording. Now, of
+
+course, you don't want to have too many
+
+things because it will lead to the file
+
+size being very large, and you could run
+
+out of storage if you record a lot of
+
+those, but I always like having system
+
+audio in my recordings. Now, speaking of
+
+storage, unless you bought the very top
+
+storage option, you're eventually going
+
+to run low and kind of run out of space.
+
+And when that time comes, you're going
+
+to be glad to have today's sponsor,
+
+CleanMyMac, running on your Mac. And
+
+that's because CleanMyMac helps you
+
+eliminate junk files and hidden files to
+
+regain that storage back. So, I just use
+
+the Space Lens feature pretty much like
+
+multiple times a week, actually, to
+
+visualize my storage and spot those big
+
+unnecessary files. But, there's so much
+
+more to it because you could also
+
+uncover duplicate files, system cache,
+
+and other junk that you likely didn't
+
+even know was eating away at your
+
+storage. You can run the smart care
+
+scan, and it's going to give you an
+
+overview of what's taking up space, and
+
+it just takes one click to remove those
+
+files. There's also clean up to clear
+
+cache and junk files, protection to scan
+
+for security threats, performance to
+
+manage background tasks, applications to
+
+properly uninstall apps and remove those
+
+leftover files, and there's my clutter
+
+as well to remove duplicates or large
+
+and old files that you just don't need
+
+anymore. And if you're running low on
+
+your iCloud space, your Google Drive
+
+space, they also have cloud clean up for
+
+that. But my personal favorite part of
+
+CleanMyMac, and I've mentioned this
+
+before, but it's the menu bar. So, the
+
+interface is just so clean and it gives
+
+you quick and easy access to your
+
+available storage, your RAM pressure,
+
+your temperatures, your Wi-Fi speeds,
+
+everything is right here and it looks so
+
+good as well. So, yeah, CleanMyMac just
+
+makes my life so much easier. And if you
+
+want to try it out free for 7 days,
+
+click my link down in the description
+
+below. And if you use my code Brandon20,
+
+you'll get 20% off. Now, in the Notes
+
+application, you can draw. So, if you go
+
+to the top toolbar right here, you'll
+
+notice that we have the markup tool, and
+
+that's because we can now draw inside of
+
+the Notes application. Now, of course,
+
+this does work better if you have a
+
+trackpad. It doesn't work as well with a
+
+mouse. You can now draw in macOS 27
+
+Golden Gates. Here's another feature you
+
+should know about on macOS 27, and that
+
+is the fact that we can now swipe to
+
+refresh. So, in Safari here, if I swipe
+
+up right here, if I go up, you can see
+
+it will refresh the page, just like we
+
+can on iOS, iPadOS, and all the other
+
+OS's. We now have that same swipe to
+
+refresh gesture here on macOS. Here's
+
+another feature that you may not have
+
+even known about because the toggle is
+
+kind of hidden. If you go into the Mail
+
+application and go into your settings,
+
+if we go over here to the composing tab,
+
+you'll see that we have personalized
+
+smart replies. This is disabled by
+
+default, but you might want to go ahead
+
+and enable this. Check that off right
+
+there because now when you go to reply
+
+to a message, it'll start off the reply
+
+with how it thinks you're going to
+
+respond. So, you can see it says, "What
+
+did you want to do tonight? Eat or
+
+golf?" And you can see it gives me the
+
+suggestions for going to dinner or
+
+preferring to golf. So, I said prefer to
+
+golf, you can see it will start up a
+
+smart reply and respond how it thinks I
+
+would reply based on my previous
+
+messages that I've sent. Okay, so here's
+
+one of my favorite features in Golden
+
+Gates, but you might not have this
+
+turned on by default. So, if you go into
+
+your Safari here, and let's say we have
+
+quite a few tabs, some of these are
+
+related, you'll notice right here we
+
+have this little subtle two right there.
+
+If you click on that drop-down, we have
+
+related tabs now. So, this allows you to
+
+organize, and you can also automatically
+
+organize. So, it says Safari can
+
+automatically create topics and organize
+
+related tabs as you browse. If you click
+
+on that, it will start to do that, and
+
+you can see it combines all of these
+
+windows right here, these tabs, into one
+
+that's called iPhone. And you can also
+
+move tabs into there as well. So, I'd
+
+recommend that if it doesn't do it
+
+automatically, you should just go ahead
+
+and kind of pull it into there, and you
+
+can see that changes to five. You can
+
+also pull it out of there just as
+
+easily. Now, staying in Safari, if we go
+
+up here to the left of the address bar,
+
+we have these three little lines right
+
+here. If we go into here, we have two
+
+new options here. So, we're going to
+
+start with describe extension because
+
+this is really cool, and you have this
+
+on iOS as well, but I feel like this is
+
+better on macOS. So, this is definitely
+
+something you should go ahead and tweak
+
+once you install this update. This
+
+allows you to create an extension, a
+
+custom extension, just by describing it
+
+with natural language. Now, if you don't
+
+know what you want to create, if you
+
+don't have an idea, you can go into one
+
+of these categories for some examples.
+
+So, if I go to boost productivity, for
+
+example, this one seems cool. So, it
+
+says display a reading time estimate as
+
+a badge on the extension. So, I'm just
+
+going to go ahead and select that and go
+
+to next, and it's going to give me an
+
+extension suggestion here. If something
+
+like it exists in the App Store, it will
+
+show me that right here. But, if I want
+
+to continue with my own custom one, I
+
+could just go to create, and we're going
+
+to have to authenticate, and it's going
+
+to continue to create the extension.
+
+You'll see a little live activity up
+
+here underneath of your address bar,
+
+underneath of your tabs. Okay, so now
+
+that it's complete, we can see we have
+
+this little icon here for reading time,
+
+and it shows us 16 minutes up there to
+
+read this article. So, it is a pretty
+
+long article, but it will show us up
+
+there like the amount of time to read
+
+it. So, not the best one, but if you do
+
+want to tweak it, you can go into here
+
+and go to edit extension, and you can
+
+describe a change. So, if you want to
+
+add on features, or remove features, or
+
+change how it works, you can describe a
+
+change, and it will change it for you.
+
+Now, if we go back up to the left of the
+
+address bar to these three lines and
+
+click again, something else you need to
+
+change in macOS Golden Gates is notify
+
+me. This is another feature that is on
+
+iOS as well, but it performs way better
+
+on macOS. So, what this does is it lets
+
+you know when a website updates the
+
+content you're interested in. So, a good
+
+example are these pants right here.
+
+These pants are great, but I don't want
+
+to spend $138. I want to wait for them
+
+to go on sale, so I can just click right
+
+here. The default is just seeing if the
+
+price dropped from the current value. If
+
+you tap on edit right here, you can
+
+choose the frequency of which it checks.
+
+So, maybe this doesn't need to check
+
+every day. I doubt that there's going to
+
+be a sale just for 1 day, so I'll just
+
+do every week. Maybe I'll do every week
+
+on Monday at, you know, 4:00 on the dot
+
+p.m. So, there we go. I have that now at
+
+4:00 p.m. I'll click done, and now it's
+
+going to give me a notification, you
+
+know, every single time on Monday only
+
+if something changes. In the calendar
+
+application, if you go to add an event,
+
+you can now just use natural language to
+
+create that event. So, I just typed in
+
+birthday at 8:15 p.m. with Mike at
+
+Capital Grille. And when I type that in,
+
+it gives me the option for which one. I
+
+can click that, and if I press on return
+
+right here, you can see it shows
+
+birthday at 81. So, not the best right
+
+here, but it does fill in the time, the
+
+location, and everything right there.
+
+And if you want to edit that, you can
+
+edit the description right there, or you
+
+can just edit the title itself. But, the
+
+whole point is, you know, that you can
+
+now use natural language when you go to
+
+create an event or a reminder. If we
+
+head into the Photos app and go to edit,
+
+and then we go to our tools section
+
+right here, you'll notice that we have
+
+our cleanup, extend, and reframe like we
+
+have on the iPhone and on the iPad.
+
+However, I notice that on macOS, it's
+
+not only much better to like I kind of
+
+see the whole visual, but also you have
+
+all these little tools over here on the
+
+right-hand side. So, I'd go ahead and
+
+tweak these and get very specific
+
+because you can do that on macOS,
+
+something you cannot do on iOS or
+
+iPadOS. If you wanted to change the
+
+angle, the perspective of this photo,
+
+you can do that with more precision over
+
+here with these on the right-hand side.
+
+And the the goes with cleanup and extend
+
+as well. So, you can see right here, I
+
+can choose the aspect ratio, for
+
+example, and then the same goes with the
+
+clean up feature as well. So, there's
+
+not really much to clean up in here, but
+
+if there were, you can see I have the
+
+erase and retouch sliders right here.
+
+So, that's something else you should
+
+change on macOS, and also you should
+
+change the image quality from auto to
+
+high quality. So, don't forget to change
+
+that on macOS. It's very easy to miss if
+
+you're not looking. Heading over to our
+
+desktop, if you already have some
+
+widgets on your desktop, you might want
+
+to right click on them because you'll
+
+notice that we have a new option for
+
+extra large portrait. So, you can now
+
+have widgets that take up a lot more
+
+real estate on your desktop. So, we can
+
+have it for reminders, we have it for
+
+weather right here, even for home. So,
+
+if you have a lot of HomeKit devices,
+
+you can see this right here. We can move
+
+that over. Now, of course, this will
+
+take up a lot of, you know, real estate
+
+on your desktop. So, you probably only
+
+want a couple of these, but it's pretty
+
+cool now that we have these extra large
+
+widgets to choose from. So, shared
+
+albums got a big revamp with all the iOS
+
+27 updates, but I specifically like
+
+using the shared albums in the Photos
+
+application on desktop. So, something
+
+else you should do is go in and check
+
+out the new options in shared album. So,
+
+we have things like you can now share
+
+full resolution photos and videos. So,
+
+if I have this video, which is of the
+
+iPhone 18 Pro Max, it will now show it
+
+in 4K quality. Before, it was, you know,
+
+limited. You can see it's in 4K right
+
+now, and this shows up for everybody as
+
+well. And plus, now you can invite
+
+somebody to a shared album who is on a
+
+Windows or Android device. You don't
+
+have to make it public, you can send
+
+them their own personal invites. You'll
+
+also notice the activity log right here,
+
+and you can also now make shared albums
+
+temporary. So, if we go up here to file,
+
+and we go to new shared album with
+
+selection, you can see right here we get
+
+this new pop-up screen. And if we go to
+
+continue, you'll notice if we scroll
+
+down, we have make album temporary. So,
+
+you can now make a shared album
+
+temporary, so it disappears, it kind of
+
+deletes after 30 days. Now, you should
+
+also check out the new Siri in macOS 27
+
+because it is so much better than ever
+
+before. So, we do have the standalone
+
+application here, which is going to be
+
+just like what you see and like a Chat
+
+GPT, for example, because it's just a
+
+back-and-forth chatbot with your history
+
+and everything like that. It's really
+
+great. And also, we have a lot of
+
+settings, as well. So, if we go into
+
+your settings here and if we go down to
+
+Siri, we have a lot of different options
+
+that you might want to change. So, first
+
+off, you can change the voice of Siri,
+
+especially if you're in the American
+
+voice. There are other ones, as well,
+
+but you can change the expressivity and
+
+the pace. So, you can change how
+
+human-like it sounds and how fast Siri
+
+talks. If we go down here, you have
+
+opens to. So, if you want to open the
+
+Siri application to a new conversation
+
+instead of your recents, you can do
+
+that. I find that to be pretty
+
+convenient. And then, you also have this
+
+right here, keep conversation. So, if
+
+you don't want to keep your
+
+conversations in Siri all the time, like
+
+forever, you can have it so they delete
+
+after a set amount of time, whether
+
+that's 30 days or 1 year. And then, down
+
+here, we have automatic visual lookup,
+
+as well. So, if you want to identify
+
+objects and places when you take a
+
+screenshot, you can enable that. And
+
+that leads me to the next thing you need
+
+to try in macOS Golden Gates, and that
+
+is visual intelligence. If you press
+
+command shift six, that will pull up
+
+this right here. And if you go ahead and
+
+select something, you can see it kind of
+
+has a Siri glow around it. If you let
+
+go, you will be able to ask Siri right
+
+there. So, I'm going to ask something
+
+like, "How tall is this?" So, I'm going
+
+to ask how tall I just said is this, but
+
+it's going to know that that is the
+
+Golden Gate Bridge, and it's going to
+
+tell me exactly how tall it is. And by
+
+the way, if you want to change that
+
+keyboard shortcut, you can. Just go into
+
+your settings and then go down here to
+
+keyboard. And we're going to go into
+
+keyboard shortcuts. And then, if we go
+
+to screenshots right here, you'll see
+
+that we have two new options. So, we can
+
+either do command option six or command
+
+option space. So, you can do it about
+
+the active window, as well. So, if I do
+
+command option space, you can see it
+
+will do visual intelligence over the
+
+entire window there, and I can ask
+
+something about this window. This is
+
+also great if you need troubleshooting
+
+advice, like if you're in Photoshop or
+
+Final Cut and you're stumped on
+
+something, you can always ask Siri, and
+
+it will do a good job of telling you how
+
+to solve that. So, those are the first
+
+15 features that I would try out after
+
+installing macOS 27 Golden Gates. And a
+
+lot of the changes are honestly just
+
+visual. You'll see a lot of changes to,
+
+you know, like the windows. You'll see
+
+we have this little animation here over
+
+the stoplights. The floating windows are
+
+gone. Everything just looks a little bit
+
+more polished and more liquid glass-like
+
+as well here in macOS 27 Golden Gates.
+
+But anyways, if you guys enjoyed this
+
+video, give it a thumbs up. Let me know
+
+your thoughts down in the comments below
+
+and I'll see you soon.

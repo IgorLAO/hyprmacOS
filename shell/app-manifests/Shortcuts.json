@@ -1,0 +1,24 @@
+{
+  "id": "dev.hyprmac.Shortcuts",
+  "name": "Shortcuts",
+  "icon": "shell/icons/tahoe26/factory/Shortcuts.png",
+  "layout": "sidebar",
+  "size": [
+    800,
+    600
+  ],
+  "sidebar_items": [],
+  "status": "coming_soon",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.shortcuts",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Shortcuts.json",
+    "menu_state": "absent",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Shortcuts.app/Contents/Resources/AppIcon.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": null,
+  "toolbar_items": [],
+  "transition_ms": 160
+}

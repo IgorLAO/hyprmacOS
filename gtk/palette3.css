@@ -1,0 +1,59 @@
+/* hyprmac — paleta GTK 3, modo escuro */
+
+/* ───────────── paleta ───────────── */
+
+@define-color mac_window      #323232;   /* windowBackgroundColor (DarkAqua.car, 26.6.1) */
+@define-color mac_toolbar     #1e1e1e;
+@define-color mac_sidebar     #262628;
+@define-color mac_view        #1e1e1e;
+@define-color mac_popover     rgba(40, 40, 43, 0.97);
+@define-color mac_control     rgba(255, 255, 255, 0.10);
+@define-color mac_control_hi  rgba(255, 255, 255, 0.15);
+@define-color mac_control_lo  rgba(255, 255, 255, 0.06);
+@define-color mac_stroke      rgba(255, 255, 255, 0.10);
+@define-color mac_separator   rgba(255, 255, 255, 0.08);
+/* labelColor/secondaryLabelColor/tertiaryLabelColor: Tahoe 26.6.1. */
+@define-color mac_label       rgba(255, 255, 255, 0.847058824);   /* labelColor (DarkAqua.car, 26.6.1) */
+@define-color mac_label_2     rgba(255, 255, 255, 0.549019608);
+@define-color mac_label_3     rgba(255, 255, 255, 0.247058824);
+/* Destaque padrão AppKit Tahoe 26.6.1; accent.css sobrescreve a escolha. */
+@define-color mac_accent      #007aff;   /* controlAccentBlueColor (26.6.1); scripts/accent sobrescreve */
+@define-color mac_accent_hi   #3395ff;   /* hover: azul 20% mais claro */
+@define-color mac_selection   #0069f9;   /* seleção de menu/lista do kit */
+@define-color mac_destructive #ff4245;
+@define-color mac_green       #30d158;
+@define-color mac_orange      #ff9230;
+@define-color mac_yellow      #ffd600;
+@define-color mac_ink         #ffffff;   /* base dos brilhos/bordas translúcidos */
+@define-color mac_knob        #e9e9ea;
+@define-color mac_tooltip     rgba(44, 44, 47, 0.97);
+/* menus: vidro "Menus" do kit (#5A5A5A/0.50 luminosity) — sem blend modes no
+ * GTK3, fica um cinza-escuro translúcido; o Hyprland desfoca o popup por trás */
+@define-color mac_menu        rgba(40, 40, 44, 0.74);
+@define-color mac_menu_rim    rgba(102, 102, 102, 0.40);   /* aro interno #666/0.40 */
+@define-color mac_menu_edge   rgba(0, 0, 0, 0.80);         /* filete externo #000/0.80 */
+@define-color mac_scroll      rgba(255, 255, 255, 0.55);   /* barra de rolagem do kit */
+
+/* nomes que o Adwaita usa internamente */
+@define-color theme_bg_color                @mac_window;
+@define-color theme_fg_color                @mac_label;
+@define-color theme_base_color              @mac_view;
+@define-color theme_text_color              @mac_label;
+@define-color theme_selected_bg_color       @mac_accent;
+@define-color theme_selected_fg_color       #ffffff;
+@define-color insensitive_fg_color          @mac_label_3;
+@define-color borders                       @mac_separator;
+@define-color accent_color                  @mac_accent;
+@define-color accent_bg_color               @mac_accent;
+@define-color window_bg_color               @mac_window;
+@define-color view_bg_color                 @mac_view;
+@define-color headerbar_bg_color            @mac_toolbar;
+@define-color popover_bg_color              @mac_popover;
+@define-color error_color                   @mac_destructive;
+@define-color destructive_color             @mac_destructive;
+@define-color success_color                 @mac_green;
+@define-color warning_color                 @mac_orange;
+
+
+/* keyboardFocusIndicatorColor: DarkAqua.car, Tahoe 26.6.1 (25G76). */
+@define-color mac_focus rgba(37, 173, 255, 0.498039216);

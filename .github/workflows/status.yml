@@ -1,0 +1,26 @@
+name: status
+# Regera o mapa de status quando um commit chega sem ele atualizado
+# (commit feito pela web ou sem o hook .githooks/pre-commit).
+on:
+  push:
+    branches: [main]
+    paths:
+      - BaseConhecimento/LISTA-DE-DESEJOS.md
+      - BaseConhecimento/comparacao/MATRIZ.md
+      - BaseConhecimento/referencias/hyprmac-apps-progress.json
+      - scripts/status-map
+permissions:
+  contents: write
+jobs:
+  mapa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/status-map
+      - run: |
+          git diff --quiet -- docs/status README.md && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/status README.md
+          git commit -m "status: atualiza mapa [skip ci]"
+          git push

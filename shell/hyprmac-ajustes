@@ -1,0 +1,3495 @@
+#!/usr/bin/env python3
+"""hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe).
+
+  hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth,
+                               network, sound, appearance, desktop-dock, displays…
+
+Referências: vídeo do macOS 27 (BaseConhecimento/video/frames-ui/ui_0098 Geral,
+ui_0100 Aparência, ui_0106 Telas) e o kit macOS 27 (páginas Sidebars, Forms, Windows):
+  - janela 756 de largura e raio 26 ("Window" do kit; regra no hyprmac.lua);
+  - barra lateral flutuante recuada 8 (raio 26 − 8 = 18), semáforo em cima, busca em
+    cápsula, a conta (avatar, nome, "Apple Account"), e itens de 32 com ícone colorido
+    de 20 e texto SF 13 — seleção em azul (a cor de destaque), raio 8;
+  - conteúdo: voltar/avançar numa cápsula de vidro + título; formulários de raio 12
+    com recuo 10, linhas de 40 (texto) e 48 (com controle), separadores recuados.
+Painéis que mexem no sistema de verdade usam os mesmos scripts do hyprmac (theme,
+accent, acessibilidade, bar-style), nmcli, bluetoothctl, wpctl/pactl, hyprctl e o
+hyprmac-shell pelo D-Bus. Conta Apple, iCloud e afins são simulados (o que se
+liga/desliga fica em ~/.config/hyprmac/ajustes.json).
+"""
+import ast
+import unicodedata
+import getpass
+import json
+import math
+import os
+import pwd
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import threading
+import time
+
+import cairo
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("PangoCairo", "1.0")
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango, PangoCairo  # noqa: E402
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(HERE)
+APP_ID = "dev.hyprmac.Settings"
+CONF_DIR = os.path.expanduser("~/.config/hyprmac")
+MOCK_PATH = os.path.join(CONF_DIR, "ajustes.json")
+SHELL_CONF = os.path.join(CONF_DIR, "config.json")
+A11Y_PATH = os.path.join(CONF_DIR, "acessibilidade.json")
+APPEARANCE_PATH = os.path.join(CONF_DIR, "aparencia.json")
+
+W, H = 756, 660
+SIDEBAR_W = 256          # coluna da barra lateral (o vidro fica recuado 8 dentro dela)
+ICON = 20                # ícones da barra lateral e das linhas (kit: Medium)
+
+from accent_palette import GNOME_ACCENTS as ACCENTS
+from cocoa_entry import CocoaEntryKeys
+import menubar_items
+
+
+
+def G(code):
+    return chr(int(code, 16))
+
+
+def run(cmd, timeout=4):
+    try:
+        return subprocess.run(cmd, shell=True, capture_output=True, text=True,
+                              timeout=timeout).stdout.strip()
+    except subprocess.TimeoutExpired:
+        return ""
+
+
+def hypr_socket(cmd):
+    """Comando direto no socket do Hyprland (como o hyprctl, sem abrir processo)."""
+    import socket
+    sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if not sig:
+        return ""
+    path = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "hypr", sig, ".socket.sock")
+    try:
+        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as so:
+            so.settimeout(1)
+            so.connect(path)
+            so.sendall(cmd.encode())
+            return so.recv(4096).decode(errors="replace")
+    except OSError:
+        return ""
+
+
+def spawn(cmd):
+    subprocess.Popen(cmd, shell=True, start_new_session=True,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def shell_cmd(cmd):
+    spawn("gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell "
+          f"--method dev.hyprmac.Shell.Command {GLib.shell_quote(cmd)}")
+
+
+def in_thread(fn, *args):
+    threading.Thread(target=fn, args=args, daemon=True).start()
+
+
+def load_json(path, default):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return default
+
+
+def save_json(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=1, ensure_ascii=False)
+
+
+MOCK = load_json(MOCK_PATH, {})
+
+
+def mock(key, default=None):
+    return MOCK.get(key, default)
+
+
+def set_mock(key, value):
+    MOCK[key] = value
+    save_json(MOCK_PATH, MOCK)
+
+
+def is_dark():
+    return "prefer-dark" in run("gsettings get org.gnome.desktop.interface color-scheme")
+
+
+def accent_name():
+    return run("gsettings get org.gnome.desktop.interface accent-color").strip("'") or "blue"
+
+
+def hypr_json(what):
+    try:
+        return json.loads(run(f"hyprctl {what} -j"))
+    except ValueError:
+        return []
+
+
+# ───────────────────────────── peças visuais ─────────────────────────────
+
+def label(text="", cls=None, xalign=0.0, markup=False, ellipsize=False):
+    lb = Gtk.Label()
+    lb.set_markup(text) if markup else lb.set_text(text)
+    lb.set_xalign(xalign)
+    if ellipsize:
+        lb.set_ellipsize(Pango.EllipsizeMode.END)
+    if cls:
+        for c in cls.split():
+            lb.get_style_context().add_class(c)
+    return lb
+
+
+WALL_THUMB_W, WALL_THUMB_H = 107, 71     # miniaturas do Wallpaper (Tahoe: 107,5×71)
+
+
+def screen_aspect():
+    """Proporção do monitor principal (a prévia do papel de parede segue a tela, como no Mac)."""
+    try:
+        disp = Gdk.Display.get_default()
+        m = disp.get_primary_monitor() or disp.get_monitor(0)
+        g = m.get_geometry()
+        return g.width / g.height if g.height else 16 / 9
+    except Exception:
+        return 16 / 9
+
+
+def remove_class(w, *classes):
+    ctx = w.get_style_context()
+    for c in classes:
+        ctx.remove_class(c)
+
+
+def add_class(w, *classes):
+    for c in classes:
+        w.get_style_context().add_class(c)
+    return w
+
+
+def hex_rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def squircle(cr, x, y, w, h, r):
+    """Retângulo de cantos contínuos (aproximação do squircle da Apple)."""
+    k = 0.62
+    cr.new_sub_path()
+    cr.move_to(x + r, y)
+    cr.line_to(x + w - r, y)
+    cr.curve_to(x + w - r * (1 - k), y, x + w, y + r * (1 - k), x + w, y + r)
+    cr.line_to(x + w, y + h - r)
+    cr.curve_to(x + w, y + h - r * (1 - k), x + w - r * (1 - k), y + h, x + w - r, y + h)
+    cr.line_to(x + r, y + h)
+    cr.curve_to(x + r * (1 - k), y + h, x, y + h - r * (1 - k), x, y + h - r)
+    cr.line_to(x, y + r)
+    cr.curve_to(x, y + r * (1 - k), x + r * (1 - k), y, x + r, y)
+    cr.close_path()
+
+
+def glyph_of(code):
+    """Código da Nerd Font ("f035c") → glifo; nomes de ícones desenhados ("toggles") passam."""
+    return G(code) if re.fullmatch(r"f[0-9a-f]{3,4}", code) else code
+
+
+class AppIcon(Gtk.DrawingArea):
+    """Ícone dos Ajustes: quadrado de cantos contínuos com degradê da cor (mais clara
+    em cima) e o símbolo branco no meio — como os do Tahoe."""
+
+    def __init__(self, glyph, color, size=ICON, fg="#FFFFFF"):
+        super().__init__()
+        self.glyph, self.color, self.size, self.fg = glyph, color, size, fg
+        self.set_size_request(size, size)
+        self.set_valign(Gtk.Align.CENTER)
+        self.connect("draw", self._draw)
+
+    def _draw(self, _w, cr):
+        s = self.size
+        r, g, b = hex_rgb(self.color)
+        squircle(cr, 0, 0, s, s, s * 0.235)
+        grad = __import__("cairo").LinearGradient(0, 0, 0, s)
+        lift = lambda c: min(1.0, c + 0.10)
+        grad.add_color_stop_rgb(0, lift(r), lift(g), lift(b))
+        grad.add_color_stop_rgb(1, r, g, b)
+        cr.set_source(grad)
+        cr.fill_preserve()
+        cr.set_source_rgba(1, 1, 1, 0.14)       # aro claro de 0,5
+        cr.set_line_width(0.6)
+        cr.stroke()
+        if self.glyph == "toggles":
+            # Menu Bar (video/frames-ui/ui_0002): dois interruptores brancos — o de cima em
+            # contorno com o botão à esquerda, o de baixo cheio com o botão (cinza) à direita
+            cr.set_source_rgb(*hex_rgb(self.fg))
+            w_, h_ = s * 0.62, s * 0.24
+            x_ = (s - w_) / 2
+            for i, y_ in enumerate((s * 0.22, s * 0.54)):
+                rr = h_ / 2
+                cr.new_sub_path()
+                cr.arc(x_ + w_ - rr, y_ + rr, rr, -math.pi / 2, math.pi / 2)
+                cr.arc(x_ + rr, y_ + rr, rr, math.pi / 2, 3 * math.pi / 2)
+                cr.close_path()
+                if i == 0:
+                    cr.set_line_width(max(1.0, s * 0.055))
+                    cr.stroke()
+                    cr.arc(x_ + rr, y_ + rr, rr * 0.62, 0, 2 * math.pi)
+                    cr.fill()
+                else:
+                    cr.fill()
+                    cr.set_source_rgb(r, g, b)
+                    cr.arc(x_ + w_ - rr, y_ + rr, rr * 0.62, 0, 2 * math.pi)
+                    cr.fill()
+            return False
+        layout = PangoCairo.create_layout(cr)
+        fd = Pango.FontDescription.from_string("Symbols Nerd Font")
+        fd.set_absolute_size(s * 0.66 * Pango.SCALE)
+        layout.set_font_description(fd)
+        layout.set_text(self.glyph, -1)
+        _ink, logical = layout.get_pixel_extents()
+        cr.move_to((s - logical.width) / 2 - logical.x, (s - logical.height) / 2 - logical.y)
+        cr.set_source_rgb(*hex_rgb(self.fg))
+        PangoCairo.show_layout(cr, layout)
+        return False
+
+
+class Avatar(Gtk.DrawingArea):
+    """Foto da conta (~/.face ou a do AccountsService) ou as iniciais num círculo."""
+
+    def __init__(self, size, name):
+        super().__init__()
+        self.size, self.name = size, name
+        self.set_size_request(size, size)
+        self.set_valign(Gtk.Align.CENTER)
+        self.pb = None
+        user = getpass.getuser()
+        for p in (os.path.expanduser("~/.face"), f"/var/lib/AccountsService/icons/{user}"):
+            try:
+                self.pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(p, size * 2, size * 2, True)
+                break
+            except Exception:
+                pass
+        self.connect("draw", self._draw)
+
+    def _draw(self, _w, cr):
+        import math
+        s = self.size
+        cr.arc(s / 2, s / 2, s / 2, 0, 2 * math.pi)
+        cr.clip()
+        if self.pb:
+            cr.scale(s / self.pb.get_width(), s / self.pb.get_height())
+            Gdk.cairo_set_source_pixbuf(cr, self.pb, 0, 0)
+            cr.paint()
+            return False
+        grad = __import__("cairo").LinearGradient(0, 0, 0, s)
+        grad.add_color_stop_rgb(0, 0.66, 0.68, 0.73)
+        grad.add_color_stop_rgb(1, 0.47, 0.49, 0.54)
+        cr.set_source(grad)
+        cr.paint()
+        initials = "".join(w[0] for w in self.name.split()[:2]).upper() or "?"
+        layout = PangoCairo.create_layout(cr)
+        fd = Pango.FontDescription.from_string("SF Pro Rounded Semibold")
+        fd.set_absolute_size(s * 0.40 * Pango.SCALE)
+        layout.set_font_description(fd)
+        layout.set_text(initials, -1)
+        _i, lg = layout.get_pixel_extents()
+        cr.move_to((s - lg.width) / 2 - lg.x, (s - lg.height) / 2 - lg.y)
+        cr.set_source_rgb(1, 1, 1)
+        PangoCairo.show_layout(cr, layout)
+        return False
+
+
+class StorageBar(Gtk.DrawingArea):
+    """Barra de armazenamento em segmentos coloridos (iCloud, Armazenamento)."""
+
+    def __init__(self, parts, total, height=14):
+        super().__init__()
+        self.parts, self.total = parts, max(total, 1)
+        self.set_size_request(-1, height)
+        self.connect("draw", self._draw)
+
+    def _draw(self, w, cr):
+        width, h = w.get_allocated_width(), w.get_allocated_height()
+        squircle(cr, 0, 0, width, h, h / 2)
+        cr.clip()
+        dark = is_dark_cached()
+        cr.set_source_rgba(1, 1, 1, 0.10) if dark else cr.set_source_rgba(0, 0, 0, 0.08)
+        cr.paint()
+        x = 0
+        for _name, size, color in self.parts:
+            pw = width * size / self.total
+            cr.rectangle(x, 0, max(pw - 1.5, 0), h)
+            cr.set_source_rgb(*hex_rgb(color))
+            cr.fill()
+            x += pw
+        return False
+
+
+_DARK = None
+
+
+def is_dark_cached():
+    global _DARK
+    if _DARK is None:
+        _DARK = is_dark()
+    return _DARK
+
+
+def popup_button(options, current, on_change, dot=None):
+    """Botão pop-up dos formulários do Tahoe (kit, linha "Popup"): valor em cinza + Arrow
+    Button de 24 (círculo #FFF/0.07 com ⌃⌄ Semibold), vão 6; o menu marca a opção atual.
+    dot: função () → "#rrggbb" | "multicolor" — bolinha de 14 antes do valor, como em "Text
+    highlight color" e "Folder color" (video/frames-ui/ui_0099)."""
+    btn = Gtk.Button()
+    add_class(btn, "popup")
+    box = Gtk.Box(spacing=6)
+    if dot:
+        da = Gtk.DrawingArea()
+        da.set_size_request(14, 14)
+        da.set_valign(Gtk.Align.CENTER)
+
+        def _paint(_a, cr):
+            c = dot()
+            if c == "multicolor":
+                draw_multicolor(cr, 14)
+            else:
+                draw_dot(cr, 14, c)
+            return False
+        da.connect("draw", _paint)
+        box.pack_start(da, False, False, 0)
+    names = dict(options)
+    val = label(names.get(current, str(current)), "popup-value")
+    val.set_valign(Gtk.Align.CENTER)
+    box.pack_start(val, False, False, 0)
+    arrow = label(G("f054f"), "glyph popup-arrow", 0.5)
+    arrow.set_size_request(24, 24)
+    box.pack_start(arrow, False, False, 0)
+    btn.add(box)
+    btn.set_valign(Gtk.Align.CENTER)
+    state = {"cur": current}
+
+    def clicked(_b):
+        menu = Gtk.Menu()
+        for key, name in options:
+            it = Gtk.CheckMenuItem(label=name)
+            it.set_draw_as_radio(True)
+            it.set_active(key == state["cur"])
+            it.connect("activate", lambda _i, k=key, n=name: (
+                state.__setitem__("cur", k), val.set_text(n), on_change(k)))
+            menu.append(it)
+        menu.show_all()
+        menu.attach_to_widget(btn, None)
+        menu.popup_at_widget(btn, Gdk.Gravity.SOUTH_EAST, Gdk.Gravity.NORTH_EAST, None)
+    btn.connect("clicked", clicked)
+    return btn
+
+
+def help_button():
+    """"?" redondo no fim do painel, à direita (video/frames-ui/ui_0099)."""
+    b = Gtk.Button(label="?")
+    add_class(b, "help-btn")
+    b.set_halign(Gtk.Align.END)
+    b.set_tooltip_text("Help")
+    return b
+
+
+def switch(active, on_toggle):
+    sw = Gtk.Switch()
+    sw.set_active(bool(active))
+    sw.set_valign(Gtk.Align.CENTER)
+    sw.connect("notify::active", lambda s, _p: on_toggle(s.get_active()))
+    return sw
+
+
+def push_button(text, on_click, primary=False):
+    b = Gtk.Button(label=text)
+    add_class(b, "push")
+    if primary:
+        add_class(b, "primary")
+    b.set_valign(Gtk.Align.CENTER)
+    b.connect("clicked", lambda _b: on_click())
+    return b
+
+
+def _capsule(cr, x, y, w, h):
+    r = h / 2
+    cr.new_sub_path()
+    cr.arc(x + w - r, y + r, r, -math.pi / 2, math.pi / 2)
+    cr.arc(x + r, y + r, r, math.pi / 2, 3 * math.pi / 2)
+    cr.close_path()
+
+
+class GlassKnob:
+    """Puxador do slider do Tahoe com a lente de verdade (referencias/desejos/
+    slider-brilho-parado e -arrastando, 1 px = 1 pt): parado, cápsula branca 33×21; ao pegar
+    cresce 1,3× (43×28) em 160 ms e vira vidro — transparente, a trilha passa por dentro
+    levemente ampliada (a faixa azul termina arredondada no centro), o fundo escurece ~2 %,
+    o aro é um filete de 1 pt azul-acinzentado onde o azul refrata (metade esquerda) e claro
+    embaixo. O GTK desenha só trilha e preenchimento; o puxador do CSS fica invisível."""
+
+    IDLE = (33.0, 21.0)
+    GLASS = (43.0, 28.0)
+    TRACK = 6.0
+
+    def __init__(self, sc):
+        self.sc, self.t, self.target, self._tick = sc, 0.0, 0.0, None
+        if os.environ.get("HYPRMAC_AJUSTES_GLASS"):     # testes (--snapshot): já "arrastando"
+            self.t = self.target = 1.0
+        add_class(sc, "glass-knob")
+        sc.set_size_request(-1, 30)
+        sc.connect_after("draw", self._draw)
+        sc.connect("button-press-event", lambda *_: self._go(1.0) or False)
+        sc.connect("button-release-event", lambda *_: self._go(0.0) or False)
+
+    def _go(self, target):
+        if target == self.target:
+            return
+        self.target = target
+        if not Gio.Settings.new("org.gnome.desktop.interface").get_boolean("enable-animations"):
+            self.t = target          # Reduzir Movimento: estado final, sem transição
+            self.sc.queue_draw()
+            return
+        # Soltar antes do fim da expansão inicia o retorno no tamanho atual.
+        self._t0, self._from = None, self.t
+        if self._tick is None:
+            self._tick = self.sc.add_tick_callback(self._frame)
+
+    def _frame(self, _w, clock):
+        now = clock.get_frame_time() / 1e6
+        if self._t0 is None:
+            self._t0, self._from = now, self.t
+        u = min(1.0, (now - self._t0) / 0.16)
+        e = 1 - (1 - u) ** 3
+        self.t = self._from + (self.target - self._from) * e
+        self.sc.queue_draw()
+        if u >= 1 or abs(self.t - self.target) < 1e-3:
+            self.t = self.target
+            self._tick = None
+            return False
+        return True
+
+    def _color(self, name, fallback):
+        ok, c = self.sc.get_style_context().lookup_color(name)
+        return (c.red, c.green, c.blue) if ok else fallback
+
+    def _draw(self, w, cr):
+        a = w.get_allocation()
+        rr = w.get_range_rect()
+        s0, s1 = w.get_slider_range()
+        cx = (s0 + s1) / 2
+        cy = rr.y + rr.height / 2
+        t = self.t
+        kw = self.IDLE[0] + (self.GLASS[0] - self.IDLE[0]) * t
+        kh = self.IDLE[1] + (self.GLASS[1] - self.IDLE[1]) * t
+        x, y = cx - kw / 2, cy - kh / 2
+        win = w.get_toplevel()
+        light = win.get_style_context().has_class("light") if win else True
+        accent = self._color("mac_accent", (0.13, 0.49, 0.89))
+        cr.save()
+        # sombra de queda (kit: 0 0.5 6 #000/0.12), mais fraca no vidro
+        for i in range(4, 0, -1):
+            cr.set_source_rgba(0, 0, 0, 0.022 * (1 - 0.5 * t))
+            _capsule(cr, x - i * 0.7, y + 0.5 - i * 0.7 + 0.6, kw + i * 1.4, kh + i * 1.4)
+            cr.fill()
+        # 1) corpo opaco (parado) que se dissolve no vidro
+        knob = (1, 1, 1) if light else (0.871, 0.871, 0.871)       # #FFF / #DEDEDE do kit
+        if t < 1:
+            cr.set_source_rgba(*knob, 1 - t)
+            _capsule(cr, x, y, kw, kh)
+            cr.fill()
+        if t > 0:
+            cr.save()
+            _capsule(cr, x, y, kw, kh)
+            cr.clip()
+            # fundo da lente: um véu sobre o que está atrás
+            cr.set_source_rgba(*((0, 0, 0, 0.02 * t) if light else (1, 1, 1, 0.05 * t)))
+            cr.paint()
+            # a faixa azul vista pela lente: 15 % mais grossa e um pouco mais clara (print:
+            # 33,125,226 fora → 53,135,237 dentro), até o centro com a ponta redonda; a trilha
+            # cinza é a do GTK (redesenhá-la dobraria o alfa)
+            th = self.TRACK * 1.15
+            lit = tuple(c + (1 - c) * 0.08 for c in accent)
+            cr.set_source_rgba(*lit, t)
+            _capsule(cr, x - kw, cy - th / 2, kw + kw / 2, th)
+            cr.fill()
+            # borda da lente um pouco mais escura (fundo puxado de fora, como no print)
+            g = cairo.RadialGradient(cx, cy, kh * 0.25, cx, cy, kw * 0.62)
+            g.add_color_stop_rgba(0.6, 0, 0, 0, 0)
+            g.add_color_stop_rgba(1.0, 0, 0, 0, (0.05 if light else 0.10) * t)
+            cr.set_source(g)
+            cr.paint()
+            cr.restore()
+            # aro de 1 pt: azul refratado na metade esquerda, cinza na direita, claro embaixo
+            lg = cairo.LinearGradient(x, 0, x + kw, 0)
+            mix = tuple(0.45 * c + 0.55 * m for c, m in zip(accent, (0.38, 0.46, 0.58)))
+            lg.add_color_stop_rgba(0.0, *mix, 0.85 * t)
+            lg.add_color_stop_rgba(0.45, *mix, 0.55 * t)
+            lg.add_color_stop_rgba(0.62, 0.5, 0.5, 0.55, 0.22 * t)
+            lg.add_color_stop_rgba(1.0, 0.5, 0.5, 0.55, 0.30 * t)
+            cr.set_source(lg)
+            cr.set_line_width(1.0)
+            _capsule(cr, x + 0.5, y + 0.5, kw - 1, kh - 1)
+            cr.stroke()
+            vg = cairo.LinearGradient(0, y, 0, y + kh)
+            vg.add_color_stop_rgba(0.55, 1, 1, 1, 0)
+            vg.add_color_stop_rgba(1.0, 1, 1, 1, (0.85 if light else 0.35) * t)
+            cr.set_source(vg)
+            cr.set_line_width(1.2)
+            _capsule(cr, x + 1.4, y + 1.4, kw - 2.8, kh - 2.8)
+            cr.stroke()
+        else:
+            cr.set_source_rgba(0, 0, 0, 0.06 if light else 0.18)       # contorno de 0,5
+            cr.set_line_width(0.5)
+            _capsule(cr, x + 0.25, y + 0.25, kw - 0.5, kh - 0.5)
+            cr.stroke()
+        cr.restore()
+        return False
+
+
+def sun_icon(name):
+    """sun.min (disco + 8 pontos) e sun.max (disco + 8 raios) dos SF Symbols, como nas pontas
+    do slider de brilho do Tahoe (referencias/desejos/slider-brilho-parado.png) — a fonte de
+    símbolos não os tem; as mesmas formas da Central (draw_sf do hyprmac-shell)."""
+    area = Gtk.DrawingArea()
+    area.set_size_request(16, 16)
+    area.set_valign(Gtk.Align.CENTER)
+    add_class(area, "slider-glyph")
+
+    def draw(w, cr):
+        c = w.get_style_context().get_color(w.get_state_flags())
+        cr.set_source_rgba(c.red, c.green, c.blue, c.alpha)
+        cx, cy = w.get_allocated_width() / 2, w.get_allocated_height() / 2
+        cr.arc(cx, cy, 3.0, 0, 2 * math.pi)
+        cr.fill()
+        for i in range(8):
+            ang = i * math.pi / 4
+            if name == "sun.min":
+                cr.arc(cx + math.cos(ang) * 5.6, cy + math.sin(ang) * 5.6, 1.0, 0, 2 * math.pi)
+                cr.fill()
+            else:
+                cr.set_line_width(1.5)
+                cr.set_line_cap(cairo.LINE_CAP_ROUND)
+                cr.move_to(cx + math.cos(ang) * 4.7, cy + math.sin(ang) * 4.7)
+                cr.line_to(cx + math.cos(ang) * 6.7, cy + math.sin(ang) * 6.7)
+                cr.stroke()
+        return False
+    area.connect("draw", draw)
+    return area
+
+
+def slider(value, on_change, lo=None, hi=None, rng=(0, 100), step=1, width=220):
+    box = Gtk.Box(spacing=8)
+    if lo in ("sun.min", "sun.max"):
+        box.pack_start(sun_icon(lo), False, False, 0)
+    elif lo:
+        box.pack_start(label(lo, "glyph slider-glyph", 0.5), False, False, 0)
+    sc = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, rng[0], rng[1], step)
+    sc.set_draw_value(False)
+    sc.glass = GlassKnob(sc)
+    sc.set_value(value)
+    sc.set_size_request(width, -1)
+    sc.connect("value-changed", lambda s: on_change(s.get_value()))
+    box.pack_start(sc, True, True, 0)
+    if hi in ("sun.min", "sun.max"):
+        box.pack_start(sun_icon(hi), False, False, 0)
+    elif hi:
+        box.pack_start(label(hi, "glyph slider-glyph", 0.5), False, False, 0)
+    box.set_valign(Gtk.Align.CENTER)
+    return box
+
+
+class Form(Gtk.Box):
+    """Formulário do kit: grupo de raio 12 com linhas separadas por filetes."""
+
+    def __init__(self, header=None, footer=None):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL)
+        self.outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(self.outer, "form-block")
+        if header:
+            self.outer.pack_start(label(header, "form-header"), False, False, 0)
+        add_class(self, "form")
+        self.outer.pack_start(self, False, False, 0)
+        if footer:
+            ft = label(footer, "form-footer")
+            ft.set_line_wrap(True)
+            ft.set_max_width_chars(60)
+            self.outer.pack_start(ft, False, False, 0)
+        self.n = 0
+
+    def add_row(self, widget):
+        if self.n:
+            sep = Gtk.Box()
+            add_class(sep, "form-sep")
+            if getattr(widget, "has_icon", False):
+                add_class(sep, "inset")
+            self.pack_start(sep, False, False, 0)
+        self.pack_start(widget, False, False, 0)
+        self.n += 1
+        return widget
+
+
+def row(title, trailing=None, icon=None, sub=None, on_click=None, value=None, tall=False,
+        top=False):
+    """Linha: [ícone] título (e subtítulo) … [valor] [controle] [›]. top: título alinhado em
+    cima (linhas altas com miniaturas/bolinhas — video/frames-ui/ui_0099)."""
+    inner = Gtk.Box(spacing=10)
+    add_class(inner, "form-row")
+    if tall or trailing is not None or sub:
+        add_class(inner, "tall")
+    if isinstance(trailing, Gtk.Switch) and not sub:
+        add_class(inner, "switch-row")     # kit Forms: linha do interruptor Mini = 40
+    if icon:
+        inner.pack_start(AppIcon(*icon) if isinstance(icon, tuple) else icon, False, False, 0)
+    texts = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+    texts.set_valign(Gtk.Align.START if top else Gtk.Align.CENTER)
+    if top:
+        texts.set_margin_top(4)
+    if len(title) > 60:      # títulos longos quebram em 2 linhas, como no Mac (ui_0192)
+        tl = label(title, "row-title")
+        tl.set_line_wrap(True)
+        tl.set_max_width_chars(50)
+        tl.set_xalign(0)
+        texts.pack_start(tl, False, False, 0)
+    else:
+        texts.pack_start(label(title, "row-title", ellipsize=True), False, False, 0)
+    if sub:
+        s = label(sub, "row-sub")
+        s.set_line_wrap(True)
+        s.set_max_width_chars(48)
+        texts.pack_start(s, False, False, 0)
+    inner.pack_start(texts, True, True, 0)
+    if value is not None:
+        inner.pack_start(label(str(value), "row-value", 1.0), False, False, 0)
+    if trailing is not None:
+        trailing.set_valign(Gtk.Align.CENTER)
+        inner.pack_start(trailing, False, False, 0)
+    if on_click:
+        inner.pack_start(label(G("f0142"), "glyph row-chev", 0.5), False, False, 0)
+        btn = Gtk.Button()
+        add_class(btn, "row-button")
+        btn.add(inner)
+        btn.connect("clicked", lambda _b: on_click())
+        btn.has_icon = bool(icon)
+        return btn
+    inner.has_icon = bool(icon)
+    return inner
+
+
+def hero(icon, title, text):
+    """Cabeçalho grande de um painel (Geral, Acessibilidade…): ícone 64, título, texto."""
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+    add_class(box, "hero")
+    ic = AppIcon(glyph_of(icon[0]), icon[1], 64)
+    ic.set_halign(Gtk.Align.CENTER)
+    box.pack_start(ic, False, False, 4)
+    box.pack_start(label(title, "hero-title", 0.5), False, False, 0)
+    if text:
+        t = label(text, "hero-text", 0.5)
+        t.set_line_wrap(True)
+        t.set_justify(Gtk.Justification.CENTER)
+        t.set_max_width_chars(58)
+        box.pack_start(t, False, False, 0)
+    return box
+
+
+class Choice(Gtk.Button):
+    """Opção com imagem e legenda (Aparência Auto/Light/Dark, estilo de ícones)."""
+
+    # medido em video/frames-ui/ui_0099 (2,18 px/pt pela maiúscula do SF 13): miniaturas de
+    # Aparência 67×44; ícones de estilo 31
+    def __init__(self, draw, caption, selected, on_click, w=67, h=44):
+        super().__init__()
+        add_class(self, "choice")
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.area = Gtk.DrawingArea()
+        self.area.set_size_request(w, h)
+        add_class(self.area, "choice-art")
+        self.area.connect("draw", lambda a, cr: draw(cr, a.get_allocated_width(),
+                                                     a.get_allocated_height()))
+        frame = Gtk.Box()
+        add_class(frame, "choice-frame")
+        frame.pack_start(self.area, False, False, 0)
+        box.pack_start(frame, False, False, 0)
+        self.cap = label(caption, "choice-cap", 0.5)
+        box.pack_start(self.cap, False, False, 0)
+        self.add(box)
+        self.set_selected(selected)
+        self.connect("clicked", lambda _b: on_click())
+
+    def set_selected(self, on):
+        ctx = self.get_style_context()
+        (ctx.add_class if on else ctx.remove_class)("selected")
+
+
+# ───────────────────────────── barra lateral ─────────────────────────────
+
+# (chave, título, glifo, cor, palavras para a busca). None = vão entre grupos.
+SIDEBAR = [
+    ("wifi", "Wi‑Fi", "f05a9", "#0A84FF", "wireless internet network"),
+    ("bluetooth", "Bluetooth", "f00af", "#0A84FF", "devices headphones"),
+    ("network", "Network", "f059f", "#0A84FF", "ethernet vpn firewall"),
+    ("energy", "Energy", "f140b", "#34C759", "battery power sleep"),
+    None,
+    ("general", "General", "f0493", "#8E8E93", "about software update storage date time language"),
+    ("accessibility", "Accessibility", "f02e6", "#0A84FF", "motion contrast transparency"),
+    ("appearance", "Appearance", "f1396", "#1C1C1E", "dark light accent color theme icon"),
+    ("menubar", "Menu Bar", "toggles", "#8E8E93", "clock bar"),
+    ("siri", "Apple Intelligence & Siri", "f0674", "#BF5AF2", "siri"),
+    ("desktop", "Desktop & Dock", "f10a9", "#1C1C1E", "dock widgets mission control"),
+    ("displays", "Displays", "f00df", "#0A84FF", "brightness resolution monitor night shift"),
+    ("spotlight", "Spotlight", "f0349", "#8E8E93", "search"),
+    ("wallpaper", "Wallpaper", "f024a", "#32ADE6", "background desktop picture"),
+    None,
+    ("notifications", "Notifications", "f009a", "#FF3B30", "alerts banners"),
+    ("sound", "Sound", "f057e", "#FF2D55", "volume output input"),
+    ("focus", "Focus", "f0f65", "#5E5CE6", "do not disturb"),
+    ("screentime", "Screen Time", "f051f", "#5E5CE6", "usage"),
+    None,
+    ("lockscreen", "Lock Screen", "f033e", "#1C1C1E", "idle sleep screen saver"),
+    ("privacy", "Privacy & Security", "f0e47", "#0A84FF", "permissions location camera"),
+    ("password", "Login Password", "f000b", "#8E8E93", "password"),
+    ("users", "Users & Groups", "f000e", "#0A84FF", "accounts"),
+    None,
+    ("internet", "Internet Accounts", "f0065", "#0A84FF", "mail accounts"),
+    ("gamecenter", "Game Center", "f0297", "#8E8E93", "games"),
+    ("wallet", "Wallet & Apple Pay", "f0584", "#1C1C1E", "cards"),
+    None,
+    ("keyboard", "Keyboard", "f030c", "#8E8E93", "layout repeat shortcuts input"),
+    ("mouse", "Mouse", "f037d", "#8E8E93", "pointer scrolling speed"),
+    ("printers", "Printers & Scanners", "f042a", "#8E8E93", "print"),
+]
+TITLES = {e[0]: e[1] for e in SIDEBAR if e}
+TITLES.update({"account": "Apple Account", "family": "Family"})
+
+
+def search_text(text):
+    return "".join(c for c in unicodedata.normalize("NFKD", text.casefold())
+                   if not unicodedata.combining(c))
+
+
+SETTINGS_SUBPAGE_TITLES = {}
+
+
+def settings_search_index(include_targets=False):
+    """Index pane/subpage row titles without building UI or executing system commands."""
+    with open(__file__, encoding="utf-8") as source:
+        tree = ast.parse(source.read())
+    # Preserve the same title used by ordinary navigation to each subpage.
+    for node in ast.walk(tree):
+        title, target = None, None
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "push" and len(node.args) >= 2:
+            title, target = node.args[:2]
+        elif isinstance(node, ast.Tuple) and node.elts:
+            title = node.elts[0]
+            target = next((e for e in node.elts if isinstance(e, ast.Attribute) and e.attr.startswith("sub_")), None)
+        if isinstance(title, ast.Constant) and isinstance(title.value, str) and isinstance(target, ast.Attribute):
+            SETTINGS_SUBPAGE_TITLES[target.attr] = title.value
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Settings")
+    methods = {n.name: n for n in cls.body if isinstance(n, ast.FunctionDef)}
+    records = []
+
+    def literal_titles(node):
+        loop_values = {}
+        for loop in ast.walk(node):
+            if not isinstance(loop, ast.For) or not isinstance(loop.iter, (ast.Tuple, ast.List)):
+                continue
+            names = loop.target.elts if isinstance(loop.target, (ast.Tuple, ast.List)) else [loop.target]
+            for values in loop.iter.elts:
+                values = values.elts if isinstance(values, (ast.Tuple, ast.List)) else [values]
+                for name, value in zip(names, values):
+                    if isinstance(name, ast.Name) and isinstance(value, ast.Constant) and isinstance(value.value, str):
+                        loop_values.setdefault(name.id, []).append(value.value)
+        for call in ast.walk(node):
+            if not isinstance(call, ast.Call) or not call.args:
+                continue
+            if not isinstance(call.func, ast.Name) or call.func.id not in ("row", "radios"):
+                continue
+            title = call.args[0]
+            if isinstance(title, ast.Constant) and isinstance(title.value, str):
+                yield title.value
+            elif isinstance(title, ast.Name):
+                yield from loop_values.get(title.id, [])
+
+    for name, pane in methods.items():
+        if not name.startswith("pane_"):
+            continue
+        key = name[5:].replace("_", "-")
+        if key not in TITLES:
+            continue
+        visited = set()
+        def visit(method):
+            if method in visited or method not in methods:
+                return
+            visited.add(method)
+            node = methods[method]
+            for title in literal_titles(node):
+                record = (key, title, method if method.startswith("sub_") else None)
+                if record not in records:
+                    records.append(record)
+            for attr in ast.walk(node):
+                if isinstance(attr, ast.Attribute) and isinstance(attr.value, ast.Name) and attr.value.id == "self":
+                    if attr.attr.startswith("sub_"):
+                        visit(attr.attr)
+        visit(name)
+    if include_targets:
+        return records
+    return list(dict.fromkeys((k, t) for k, t, _target in records))
+
+
+# ── Relógio do bloqueio (Wallpaper ▸ Clock Appearance…) ──
+# Os 6 estilos do popover do Tahoe, na ordem da Apple. Só SF Pro, SF Pro Rounded e New York
+# são fontes públicas; o estêncil, o "pesado com pé" e o de linha dupla são fontes internas do
+# sistema: aparecem com a amostra recortada da referência e ficam desativados.
+CLOCK_STYLES = [("sf", "SF Pro"), ("rounded", "SF Pro Rounded"), ("stencil", None),
+                ("serif", "New York"), ("heavy", None), ("rails", None)]
+CLOCK_WEIGHT_DEFAULT = 647        # medido no relógio da tela oficial; o slider vai de 100 a 900
+_FAMILIES = None
+
+
+def font_families():
+    global _FAMILIES
+    if _FAMILIES is None:
+        _FAMILIES = {f.get_name() for f in PangoCairo.FontMap.get_default().list_families()}
+    return _FAMILIES
+
+
+def clock_style_family(key):
+    fam = dict(CLOCK_STYLES).get(key)
+    return fam if fam and fam in font_families() else None
+
+
+def clock_conf():
+    c = load_json(SHELL_CONF, {})
+    style = c.get("lock_clock_style", "sf")
+    if not clock_style_family(style):
+        style = "sf"
+    return {"show": c.get("lock_clock", "lock"), "style": style,
+            "weight": int(c.get("lock_clock_weight", CLOCK_WEIGHT_DEFAULT))}
+
+
+def set_clock_conf(key, value):
+    c = load_json(SHELL_CONF, {})
+    c[key] = value
+    save_json(SHELL_CONF, c)
+
+
+def clock_font(style, weight, size):
+    d = Pango.FontDescription()
+    d.set_family(clock_style_family(style) or "SF Pro")
+    d.set_variations(f"wght={int(weight)}")
+    d.set_weight(Pango.Weight.BOLD if weight >= 700 else Pango.Weight.SEMIBOLD
+                 if weight >= 590 else Pango.Weight.MEDIUM if weight >= 500 else Pango.Weight.NORMAL)
+    d.set_absolute_size(size * Pango.SCALE)
+    return d
+
+
+def draw_clock_text(cr, text, style, weight, size, cx, cy, rgba):
+    """Texto centrado pela tinta em (cx, cy)."""
+    layout = PangoCairo.create_layout(cr)
+    layout.set_font_description(clock_font(style, weight, size))
+    layout.set_text(text, -1)
+    ink, _l = layout.get_pixel_extents()
+    cr.move_to(cx - ink.width / 2 - ink.x, cy - ink.height / 2 - ink.y)
+    cr.set_source_rgba(*rgba)
+    PangoCairo.show_layout(cr, layout)
+
+
+class ClockSample(Gtk.Button):
+    """Uma das 6 amostras "12" (popover medido: célula de 67,75, moldura de 45,5 com borda de
+    destaque de 2 na escolhida, algarismos com maiúsculas de ≈ 24 pt)."""
+    MASK_SCALE = 20 / 14       # recortes tirados de um print a 1,43 px/pt
+    SAMPLE_WEIGHT = 720
+
+    def __init__(self, index, key, get_weight, on_pick):
+        super().__init__()
+        add_class(self, "clock-style")
+        self.key, self.get_weight = key, get_weight
+        self.available = clock_style_family(key) is not None
+        self.mask = None
+        if not self.available:
+            path = os.path.join(HERE, "icones", f"relogio-estilo-{index}.png")
+            if os.path.exists(path):
+                self.mask = cairo.ImageSurface.create_from_png(path)
+            self.set_sensitive(False)
+            self.set_tooltip_text("Fonte do sistema da Apple — não disponível no Linux")
+        area = Gtk.DrawingArea()
+        area.set_size_request(42, 42)
+        area.connect("draw", self._draw)
+        self.area = area
+        self.add(area)
+        self.set_halign(Gtk.Align.CENTER)
+        self.set_valign(Gtk.Align.CENTER)
+        self.connect("clicked", lambda _b: on_pick(key))
+
+    def _draw(self, w, cr):
+        a = w.get_allocation()
+        fg = w.get_style_context().get_color(Gtk.StateFlags.NORMAL)
+        rgba = (fg.red, fg.green, fg.blue, 1.0 if self.available else 0.55)
+        if self.available:
+            # peso fixo das amostras: área da tinta da referência = SF Pro wght ≈ 720 (o relógio
+            # em si usa o peso do slider)
+            draw_clock_text(cr, "12", self.key, self.SAMPLE_WEIGHT, 35, a.width / 2, a.height / 2, rgba)
+        elif self.mask is not None:
+            k = 1 / self.MASK_SCALE
+            mw, mh = self.mask.get_width() * k, self.mask.get_height() * k
+            cr.translate((a.width - mw) / 2, (a.height - mh) / 2)
+            cr.scale(k, k)
+            cr.set_source_rgba(*rgba)
+            cr.mask_surface(self.mask, 0, 0)
+        return False
+
+
+def window_control_symbol(symbol):
+    """Símbolo limitado à caixa do semáforo, independente da fonte de fallback.
+
+    O glifo ⤢ pode ter line-height de 24 px. Caixa 14×14 do kit
+    [real:BaseConhecimento/referencias/kit/contornos/Titlebars_and_Toolbars.txt:1144];
+    símbolo de 8 px como [real:gtk/gtk4.css:112].
+    """
+    area = Gtk.DrawingArea()
+    area.set_size_request(14, 14)
+    add_class(area, "light-symbol")
+    layout = area.create_pango_layout(symbol)
+
+    def draw(widget, cr):
+        style = widget.get_style_context()
+        state = widget.get_state_flags()
+        layout.set_font_description(style.get_font(state))
+        ink, _logical = layout.get_pixel_extents()
+        scale = min(1.0, 8 / max(1, ink.width), 8 / max(1, ink.height))
+        cr.translate((widget.get_allocated_width() - ink.width * scale) / 2,
+                     (widget.get_allocated_height() - ink.height * scale) / 2)
+        cr.scale(scale, scale)
+        cr.move_to(-ink.x, -ink.y)
+        color = style.get_color(state)
+        cr.set_source_rgba(color.red, color.green, color.blue, color.alpha)
+        PangoCairo.show_layout(cr, layout)
+        return False
+
+    area.connect("draw", draw)
+    return area
+
+
+class Settings(Gtk.Window):
+    def __init__(self, first="appearance", offscreen=False):
+        super().__init__(title="System Settings")
+        self.set_default_size(W, H)
+        self.set_decorated(False)
+        # janela com alfa: a barra lateral é vidro (kit: Sidebar/Background/Dark/Active =
+        # #0C0C0C/0.85 sobre desfoque 80, saturação 2) — o compositor desfoca o que está atrás
+        visual = self.get_screen().get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
+        self.set_app_paintable(True)
+        add_class(self, "settings")
+        self.dark = is_dark()
+        self.set_dark_class()
+        self.history, self.pos = [], -1
+        self.rows = {}
+        self.current = None
+
+        # Overlay: por cima do conteúdo podem entrar folhas (sheets) com o véu do Tahoe
+        body = Gtk.Box()
+        add_class(body, "root")
+        root = Gtk.Overlay()
+        root.add(body)
+        self.overlay = root
+        self.add(root)
+
+        # ── barra lateral flutuante ──
+        side_col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        side_col.set_size_request(SIDEBAR_W, -1)
+        side_col.connect("draw", self._draw_side_frame)
+        side = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(side, "sidebar")
+        side.set_vexpand(True)
+        self.side = side
+        side_col.pack_start(side, True, True, 0)
+        body.pack_start(side_col, False, False, 0)
+
+        lights = Gtk.Box(spacing=9)
+        add_class(lights, "lights")
+        for cls, symbol, act in (("close", "×", self.close),
+                                 ("minimize", "−", self._minimize),
+                                 ("zoom", "⤢", self._zoom)):
+            b = Gtk.Button()
+            add_class(b, "light", cls)
+            b.set_size_request(14, 14)
+            b.set_valign(Gtk.Align.CENTER)
+            b.add(window_control_symbol(symbol))
+            b.get_accessible().set_name({"close": "Close", "minimize": "Minimize", "zoom": "Zoom"}[cls])
+            b.connect("clicked", lambda _b, a=act: a())
+            lights.pack_start(b, False, False, 0)
+        side.pack_start(lights, False, False, 0)
+
+        self.search = Gtk.SearchEntry()
+        self._cocoa_keys = CocoaEntryKeys(self.search)
+        add_class(self.search, "side-search")
+        self.search.set_placeholder_text("Search")
+        self.search.connect("changed", lambda _e: self._filter())
+        self.search.connect("activate", lambda _e: self._search_go())
+        side.pack_start(self.search, False, False, 0)
+
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        add_class(scroll, "side-scroll")
+        self.side_list = Gtk.ListBox()
+        add_class(self.side_list, "side-list")
+        self.side_list.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.side_list.set_header_func(self._side_header)
+        self.side_list.connect("row-selected", self._side_selected)
+        scroll.add(self.side_list)
+        side.pack_start(scroll, True, True, 0)
+        self._build_sidebar()
+
+        # ── conteúdo ──
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(content, "content")
+        self.content = content
+        content.connect("draw", self._draw_content_bg)
+        body.pack_start(content, True, True, 0)
+        bar = Gtk.Box(spacing=12)
+        add_class(bar, "toolbar")
+        nav = Gtk.Box()
+        add_class(nav, "nav")
+        self.nav = nav
+        self.back = Gtk.Button()
+        self.back.add(label(G("f0141"), "glyph", 0.5))
+        self.fwd = Gtk.Button()
+        self.fwd.add(label(G("f0142"), "glyph", 0.5))
+        for b, d in ((self.back, -1), (self.fwd, 1)):
+            add_class(b, "nav-btn")
+            b.connect("clicked", lambda _b, d=d: self._step(d))
+            nav.pack_start(b, False, False, 0)
+            if d < 0:   # filete entre ‹ e › (referencias/desejos/ajustes-voltar-avancar-separador)
+                sep = Gtk.Box()
+                add_class(sep, "nav-sep")
+                sep.set_valign(Gtk.Align.CENTER)
+                nav.pack_start(sep, False, False, 0)
+        nav.set_valign(Gtk.Align.CENTER)
+        bar.pack_start(nav, False, False, 0)
+        self.title_lbl = label("", "page-title")
+        bar.pack_start(self.title_lbl, False, False, 0)
+        content.pack_start(bar, False, False, 0)
+        self.stack = Gtk.Stack()
+        self.stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.stack.set_transition_duration(180)
+        self._next_transition = None
+        # topo fixo do Tahoe (referencias/desejos/ajustes-voltar-avancar-separador): ao rolar,
+        # o conteúdo se apaga num degradê logo abaixo do título ("scroll edge effect"), com
+        # uma sombra levíssima; parado no topo não aparece nada
+        ov = Gtk.Overlay()
+        ov.add(self.stack)
+        self.edge = Gtk.DrawingArea()
+        self.edge.set_size_request(-1, 22)
+        self.edge.set_valign(Gtk.Align.START)
+        self.edge.connect("draw", self._draw_edge)
+        ov.add_overlay(self.edge)
+        ov.set_overlay_pass_through(self.edge, True)
+        content.pack_start(ov, True, True, 0)
+
+        self.connect("key-press-event", self._on_key)
+        self.theme = Gio.Settings.new("org.gnome.desktop.interface")
+        self.theme.connect("changed::color-scheme", lambda *_: self._retheme())
+        self.theme.connect("changed::accent-color", lambda *_: load_css())
+        if offscreen:      # --snapshot: desenha fora da tela, sem janela no desktop
+            self.remove(root)
+            self.off = Gtk.OffscreenWindow()
+            add_class(self.off, "settings", "dark" if self.dark else "light")
+            self.off.set_size_request(W, H)
+            self.off.add(root)
+            self.off.show_all()
+        else:
+            self.show_all()
+            # Liquid Glass: declara as peças de vidro ao compositor (barra lateral e cápsula
+            # < >) e refaz quando a janela muda de tamanho
+            self._glass_addr = None
+            self._glass_sent = None
+            self.connect("size-allocate", lambda *_: GLib.idle_add(self._send_glass_shapes))
+            GLib.timeout_add(400, self._send_glass_shapes)
+        self.open_pane(first)
+
+    # ── janela ──
+    def _draw_side_frame(self, w, cr):
+        """Fundo opaco da coluna da barra lateral, com o recorte arredondado da barra
+        (recuo 8, raio 18) vazado: ali só o vidro. CSS não fura um fundo, então é cairo."""
+        import math
+        a = w.get_allocation()
+        m, r = 8, 18
+        cr.set_source_rgb(*((0.118, 0.118, 0.118) if self.dark else (1, 1, 1)))
+        cr.set_fill_rule(1)  # cairo.FILL_RULE_EVEN_ODD
+        cr.rectangle(0, 0, a.width, a.height)
+        x, y, x2, y2 = m, m, a.width, a.height - m
+        cr.new_sub_path()
+        cr.arc(x2 - r, y + r, r, -math.pi / 2, 0)
+        cr.arc(x2 - r, y2 - r, r, 0, math.pi / 2)
+        cr.arc(x + r, y2 - r, r, math.pi / 2, math.pi)
+        cr.arc(x + r, y + r, r, math.pi, 3 * math.pi / 2)
+        cr.close_path()
+        cr.fill()
+        return False
+
+    def _rounded(self, cr, x, y, w, h, r):
+        import math
+        r = min(r, w / 2, h / 2)
+        cr.new_sub_path()
+        cr.arc(x + w - r, y + r, r, -math.pi / 2, 0)
+        cr.arc(x + w - r, y + h - r, r, 0, math.pi / 2)
+        cr.arc(x + r, y + h - r, r, math.pi / 2, math.pi)
+        cr.arc(x + r, y + r, r, math.pi, 3 * math.pi / 2)
+        cr.close_path()
+
+    def _draw_content_bg(self, w, cr):
+        """Fundo opaco do conteúdo com a cápsula < > vazada: ela é vidro (kit: Liquid Glass/
+        Dark/Regular - Small, distorção 0,4), desenhado pelo compositor por trás da janela."""
+        a = w.get_allocation()
+        cr.set_source_rgb(*((0.118, 0.118, 0.118) if self.dark else (1, 1, 1)))
+        cr.set_fill_rule(1)  # even-odd
+        cr.rectangle(0, 0, a.width, a.height)
+        pos = self.nav.translate_coordinates(w, 0, 0) if getattr(self, "nav", None) else None
+        if pos:
+            na = self.nav.get_allocation()
+            self._rounded(cr, pos[0], pos[1], na.width, na.height, na.height / 2)
+        cr.fill()
+        return False
+
+    def _draw_edge(self, w, cr):
+        sc = self.stack.get_visible_child()
+        v = sc.get_vadjustment().get_value() if isinstance(sc, Gtk.ScrolledWindow) else 0
+        k = min(1.0, v / 12)                  # aparece nos primeiros 12 px de rolagem
+        if k <= 0:
+            return False
+        a = w.get_allocation()
+        bg = (0.118, 0.118, 0.118) if self.dark else (1, 1, 1)
+        g = cairo.LinearGradient(0, 0, 0, a.height)
+        g.add_color_stop_rgba(0.0, *bg, 1.0 * k)
+        g.add_color_stop_rgba(0.35, *bg, 0.75 * k)
+        g.add_color_stop_rgba(1.0, *bg, 0.0)
+        cr.set_source(g)
+        cr.paint()
+        # sombra muito leve colada ao título
+        sh = cairo.LinearGradient(0, 0, 0, 6)
+        sh.add_color_stop_rgba(0, 0, 0, 0, (0.10 if self.dark else 0.035) * k)
+        sh.add_color_stop_rgba(1, 0, 0, 0, 0)
+        cr.set_source(sh)
+        cr.rectangle(0, 0, a.width, 6)
+        cr.fill()
+        return False
+
+    def _send_glass_shapes(self):
+        """Compatibilidade com builds antigos que ofereciam `hyprglass shape`.
+
+        O upstream v0.9.0 não registra esse comando. A chamada é mantida sem erro visível
+        para não quebrar uma instalação que ainda use o patch local antigo; o preset da
+        janela e o fallback do Hyprland continuam funcionando sem ele.
+        """
+        if not self.get_mapped():
+            return False
+        shapes = []
+        for wdg, r in ((self.side, 18), (self.nav, None)):
+            pos = wdg.translate_coordinates(self, 0, 0)
+            if not pos:
+                continue
+            al = wdg.get_allocation()
+            shapes.append((pos[0], pos[1], al.width, al.height, al.height / 2 if r is None else r))
+        if shapes == self._glass_sent:
+            return False
+        if not self._glass_addr:
+            try:
+                for c in json.loads(run("hyprctl clients -j")):
+                    if c.get("pid") == os.getpid() and c.get("class") == APP_ID:
+                        self._glass_addr = c["address"]
+            except ValueError:
+                pass
+        if not self._glass_addr:
+            GLib.timeout_add(300, self._send_glass_shapes)
+            return False
+        self._glass_sent = shapes
+        cmd = "hyprglass shape " + self._glass_addr + " " + " ".join(
+            ",".join(f"{v:.1f}" for v in sh) for sh in shapes)
+        hypr_socket(cmd)
+        return False
+
+    def set_dark_class(self):
+        ctx = self.get_style_context()
+        ctx.remove_class("light")
+        ctx.remove_class("dark")
+        ctx.add_class("dark" if self.dark else "light")
+
+    def _retheme(self):
+        global _DARK
+        self.dark = _DARK = is_dark()
+        self.set_dark_class()
+        load_css()
+        self.queue_draw()
+
+    def _minimize(self):
+        # como ⌘M: pelo Dock do shell (Genie); sem shell, só estaciona a janela
+        spawn("gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell "
+              "--method dev.hyprmac.Shell.Command minimize >/dev/null || hyprctl dispatch "
+              "'hl.dsp.window.move({ workspace = \"special:minimized\", follow = false })'")
+
+    def _zoom(self):
+        spawn("hyprctl dispatch 'hl.dsp.window.fullscreen({ mode = \"maximized\" })'")
+
+    def _on_key(self, _w, ev):
+        ctrl = ev.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK
+                           | Gdk.ModifierType.MOD4_MASK)
+        if ev.keyval == Gdk.KEY_Escape and self.search.get_text():
+            self.search.set_text("")
+            return True
+        if ctrl and ev.keyval in (Gdk.KEY_w, Gdk.KEY_q):
+            self.close()
+            return True
+        if ctrl and ev.keyval == Gdk.KEY_f:
+            self.search.grab_focus()
+            return True
+        if ctrl and ev.keyval == Gdk.KEY_bracketleft:
+            self._step(-1)
+            return True
+        if ctrl and ev.keyval == Gdk.KEY_bracketright:
+            self._step(1)
+            return True
+        return False
+
+    # ── barra lateral ──
+    def _build_sidebar(self):
+        acc = Gtk.ListBoxRow()
+        acc.key, acc.group = "account", -1
+        name = account_name()
+        b = Gtk.Box(spacing=10)
+        add_class(b, "account")
+        b.pack_start(Avatar(36, name), False, False, 0)
+        t = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        t.set_valign(Gtk.Align.CENTER)
+        t.pack_start(label(name, "acc-name", ellipsize=True), False, False, 0)
+        t.pack_start(label("Apple Account", "acc-sub"), False, False, 0)
+        b.pack_start(t, True, True, 0)
+        acc.add(b)
+        acc.search = f"{name} apple account icloud".lower()
+        self.side_list.add(acc)
+        self.rows["account"] = acc
+        fam = self._side_row("family", "Family", ("f0849", "#64D2FF"), -1)
+        fam.search = "family sharing"
+        group = 0
+        for e in SIDEBAR:
+            if e is None:
+                group += 1
+                continue
+            key, title, glyph, color, words = e
+            r = self._side_row(key, title, (glyph, color), group)
+            r.search = f"{title} {words}".lower()
+        self.side_list.show_all()
+
+    def _side_row(self, key, title, icon, group):
+        r = Gtk.ListBoxRow()
+        r.key, r.group = key, group
+        b = Gtk.Box(spacing=8)
+        add_class(b, "side-item")
+        b.pack_start(AppIcon(glyph_of(icon[0]), icon[1]), False, False, 0)
+        b.pack_start(label(title, "side-title", ellipsize=True), True, True, 0)
+        r.add(b)
+        self.side_list.add(r)
+        self.rows[key] = r
+        return r
+
+    def _side_header(self, row, before):
+        if before is not None and before.group != row.group and not self.search.get_text():
+            sp = Gtk.Box()
+            add_class(sp, "side-gap")
+            row.set_header(sp)
+        else:
+            row.set_header(None)
+
+    def _filter(self):
+        q = search_text(self.search.get_text().strip())
+        words = q.split()
+        if not hasattr(self, "search_index"):
+            records = settings_search_index(include_targets=True)
+            self.search_index = list(dict.fromkeys((k, t) for k, t, _target in records))
+            self.search_targets = {(k, t): target for k, t, target in records}
+        matches = [(k, t) for k, t in self.search_index
+                   if all(w in search_text(TITLES[k] + " " + t) for w in words)] if q else []
+        if q:
+            for entry in SIDEBAR:
+                if entry and all(w in search_text(entry[1] + " " + entry[4]) for w in words):
+                    matches.insert(0, (entry[0], entry[1]))
+        keys = {k for k, _t in matches}
+        for r in self.side_list.get_children():
+            r.set_visible(not q or r.key in keys or
+                          all(w in search_text(r.search) for w in words))
+        self.side_list.invalidate_headers()
+        if q:
+            self._show("Search", lambda: self._search_results(matches))
+        elif hasattr(self, "current"):
+            self._restore_history()
+
+    def _search_results(self, matches):
+        form = Form()
+        self.search_matches = matches
+        for key, title in matches:
+            form.add_row(row(title, sub=TITLES[key],
+                             on_click=lambda k=key, t=title: self._search_open(k, t)))
+        if not matches:
+            form.add_row(row("No matching options", sub="Try a panel name or an option such as Folder color."))
+        return [form.outer]
+
+    def _search_open(self, key, title):
+        self.search.set_text("")
+        self.open_pane(key)
+        target = getattr(self, "search_targets", {}).get((key, title))
+        if target:
+            # Open the actual subpage before scrolling to the matching option.
+            self.push(SETTINGS_SUBPAGE_TITLES.get(target, TITLES[key]), getattr(self, target))
+        def reveal():
+            sc = self.stack.get_visible_child()
+            def visit(widget):
+                if isinstance(widget, Gtk.Label) and widget.get_text() == title:
+                    pos = widget.translate_coordinates(sc.get_child(), 0, 0)
+                    if pos:
+                        adj = sc.get_vadjustment()
+                        adj.set_value(max(adj.get_lower(), min(pos[1] - 20,
+                                      adj.get_upper() - adj.get_page_size())))
+                    return True
+                if isinstance(widget, Gtk.Container):
+                    return any(visit(child) for child in widget.get_children())
+                return False
+            visit(sc)
+            return False
+        GLib.timeout_add(350, reveal)
+
+    def _search_go(self):
+        matches = getattr(self, "search_matches", [])
+        if self.search.get_text() and matches:
+            self._search_open(*matches[0])
+            return
+        for r in self.side_list.get_children():
+            if r.get_visible():
+                self.side_list.select_row(r)
+                return
+
+    def _side_selected(self, _l, r):
+        if r is not None and r.key != self.current:
+            self.open_pane(r.key)
+
+    # ── navegação ──
+    def open_pane(self, key, record=True):
+        builder = getattr(self, "pane_" + key.replace("-", "_"), None)
+        if builder is None:
+            builder = lambda: self.pane_mock(key)
+        self.current = key
+        row = self.rows.get(key)
+        if row is not None and self.side_list.get_selected_row() is not row:
+            self.side_list.select_row(row)
+        self._show(TITLES.get(key, key), builder)
+        if record:
+            self.history = self.history[:self.pos + 1] + [("pane", key)]
+            self.pos = len(self.history) - 1
+        self._nav_state()
+
+    def push(self, title, builder):
+        """Subpágina (Geral ▸ Sobre…): entra no histórico do voltar."""
+        self._next_transition = Gtk.StackTransitionType.SLIDE_LEFT
+        self._show(title, builder)
+        self.history = self.history[:self.pos + 1] + [("sub", (title, builder))]
+        self.pos = len(self.history) - 1
+        self._nav_state()
+
+    def _step(self, d):
+        p = self.pos + d
+        if not 0 <= p < len(self.history):
+            return
+        self.pos = p
+        self._next_transition = (Gtk.StackTransitionType.SLIDE_RIGHT if d < 0
+                                 else Gtk.StackTransitionType.SLIDE_LEFT)
+        if self.search.get_text():
+            self.search.set_text("")  # _filter restaura o destino já escolhido
+        else:
+            self._restore_history()
+        self._nav_state()
+
+    def _restore_history(self):
+        """Restaura página e seleção lateral juntas, inclusive após uma busca."""
+        if not 0 <= self.pos < len(self.history):
+            return
+        p = self.pos
+        kind, val = self.history[p]
+        if kind == "pane":
+            self.open_pane(val, record=False)
+        else:
+            parent = next(
+                (value for kind, value in reversed(self.history[:p]) if kind == "pane"),
+                self.current,
+            )
+            self.current = parent
+            selected = self.rows.get(parent)
+            if selected is not None:
+                self.side_list.select_row(selected)
+            self._show(*val)
+
+    def _nav_state(self):
+        self.back.set_sensitive(self.pos > 0)
+        self.fwd.set_sensitive(self.pos < len(self.history) - 1)
+
+    def _show(self, title, builder):
+        self.title_lbl.set_text(title)
+        page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        add_class(page, "page")
+        try:
+            items = builder()
+        except Exception as e:     # um painel com erro não derruba o app
+            items = [Form().outer]
+            items[0].get_children()[0].add_row(row("This pane could not load", sub=str(e)))
+        for w in items:
+            page.pack_start(w, False, False, 0)
+        sc = Gtk.ScrolledWindow()
+        sc.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sc.add(page)
+        sc.get_vadjustment().connect("value-changed", lambda *_: self.edge.queue_draw())
+        sc.show_all()
+        if os.environ.get("HYPRMAC_AJUSTES_SCROLL"):     # testes (--snapshot): rola N px
+            GLib.timeout_add(500, lambda: sc.get_vadjustment().set_value(
+                float(os.environ["HYPRMAC_AJUSTES_SCROLL"])) and False)
+        name = f"p{time.monotonic_ns()}"
+        old = self.stack.get_visible_child()    # antes: num Stack vazio o 1º filho já é o visível
+        self.stack.add_named(sc, name)
+        transition = self._next_transition or Gtk.StackTransitionType.CROSSFADE
+        self._next_transition = None
+        self.stack.set_visible_child_full(name, transition)
+        if old is not None:
+            GLib.timeout_add(300, lambda: old.destroy() and False)
+
+    def refresh(self, delay=600):
+        """Remonta a página atual (depois de mudar algo do sistema)."""
+        def go():
+            if 0 <= self.pos < len(self.history):
+                # Uma atualização pendente não deve apagar a busca em andamento.
+                if not self.search.get_text():
+                    self._restore_history()
+            return False
+        GLib.timeout_add(delay, go)
+
+    # ───────────────────── painéis ─────────────────────
+
+    def pane_mock(self, key):
+        title = TITLES.get(key, key)
+        f = Form()
+        f.add_row(row(title))
+        return [f.outer]
+
+    # ── conta (simulada) ──
+    def pane_account(self):
+        name = account_name()
+        head = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        add_class(head, "hero")
+        av = Avatar(72, name)
+        av.set_halign(Gtk.Align.CENTER)
+        head.pack_start(av, False, False, 4)
+        head.pack_start(label(name, "hero-title", 0.5), False, False, 0)
+        head.pack_start(label(account_email(), "hero-text", 0.5), False, False, 0)
+        f1 = Form()
+        for t, g, c in (("Personal Information", "f0009", "#8E8E93"),
+                        ("Sign-In & Security", "f099d", "#8E8E93"),
+                        ("Payment & Shipping", "f0fef", "#8E8E93")):
+            f1.add_row(row(t, icon=(G(g), c), on_click=lambda t=t: self.push(t, lambda t=t: self._mock_sub(t))))
+        f2 = Form()
+        f2.add_row(row("iCloud", icon=(G("f015f"), "#0A84FF"), value=f"{icloud_used():.1f} GB of 50 GB",
+                       on_click=lambda: self.push("iCloud", self.sub_icloud)))
+        f2.add_row(row("Family", icon=(G("f0849"), "#64D2FF"), value="Set Up",
+                       on_click=lambda: self.open_pane("family")))
+        f2.add_row(row("Media & Purchases", icon=(G("f0387"), "#FF2D55"),
+                       on_click=lambda: self.push("Media & Purchases", lambda: self._mock_sub("Media & Purchases"))))
+        f3 = Form(header="Devices")
+        f3.add_row(row(socket.gethostname(), icon=(G("f0322"), "#8E8E93"),
+                       sub="This Computer", on_click=lambda: self.push("About", self.sub_about)))
+        out = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        out.pack_end(push_button("Sign Out…", lambda: None), False, False, 0)
+        add_class(out, "form-actions")
+        return [head, f1.outer, f2.outer, f3.outer, out]
+
+    def pane_family(self):
+        f = Form()
+        f.add_row(row("Family", icon=(G("f0849"), "#64D2FF"),
+                      trailing=push_button("Set Up Family Sharing", lambda: None)))
+        return [hero(("f0849", "#64D2FF"), "Family", ""),
+                f.outer]
+
+    def _mock_sub(self, title):
+        f = Form()
+        rows = {
+            "Personal Information": [("Name", account_name()), ("Birthday", "January 1"),
+                                     ("Language", "English")],
+            "Sign-In & Security": [("Email & Phone Numbers", account_email()),
+                                   ("Password", "Changed recently"),
+                                   ("Two-Factor Authentication", "On")],
+            "Payment & Shipping": [("Payment Method", "None"), ("Shipping Address", "None")],
+            "Media & Purchases": [("Account", account_email()),
+                                  ("Subscriptions", "Manage…")],
+        }.get(title, [(title, "")])
+        for t, v in rows:
+            f.add_row(row(t, value=v))
+        return [f.outer]
+
+    def sub_icloud(self):
+        used = icloud_used()
+        parts = [("Photos", used * 0.46, "#FF9F0A"), ("Documents", used * 0.24, "#0A84FF"),
+                 ("Backups", used * 0.18, "#BF5AF2"), ("Mail", used * 0.12, "#FF453A")]
+        top = Form()
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        add_class(box, "form-row", "tall", "storage")
+        hdr = Gtk.Box()
+        hdr.pack_start(label("iCloud+", "row-title"), False, False, 0)
+        hdr.pack_end(label(f"{used:.1f} GB of 50 GB used", "row-value"), False, False, 0)
+        box.pack_start(hdr, False, False, 0)
+        box.pack_start(StorageBar(parts, 50), False, False, 0)
+        legend = Gtk.Box(spacing=14)
+        for n, _s, c in parts:
+            dot = label("●", "legend-dot")
+            dot.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*hex_rgb(c), 1))
+            lg = Gtk.Box(spacing=4)
+            lg.pack_start(dot, False, False, 0)
+            lg.pack_start(label(n, "row-sub"), False, False, 0)
+            legend.pack_start(lg, False, False, 0)
+        box.pack_start(legend, False, False, 0)
+        top.add_row(box)
+        top.add_row(row("Manage…", trailing=push_button("Manage…", lambda: None)))
+        saved = Form(header="Saved to iCloud")
+        for key, t, g, c in (("photos", "Photos", "f02f9", "#FF9F0A"),
+                             ("drive", "iCloud Drive", "f015f", "#0A84FF"),
+                             ("passwords", "Passwords", "f030b", "#8E8E93"),
+                             ("notes", "Notes", "f0369", "#FFD60A"),
+                             ("messages", "Messages", "f0369", "#34C759")):
+            saved.add_row(row(t, icon=(G(g), c),
+                              value="On" if mock("icloud_" + key, True) else "Off",
+                              on_click=lambda key=key, t=t: self.push(t, lambda: self._icloud_app(key, t))))
+        plus = Form(header="iCloud+ Features")
+        for t, v in (("Private Relay", "Off"), ("Hide My Email", "3 addresses"),
+                     ("Custom Email Domain", "")):
+            plus.add_row(row(t, value=v))
+        adv = Form()
+        adv.add_row(row("Advanced Data Protection", value="Off"))
+        adv.add_row(row("Access iCloud Data on the Web",
+                        trailing=switch(mock("icloud_web", True), lambda v: set_mock("icloud_web", v))))
+        return [top.outer, saved.outer, plus.outer, adv.outer]
+
+    def _icloud_app(self, key, title):
+        f = Form(footer=f"{title} keeps your content up to date across all your devices.")
+        f.add_row(row(f"Sync this computer", trailing=switch(
+            mock("icloud_" + key, True), lambda v: set_mock("icloud_" + key, v))))
+        return [f.outer]
+
+    # ── Wi‑Fi ──
+    def pane_wifi(self):
+        dev = run("nmcli -t -f DEVICE,TYPE device | awk -F: '$2==\"wifi\"{print $1; exit}'")
+        top = Form()
+        if not dev:
+            top.add_row(row("Wi‑Fi", icon=(G("f05a9"), "#0A84FF"), sub="No Wi‑Fi hardware installed"))
+            return [top.outer]
+        on = run("nmcli radio wifi") == "enabled"
+        top.add_row(row("Wi‑Fi", icon=(G("f05a9"), "#0A84FF"), trailing=switch(
+            on, lambda v: (spawn(f"nmcli radio wifi {'on' if v else 'off'}"), self.refresh(1500)))))
+        out = [top.outer]
+        if not on:
+            return out
+        nets, cur = [], None
+        for line in run("nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list", 8).splitlines():
+            f = re.split(r"(?<!\\):", line)
+            if len(f) < 4 or not f[1]:
+                continue
+            ssid = f[1].replace("\\:", ":")
+            item = (ssid, int(f[2] or 0), bool(f[3]))
+            if f[0] == "*":
+                cur = item
+            elif ssid not in [n[0] for n in nets]:
+                nets.append(item)
+        if cur:
+            top.add_row(row(cur[0], sub="Connected", icon=(G("f05a9"), "#0A84FF"),
+                            trailing=push_button("Details…", lambda: self.push(
+                                cur[0], lambda: self._net_details(cur[0])))))
+        known = set(run("nmcli -t -f NAME,TYPE connection show | grep wireless | cut -d: -f1").splitlines())
+        kn = Form(header="Known Networks")
+        oth = Form(header="Other Networks")
+        for ssid, sig, sec in nets[:14]:
+            target = kn if ssid in known else oth
+            target.add_row(row(ssid, value=f"{sig}%" + ("  " + G("f033e") if sec else ""),
+                               trailing=push_button("Connect", lambda s=ssid: (
+                                   spawn(f"nmcli device wifi connect {GLib.shell_quote(s)}"),
+                                   self.refresh(3000)))))
+        for f in (kn, oth):
+            if f.n:
+                out.append(f.outer)
+        adv = Form()
+        adv.add_row(row("Ask to join hotspots", trailing=popup_button(
+            [("never", "Never"), ("ask", "Ask To Join"), ("auto", "Automatic")],
+            mock("wifi_hotspots", "ask"), lambda v: set_mock("wifi_hotspots", v))))
+        out.append(adv.outer)
+        return out
+
+    def _net_details(self, name):
+        f = Form()
+        info = run(f"nmcli -t -f IP4.ADDRESS,IP4.GATEWAY,IP4.DNS,GENERAL.HWADDR connection show "
+                   f"{GLib.shell_quote(name)} 2>/dev/null; nmcli -t -f GENERAL.HWADDR device show")
+        for line in info.splitlines():
+            k, _, v = line.partition(":")
+            if v:
+                f.add_row(row(k.split(".")[-1].replace("[1]", ""), value=v.replace("\\:", ":")))
+        bottom = Gtk.Box()
+        add_class(bottom, "form-actions")
+        bottom.pack_end(push_button("Forget This Network…", lambda: (
+            spawn(f"nmcli connection delete id {GLib.shell_quote(name)}"), self._step(-1))), False, False, 0)
+        return [f.outer, bottom]
+
+    # ── Bluetooth ──
+    def pane_bluetooth(self):
+        on = "Powered: yes" in run("bluetoothctl show")
+        top = Form(footer="This computer is discoverable as “%s” while Bluetooth Settings is open."
+                   % socket.gethostname() if on else None)
+        top.add_row(row("Bluetooth", icon=(G("f00af"), "#0A84FF"), trailing=switch(
+            on, lambda v: (spawn(f"bluetoothctl power {'on' if v else 'off'}"), self.refresh(1200)))))
+        out = [top.outer]
+        if not on:
+            return out
+        paired = run("bluetoothctl devices Paired").splitlines()
+        mine = Form(header="My Devices")
+        for line in paired:
+            parts = line.split(" ", 2)
+            if len(parts) < 3:
+                continue
+            mac, name = parts[1], parts[2]
+            info = run(f"bluetoothctl info {mac}")
+            con = "Connected: yes" in info
+            bat = re.search(r"Battery Percentage: .*\((\d+)\)", info)
+            icon = G("f02cb") if re.search(r"Icon: audio", info) else G("f00af")
+            mine.add_row(row(name, icon=(icon, "#8E8E93"),
+                             sub=("Connected" + (f" · {bat.group(1)}%" if bat else "")) if con else "Not Connected",
+                             trailing=push_button("Disconnect" if con else "Connect", lambda m=mac, c=con: (
+                                 spawn(f"bluetoothctl {'disconnect' if c else 'connect'} {m}"),
+                                 self.refresh(2500)))))
+        if mine.n:
+            out.append(mine.outer)
+        near = Form(header="Nearby Devices", footer="Put a device in pairing mode to find it here.")
+        near.add_row(row("Searching…", trailing=Gtk.Spinner(active=True)))
+        out.append(near.outer)
+        spawn("timeout 8 bluetoothctl --timeout 8 scan on")
+        return out
+
+    # ── Rede ──
+    def pane_network(self):
+        f = Form()
+        for line in run("nmcli -t -f NAME,TYPE,DEVICE,STATE connection show").splitlines():
+            n = re.split(r"(?<!\\):", line)
+            if len(n) < 4 or n[1] in ("loopback", "bridge") or n[1].startswith("tun"):
+                continue
+            name, typ, _dev, state = n[0], n[1], n[2], n[3]
+            glyph, color = {"802-3-ethernet": ("f0200", "#0A84FF"), "vpn": ("f0582", "#0A84FF"),
+                            "wireguard": ("f0582", "#0A84FF"), "802-11-wireless": ("f05a9", "#0A84FF")
+                            }.get(typ, ("f059f", "#8E8E93"))
+            active = state == "activated"
+            dot = label("●", "status-dot " + ("green" if active else "gray"))
+            st = Gtk.Box(spacing=6)
+            st.pack_start(dot, False, False, 0)
+            st.pack_start(label("Connected" if active else "Not Connected", "row-value"), False, False, 0)
+            f.add_row(row(name, icon=(G(glyph), color), trailing=st,
+                          on_click=lambda name=name: self.push(name, lambda: self._net_details(name))))
+        fw = Form()
+        fw.add_row(row("Firewall", icon=(G("f0565"), "#8E8E93"),
+                       value="Active" if shutil.which("ufw") and "active" in run("ufw status 2>/dev/null")
+                       else "Inactive"))
+        return [f.outer, fw.outer]
+
+    # ── Energia (sem bateria: como o Mac mini) ──
+    def pane_energy(self):
+        bat = [d for d in os.listdir("/sys/class/power_supply") if d.startswith("BAT")] \
+            if os.path.isdir("/sys/class/power_supply") else []
+        out = []
+        if bat:
+            cap = open(f"/sys/class/power_supply/{bat[0]}/capacity").read().strip()
+            f0 = Form()
+            f0.add_row(row("Battery Level", value=f"{cap}%"))
+            out.append(f0.outer)
+        conf = load_json(SHELL_CONF, {})
+        f = Form()
+        f.add_row(row("Low Power Mode", trailing=popup_button(
+            [("never", "Never"), ("always", "Always"), ("battery", "Only on Battery")],
+            mock("low_power", "never"), lambda v: set_mock("low_power", v))))
+        f.add_row(row("Prevent your Mac from automatically sleeping when the display is off", trailing=switch(
+            mock("prevent_sleep", True), lambda v: set_mock("prevent_sleep", v))))
+        f.add_row(row("Wake for network access", trailing=popup_button(
+            [("always", "Always"), ("never", "Never")], mock("wake_network", "always"),
+            lambda v: set_mock("wake_network", v))))
+        f.add_row(row("Start up automatically after a power failure", trailing=switch(
+            mock("restart_power", False), lambda v: set_mock("restart_power", v))))
+        out.append(f.outer)
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Schedule…", lambda: None), False, False, 0)
+        out.append(b)
+        return out
+
+    # ── Geral ──
+    def pane_general(self):
+        h = hero(("f0493", "#8E8E93"), "General",
+                 "")
+        f1, f2, f3, f4 = Form(), Form(), Form(), Form()
+        f1.add_row(row("About", icon=(G("f0322"), "#8E8E93"), on_click=lambda: self.push("About", self.sub_about)))
+        f1.add_row(row("Software Update", icon=(G("f06b0"), "#8E8E93"),
+                       on_click=lambda: self.push("Software Update", self.sub_update)))
+        f1.add_row(row("Storage", icon=(G("f02ca"), "#8E8E93"),
+                       on_click=lambda: self.push("Storage", self.sub_storage)))
+        f2.add_row(row("AppleCare & Warranty", icon=(G("f0035"), "#FF3B30"),
+                       on_click=lambda: self.push("AppleCare & Warranty", lambda: self._simple(
+                           [("Coverage", "Limited Warranty"), ("Expires", "—")]))))
+        f3.add_row(row("AirDrop & Handoff", icon=(G("f04e6"), "#0A84FF"),
+                       on_click=lambda: self.push("AirDrop & Handoff", self.sub_airdrop)))
+        for t, g, c, fn in (("AutoFill & Passwords", "f030b", "#8E8E93", None),
+                            ("Date & Time", "f00f0", "#0A84FF", self.sub_datetime),
+                            ("Language & Region", "f05ca", "#0A84FF", self.sub_language),
+                            ("Login Items & Extensions", "f0342", "#8E8E93", self.sub_login),
+                            ("Sharing", "f0497", "#8E8E93", self.sub_sharing),
+                            ("Startup Disk", "f02ca", "#8E8E93", None),
+                            ("Time Machine", "f006f", "#8E8E93", None),
+                            ("Transfer or Reset", "f04e6", "#8E8E93", None)):
+            f4.add_row(row(t, icon=(G(g), c), on_click=lambda t=t, fn=fn: self.push(
+                t, fn or (lambda t=t: self.pane_mock(t)))))
+        return [h, f1.outer, f2.outer, f3.outer, f4.outer]
+
+    def _simple(self, pairs):
+        f = Form()
+        for k, v in pairs:
+            f.add_row(row(k, value=v))
+        return [f.outer]
+
+    def sub_about(self):
+        os_name = "Linux"
+        try:
+            for line in open("/etc/os-release"):
+                if line.startswith("PRETTY_NAME="):
+                    os_name = line.split("=", 1)[1].strip().strip('"')
+        except OSError:
+            pass
+        cpu = run("grep -m1 'model name' /proc/cpuinfo | cut -d: -f2").strip()
+        mem = 0
+        try:
+            mem = int(open("/proc/meminfo").readline().split()[1]) / 1024 / 1024
+        except Exception:
+            pass
+        gpu = run("lspci 2>/dev/null | grep -E 'VGA|3D' | head -1 | sed 's/.*: //'")
+        serial = run("cat /etc/machine-id")[:12].upper()
+        top = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        add_class(top, "hero")
+        ic = AppIcon(G("f0379"), "#3A3A3C", 96)
+        ic.set_halign(Gtk.Align.CENTER)
+        top.pack_start(ic, False, False, 6)
+        top.pack_start(label(socket.gethostname(), "hero-title", 0.5), False, False, 0)
+        top.pack_start(label("hyprmac · Hyprland", "hero-text", 0.5), False, False, 0)
+        f = Form()
+        for k, v in (("Name", socket.gethostname()), ("Chip", cpu or "—"), ("Graphics", gpu or "—"),
+                     ("Memory", f"{mem:.0f} GB"), ("Serial number", serial),
+                     ("Kernel", os.uname().release)):
+            f.add_row(row(k, value=v))
+        f2 = Form(header="System")
+        f2.add_row(row(os_name, icon=(G("f0035"), "#1C1C1E"), sub="hyprmac — macOS Tahoe look for Hyprland"))
+        disp = Form(header="Displays")
+        for m in hypr_json("monitors"):
+            disp.add_row(row(m.get("description") or m["name"], icon=(G("f0379"), "#0A84FF"),
+                             sub=f'{m["width"]} × {m["height"]} @ {m["refreshRate"]:.0f} Hz',
+                             on_click=lambda: self.open_pane("displays")))
+        return [top, f.outer, f2.outer, disp.outer]
+
+    def sub_update(self):
+        f = Form()
+        n = run("checkupdates 2>/dev/null | wc -l", 25) if shutil.which("checkupdates") else ""
+        msg = (f"{n} updates available" if n and n != "0" else "Your system is up to date")
+        f.add_row(row("Software Update", icon=(G("f06b0"), "#8E8E93"), sub=msg,
+                      trailing=push_button("Update Now", lambda: spawn(
+                          "ghostty -e sh -c 'sudo pacman -Syu; read -p Done…'")) if n and n != "0" else None))
+        f2 = Form()
+        f2.add_row(row("Automatic updates", value=mock("auto_updates", "Security Responses only")))
+        return [f.outer, f2.outer]
+
+    def sub_storage(self):
+        st = os.statvfs(os.path.expanduser("~"))
+        total = st.f_blocks * st.f_frsize / 1e9
+        free = st.f_bavail * st.f_frsize / 1e9
+        used = total - free
+        home = run("du -sb ~/Documents ~/Downloads ~/Pictures ~/Music ~/Videos 2>/dev/null | awk '{s+=$1} END {print s}'", 6)
+        docs = (int(home) / 1e9) if home.isdigit() else used * 0.3
+        parts = [("Documents", min(docs, used), "#FF9F0A"), ("System Data", max(used - docs, 0), "#8E8E93")]
+        f = Form()
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        add_class(box, "form-row", "tall", "storage")
+        hdr = Gtk.Box()
+        hdr.pack_start(label("Macintosh HD", "row-title"), False, False, 0)
+        hdr.pack_end(label(f"{used:.1f} GB of {total:.0f} GB used", "row-value"), False, False, 0)
+        box.pack_start(hdr, False, False, 0)
+        box.pack_start(StorageBar(parts, total), False, False, 0)
+        f.add_row(box)
+        f2 = Form()
+        for t, s in (("Documents", docs), ("System Data", max(used - docs, 0))):
+            f2.add_row(row(t, value=f"{s:.1f} GB"))
+        return [f.outer, f2.outer]
+
+    def sub_airdrop(self):
+        f = Form()
+        f.add_row(row("Allow Handoff between this computer and your iCloud devices",
+                      trailing=switch(mock("handoff", True), lambda v: set_mock("handoff", v))))
+        f.add_row(row("AirDrop", trailing=popup_button(
+            [("off", "No One"), ("contacts", "Contacts Only"), ("everyone", "Everyone for 10 Minutes")],
+            mock("airdrop", "contacts"), lambda v: set_mock("airdrop", v))))
+        return [f.outer]
+
+    def sub_datetime(self):
+        info = run("timedatectl show")
+        d = dict(line.split("=", 1) for line in info.splitlines() if "=" in line)
+        f = Form()
+        f.add_row(row("Set time and date automatically", trailing=switch(
+            d.get("NTP") == "yes", lambda v: spawn(f"timedatectl set-ntp {'true' if v else 'false'}"))))
+        f.add_row(row("Date and time", value=time.strftime("%d/%m/%Y, %H:%M")))
+        f.add_row(row("Time zone", value=d.get("Timezone", "—")))
+        f2 = Form()
+        f2.add_row(row("24-hour time", trailing=switch(mock("clock_24h", True), lambda v: (
+            set_mock("clock_24h", v), spawn("pkill -USR1 -f waybar/scripts/[c]lock.py")))))
+        return [f.outer, f2.outer]
+
+    def sub_language(self):
+        lang = os.environ.get("LANG", "en_US.UTF-8")
+        f = Form(header="Preferred Languages")
+        f.add_row(row(lang.split(".")[0].replace("_", " — "), sub="Primary"))
+        f2 = Form()
+        layouts = []
+        for d in hypr_json("devices").get("keyboards", []) if isinstance(hypr_json("devices"), dict) else []:
+            if d.get("main"):
+                layouts = [d.get("layout", ""), d.get("active_keymap", "")]
+        f2.add_row(row("Region", value=time.tzname[0]))
+        f2.add_row(row("Keyboard", value=" · ".join(x for x in layouts if x) or "—"))
+        f2.add_row(row("Temperature", value=mock("temp_unit", "Celsius (°C)")))
+        return [f.outer, f2.outer]
+
+    def sub_login(self):
+        f = Form(header="Open at Login")
+        auto = os.path.expanduser("~/.config/autostart")
+        names = sorted(n[:-8] for n in os.listdir(auto) if n.endswith(".desktop")) if os.path.isdir(auto) else []
+        for n in names:
+            f.add_row(row(n, icon=(G("f0675"), "#8E8E93")))
+        if not names:
+            f.add_row(row("No items", sub="Apps started by Hyprland (exec-once) are not listed here."))
+        return [f.outer]
+
+    def sub_sharing(self):
+        f = Form()
+        f.add_row(row("Local hostname", value=socket.gethostname() + ".local"))
+        ssh = run("systemctl is-active sshd 2>/dev/null") == "active"
+        f.add_row(row("Remote Login", sub="SSH", value="On" if ssh else "Off"))
+        return [f.outer]
+
+    # ── Acessibilidade ──
+    def pane_accessibility(self):
+        a = load_json(A11Y_PATH, {})
+        motion = run("gsettings get org.gnome.desktop.interface enable-animations") == "false"
+        h = hero(("f02e6", "#0A84FF"), "Accessibility",
+                 "Personalize Mac in ways that work best for you with accessibility features for "
+                 "vision, hearing, motor, speech, and cognition.")
+        vis = Form(header="Display")
+        # o hyprmac.lua só lê a preferência ao carregar: recarrega para janelas e Spaces
+        vis.add_row(row("Reduce motion", trailing=switch(motion, lambda v: spawn(
+            f"gsettings set org.gnome.desktop.interface enable-animations {'false' if v else 'true'}"
+            " && hyprctl reload >/dev/null"))))
+        vis.add_row(row("Reduce transparency", trailing=switch(
+            a.get("reduce_transparency"), lambda v: spawn(
+                f"{ROOT}/scripts/acessibilidade transparency {'on' if v else 'off'}"))))
+        vis.add_row(row("Increase contrast", trailing=switch(
+            a.get("increase_contrast"), lambda v: spawn(
+                f"{ROOT}/scripts/acessibilidade contrast {'on' if v else 'off'}"))))
+        size = float(run("gsettings get org.gnome.desktop.interface text-scaling-factor") or 1)
+        vis.add_row(row("Text size", trailing=slider(size * 100, lambda v: spawn(
+            f"gsettings set org.gnome.desktop.interface text-scaling-factor {v / 100:.2f}"),
+            "A", "A", (80, 150), 5, 160)))
+        more = Form(header="Vision")
+        for t, g in (("VoiceOver", "f0208"), ("Zoom", "f0349"), ("Spoken Content", "f07c5")):
+            more.add_row(row(t, icon=(G(g), "#8E8E93"), value="Off",
+                             on_click=lambda t=t: self.push(t, lambda t=t: self.pane_mock(t))))
+        return [h, vis.outer, more.outer]
+
+    # ── Aparência ──
+    def pane_appearance(self):
+        dark = is_dark()
+        mode = mock("appearance_mode", "dark" if dark else "light")
+        f1 = Form()
+        choices = Gtk.Box(spacing=10)
+        refs = {}
+
+        def pick(m):
+            set_mock("appearance_mode", m)
+            for k, c in refs.items():
+                c.set_selected(k == m)
+            want = m if m != "auto" else ("dark" if not 7 <= time.localtime().tm_hour < 19 else "light")
+            if (want == "dark") != is_dark():
+                spawn(f"{ROOT}/scripts/theme {want}")
+        for m, cap in (("auto", "Auto"), ("light", "Light"), ("dark", "Dark")):
+            refs[m] = Choice(lambda cr, w, h, m=m: draw_mode_thumb(cr, w, h, m), cap, m == mode,
+                             lambda m=m: pick(m))
+            choices.pack_start(refs[m], False, False, 0)
+        f1.add_row(row("Appearance", trailing=choices, tall=True, top=True))
+
+        # Liquid Glass (macOS 27: "from ultraclear to fully tinted"): vale na hora no vidro
+        # do hyprglass (hypr/vidro-presets.lua lê aparencia.json; reaplicar = reler a config)
+        glass_timer = [0]
+
+        def set_glass(v):
+            d = load_json(APPEARANCE_PATH, {})
+            d["glass_tint"] = round(v)
+            save_json(APPEARANCE_PATH, d)
+            if glass_timer[0]:
+                GLib.source_remove(glass_timer[0])
+
+            def apply():
+                glass_timer[0] = 0
+                spawn(f"{ROOT}/scripts/vidro recarregar")
+                return False
+            glass_timer[0] = GLib.timeout_add(250, apply)
+        f1.add_row(row("Liquid Glass", trailing=slider(
+            load_json(APPEARANCE_PATH, {}).get("glass_tint", 5), set_glass, "Clear", "Tinted")))
+
+        f2 = Form(header="Theme")
+        # Tahoe: a primeira é a Multicolor (cada app usa a sua; aqui = azul do sistema) e o
+        # nome da cor escolhida aparece embaixo dela, em Subheadline cinza
+        cur = "multicolor" if mock("accent_multicolor", False) and accent_name() == "blue" else accent_name()
+        dots = Gtk.Box(spacing=8)
+        dot_refs = {}
+
+        def nome(n):
+            return {"slate": "Graphite", "multicolor": "Multicolor"}.get(n, n.title())
+
+        # legenda única, sobreposta e centrada sob a bolinha escolhida (não mexe no espaçamento)
+        lay = Gtk.Overlay()
+        lay.add(dots)
+        fixo = Gtk.Fixed()
+        fixo.set_halign(Gtk.Align.FILL)
+        fixo.set_valign(Gtk.Align.FILL)
+        acc_cap = label("", "accent-acc_cap", 0.5)
+        fixo.put(acc_cap, 0, 0)
+        lay.add_overlay(fixo)
+        lay.set_overlay_pass_through(fixo, True)
+        escolha = [cur]
+
+        def pos_cap(*_):
+            b = dot_refs.get(escolha[0])
+            if not b:
+                return False
+            al = b.get_allocation()
+            da = dots.get_allocation()
+            cw = acc_cap.get_preferred_width()[1]
+            fixo.move(acc_cap, max(0, al.x - da.x + al.width // 2 - cw // 2), al.y - da.y + al.height + 1)
+            return False
+
+        def set_accent(name):
+            set_mock("accent_multicolor", name == "multicolor")
+            real = "blue" if name == "multicolor" else name
+            spawn(f"{ROOT}/scripts/accent {'graphite' if real == 'slate' else real}")
+            escolha[0] = name
+            acc_cap.set_text(nome(name))
+            for k, b in dot_refs.items():
+                set_cls(b, "selected", k == name)
+            GLib.idle_add(pos_cap)
+        for name in ("multicolor", "blue", "purple", "pink", "red", "orange", "yellow", "green", "slate"):
+            b = Gtk.Button()
+            add_class(b, "accent-dot")
+            b.set_valign(Gtk.Align.START)
+            area = Gtk.DrawingArea()
+            area.set_size_request(22, 22)
+            if name == "multicolor":
+                area.connect("draw", lambda a, cr: draw_multicolor(cr, 22))
+            else:
+                col = ACCENTS[name][0 if dark else 1]
+                area.connect("draw", lambda a, cr, col=col: draw_dot(cr, 22, col))
+            b.add(area)
+            b.set_tooltip_text(nome(name))
+            set_cls(b, "selected", name == cur)
+            b.connect("clicked", lambda _b, n=name: set_accent(n))
+            dot_refs[name] = b
+            dots.pack_start(b, False, False, 0)
+        acc_cap.set_text(nome(cur))
+        dots.set_margin_bottom(14)          # espaço da legenda (Subheadline 11)
+        dots.connect("size-allocate", lambda *_: GLib.idle_add(pos_cap))
+        dots = lay
+        f2.add_row(row("Color", trailing=dots, tall=True, top=True))
+        f2.add_row(row("Text highlight color", trailing=popup_button(
+            [("auto", "Automatic"), ("accent", "Accent Color"), ("graphite", "Graphite")],
+            mock("highlight", "auto"), lambda v: set_mock("highlight", v),
+            dot=lambda: "multicolor" if escolha[0] == "multicolor" else
+            ACCENTS.get("slate" if escolha[0] == "slate" else escolha[0], ACCENTS["blue"])[0 if dark else 1])))
+
+        f3 = Form()
+        style = load_json(APPEARANCE_PATH, {}).get("icon_style", "default")
+        st_refs = {}
+
+        # sob os ícones, um rádio conforme o estilo (referencias/telas/dark-icons-widgets-macos-1
+        # e clear-dark-1): Dark → "Always / Auto"; Clear → "Light / Dark / Auto"
+        VARIANTS = {"dark": (("always", "Always"), ("auto", "Auto")),
+                    "clear": (("light", "Light"), ("dark", "Dark"), ("auto", "Auto"))}
+        radios = Gtk.Box(spacing=14)
+        radios.set_halign(Gtk.Align.END)
+        add_class(radios, "style-variant")
+
+        def fill_radios(s):
+            for ch in radios.get_children():
+                ch.destroy()
+            opts = VARIANTS.get(s)
+            radios.set_visible(bool(opts))
+            if not opts:
+                return
+            var = load_json(APPEARANCE_PATH, {}).get("icon_style_variant", {})
+            cur = var.get(s, opts[0][0]) if isinstance(var, dict) else opts[0][0]
+            group = None
+            for key, cap in opts:
+                rb = Gtk.RadioButton.new_with_label_from_widget(group, cap)
+                group = group or rb
+                rb.set_active(key == cur)
+                rb.connect("toggled", lambda b, k=key: b.get_active() and set_variant(s, k))
+                radios.pack_start(rb, False, False, 0)
+                rb.show_all()
+
+        def set_variant(s, k):
+            d = load_json(APPEARANCE_PATH, {})
+            var = d.get("icon_style_variant")
+            var = var if isinstance(var, dict) else {}
+            var[s] = k
+            d["icon_style_variant"] = var
+            save_json(APPEARANCE_PATH, d)
+
+        def set_style(s):
+            d = load_json(APPEARANCE_PATH, {})
+            d["icon_style"] = s
+            save_json(APPEARANCE_PATH, d)
+            for k, c in st_refs.items():
+                c.set_selected(k == s)
+            fill_radios(s)
+        sty = Gtk.Box(spacing=8)
+        for s, cap in (("default", "Default"), ("dark", "Dark"), ("clear", "Clear"), ("tinted", "Tinted")):
+            st_refs[s] = Choice(lambda cr, w, h, s=s: draw_style_thumb(cr, w, h, s), cap, s == style,
+                                lambda s=s: set_style(s), 31, 31)
+            sty.pack_start(st_refs[s], False, False, 0)
+        col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        col.pack_start(sty, False, False, 0)
+        col.pack_start(radios, False, False, 0)
+        radios.set_no_show_all(True)
+        fill_radios(style)
+        f3.add_row(row("Icon & widget style", trailing=col, tall=True, top=True))
+        # Tahoe: "Folder color" (curso do Tahoe: Appearance → Folder Color; menu em
+        # referencias/telas/ajustes-aparencia-claro-cor-pastas.png)
+        f3.add_row(row("Folder color", trailing=popup_button(
+            [("auto", "Automatic"), ("red", "Red"), ("orange", "Orange"), ("yellow", "Yellow"),
+             ("green", "Green"), ("blue", "Blue"), ("purple", "Purple"), ("pink", "Pink"),
+             ("graphite", "Graphite"), ("choose", "Choose Color…")], mock("folder_color", "auto"),
+            lambda v: set_mock("folder_color", v),
+            dot=lambda: ACCENTS.get({"graphite": "slate"}.get(mock("folder_color", "auto"),
+                                                              mock("folder_color", "auto")),
+                                    ACCENTS["blue"])[0 if dark else 1])))
+
+        f4 = Form(header="Windows")
+        f4.add_row(row("Sidebar icon size", trailing=popup_button(
+            [("small", "Small"), ("medium", "Medium"), ("large", "Large")],
+            mock("sidebar_icons", "medium"), lambda v: set_mock("sidebar_icons", v))))
+        f4.add_row(row("Tint window background with wallpaper color", trailing=switch(
+            mock("tint_windows", False), lambda v: set_mock("tint_windows", v))))
+        # barras de rolagem: dois grupos de rádio num bloco (ui_0099), não menus
+        f5 = Form()
+
+        def radios(title, opts, cur, on):
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+            add_class(box, "radio-group")
+            box.pack_start(label(title, "row-title"), False, False, 0)
+            group = None
+            for k, n in opts:
+                rb = Gtk.RadioButton.new_with_label_from_widget(group, n)
+                group = group or rb
+                rb.set_active(k == cur)
+                rb.connect("toggled", lambda b, k=k: b.get_active() and on(k))
+                box.pack_start(rb, False, False, 0)
+            return box
+        f5.add_row(radios("Show scroll bars",
+                          [("auto", "Automatically based on mouse or trackpad"),
+                           ("scrolling", "When scrolling"), ("always", "Always")],
+                          mock("scrollbars", "auto"), lambda v: (
+                              set_mock("scrollbars", v), spawn(
+                                  "gsettings set org.gnome.desktop.interface overlay-scrolling "
+                                  f"{'false' if v == 'always' else 'true'}"))))
+        f5.add_row(radios("Click in the scroll bar to",
+                          [("page", "Jump to the next page"), ("spot", "Jump to the spot that’s clicked")],
+                          mock("scroll_click", "page"), lambda v: set_mock("scroll_click", v)))
+        return [f1.outer, f2.outer, f3.outer, f4.outer, f5.outer, help_button()]
+
+    # ── Barra de Menus ──
+    def pane_menubar(self):
+        light = os.path.exists(os.path.join(ROOT, "waybar", "bar-light.css")) and \
+            os.path.getsize(os.path.join(ROOT, "waybar", "bar-light.css")) > 0
+        f = Form()
+        f.add_row(row("Show menu bar background", trailing=switch(
+            light, lambda v: spawn(f"{ROOT}/scripts/bar-style {'light' if v else 'transparent'}"))))
+        f.add_row(row("Automatically hide and show the menu bar", trailing=popup_button(
+            [("never", "Never"), ("fullscreen", "In Full Screen Only"), ("always", "Always")],
+            mock("bar_autohide", "fullscreen"), lambda v: set_mock("bar_autohide", v))))
+        f.add_row(row("Recent documents, applications, and servers", trailing=popup_button(
+            [("5", "5"), ("10", "10"), ("15", "15")], mock("recents", "10"),
+            lambda v: set_mock("recents", v))))
+        return [f.outer] + self._menubar_controls()
+
+    # Menu Bar Controls do macOS 27 (video/frames-ui/ui_0002–0005): cartão com o texto, "Add
+    # Controls…" e a Central desenhada à direita; lista com caixa de seleção à esquerda + ícone;
+    # o Relógio sem caixa e com "Clock Options…"; itens que só aparecem quando ativos com
+    # "Show When Active". A caixa liga/desliga o item na barra de verdade (waybar/
+    # barra-ocultos.css, gerado). Só os itens que a barra do hyprmac tem.
+    BAR_ITEMS = [
+        # chave, título, ícone (glifo, cor), seletor CSS do módulo, extra
+        ("clock", "Clock", ("f0954", "#8E8E93"), None, "clock"),
+        ("wifi", "Wi‑Fi", ("f05a9", "#0A84FF"), "#network", None),
+        ("battery", "Battery", ("f0079", "#34C759"), "#battery", "battery"),
+        ("vpn", "VPN", ("f0582", "#0A84FF"), "#custom-vpn", None),
+        ("focus", "Focus", ("f0594", "#5E5CE6"), "#custom-focus", "active"),
+        ("nowplaying", "Now Playing", ("f075a", "#FF2D55"), "#mpris", "active"),
+        ("spotlight", "Spotlight", ("f0349", "#8E8E93"), "#custom-spotlight", None),
+    ]
+
+    def _menubar_controls(self):
+        hidden = set(load_json(os.path.join(CONF_DIR, "barra.json"), {}).get("hidden", []))
+
+        def set_shown(key, on):
+            menubar_items.set_shown(key, on, CONF_DIR, ROOT)    # mesmo código da galeria da Central
+
+        # cartão de apresentação
+        intro = Gtk.Overlay()
+        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        add_class(card, "form", "mbc-intro")
+        txt = label("System and app controls can be configured to appear in both Control "
+                    "Center and the menu bar.", "row-sub mbc-text")
+        txt.set_line_wrap(True)
+        txt.set_max_width_chars(38)        # quebra em "configured to / appear…" (ui_0002)
+        txt.set_halign(Gtk.Align.START)
+        card.pack_start(txt, False, False, 0)
+        add = push_button("Add Controls…", lambda: shell_cmd("edit-controls"))
+        add.set_halign(Gtk.Align.START)
+        add_class(add, "mbc-add")
+        card.pack_start(add, False, False, 0)
+        art = Gtk.DrawingArea()
+        art.set_size_request(120, -1)
+        art.set_halign(Gtk.Align.END)
+        art.connect("draw", self._draw_mbc_art)
+        intro.add(card)
+        intro.add_overlay(art)
+        intro.set_overlay_pass_through(art, True)
+        head = label("Menu Bar Controls", "form-header")
+        ctl = Form()
+        for key, title, (g, c), sel, extra in self.BAR_ITEMS:
+            lead = Gtk.Box(spacing=10)
+            if sel:
+                cb = Gtk.CheckButton()
+                cb.set_active(key not in hidden)
+                cb.set_valign(Gtk.Align.CENTER)
+                cb.connect("toggled", lambda b, k=key: set_shown(k, b.get_active()))
+                lead.pack_start(cb, False, False, 0)
+            else:
+                sp = Gtk.Box()
+                add_class(sp, "mbc-nocheck")
+                lead.pack_start(sp, False, False, 0)
+            lead.pack_start(AppIcon(glyph_of(g), c), False, False, 0)
+            trail = None
+            if extra == "clock":
+                trail = push_button("Clock Options…", self._clock_options_sheet)
+                if os.environ.get("HYPRMAC_AJUSTES_OPEN") == "clockoptions":   # testes (--snapshot)
+                    GLib.timeout_add(700, lambda: self._clock_options_sheet() and False)
+            elif extra == "battery":
+                trail = push_button("Battery Options…", lambda: self.open_pane("energy"))
+            elif extra == "active":
+                trail = popup_button([("active", "Show When Active")], "active", lambda v: None)
+            ctl.add_row(row(title, icon=lead, trailing=trail))
+        sections = [head, intro, ctl.outer]
+        # Lista exclusivamente registros SNI, nunca todos os apps abertos.
+        helper = os.path.join(ROOT, "scripts", "menu-extras")
+        try:
+            extras = json.loads(subprocess.check_output(
+                [helper, "list", "--json"], text=True, timeout=4))
+        except (OSError, subprocess.SubprocessError, ValueError):
+            extras = []
+        prefs = load_json(os.path.join(CONF_DIR, "menu-extras.json"), {}).get("tray", {})
+        hidden_apps = set(prefs.get("hidden-items", []))
+        app_controls = Form()
+        seen = set()
+        for extra in extras:
+            app_id, title = extra["id"], extra["title"]
+            # Electron pode compartilhar Id: Title é o seletor explícito nesses casos.
+            duplicate_id = app_id == "chrome_status_icon_1" or sum(it["id"] == app_id for it in extras) > 1
+            identity = "title:" + title if duplicate_id and title else app_id
+            if not identity or identity in seen:
+                continue
+            seen.add(identity)
+            checkbox = Gtk.CheckButton()
+            checkbox.set_active(app_id not in hidden_apps and "title:" + title not in hidden_apps)
+            checkbox.set_sensitive(os.path.isfile(os.path.join(
+                os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")),
+                "hyprmac", "waybar-tahoe", "waybar")))
+            checkbox.connect("toggled", lambda button, key=identity:
+                subprocess.Popen([helper, "show" if button.get_active() else "hide", key]))
+            app_controls.add_row(row(title or app_id, icon=checkbox))
+        if seen:
+            sections.extend([label("Allow in the Menu Bar", "form-header"), app_controls.outer])
+        return sections
+
+    def _draw_mbc_art(self, w, cr):
+        """A Central em miniatura, cortada pela borda direita do cartão (ui_0002): cápsulas e
+        círculos cinza-claros, com a barra de menus de pontinhos em cima."""
+        a = w.get_allocation()
+        ink = (1, 1, 1, 0.10) if self.dark else (0, 0, 0, 0.07)
+        cr.set_source_rgba(*ink)
+        x0, y0, u = 10, 8, 13
+        for i in range(6):                       # "barra de menus" pontilhada
+            cr.arc(x0 + 30 + i * 9, y0, 2, 0, 2 * math.pi)
+            cr.fill()
+        y = y0 + 10
+        cr.set_source_rgba(*ink)
+        for (cx, cy, kind) in ((0, 0, "pill"), (60, 0, "sq"), (0, 1, "c"), (1, 1, "c"),
+                               (0, 2, "pill"), (2, 2, "c"), (3, 2, "c")):
+            if kind == "pill":
+                squircle(cr, x0, y + cy * (u + 4), 2 * u + 4, u, u / 2)
+            elif kind == "sq":
+                squircle(cr, x0 + cx - 26, y, 2 * u + 4, 2 * u + 4, 6)
+            else:
+                cr.arc(x0 + u / 2 + cx * (u + 4), y + cy * (u + 4) + u / 2, u / 2, 0, 2 * math.pi)
+            cr.fill()
+        return False
+
+    # ── Apple Intelligence & Siri (simulado) ──
+    def pane_siri(self):
+        h = hero(("f0674", "#BF5AF2"), "Apple Intelligence & Siri",
+                 "Siri helps you get things done, just by asking. Dictate a note, check the weather, "
+                 "and more.")
+        f = Form()
+        f.add_row(row("Siri", trailing=switch(mock("siri", False), lambda v: set_mock("siri", v))))
+        f.add_row(row("Keyboard shortcut", value="Hold Command Space"))
+        return [h, f.outer]
+
+    # ── Mesa e Dock ──
+    def pane_desktop(self):
+        conf = load_json(SHELL_CONF, {})
+        dock = load_json(os.path.join(CONF_DIR, "dock.json"), {})
+        f = Form(header="Dock")
+
+        def set_size(v):
+            c = load_json(SHELL_CONF, {})
+            c["dock_icon"] = int(v)
+            save_json(SHELL_CONF, c)
+            self._reload_shell_soon()
+        # rótulos exatos do Tahoe 26.6.1 (Desktop & Dock: "Dock Size", "Minimized window animation")
+        f.add_row(row("Dock Size", trailing=slider(conf.get("dock_icon", 46), set_size,
+                                              "Small", "Large", (32, 72), 2, 180)))
+        def set_magnification(v):
+            c = load_json(SHELL_CONF, {})
+            c["dock_magnification"] = bool(v)
+            save_json(SHELL_CONF, c)
+            self._reload_shell_soon()
+        f.add_row(row("Magnification", trailing=switch(
+            conf.get("dock_magnification", False), set_magnification)))
+        f.add_row(row("Position on Screen", trailing=popup_button(
+            [("bottom", "Bottom")], "bottom", lambda v: None)))
+        def set_minimize_effect(v):
+            c = load_json(SHELL_CONF, {})
+            c["dock_minimize_effect"] = v
+            save_json(SHELL_CONF, c)
+            self._reload_shell_soon()
+        f.add_row(row("Minimized window animation", trailing=popup_button(
+            [("genie", "Genie Effect"), ("scale", "Scale Effect")],
+            conf.get("dock_minimize_effect", "genie"), set_minimize_effect)))
+        f.add_row(row("Automatically hide and show the Dock", trailing=switch(
+            dock.get("autohide", False), lambda v: shell_cmd("dock-autohide"))))
+        f.add_row(row("Show indicators for open applications", trailing=switch(True, lambda v: None)))
+        f.add_row(row("Show suggested and recent apps in Dock", trailing=switch(
+            mock("dock_recents", True), lambda v: set_mock("dock_recents", v))))
+        w = Form(header="Desktop & Stage Manager")
+        w.add_row(row("Show Widgets", trailing=popup_button(
+            [("desktop", "On Desktop"), ("off", "Off")], mock("widgets", "desktop"),
+            lambda v: set_mock("widgets", v))))
+        w.add_row(row("Widget style", trailing=popup_button(
+            [("auto", "Automatic"), ("mono", "Monochrome"), ("color", "Full-color")],
+            mock("widget_style", "auto"), lambda v: set_mock("widget_style", v))))
+        w.add_row(row("Default web browser", trailing=self._browser_popup()))
+        # Windows (video/frames-ui/ui_0192): documentos e, num bloco à parte, o encaixe
+        win = Form(header="Windows")
+        win.add_row(row("Prefer tabs when opening documents", trailing=popup_button(
+            [("never", "Never"), ("always", "Always"), ("fullscreen", "In Full Screen")],
+            mock("prefer_tabs", "fullscreen"), lambda v: set_mock("prefer_tabs", v))))
+        win.add_row(row("Ask to keep changes when closing documents", trailing=switch(
+            mock("ask_keep", False), lambda v: set_mock("ask_keep", v))))
+        win.add_row(row("Close windows when quitting an application",
+                        sub="When enabled, open documents and windows will not be restored when "
+                            "you re-open an application.",
+                        trailing=switch(mock("close_on_quit", True),
+                                        lambda v: set_mock("close_on_quit", v))))
+        tile = Form()
+        for k, t, d in (("tile_edges", "Drag windows to left or right edge of screen to tile", True),
+                        ("tile_menubar", "Drag windows to menu bar to fill screen", True),
+                        ("tile_option", "Hold ⌥ key while dragging windows to tile", True),
+                        # sem medida da margem do Mac: guardado, sem efeito (REFERENCIAS-PENDENTES)
+                        ("tile_margins", "Tiled windows have margins", False)):
+            tile.add_row(row(t, trailing=switch(mock(k, d), lambda v, k=k: set_mock(k, v))))
+        mc = Form(header="Mission Control",
+                  footer=None)
+        mc_desc = label("Mission Control shows an overview of your open windows and thumbnails of "
+                        "full-screen applications, all arranged in a unified view.", "row-sub mc-desc")
+        mc_desc.set_line_wrap(True)
+        mc_desc.set_xalign(0)
+        mc.outer.pack_start(mc_desc, False, False, 0)
+        mc.outer.reorder_child(mc_desc, 1)
+        mc.add_row(row("Automatically rearrange Spaces based on most recent use",
+                       trailing=switch(mock("rearrange_spaces", False), lambda v: set_mock("rearrange_spaces", v))))
+        mc.add_row(row("When switching to an application, switch to a Space with open windows for "
+                       "the application", trailing=switch(
+                           mock("switch_space", True), lambda v: set_mock("switch_space", v))))
+        mc.add_row(row("Group windows by application", trailing=switch(
+            mock("group_windows", False), lambda v: set_mock("group_windows", v))))
+        mc.add_row(row("Displays have separate Spaces", trailing=switch(
+            mock("separate_spaces", True), lambda v: set_mock("separate_spaces", v))))
+        mc.add_row(row("Drag windows to top of screen to enter Mission Control", trailing=switch(
+            mock("drag_top_mc", True), lambda v: set_mock("drag_top_mc", v))))
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Hot Corners…", self._hot_corners_sheet), False, False, 0)
+        if os.environ.get("HYPRMAC_AJUSTES_OPEN") == "hotcorners":   # testes (--snapshot)
+            GLib.timeout_add(700, lambda: self._hot_corners_sheet() and False)
+        b.pack_end(push_button("Shortcuts…", lambda: self.open_pane("keyboard")), False, False, 0)
+        hb = help_button()
+        hb.set_margin_start(8)
+        b.pack_end(hb, False, False, 0)
+        b.reorder_child(hb, 0)
+        return [f.outer, w.outer, win.outer, tile.outer, mc.outer, b]
+
+    def _browser_popup(self):
+        """Navegador padrão (ui_0192: ícone + nome num pop-up); escolher muda de verdade
+        (xdg-settings)."""
+        cur = run("xdg-settings get default-web-browser 2>/dev/null").strip()
+        apps = {}
+        for info in Gio.AppInfo.get_all_for_type("x-scheme-handler/https"):
+            if isinstance(info, Gio.DesktopAppInfo) and info.should_show():
+                apps[info.get_id()] = info
+        if cur and cur not in apps:
+            info = Gio.DesktopAppInfo.new(cur)
+            if info:
+                apps[cur] = info
+        opts = sorted(((k, i.get_name()) for k, i in apps.items()), key=lambda t: t[1].lower())
+        btn = popup_button(opts or [("", "—")], cur, lambda v: spawn(
+            f"xdg-settings set default-web-browser {GLib.shell_quote(v)}"))
+        info = apps.get(cur)
+        if info and info.get_icon():
+            img = Gtk.Image.new_from_gicon(info.get_icon(), Gtk.IconSize.MENU)
+            img.set_pixel_size(16)
+            box = btn.get_child()
+            box.pack_start(img, False, False, 0)
+            box.reorder_child(img, 0)
+        return btn
+
+    def _reload_shell_soon(self):
+        if getattr(self, "_reload_id", None):
+            GLib.source_remove(self._reload_id)
+        self._reload_id = GLib.timeout_add(900, lambda: (
+            spawn(f"{ROOT}/shell/hyprmac-shell reload"), setattr(self, "_reload_id", None)) and False)
+
+    # ── Telas ──
+    def pane_displays(self):
+        mons = hypr_json("monitors")
+        out = []
+        if mons:
+            strip = Gtk.Box(spacing=14)
+            add_class(strip, "display-strip")
+            strip.set_halign(Gtk.Align.CENTER)
+            for m in mons:
+                b = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+                ar = Gtk.DrawingArea()
+                ar.set_size_request(118, 70)
+                ar.connect("draw", lambda a, cr: draw_monitor(cr, a.get_allocated_width(),
+                                                               a.get_allocated_height()))
+                b.pack_start(ar, False, False, 0)
+                b.pack_start(label(m.get("model") or m["name"], "choice-cap", 0.5), False, False, 0)
+                strip.pack_start(b, False, False, 0)
+            box = Gtk.Box()
+            add_class(box, "form", "display-box")
+            box.pack_start(strip, True, True, 0)
+            out.append(box)
+        f = Form()
+        f.add_row(row("Brightness", trailing=slider(
+            mock("brightness", 70), lambda v: (set_mock("brightness", int(v)),
+                                               shell_cmd(f"brightness {int(v)}")),
+            "sun.min", "sun.max", (0, 100), 1, 200)))
+        f.add_row(row("Automatically adjust brightness", trailing=switch(False, lambda v: None)))
+        out.append(f.outer)
+        for m in mons:
+            fm = Form(header=m.get("description") or m["name"])
+            modes = sorted({re.sub(r"@.*", "", x) for x in m.get("availableModes", [])},
+                           key=lambda s: -int(s.split("x")[0]) if "x" in s else 0)
+            fm.add_row(row("Resolution", value=f'{m["width"]} × {m["height"]}'))
+            fm.add_row(row("Refresh rate", value=f'{m["refreshRate"]:.2f} Hz'))
+            fm.add_row(row("Scale", value=f'{m["scale"]:g}×'))
+            fm.add_row(row("Rotation", value="Standard" if not m.get("transform") else f'{m["transform"] * 90}°'))
+            if modes:
+                fm.add_row(row("Available resolutions", value=", ".join(modes[:3])))
+            out.append(fm.outer)
+        ns = Form()
+        ns.add_row(row("Night Shift", trailing=popup_button(
+            [("off", "Off"), ("sunset", "Sunset to Sunrise"), ("custom", "Custom")],
+            mock("nightshift", "off"), lambda v: (set_mock("nightshift", v), self._nightshift(v)))))
+        out.append(ns.outer)
+        return out
+
+    def _nightshift(self, v):
+        if v == "off":
+            spawn("pkill -x hyprsunset; pkill -x gammastep; pkill -x wlsunset")
+        elif shutil.which("hyprsunset"):
+            spawn("pkill -x hyprsunset; hyprsunset -t 4500")
+        elif shutil.which("wlsunset"):
+            spawn("pkill -x wlsunset; wlsunset -T 4501 -t 4500")
+
+    # ── Spotlight ──
+    def pane_spotlight(self):
+        f = Form(header="Search results",
+                 footer="Only selected categories appear in Spotlight search results.")
+        for key, t in (("apps", "Applications"), ("settings", "System Settings"),
+                       ("actions", "Actions & Menu Items"), ("files", "Documents & Folders"),
+                       ("calc", "Calculator"), ("clipboard", "Clipboard History")):
+            f.add_row(row(t, trailing=switch(mock("spot_" + key, True),
+                                             lambda v, k=key: set_mock("spot_" + k, v))))
+        f2 = Form()
+        f2.add_row(row("Keyboard shortcut", value="⌘ Space"))
+        return [f.outer, f2.outer]
+
+    # ── Papel de Parede ──
+    # Topo como no Tahoe (Ajustes ▸ Wallpaper, print 2×): prévia 160 de largura na proporção da
+    # tela, formulário à direita (nome + "Show on all Spaces"), embaixo dele os botões
+    # "Screen Saver…" e "Clock Appearance…" alinhados à direita (24 de altura, vão 8), filete.
+    def pane_wallpaper(self):
+        cur = run("gsettings get org.gnome.desktop.background picture-uri-dark" if is_dark()
+                  else "gsettings get org.gnome.desktop.background picture-uri").strip("'")
+        cur = cur.replace("file://", "")
+        dirs = [os.path.join(ROOT, "wallpapers"),
+                os.path.join(ROOT, "BaseConhecimento", "referencias", "kit", "papeis-de-parede"),
+                os.path.expanduser("~/Pictures/Wallpapers")]
+        files = []
+        for d in dirs:
+            if os.path.isdir(d):
+                files += sorted(os.path.join(d, n) for n in os.listdir(d)
+                                if n.lower().endswith((".jpg", ".jpeg", ".png", ".webp")))
+        top = Gtk.Box(spacing=10)
+        add_class(top, "wall-top")
+        pw, ph = 160, round(160 / screen_aspect())
+        art = Gtk.DrawingArea()
+        art.set_size_request(pw, ph)
+        art.set_valign(Gtk.Align.START)
+        cache = {}
+        self._wall_lock_preview = False
+        art.connect("draw", lambda a, cr: self._draw_wall_preview(cr, pw, ph, cur, cache))
+        self._wall_art = art
+        top.pack_start(art, False, False, 0)
+        right = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=11)
+        f = Form()
+        name = os.path.splitext(os.path.basename(cur))[0] or "Wallpaper"
+        f.add_row(row(name))
+        f.add_row(row("Show on all Spaces", trailing=switch(
+            mock("wall_all_spaces", True), lambda v: set_mock("wall_all_spaces", v))))
+        add_class(f, "wall-info")
+        right.pack_start(f.outer, False, False, 0)
+        btns = Gtk.Box(spacing=0)
+        btns.set_halign(Gtk.Align.END)
+        ss = push_button("Screen Saver…", lambda: self._screen_saver_sheet(cur))
+        ca = push_button("Clock Appearance…", lambda: None)
+        ca.connect("clicked", lambda b: self._clock_popover(b))
+        test = os.environ.get("HYPRMAC_AJUSTES_OPEN")      # testes (--snapshot): abre já
+        if test == "clock":
+            GLib.timeout_add(700, lambda: (ca.clicked(), False)[1])
+        elif test == "saver":
+            GLib.timeout_add(700, lambda: (ss.clicked(), False)[1])
+        btns.pack_start(ss, False, False, 0)
+        btns.pack_start(ca, False, False, 0)
+        right.pack_start(btns, False, False, 0)
+        top.pack_start(right, True, True, 0)
+        sep = Gtk.Box()
+        add_class(sep, "wall-sep")
+        # seções como no Tahoe (prints 2×): miniaturas de 107,5×71 com o nome embaixo, 4 por
+        # linha com vão de 10; "Your Photos" começa pelo bloco "Add Photo…" e tem "Show All (n)"
+        conf = load_json(SHELL_CONF, {})
+        added = [p for p in conf.get("user_wallpapers", []) if os.path.isfile(p)]
+        mine, seen = [], set()
+        for p in added + self._picture_files():
+            rp = os.path.realpath(p)
+            if rp not in seen:
+                seen.add(rp)
+                mine.append(p)
+        builtin = [p for p in files if "-mini." not in os.path.basename(p)
+                   and os.path.realpath(p) not in seen]
+        show_all = getattr(self, "_wall_show_all", False)
+        out = [top, sep]
+        # Your Photos
+        hdr = Gtk.Box()
+        hdr.pack_start(label("Your Photos", "form-header"), False, False, 0)
+        if len(mine) > 7:
+            more = Gtk.Button(label="Show Less" if show_all else f"Show All ({len(mine)})")
+            add_class(more, "wall-more")
+            more.set_valign(Gtk.Align.CENTER)
+            more.connect("clicked", lambda _b: (setattr(self, "_wall_show_all", not show_all),
+                                                self.refresh(0)))
+            hdr.pack_end(more, False, False, 0)
+        out.append(hdr)
+        g1 = self._wall_grid()
+        g1.add(self._wall_add_tile())
+        for p in (mine if show_all else mine[:7]):
+            g1.add(self._wall_thumb(p, cur))
+        out.append(g1)
+        if builtin:
+            out.append(label("Pictures", "form-header"))
+            g2 = self._wall_grid()
+            for p in builtin:
+                g2.add(self._wall_thumb(p, cur))
+            out.append(g2)
+        return out
+
+    @staticmethod
+    def _picture_files():
+        """Fotos do usuário: ~/Pictures/Wallpapers e o nível de cima de ~/Pictures, as mais
+        novas primeiro (no Mac, "Your Photos" vem da fototeca)."""
+        out = []
+        for d in (os.path.expanduser("~/Pictures/Wallpapers"), os.path.expanduser("~/Pictures")):
+            try:
+                names = os.listdir(d)
+            except OSError:
+                continue
+            for n in names:
+                p = os.path.join(d, n)
+                if n.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".heic")) and os.path.isfile(p):
+                    out.append(p)
+        out.sort(key=lambda p: -os.path.getmtime(p))
+        return out
+
+    @staticmethod
+    def _wall_grid():
+        grid = Gtk.FlowBox()
+        add_class(grid, "wall-grid")
+        grid.set_selection_mode(Gtk.SelectionMode.NONE)
+        grid.set_max_children_per_line(4)
+        grid.set_min_children_per_line(4)
+        grid.set_homogeneous(True)
+        grid.set_column_spacing(10)
+        grid.set_row_spacing(10)
+        grid.set_valign(Gtk.Align.START)
+        grid.set_vexpand(False)
+        return grid
+
+    def _wall_thumb(self, p, cur):
+        b = Gtk.Button()
+        add_class(b, "wall-thumb")
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        frame = Gtk.Box()
+        add_class(frame, "wall-frame")
+        if os.path.realpath(p) == os.path.realpath(cur or "/"):
+            add_class(frame, "selected")
+        ar = Gtk.DrawingArea()
+        ar.set_size_request(WALL_THUMB_W, WALL_THUMB_H)
+        c = {}
+        ar.connect("draw", lambda a, cr, p=p, c=c: draw_picture(cr, WALL_THUMB_W, WALL_THUMB_H, p, c, 6))
+        frame.pack_start(ar, False, False, 0)
+        frame.set_halign(Gtk.Align.CENTER)
+        box.pack_start(frame, False, False, 0)
+        name = label(os.path.splitext(os.path.basename(p))[0], "wall-name", 0.5, ellipsize=True)
+        name.set_max_width_chars(14)
+        box.pack_start(name, False, False, 0)
+        b.add(box)
+        b.set_tooltip_text(p)
+        b.connect("clicked", lambda _b, p=p: (set_wallpaper(p), self.refresh(400)))
+        return b
+
+    def _wall_add_tile(self):
+        """Bloco "Add Photo…" (Tahoe: cinza, ícone de foto com +, texto embaixo, dentro)."""
+        b = Gtk.Button()
+        add_class(b, "wall-thumb", "wall-add")
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        tile = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        add_class(tile, "wall-add-tile")
+        tile.set_size_request(WALL_THUMB_W, WALL_THUMB_H)
+        tile.set_halign(Gtk.Align.CENTER)
+        # ícone "photo.badge.plus" da referência: imagem + selo redondo com "+" no canto
+        ic = Gtk.DrawingArea()
+        add_class(ic, "wall-add-icon")
+        ic.set_size_request(34, 28)
+        ic.set_halign(Gtk.Align.CENTER)
+        ic.set_valign(Gtk.Align.END)
+        ic.set_vexpand(True)
+
+        def draw_icon(w, cr):
+            col = w.get_style_context().get_color(Gtk.StateFlags.NORMAL)
+            cr.push_group()                      # o CLEAR só pode recortar o próprio ícone
+            cr.set_source_rgba(col.red, col.green, col.blue, 1)
+            lay = PangoCairo.create_layout(cr)
+            fd = Pango.FontDescription("Symbols Nerd Font")
+            fd.set_absolute_size(26 * Pango.SCALE)
+            lay.set_font_description(fd)
+            lay.set_text(G("f02e9"), -1)
+            cr.move_to(0, -1)
+            PangoCairo.show_layout(cr, lay)
+            bx, by, r = 26.5, 20.5, 6.5          # selo: recorta um anel e desenha o círculo com +
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.arc(bx, by, r + 1.5, 0, 6.2832)
+            cr.fill()
+            cr.set_operator(cairo.OPERATOR_OVER)
+            cr.arc(bx, by, r, 0, 6.2832)
+            cr.fill()
+            cr.set_operator(cairo.OPERATOR_CLEAR)
+            cr.set_line_width(1.6)
+            cr.move_to(bx - 3.2, by)
+            cr.line_to(bx + 3.2, by)
+            cr.move_to(bx, by - 3.2)
+            cr.line_to(bx, by + 3.2)
+            cr.stroke()
+            cr.pop_group_to_source()
+            cr.paint_with_alpha(col.alpha)
+            return False
+        ic.connect("draw", draw_icon)
+        tile.pack_start(ic, True, True, 0)
+        tx = label("Add Photo…", "wall-add-text", 0.5)
+        tx.set_valign(Gtk.Align.START)
+        tx.set_vexpand(True)
+        tile.pack_start(tx, True, True, 0)
+        box.pack_start(tile, False, False, 0)
+        box.pack_start(label(" ", "wall-name", 0.5), False, False, 0)
+        b.add(box)
+        b.connect("clicked", lambda _b: self._wall_add_photo())
+        return b
+
+    def _wall_add_photo(self):
+        dlg = Gtk.FileChooserNative.new("Add Photo", self, Gtk.FileChooserAction.OPEN, "Add", "Cancel")
+        flt = Gtk.FileFilter()
+        flt.set_name("Images")
+        for pat in ("*.jpg", "*.jpeg", "*.png", "*.webp", "*.heic", "*.JPG", "*.JPEG", "*.PNG"):
+            flt.add_pattern(pat)
+        dlg.add_filter(flt)
+        dlg.set_select_multiple(True)
+        if dlg.run() == Gtk.ResponseType.ACCEPT:
+            paths = [f.get_path() for f in dlg.get_files() if f.get_path()]
+            if paths:
+                conf = load_json(SHELL_CONF, {})
+                lst = [p for p in conf.get("user_wallpapers", []) if p not in paths]
+                conf["user_wallpapers"] = paths + lst
+                save_json(SHELL_CONF, conf)
+                set_wallpaper(paths[0])
+                self.refresh(400)
+        dlg.destroy()
+
+    def _draw_wall_preview(self, cr, w, h, path, cache):
+        """Prévia do papel de parede; com o popover do relógio aberto vira a miniatura da tela
+        de bloqueio (como no Tahoe): traço da data, relógio no estilo escolhido, avatar e os
+        traços do nome e da dica (proporções medidas no print a 1,43×)."""
+        cr.save()
+        draw_picture(cr, w, h, path, cache, 8)
+        cr.restore()
+        if not self._wall_lock_preview:
+            return False
+        cc = clock_conf()
+        cr.set_line_cap(cairo.LINE_CAP_ROUND)
+
+        def bar(cy, frac, thick):
+            cr.set_line_width(thick * h)
+            cr.move_to(w / 2 - frac * w / 2, cy * h)
+            cr.line_to(w / 2 + frac * w / 2, cy * h)
+            cr.set_source_rgba(1, 1, 1, 0.9)
+            cr.stroke()
+        bar(0.062, 0.21, 0.027)
+        if cc["show"] != "never":
+            draw_clock_text(cr, time.strftime("%-H:%M"), cc["style"], cc["weight"],
+                            0.19 * h / 0.7046, w / 2, 0.25 * h, (1, 1, 1, 0.92))
+        cr.arc(w / 2, 0.81 * h, 0.0385 * h, 0, 6.2832)
+        cr.set_source_rgba(1, 1, 1, 0.92)
+        cr.fill()
+        bar(0.885, 0.10, 0.023)
+        bar(0.93, 0.21, 0.027)
+        return False
+
+    def _clock_popover(self, button):
+        """Clock Appearance… (popover do Tahoe, medido a 1×: 441 de largura, grupo interno com
+        recuo de 11; linhas de 41 / 74 / 39; amostras a cada 67,75; trilho do peso de 218)."""
+        cc = clock_conf()
+        state = {"weight": cc["weight"], "style": cc["style"]}
+        pop = Gtk.Popover.new(button)
+        add_class(pop, "clock-pop")
+        pop.set_position(Gtk.PositionType.BOTTOM)
+        pop.set_constrain_to(Gtk.PopoverConstraint.NONE)
+        f = Form()
+        add_class(f, "clock-form")
+        f.add_row(row("Show large clock", trailing=popup_button(
+            [("lock", "On Lock Screen"), ("never", "Never")], cc["show"],
+            lambda v: (set_clock_conf("lock_clock", v), self._wall_art.queue_draw()))))
+        styles = Gtk.Box(homogeneous=True)
+        add_class(styles, "clock-styles")
+        samples = []
+
+        def pick(key):
+            state["style"] = key
+            set_clock_conf("lock_clock_style", key)
+            for smp in samples:
+                (add_class if smp.key == key else remove_class)(smp, "selected")
+            self._wall_art.queue_draw()
+        for i, (key, _fam) in enumerate(CLOCK_STYLES, 1):
+            smp = ClockSample(i, key, lambda: state["weight"], pick)
+            if key == state["style"]:
+                add_class(smp, "selected")
+            samples.append(smp)
+            styles.pack_start(smp, True, True, 0)
+        f.add_row(styles)
+
+        def weight(v):
+            state["weight"] = int(round(v))
+            set_clock_conf("lock_clock_weight", state["weight"])
+            for smp in samples:
+                smp.area.queue_draw()
+            self._wall_art.queue_draw()
+        f.add_row(row("Weight", trailing=slider(state["weight"], weight, rng=(100, 900), width=218)))
+        pop.add(f.outer)
+
+        def shown(on):
+            self._wall_lock_preview = on
+            self._wall_art.queue_draw()
+        pop.connect("closed", lambda *_: shown(False))
+        f.outer.show_all()
+        if os.environ.get("HYPRMAC_AJUSTES_OPEN") == "clock" and hasattr(self, "off"):
+            # --snapshot: popover não desenha fora da tela; mostra o conteúdo no lugar dele
+            pop.remove(f.outer)
+            fake = Gtk.Box()
+            add_class(fake, "clock-pop-test")
+            fake.add(f.outer)
+            fake.set_halign(Gtk.Align.END)
+            fake.set_valign(Gtk.Align.START)
+            fake.set_margin_top(178)
+            self.overlay.add_overlay(fake)
+            fake.show_all()
+        else:
+            pop.popup()
+        shown(True)
+
+    def _screen_saver_sheet(self, cur):
+        """Folha "Screen Saver…" do Tahoe (print a 1×): 520 de largura, prévia 168×105 no
+        topo, formulário de 2 linhas, filete e "Done" azul à direita; véu sobre a janela."""
+        veil = Gtk.EventBox()
+        add_class(veil, "sheet-veil")
+        veil.set_visible_window(True)
+        sheet = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(sheet, "sheet")
+        sheet.set_halign(Gtk.Align.CENTER)
+        sheet.set_valign(Gtk.Align.CENTER)
+        sheet.set_size_request(520, -1)
+        art = Gtk.DrawingArea()
+        art.set_size_request(168, 105)
+        art.set_halign(Gtk.Align.CENTER)
+        c = {}
+        art.connect("draw", lambda a, cr: draw_picture(cr, 168, 105, cur, c, 6))
+        art.set_margin_top(21)
+        art.set_margin_bottom(21)
+        sheet.pack_start(art, False, False, 0)
+        f = Form()
+        add_class(f, "sheet-form")
+        opts = [("60", "After 1 minute"), ("120", "After 2 minutes"), ("300", "After 5 minutes"),
+                ("600", "After 10 minutes"), ("1200", "After 20 minutes"), ("1800", "After 30 minutes"),
+                ("3600", "After 1 hour"), ("never", "Never")]
+        f.add_row(row("Start Screen Saver…", trailing=popup_button(
+            opts, mock("screensaver", "300"), lambda v: set_mock("screensaver", v))))
+        radios = Gtk.Box(spacing=16)
+        auto = Gtk.RadioButton.new_with_label(None, "Automatic")
+        cust = Gtk.RadioButton.new_with_label_from_widget(auto, "Custom")
+        (cust if mock("screensaver_mode", "auto") == "custom" else auto).set_active(True)
+        auto.connect("toggled", lambda b: b.get_active() and set_mock("screensaver_mode", "auto"))
+        cust.connect("toggled", lambda b: b.get_active() and set_mock("screensaver_mode", "custom"))
+        radios.pack_start(auto, False, False, 0)
+        radios.pack_start(cust, False, False, 0)
+        f.add_row(row("Use Screen Saver", trailing=radios))
+        sheet.pack_start(f.outer, False, False, 0)
+        sep = Gtk.Box()
+        add_class(sep, "sheet-sep")
+        sheet.pack_start(sep, False, False, 0)
+        foot = Gtk.Box()
+        add_class(foot, "sheet-foot")
+        done = push_button("Done", lambda: close(), primary=True)
+        foot.pack_end(done, False, False, 0)
+        sheet.pack_start(foot, False, False, 0)
+        layer = Gtk.Overlay()
+        layer.add(veil)
+        layer.add_overlay(sheet)
+
+        def close():
+            self.overlay.remove(layer)
+            layer.destroy()
+        self.overlay.add_overlay(layer)
+        layer.show_all()
+        done.grab_focus()
+
+    def _clock_options_sheet(self):
+        """Folha "Clock Options…" (Control Center ▸ Menu Bar Controls). Opções e textos de
+        ClockPreferences/ControlCenterSettings do macOS 26.6.1 (25G76); a ordem das linhas e a
+        largura seguem as outras folhas, sem captura do Tahoe. Analog e Announce the time
+        ainda não existem no hyprmac: aparecem esmaecidos."""
+        from clock_format import prefs_of
+        path = os.path.join(CONF_DIR, "relogio.json")
+        prefs = prefs_of(load_json(path, {}))
+
+        def set_pref(key, value):
+            prefs[key] = value
+            save_json(path, prefs)
+            spawn("pkill -USR1 -f waybar/scripts/[c]lock.py")
+
+        veil = Gtk.EventBox()
+        add_class(veil, "sheet-veil")
+        veil.set_visible_window(True)
+        sheet = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(sheet, "sheet")
+        sheet.set_halign(Gtk.Align.CENTER)
+        sheet.set_valign(Gtk.Align.CENTER)
+        sheet.set_size_request(520, -1)
+        date = Form(header="Date")
+        add_class(date, "sheet-form")
+        date.add_row(row("Show date", trailing=popup_button(
+            [("when_space_allows", "When Space Allows"), ("always", "Always"), ("never", "Never")],
+            prefs["show_date"], lambda v: set_pref("show_date", v))))
+        date.add_row(row("Show the day of the week", trailing=switch(
+            prefs["show_day_of_week"], lambda v: set_pref("show_day_of_week", v))))
+        tm = Form(header="Time")
+        add_class(tm, "sheet-form")
+        style = popup_button([("digital", "Digital"), ("analog", "Analog")], "digital", lambda v: None)
+        style.set_sensitive(False)
+        tm.add_row(row("Style", trailing=style))
+        ampm = switch(prefs["show_ampm"], lambda v: set_pref("show_ampm", v))
+        ampm.set_sensitive(not mock("clock_24h", True))     # sem efeito no formato de 24 horas
+        tm.add_row(row("Show AM/PM", trailing=ampm))
+        tm.add_row(row("Display the time with seconds", trailing=switch(
+            prefs["show_seconds"], lambda v: set_pref("show_seconds", v))))
+        tm.add_row(row("Flash the time separators", trailing=switch(
+            prefs["flash_separators"], lambda v: set_pref("flash_separators", v))))
+        announce = switch(False, lambda v: None)
+        announce.set_sensitive(False)
+        tm.add_row(row("Announce the time", trailing=announce))
+        for f in (date, tm):
+            sheet.pack_start(f.outer, False, False, 0)
+        sep = Gtk.Box()
+        add_class(sep, "sheet-sep")
+        sheet.pack_start(sep, False, False, 0)
+        foot = Gtk.Box()
+        add_class(foot, "sheet-foot")
+        done = push_button("Done", lambda: close(), primary=True)
+        foot.pack_end(done, False, False, 0)
+        sheet.pack_start(foot, False, False, 0)
+        layer = Gtk.Overlay()
+        layer.add(veil)
+        layer.add_overlay(sheet)
+
+        def close():
+            self.overlay.remove(layer)
+            layer.destroy()
+        self.overlay.add_overlay(layer)
+        layer.show_all()
+        done.grab_focus()
+
+    # cantos ativos: ações que o hyprmac-shell sabe fazer (HotCorners), na ordem do Mac;
+    # "-" (nada) fica por último, como no menu da Apple
+    # menu do Tahoe (video/frames-ui/ui_0197.png): grupos separados por filete; None = filete;
+    # chave None = item que o hyprmac não tem (aparece esmaecido, como manda o HIG)
+    HOT_ACTIONS = [("mission-control", "Mission Control"), ("app-windows", "Application Windows"),
+                   ("desktop", "Desktop"), ("notification-center", "Notification Center"), None,
+                   ("apps", "Apps"), None,
+                   (None, "Quick Note"), None,
+                   (None, "Start Screen Saver"), (None, "Disable Screen Saver"), None,
+                   ("display-sleep", "Put Display to Sleep"), None,
+                   ("lock-screen", "Lock Screen"), None,
+                   ("none", "–")]
+
+    def _hot_corners_sheet(self):
+        """Folha "Hot Corners…" do Tahoe (referencias/desejos/cantos-ativos-folha.png, 1,3 px/pt):
+        547 de largura, grupo recuado 14 com 4 menus de 198×21 (passo 40) em volta da
+        miniatura do papel de parede 87×61 (vão 7) com os cantos marcados, filete e "Done"."""
+        conf = load_json(SHELL_CONF, {}).get("hot_corners") or {}
+        veil = Gtk.EventBox()
+        add_class(veil, "sheet-veil")
+        veil.set_visible_window(True)
+        sheet = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        add_class(sheet, "sheet", "hc-sheet")
+        sheet.set_halign(Gtk.Align.CENTER)
+        sheet.set_valign(Gtk.Align.CENTER)
+        sheet.set_size_request(547, -1)
+        group = Gtk.Grid(column_spacing=7, row_spacing=19)
+        add_class(group, "hc-group")
+
+        def set_corner(key, v):
+            d = load_json(SHELL_CONF, {})
+            hc = d.get("hot_corners") if isinstance(d.get("hot_corners"), dict) else {}
+            if v == "none":
+                hc.pop(key, None)
+            else:
+                hc[key] = v
+            d["hot_corners"] = hc
+            save_json(SHELL_CONF, d)
+            shell_cmd("hot-corners-reload")
+
+        def menu(key):
+            names = dict(a for a in self.HOT_ACTIONS if a and a[0])
+            cur = conf.get(key, "none")
+            btn = Gtk.Button()
+            add_class(btn, "hc-popup")
+            box = Gtk.Box(spacing=6)
+            val = label(names.get(cur, "–"), "hc-value")
+            val.set_ellipsize(Pango.EllipsizeMode.END)
+            box.pack_start(val, True, True, 0)
+            box.pack_end(label(G("f054f"), "glyph hc-arrow", 0.5), False, False, 0)
+            btn.add(box)
+            btn.set_size_request(198, 21)
+            btn.set_valign(Gtk.Align.CENTER)
+
+            def pick(_b):
+                m = Gtk.Menu()
+                for a in self.HOT_ACTIONS:
+                    if a is None:
+                        m.append(Gtk.SeparatorMenuItem())
+                        continue
+                    k, n = a
+                    it = Gtk.CheckMenuItem(label=n)
+                    it.set_draw_as_radio(True)
+                    it.set_active(k == cur)
+                    it.set_sensitive(k is not None)
+                    it.connect("activate", lambda _i, k=k, n=n: (
+                        val.set_text(n), set_corner(key, k)))
+                    m.append(it)
+                m.show_all()
+                m.attach_to_widget(btn, None)
+                m.popup_at_widget(btn, Gdk.Gravity.SOUTH_WEST, Gdk.Gravity.NORTH_WEST, None)
+            btn.connect("clicked", pick)
+            return btn
+
+        cur_wall = run("gsettings get org.gnome.desktop.background picture-uri-dark" if is_dark()
+                       else "gsettings get org.gnome.desktop.background picture-uri").strip("'")
+        cur_wall = cur_wall.replace("file://", "")
+        art = Gtk.DrawingArea()
+        art.set_size_request(87, 61)
+        cache = {}
+
+        def draw_art(a, cr):
+            cr.save()
+            draw_picture(cr, 87, 61, cur_wall, cache, 0)
+            cr.restore()
+            # filete escuro de 1 em volta da miniatura (ui_0197: 52,49,55), cantos retos
+            cr.set_source_rgba(0.2, 0.19, 0.22, 0.9)
+            cr.set_line_width(1)
+            cr.rectangle(0.5, 0.5, 86, 60)
+            cr.stroke()
+            # cantos marcados: triângulo branco com contorno escuro fino em cada canto
+            L = 8
+            for (x, y, dx, dy) in ((2, 2, 1, 1), (85, 2, -1, 1), (2, 59, 1, -1), (85, 59, -1, -1)):
+                cr.move_to(x, y)
+                cr.line_to(x + dx * L, y)
+                cr.line_to(x, y + dy * L)
+                cr.close_path()
+                cr.set_source_rgba(1, 1, 1, 0.95)
+                cr.fill_preserve()
+                cr.set_source_rgba(0, 0, 0, 0.35)
+                cr.set_line_width(0.6)
+                cr.stroke()
+            return False
+        art.connect("draw", draw_art)
+        group.attach(menu("tl"), 0, 0, 1, 1)
+        group.attach(art, 1, 0, 1, 2)
+        group.attach(menu("tr"), 2, 0, 1, 1)
+        group.attach(menu("bl"), 0, 1, 1, 1)
+        group.attach(menu("br"), 2, 1, 1, 1)
+        sheet.pack_start(group, False, False, 0)
+        sep = Gtk.Box()
+        add_class(sep, "sheet-sep")
+        sheet.pack_start(sep, False, False, 0)
+        foot = Gtk.Box()
+        add_class(foot, "sheet-foot", "hc-foot")
+        done = push_button("Done", lambda: close(), primary=True)
+        foot.pack_end(done, False, False, 0)
+        sheet.pack_start(foot, False, False, 0)
+        layer = Gtk.Overlay()
+        layer.add(veil)
+        layer.add_overlay(sheet)
+
+        def close():
+            self.overlay.remove(layer)
+            layer.destroy()
+        self.overlay.add_overlay(layer)
+        layer.show_all()
+        done.grab_focus()
+
+    # ── Notificações ──
+    def pane_notifications(self):
+        f = Form(header="Notification Center")
+        f.add_row(row("Show previews", trailing=popup_button(
+            [("always", "Always"), ("unlocked", "When Unlocked"), ("never", "Never")],
+            mock("previews", "unlocked"), lambda v: set_mock("previews", v))))
+        f.add_row(row("Allow notifications when the display is sleeping", trailing=switch(
+            mock("notif_sleep", False), lambda v: set_mock("notif_sleep", v))))
+        f.add_row(row("Allow notifications when the screen is locked", trailing=switch(
+            mock("notif_locked", True), lambda v: set_mock("notif_locked", v))))
+        apps = Form(header="Application Notifications")
+        seen = set()
+        for info in sorted(Gio.AppInfo.get_all(), key=lambda i: i.get_name().lower()):
+            if not info.should_show() or info.get_name() in seen:
+                continue
+            seen.add(info.get_name())
+            img = Gtk.Image.new_from_gicon(info.get_icon(), Gtk.IconSize.LARGE_TOOLBAR) \
+                if info.get_icon() else Gtk.Image()
+            img.set_pixel_size(ICON)
+            key = "notif_app_" + info.get_name()
+            apps.add_row(row(info.get_name(), icon=img, value="Banners" if mock(key, True) else "Off",
+                             on_click=lambda k=key, n=info.get_name(): self.push(n, lambda: self._notif_app(k, n))))
+            if apps.n >= 24:
+                break
+        return [f.outer, apps.outer]
+
+    def _notif_app(self, key, name):
+        f = Form()
+        f.add_row(row("Allow notifications", trailing=switch(mock(key, True), lambda v: set_mock(key, v))))
+        f.add_row(row("Alert style", trailing=popup_button(
+            [("none", "None"), ("banners", "Temporary"), ("alerts", "Persistent")],
+            mock(key + "_style", "banners"), lambda v: set_mock(key + "_style", v))))
+        f.add_row(row("Badge application icon", trailing=switch(
+            mock(key + "_badge", True), lambda v: set_mock(key + "_badge", v))))
+        f.add_row(row("Play sound for notification", trailing=switch(
+            mock(key + "_sound", True), lambda v: set_mock(key + "_sound", v))))
+        return [f.outer]
+
+    # ── Som ──
+    def pane_sound(self):
+        def vol(target):
+            m = re.search(r"Volume: ([\d.]+)", run(f"wpctl get-volume {target}"))
+            return float(m.group(1)) * 100 if m else 50
+        f = Form()
+        f.add_row(row("Output volume", trailing=slider(vol("@DEFAULT_AUDIO_SINK@"), lambda v: spawn(
+            f"wpctl set-volume @DEFAULT_AUDIO_SINK@ {v / 100:.2f}"), G("f057f"), G("f057e"), (0, 100), 1, 200)))
+        f.add_row(row("Mute", trailing=switch("MUTED" in run("wpctl get-volume @DEFAULT_AUDIO_SINK@"),
+                                               lambda v: spawn(f"wpctl set-mute @DEFAULT_AUDIO_SINK@ {int(v)}"))))
+        f.add_row(row("Alert volume", trailing=slider(mock("alert_volume", 70), lambda v: set_mock(
+            "alert_volume", int(v)), G("f057f"), G("f057e"), (0, 100), 1, 200)))
+        f.add_row(row("Play sound on startup", trailing=switch(
+            mock("startup_sound", True), lambda v: set_mock("startup_sound", v))))
+        f.add_row(row("Play user interface sound effects", trailing=switch(
+            mock("ui_sounds", True), lambda v: set_mock("ui_sounds", v))))
+        out = [f.outer]
+        for kind, title in (("sinks", "Output"), ("sources", "Input")):
+            try:
+                devs = json.loads(run(f"pactl -f json list {kind}") or "[]")
+            except ValueError:
+                devs = []
+            default = run(f"pactl get-default-{kind[:-1]}")
+            g = Form(header=title)
+            for d in devs:
+                if kind == "sources" and d.get("monitor_source") is not None and ".monitor" in d.get("name", ""):
+                    continue
+                name = d.get("description") or d.get("name")
+                cur = d.get("name") == default
+                g.add_row(row(name, icon=(G("f04c3" if kind == "sinks" else "f036c"), "#8E8E93"),
+                              value="Selected" if cur else "",
+                              trailing=None if cur else push_button("Use", lambda n=d.get("name"), k=kind: (
+                                  spawn(f"pactl set-default-{k[:-1]} {GLib.shell_quote(n)}"),
+                                  self.refresh(500)))))
+            if g.n:
+                out.append(g.outer)
+        return out
+
+    # ── Foco ──
+    def pane_focus(self):
+        dnd = os.path.exists(os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "hyprmac-dnd"))
+        f = Form()
+        f.add_row(row("Do Not Disturb", icon=(G("f0f65"), "#5E5CE6"), sub="On" if dnd else "Off",
+                      trailing=switch(dnd, lambda v: shell_cmd("toggle-dnd"))))
+        for t, g, c in (("Sleep", "f04b2", "#30D158"), ("Personal", "f0009", "#BF5AF2"),
+                        ("Work", "f0322", "#0A84FF")):
+            f.add_row(row(t, icon=(G(g), c), value="Set Up"))
+        f2 = Form()
+        f2.add_row(row("Share across devices", trailing=switch(mock("focus_share", True),
+                                                               lambda v: set_mock("focus_share", v))))
+        return [f.outer, f2.outer]
+
+    def pane_screentime(self):
+        h = hero(("f051f", "#5E5CE6"), "Screen Time",
+                 "")
+        f = Form()
+        for t in ("App & Website Activity", "Notifications", "Pickups", "Downtime", "App Limits",
+                  "Always Allowed", "Content & Privacy"):
+            f.add_row(row(t, value="Off" if t in ("Downtime", "App Limits") else "",
+                          on_click=lambda t=t: self.push(t, lambda t=t: self.pane_mock(t))))
+        return [h, f.outer]
+
+    # ── Tela de Bloqueio ──
+    def pane_lockscreen(self):
+        c = load_json(SHELL_CONF, {})
+        idle = int(c.get("idle_seconds", 600))
+        opts = [("60", "For 1 minute"), ("120", "For 2 minutes"), ("300", "For 5 minutes"),
+                ("600", "For 10 minutes"), ("1200", "For 20 minutes"), ("1800", "For 30 minutes"),
+                ("3600", "For 1 hour"), ("0", "Never")]
+
+        def set_conf(k, v):
+            cc = load_json(SHELL_CONF, {})
+            cc[k] = v
+            save_json(SHELL_CONF, cc)
+            spawn(f"{ROOT}/scripts/ocioso restart 2>/dev/null || true")
+        f = Form()
+        f.add_row(row("Start Screen Saver when inactive", trailing=popup_button(
+            [("never", "Never")] + opts[:-1], mock("screensaver", "never"), lambda v: set_mock("screensaver", v))))
+        f.add_row(row("Turn display off when inactive", trailing=popup_button(
+            opts, str(idle), lambda v: set_conf("idle_seconds", int(v)))))
+        f.add_row(row("Require password after screen saver begins or display is turned off",
+                      trailing=popup_button([("now", "Immediately"), ("never", "Never")],
+                                            "now" if c.get("lock_when_idle") else "never",
+                                            lambda v: set_conf("lock_when_idle", v == "now"))))
+        f2 = Form()
+        f2.add_row(row("Show large clock", trailing=popup_button(
+            [("lock", "On Lock Screen"), ("never", "Never")], clock_conf()["show"],
+            lambda v: set_clock_conf("lock_clock", v))))
+        f2.add_row(row("Show message when locked", trailing=switch(
+            mock("lock_message", False), lambda v: set_mock("lock_message", v))))
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Lock Screen", lambda: spawn(f"{ROOT}/shell/hyprmac-lock")), False, False, 0)
+        return [f.outer, f2.outer, b]
+
+    def pane_privacy(self):
+        f = Form(header="Privacy")
+        for t, g, c in (("Location Services", "f034e", "#0A84FF"), ("Camera", "f0100", "#8E8E93"),
+                        ("Microphone", "f036c", "#FF9500"), ("Screen & System Audio Recording", "f0379", "#BF5AF2"),
+                        ("Files & Folders", "f024b", "#0A84FF"), ("Full Disk Access", "f02ca", "#8E8E93")):
+            f.add_row(row(t, icon=(G(g), c), on_click=lambda t=t: self.push(t, lambda t=t: self.pane_mock(t))))
+        s = Form(header="Security")
+        s.add_row(row("Allow applications from", trailing=popup_button(
+            [("store", "App Store"), ("all", "App Store & Known Developers")], "all", lambda v: None)))
+        fde = run("lsblk -o TYPE | grep -c crypt")
+        s.add_row(row("Disk encryption", value="On" if fde and fde != "0" else "Off"))
+        return [f.outer, s.outer]
+
+    def pane_password(self):
+        f = Form()
+        f.add_row(row("Login password", sub="A login password can be used to unlock your device, authorize purchases, "
+                          "and access sensitive data.",
+                      trailing=push_button("Change…", lambda: spawn("ghostty -e passwd"))))
+        return [f.outer]
+
+    def pane_users(self):
+        f = Form()
+        me = getpass.getuser()
+        for u in pwd.getpwall():
+            if 1000 <= u.pw_uid < 60000:
+                name = u.pw_gecos.split(",")[0] or u.pw_name
+                groups = run(f"id -nG {u.pw_name}")
+                f.add_row(row(name, icon=Avatar(ICON + 8, name),
+                              sub="Admin" if re.search(r"\b(wheel|sudo)\b", groups) else "Standard",
+                              value="You" if u.pw_name == me else ""))
+        g = Form()
+        g.add_row(row("Guest User", value="Off"))
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Add User…", lambda: None), False, False, 0)
+        return [f.outer, g.outer, b]
+
+    def pane_internet(self):
+        f = Form()
+        f.add_row(row("iCloud", icon=(G("f015f"), "#0A84FF"), sub=account_email(),
+                      on_click=lambda: self.push("iCloud", self.sub_icloud)))
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Add Account…", lambda: None), False, False, 0)
+        return [f.outer, b]
+
+    def pane_gamecenter(self):
+        f = Form()
+        f.add_row(row("Game Center", trailing=switch(mock("gamecenter", False),
+                                                     lambda v: set_mock("gamecenter", v))))
+        return [hero(("f0297", "#8E8E93"), "Game Center", ""),
+                f.outer]
+
+    def pane_wallet(self):
+        f = Form()
+        f.add_row(row("Wallet & Apple Pay", trailing=push_button("+", lambda: None)))
+        return [hero(("f0584", "#1C1C1E"), "Wallet & Apple Pay", ""), f.outer]
+
+    # ── Teclado ──
+    def pane_keyboard(self):
+        def opt(name, default):
+            out = run(f"hyprctl getoption {name}")
+            m = re.search(r"(?:int|float|str):\s*(\S+)", out)
+            return m.group(1) if m else default
+        rate = int(float(opt("input:repeat_rate", 25)))
+        delay = int(float(opt("input:repeat_delay", 600)))
+        f = Form()
+        f.add_row(row("Key repeat rate", trailing=slider(rate, lambda v: spawn(
+            f"hyprctl keyword input:repeat_rate {int(v)}"), "Slow", "Fast", (5, 60), 1, 170)))
+        f.add_row(row("Delay until repeat", trailing=slider(1100 - delay, lambda v: spawn(
+            f"hyprctl keyword input:repeat_delay {int(1100 - v)}"), "Long", "Short", (100, 900), 10, 170)))
+        f.add_row(row("Adjust keyboard brightness in low light", trailing=switch(False, lambda v: None)))
+        k = Form(header="Text Input")
+        layout = opt("input:kb_layout", "us")
+        k.add_row(row("Input Sources", value=layout.upper().replace(",", ", ")))
+        k.add_row(row("Press 🌐︎ key to", trailing=popup_button(
+            [("input", "Change Input Source"), ("emoji", "Show Emoji & Symbols"), ("none", "Do Nothing")],
+            mock("globe_key", "input"), lambda v: set_mock("globe_key", v))))
+        s = Form(header="Keyboard Shortcuts")
+        for t, v in (("Spotlight", "⌘ Space"), ("Mission Control", "⌃ ↑"), ("Screenshot", "⇧ ⌘ 5"),
+                     ("App Switcher", "⌥ Tab"), ("Lock Screen", "⌃ ⌘ Q"), ("Force Quit", "⌥ ⌘ Esc")):
+            s.add_row(row(t, value=v))
+        return [f.outer, k.outer, s.outer]
+
+    def pane_mouse(self):
+        sens = float(re.search(r"float:\s*(\S+)", run("hyprctl getoption input:sensitivity") or "float: 0")
+                     .group(1)) if "float" in run("hyprctl getoption input:sensitivity") else 0.0
+        nat = "int: 1" in run("hyprctl getoption input:natural_scroll")
+        f = Form()
+        f.add_row(row("Tracking speed", trailing=slider((sens + 1) * 50, lambda v: spawn(
+            f"hyprctl keyword input:sensitivity {v / 50 - 1:.2f}"), "Slow", "Fast", (0, 100), 1, 180)))
+        f.add_row(row("Natural scrolling", sub="Content tracks finger movement", trailing=switch(
+            nat, lambda v: spawn(f"hyprctl keyword input:natural_scroll {int(v)}"))))
+        f.add_row(row("Secondary click", trailing=popup_button(
+            [("right", "Click Right Side"), ("left", "Click Left Side")], "right", lambda v: None)))
+        f.add_row(row("Double-click speed", trailing=slider(
+            mock("dblclick", 50), lambda v: set_mock("dblclick", int(v)), "Slow", "Fast", (0, 100), 1, 180)))
+        return [f.outer]
+
+    def pane_printers(self):
+        f = Form()
+        printers = [l.split()[1] for l in run("lpstat -p 2>/dev/null").splitlines() if l.startswith("printer")]
+        for p in printers:
+            f.add_row(row(p, icon=(G("f042a"), "#8E8E93"), sub="Idle"))
+        if not printers:
+            f.add_row(row("No Printers"))
+        b = Gtk.Box()
+        add_class(b, "form-actions")
+        b.pack_end(push_button("Add Printer, Scanner, or Fax…", lambda: spawn("system-config-printer")),
+                   False, False, 0)
+        return [f.outer, b]
+
+
+# ───────────────────────────── desenhos ─────────────────────────────
+
+def set_cls(w, cls, on):
+    ctx = w.get_style_context()
+    (ctx.add_class if on else ctx.remove_class)(cls)
+
+
+def draw_multicolor(cr, s):
+    """Bolinha Multicolor do Tahoe: roda de cores (as 7 cores do sistema em fatias suaves)."""
+    import math
+    cores = [hex_rgb(ACCENTS[n][0]) for n in ("red", "orange", "yellow", "green", "blue", "purple", "pink")]
+    c, r, passos = s / 2, s / 2 - 1, 84
+    for i in range(passos):
+        t = i / passos * len(cores)
+        a, b = cores[int(t) % len(cores)], cores[(int(t) + 1) % len(cores)]
+        f = t - int(t)
+        cr.set_source_rgb(*(a[k] + (b[k] - a[k]) * f for k in range(3)))
+        a0 = -math.pi / 2 + 2 * math.pi * i / passos
+        cr.move_to(c, c)
+        cr.arc(c, c, r, a0, a0 + 2 * math.pi / passos + 0.02)
+        cr.close_path()
+        cr.fill()
+
+
+def draw_dot(cr, s, col):
+    import math
+    cr.arc(s / 2, s / 2, s / 2 - 1, 0, 2 * math.pi)
+    cr.set_source_rgb(*hex_rgb(col))
+    cr.fill()
+
+
+def draw_mode_thumb(cr, w, h, mode):
+    """Miniatura de Aparência: mesa com uma janelinha clara/escura (Auto = metade)."""
+    def paint(dark):
+        bg = (0.16, 0.20, 0.42) if dark else (0.45, 0.62, 0.92)
+        cr.set_source_rgb(*bg)
+        cr.paint()
+        squircle(cr, w * 0.16, h * 0.22, w * 0.68, h * 0.62, 5)
+        cr.set_source_rgb(*((0.17, 0.17, 0.18) if dark else (0.97, 0.97, 0.98)))
+        cr.fill()
+        cr.rectangle(w * 0.16, h * 0.22, w * 0.68, h * 0.14)
+        cr.set_source_rgb(0.0, 0.53, 1.0)
+        cr.fill()
+        for i, c in enumerate(((1, 0.37, 0.36), (0.98, 0.78, 0), (0.21, 0.78, 0.35))):
+            cr.arc(w * 0.24 + i * 7, h * 0.72, 2.3, 0, 6.3)
+            cr.set_source_rgb(*c)
+            cr.fill()
+    squircle(cr, 0, 0, w, h, 7)
+    cr.clip()
+    if mode == "auto":
+        cr.save()
+        cr.rectangle(0, 0, w / 2, h)
+        cr.clip()
+        paint(False)
+        cr.restore()
+        cr.rectangle(w / 2, 0, w / 2, h)
+        cr.clip()
+        paint(True)
+    else:
+        paint(mode == "dark")
+    return False
+
+
+def draw_style_thumb(cr, w, h, style):
+    """Estilo de ícones: o mesmo ícone de clima Default/Dark/Clear/Tinted."""
+    cols = {"default": ((0.18, 0.55, 1.0), (0.02, 0.38, 0.92)), "dark": ((0.15, 0.15, 0.16), (0.08, 0.08, 0.09)),
+            "clear": ((0.55, 0.57, 0.62), (0.40, 0.42, 0.47)), "tinted": ((0.90, 0.93, 0.98), (0.80, 0.85, 0.94))}
+    a, b = cols[style]
+    squircle(cr, 0, 0, w, h, w * 0.235)
+    g = __import__("cairo").LinearGradient(0, 0, 0, h)
+    g.add_color_stop_rgb(0, *a)
+    g.add_color_stop_rgb(1, *b)
+    cr.set_source(g)
+    cr.fill()
+    cr.arc(w * 0.62, h * 0.38, w * 0.14, 0, 6.3)
+    cr.set_source_rgb(1.0, 0.80, 0.15) if style in ("default", "dark") else cr.set_source_rgba(1, 1, 1, 0.9)
+    cr.fill()
+    for cx, cy, r in ((0.40, 0.60, 0.17), (0.56, 0.58, 0.20), (0.70, 0.64, 0.14)):
+        cr.arc(w * cx, h * cy, w * r, 0, 6.3)
+    cr.set_source_rgba(1, 1, 1, 0.95 if style != "tinted" else 0.75)
+    cr.fill()
+    return False
+
+
+def draw_monitor(cr, w, h):
+    squircle(cr, 2, 2, w - 4, h - 12, 6)
+    cr.set_source_rgb(0.10, 0.10, 0.11)
+    cr.fill()
+    squircle(cr, 6, 6, w - 12, h - 20, 3)
+    g = __import__("cairo").LinearGradient(0, 0, w, h)
+    g.add_color_stop_rgb(0, 0.20, 0.35, 0.85)
+    g.add_color_stop_rgb(1, 0.55, 0.30, 0.80)
+    cr.set_source(g)
+    cr.fill()
+    cr.rectangle(w / 2 - 10, h - 10, 20, 8)
+    cr.set_source_rgb(0.55, 0.56, 0.58)
+    cr.fill()
+    return False
+
+
+def draw_picture(cr, w, h, path, cache, radius):
+    pb = cache.get("pb")
+    if pb is None and path and os.path.exists(path):
+        try:
+            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, w * 2, h * 2, False)
+        except Exception:
+            pb = None
+        cache["pb"] = pb
+    squircle(cr, 0, 0, w, h, radius)
+    cr.clip()
+    if pb:
+        cr.scale(w / pb.get_width(), h / pb.get_height())
+        Gdk.cairo_set_source_pixbuf(cr, pb, 0, 0)
+        cr.paint()
+    else:
+        cr.set_source_rgb(0.3, 0.3, 0.32)
+        cr.paint()
+    return False
+
+
+def set_wallpaper(path):
+    uri = "file://" + path
+    spawn(f"gsettings set org.gnome.desktop.background picture-uri {GLib.shell_quote(uri)}; "
+          f"gsettings set org.gnome.desktop.background picture-uri-dark {GLib.shell_quote(uri)}")
+
+
+def account_name():
+    try:
+        g = pwd.getpwuid(os.getuid()).pw_gecos.split(",")[0]
+    except KeyError:
+        g = ""
+    return g or getpass.getuser().title()
+
+
+def account_email():
+    return mock("account_email") or f"{getpass.getuser()}@icloud.com"
+
+
+def icloud_used():
+    return float(mock("icloud_used", 18.4))
+
+
+# ───────────────────────────── CSS / main ─────────────────────────────
+
+_provider = None
+
+
+def load_css():
+    global _provider
+    dark = is_dark()
+    acc = ACCENTS.get(accent_name(), ACCENTS["blue"])[0 if dark else 1]
+    with open(os.path.join(HERE, "ajustes.css")) as f:
+        css = f.read()
+    # seleção da barra lateral: o destaque escurecido (medido no Tahoe com o azul: 0,84,196)
+    if accent_name() in ("blue", None, ""):
+        sel = "#0054C4"
+    else:
+        r, g, b = (int(acc[i:i + 2], 16) for i in (1, 3, 5))
+        sel = "#%02X%02X%02X" % (int(r * 0.74), int(g * 0.70), int(b * 0.77))
+    css = css.replace("@ACCENT_SEL@", sel).replace("@ACCENT@", acc)
+    prov = Gtk.CssProvider()
+    prov.load_from_data(css.encode())
+    screen = Gdk.Screen.get_default()
+    if _provider:
+        Gtk.StyleContext.remove_provider_for_screen(screen, _provider)
+    Gtk.StyleContext.add_provider_for_screen(screen, prov, Gtk.STYLE_PROVIDER_PRIORITY_USER + 10)
+    _provider = prov
+
+
+def snapshot(pane, out):
+    """Testes: desenha um painel numa janela fora da tela e salva o PNG."""
+    load_css()
+    win = Settings(pane, offscreen=True)
+    end = time.time() + 2.5
+    while time.time() < end:
+        while Gtk.events_pending():
+            Gtk.main_iteration_do(False)
+        time.sleep(0.02)
+    pb = win.off.get_pixbuf()
+    pb.savev(out, "png", [], [])
+    print(out, pb.get_width(), pb.get_height())
+
+
+def main():
+    if len(sys.argv) > 3 and sys.argv[1] == "--snapshot":
+        return snapshot(sys.argv[2], sys.argv[3])
+    first = sys.argv[1] if len(sys.argv) > 1 else "appearance"
+    # uma instância só: se já houver uma, ela vai para o painel pedido
+    app = Gtk.Application(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
+    GLib.set_prgname(APP_ID)
+    state = {"win": None}
+
+    def cmdline(a, cl):
+        args = cl.get_arguments()[1:]
+        pane = args[0] if args else None
+        # "about" = General ▸ About (menu Apple ▸ About This Mac)
+        sobre = pane == "about"
+        if sobre:
+            pane = "general"
+        if state["win"] is None:
+            load_css()
+            state["win"] = Settings(pane or first)
+            a.add_window(state["win"])
+        elif pane:
+            state["win"].open_pane(pane)
+        if sobre:
+            state["win"].push("About", state["win"].sub_about)
+        state["win"].present()
+        return 0
+    app.connect("command-line", cmdline)
+    app.run(sys.argv)
+
+
+if __name__ == "__main__":
+    main()

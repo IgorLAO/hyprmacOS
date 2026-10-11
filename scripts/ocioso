@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio):
+#   ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só
+#   ocioso idle     tela inativa: bloqueia (se "lock_when_idle") e apaga os monitores
+#   ocioso resume   voltou: religa os monitores
+#
+# ~/.config/hyprmac/config.json:
+#   "idle_seconds": 600        apagar a tela depois de N s sem uso (Mac: 10 min)
+#   "lock_when_idle": false    bloquear junto (Mac: "exigir senha imediatamente");
+#                              ligue depois de testar o bloqueio uma vez com ⌃⌘Q
+H="$HOME/Projects/hyprmac"
+idle_state="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-idle-pending"
+lock_ready="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-lock.ready"
+cfg() { python3 -c "
+import json,os
+try: d=json.load(open(os.path.expanduser('~/.config/hyprmac/config.json')))
+except Exception: d={}
+print(d.get('$1', '$2'))"; }
+
+case "${1:-start}" in
+  start)
+    pkill -x hyprmac-ocioso 2>/dev/null
+    [ -x "$H/shell/ocioso/hyprmac-ocioso" ] || make -s -C "$H/shell/ocioso" >/dev/null 2>&1 || exit 1
+    exec "$H/shell/ocioso/hyprmac-ocioso" "$(cfg idle_seconds 600)" "$H/scripts/ocioso idle" "$H/scripts/ocioso resume"
+    ;;
+  idle)
+    token="$BASHPID"
+    printf '%s' "$token" > "$idle_state" || exit 1
+    if [ "$(cfg lock_when_idle False)" = True ]; then
+      # The lock has its own flock: concurrent/manual launches are safe.
+      setsid -f "$H/shell/hyprmac-lock" >/dev/null 2>&1
+      ready=false
+      for ((attempt=0; attempt<100; attempt++)); do
+        # Input while a slow wallpaper/PAM setup is loading cancels screen-off.
+        [ -f "$idle_state" ] && [ "$(cat "$idle_state")" = "$token" ] || exit 0
+        if python3 - "$lock_ready" "$H/shell/hyprmac-lock" <<'READY'
+import os, sys
+try:
+    pid = int(open(sys.argv[1]).read())
+    os.kill(pid, 0)
+    with open(f"/proc/{pid}/cmdline", "rb") as command:
+        arguments = command.read().split(b"\0")
+    sys.exit(0 if os.fsencode(sys.argv[2]) in arguments else 1)
+except (OSError, ValueError):
+    sys.exit(1)
+READY
+        then
+          ready=true
+          break
+        fi
+        sleep 0.1
+      done
+      if [ "$ready" != true ]; then
+        echo "hyprmac: bloqueio não confirmado; tela permanece ligada" >&2
+        exit 1
+      fi
+    fi
+    [ -f "$idle_state" ] && [ "$(cat "$idle_state")" = "$token" ] || exit 0
+    hyprctl dispatch 'hl.dsp.dpms({ action = "off" })' >/dev/null
+    ;;
+  resume)
+    rm -f "$idle_state"
+    hyprctl dispatch 'hl.dsp.dpms({ action = "on" })' >/dev/null
+    ;;
+esac

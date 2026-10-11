@@ -1,0 +1,420 @@
+/* keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */
+@define-color shell_focus #3b99fc;
+/* hyprmac-shell — ajustes do tema claro (carregado por cima do style.css
+ * quando org.gnome.desktop.interface color-scheme ≠ prefer-dark). */
+
+/* Mesmos papéis do tema escuro. Os controles Clear conservam tinta branca;
+ * superfícies de leitura e variantes AX acompanham o tema. */
+@define-color shell_surface_opaque rgb(246, 246, 248);
+@define-color shell_content_opaque rgb(250, 250, 252);
+@define-color shell_peek rgb(238, 238, 242);
+@define-color shell_peek_back rgb(230, 230, 235);
+@define-color shell_contrast_label rgba(0, 0, 0, 0.85);
+@define-color shell_contrast_border rgba(0, 0, 0, 0.60);
+@define-color shell_contrast_separator rgba(0, 0, 0, 0.45);
+@define-color shell_glass_text rgba(255, 255, 255, 0.42);
+@define-color shell_glass_spotlight rgba(255, 255, 255, 0.60);
+@define-color shell_glass_border rgba(255, 255, 255, 0.55);
+
+/* Clima volta ao azul do Tahoe claro */
+.weather {
+  background-image: linear-gradient(175deg, rgba(22, 86, 200, 0.74), rgba(52, 124, 222, 0.62));
+}
+
+/* Atalhos: cartão branco com ícones escuros */
+.shortcuts {
+  background-color: rgba(255, 255, 255, 0.92);
+}
+.shortcuts button label {
+  color: #1d1d1f;
+}
+.shortcuts button:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Menu "Janela" em vidro claro */
+menu.hyprmac-menu,
+.hyprmac-menu menu {
+  background: rgba(246, 246, 248, 0.80);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+menu.hyprmac-menu menuitem label,
+.hyprmac-menu menu menuitem label {
+  color: rgba(0, 0, 0, 0.86);
+}
+menu.hyprmac-menu menuitem:hover,
+menu.hyprmac-menu menuitem:focus,
+.hyprmac-menu menu menuitem:hover,
+.hyprmac-menu menu menuitem:focus {
+  background: @shell_selection;
+}
+menu.hyprmac-menu menuitem:hover > label,
+menu.hyprmac-menu menuitem:hover > box > label,
+menu.hyprmac-menu menuitem:focus > label,
+menu.hyprmac-menu menuitem:focus > box > label,
+.hyprmac-menu menu menuitem:hover > label,
+.hyprmac-menu menu menuitem:hover > box > label,
+.hyprmac-menu menu menuitem:focus > label,
+.hyprmac-menu menu menuitem:focus > box > label {
+  color: #ffffff;
+}
+menu.hyprmac-menu menuitem:disabled > label,
+menu.hyprmac-menu menuitem:disabled > box > label,
+.hyprmac-menu menu menuitem:disabled > label,
+.hyprmac-menu menu menuitem:disabled > box > label {
+  color: rgba(0, 0, 0, 0.30);
+}
+menu.hyprmac-menu menuitem arrow,
+.hyprmac-menu menu menuitem arrow {
+  color: rgba(0, 0, 0, 0.45);
+}
+menu.hyprmac-menu separator,
+.hyprmac-menu menu separator {
+  background: rgba(0, 0, 0, 0.10);
+}
+
+/* Kit Menus/Light/Header: Bold 13 #737373 plus-darker (≈ preto a 57% sobre o vidro) */
+menu.hyprmac-menu menuitem.header:disabled > label,
+menu.hyprmac-menu menuitem.header:disabled > box > label { color: rgba(0, 0, 0, 0.57); }
+
+/* atalhos à direita: cinza (kit plus-darker ≈ preto a 42%); destaque #0069F9 */
+menu.hyprmac-menu menuitem label.shortcut,
+.hyprmac-menu menu menuitem label.shortcut {
+  color: rgba(0, 0, 0, 0.42);
+}
+menu.hyprmac-menu menuitem:hover > label.shortcut,
+menu.hyprmac-menu menuitem:hover > box > label.shortcut,
+menu.hyprmac-menu menuitem:focus > label.shortcut,
+menu.hyprmac-menu menuitem:focus > box > label.shortcut,
+.hyprmac-menu menu menuitem:hover > label.shortcut,
+.hyprmac-menu menu menuitem:hover > box > label.shortcut,
+.hyprmac-menu menu menuitem:focus > label.shortcut,
+.hyprmac-menu menu menuitem:focus > box > label.shortcut,
+menu.hyprmac-menu menuitem:hover > arrow,
+menu.hyprmac-menu menuitem:focus > arrow,
+.hyprmac-menu menu menuitem:hover > arrow,
+.hyprmac-menu menu menuitem:focus > arrow { color: #ffffff; }
+
+/* Kit Menus/Light/Regular/Items - Submenu/3 - Open: tint preto 7%. */
+menu.hyprmac-menu menuitem.submenu-open,
+.hyprmac-menu menu menuitem.submenu-open { background: rgba(0, 0, 0, 0.07); }
+menu.hyprmac-menu menuitem.submenu-open > label,
+menu.hyprmac-menu menuitem.submenu-open > box > label,
+.hyprmac-menu menu menuitem.submenu-open > label,
+.hyprmac-menu menu menuitem.submenu-open > box > label { color: rgba(0, 0, 0, 0.86); }
+menu.hyprmac-menu menuitem.submenu-open > box > label.chevron,
+.hyprmac-menu menu menuitem.submenu-open > box > label.chevron { color: rgba(0, 0, 0, 0.42); }
+
+menu.hyprmac-menu menuitem:disabled,
+.hyprmac-menu menu menuitem:disabled { background: transparent; }
+
+/* Menus dos extras (Wi‑Fi, Bluetooth, Som) em vidro claro */
+.xmenu {
+  background-color: rgba(246, 246, 248, 0.80);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+.xmenu .xm-label,
+.xmenu .xm-title { color: rgba(0, 0, 0, 0.85); }
+.xmenu .xm-sub { color: rgba(0, 0, 0, 0.50); }
+.xmenu .xm-head,
+.xmenu .xm-head-in,
+.xmenu .xm-chev { color: rgba(0, 0, 0, 0.45); }
+.xmenu .xm-note,
+.xmenu .xm-right,
+.xmenu .xm-right-icon { color: rgba(0, 0, 0, 0.42); }
+.xmenu button.xm-item:disabled label { color: rgba(0, 0, 0, 0.30); }
+.xmenu button.xm-item:hover label { color: #ffffff; }
+.xmenu button.xm-item.blink:hover label { color: rgba(0, 0, 0, 0.85); }
+.xmenu .xm-sep { background: rgba(0, 0, 0, 0.10); }
+.xmenu .xm-dot { background: rgba(0, 0, 0, 0.08); color: rgba(0, 0, 0, 0.75); }
+.xmenu .xm-dot.on { background: #0088FF; color: #ffffff; }
+.xmenu button.xm-item:hover .xm-dot { background: rgba(255, 255, 255, 0.28); color: #ffffff; }
+.xmenu button.xm-item:hover .xm-dot.on { background: #ffffff; color: #0069F9; }
+/* interruptor mini do kit: trilho 36×16 em cápsula, azul quando ligado,
+ * puxador em cápsula com 2px de margem */
+.xmenu switch {
+  min-width: 36px;
+  min-height: 16px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  box-shadow: none;
+  font-size: 0;
+  color: transparent;
+  transition: background-color 150ms cubic-bezier(0.3, 0.7, 0.3, 1), box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+.xmenu switch:checked { background: #0088FF; }
+.xmenu switch:disabled { opacity: 0.45; }
+.xmenu switch slider {
+  min-width: 14px;
+  min-height: 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
+  transition: margin-left 150ms cubic-bezier(0.3, 0.7, 0.3, 1),
+              box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+.xmenu .xm-slider-icon { color: rgba(0, 0, 0, 0.55); }
+.xmenu scale trough { background: rgba(0, 0, 0, 0.12); }
+.xmenu scale highlight { background: #ffffff; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06); }
+.xmenu scale slider { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 0 0 0.5px rgba(0, 0, 0, 0.12); }
+
+/* OSD de volume/brilho em vidro claro */
+.osd {
+  background-color: rgba(246, 246, 248, 0.80);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+.osd .osd-icon,
+.osd .osd-title,
+.osd .osd-bar { color: rgba(0, 0, 0, 0.80); }
+
+.hyprmac tooltip {
+  background: rgba(250, 250, 252, 0.97);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+.hyprmac tooltip label {
+  color: rgba(0, 0, 0, 0.86);
+}
+
+/* Notificações em vidro claro */
+.notif {
+  background-color: rgba(246, 246, 248, 0.80);
+  border-color: rgba(255, 255, 255, 0.85) rgba(0, 0, 0, 0.06)
+                rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+/* kit: texto #363636, hora #737373 */
+.notif .title { color: #363636; }
+.notif .time  { color: #737373; }
+.notif .body  { color: #363636; }
+.notif .actions button { background: rgba(0, 0, 0, 0.06); }
+.notif .actions button:hover { background: rgba(0, 0, 0, 0.11); }
+.notif .actions button label { color: rgba(0, 0, 0, 0.85); }
+.hyprmac button.close {
+  background: rgba(250, 250, 252, 0.97);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.hyprmac button.close label { color: rgba(0, 0, 0, 0.7); }
+
+/* Central de Notificações no tema claro */
+.nc button.nc-pill,
+.nc button.nc-x {
+  background: rgba(246, 246, 248, 0.84);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.nc button.nc-pill:hover,
+.nc button.nc-x:hover { background: rgba(255, 255, 255, 0.95); }
+.nc button.nc-pill label,
+.nc button.nc-x label { color: rgba(0, 0, 0, 0.78); }
+.nc-empty  { color: rgba(60, 60, 67, 0.6); }
+.hyprmac label.cal-month { color: #FF383C; }
+.hyprmac label.cal-head  { color: rgba(60, 60, 67, 0.5); }
+.hyprmac label.cal-day   { color: rgba(0, 0, 0, 0.85); }
+.hyprmac label.cal-today { color: #ffffff; background: #FF383C; }
+
+/* Central de Controle no tema claro: vidro claro "leitoso". Como na tela
+ * Edit-Controls-in-macOS-Control-Center (tema claro), o texto continua branco:
+ * o vidro é um cinza-lilás translúcido com um véu branco no alto, que escurece
+ * fundos claros o bastante para o branco ler e clareia fundos escuros. */
+.cc .tile,
+.cc .circle,
+.cc .edit-pill {
+  background-color: rgba(112, 112, 130, 0.42);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.18),
+                                    rgba(255, 255, 255, 0.04) 60%);
+  border-color: rgba(255, 255, 255, 0.70) rgba(255, 255, 255, 0.30)
+                rgba(255, 255, 255, 0.18) rgba(255, 255, 255, 0.30);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.28),
+              inset 0 -1px 1px rgba(0, 0, 0, 0.04);
+}
+.cc .tile:hover,
+.cc .circle:hover,
+.cc .edit-pill:hover { background-color: rgba(132, 132, 150, 0.48); }
+.cc .tile:active,
+.cc .circle:active,
+.cc .edit-pill:active {
+  background-color: rgba(175, 175, 186, 0.50);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.34),
+              inset 0 1px 1px rgba(255, 255, 255, 0.30);
+}
+.cc label { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+/* ligado: disco branco + glifo azul, igual ao escuro (não mais fundo azul).
+ * Este arquivo tem prioridade maior que o style.css — no GTK a prioridade do
+ * provedor vence a especificidade —, então o estado ligado é repetido aqui. */
+.cc .circle.on,
+.cc .circle.on:hover {
+  background-color: rgba(255, 255, 255, 0.97);
+  background-image: none;
+  border-color: rgba(255, 255, 255, 0.97);
+  box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+}
+.cc .circle.on:active {
+  box-shadow: inset 0 0 18px rgba(0, 145, 255, 0.28);
+}
+.cc .circle.on label,
+.cc .dot { color: #0088FF; text-shadow: none; }
+.cc .dot.off,
+.cc .dot.soft { color: #ffffff; }
+
+/* sliders: no claro também é a linha fina sem puxador (Tahoe final; ver style.css) */
+.cc .slider-icon { color: rgba(255, 255, 255, 0.96); }
+
+/* Alt+Tab no tema claro */
+.switcher-panel {
+  background-color: rgba(246, 246, 248, 0.80);
+  border-color: rgba(255, 255, 255, 0.85) rgba(0, 0, 0, 0.06)
+                rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.switcher-cell.selected {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+.switcher-name { color: rgba(0, 0, 0, 0.85); }
+
+/* Tocando Agora no tema claro */
+.media-panel {
+  background-color: rgba(246, 246, 248, 0.80);
+  border-color: rgba(255, 255, 255, 0.85) rgba(0, 0, 0, 0.06)
+                rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.media-panel .np-source,
+.media-panel .np-time,
+.media-panel .np-vol-icon { color: rgba(60, 60, 67, 0.55); }
+.media-panel .np-title { color: rgba(0, 0, 0, 0.88); }
+.media-panel .np-artist { color: rgba(60, 60, 67, 0.75); }
+.media-panel button.np-ctrl label,
+.media-panel button.np-air label { color: rgba(0, 0, 0, 0.85); }
+.media-panel button.np-ctrl:hover,
+.media-panel button.np-air:hover { background: rgba(0, 0, 0, 0.06); }
+.media-panel button.np-ctrl:active { background: rgba(0, 0, 0, 0.11); }
+.media-panel scale trough { background: rgba(0, 0, 0, 0.12); }
+.media-panel scale highlight { background: rgba(0, 0, 0, 0.62); }
+
+/* Central de Controle: edição no tema claro */
+.cc button.ctl-remove {
+  background: rgba(250, 250, 252, 0.97);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.cc button.ctl-remove label { color: rgba(0, 0, 0, 0.75); }
+.cc button.ctl-remove:hover { background: #FF383C; }
+.cc button.ctl-remove:hover label { color: #ffffff; }
+.cc .ghost { background-color: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.24); }
+/* alvo ao arrastar (repetido: o vidro claro acima sobrescreveria a borda azul) */
+.cc .drop-target .tile,
+.cc .drop-target .circle,
+.cc .ghost.drop-target { border-color: #0088FF; }
+.cc .ghost.drop-target { background-color: rgba(0, 136, 255, 0.20); }
+
+/* Galeria de Controles no tema claro: vidro claro, texto escuro */
+.ccg {
+  background-color: rgba(246, 246, 248, 0.82);
+  border-color: rgba(255, 255, 255, 0.85) rgba(0, 0, 0, 0.06)
+                rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.ccg-side {
+  background-color: rgba(255, 255, 255, 0.40);
+  border-right-color: rgba(0, 0, 0, 0.08);
+}
+.cc entry.ccg-search { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.88); }
+.cc entry.ccg-search image { color: rgba(0, 0, 0, 0.45); }
+.cc list.ccg-cats row:hover { background: rgba(0, 0, 0, 0.05); }
+.cc list.ccg-cats row:selected { background: rgba(0, 0, 0, 0.09); }
+.ccg-cat-name { color: rgba(0, 0, 0, 0.85); }
+.cc button.ccg-reset:hover { background: rgba(0, 0, 0, 0.06); }
+.cc button.ccg-reset label { color: rgba(0, 0, 0, 0.50); }
+.ccg-section { border-bottom-color: rgba(0, 0, 0, 0.08); }
+.ccg-head { color: rgba(0, 0, 0, 0.85); }
+.ccg-caption { color: rgba(0, 0, 0, 0.60); }
+.ccg-empty, .ccg-hint { color: rgba(60, 60, 67, 0.60); }
+.ccg-foot { border-top-color: rgba(0, 0, 0, 0.08); }
+.cc button.ccg-done { background: #0088FF; }
+.cc button.ccg-done:hover { background: #1A94FF; }
+
+/* Área de Transferência no tema claro */
+.clip-panel {
+  background-color: rgba(246, 246, 248, 0.86);
+  border-color: rgba(255, 255, 255, 0.85) rgba(0, 0, 0, 0.06)
+                rgba(0, 0, 0, 0.08) rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.clip-title { color: rgba(0, 0, 0, 0.88); }
+.hyprmac button.clip-pill { background: rgba(0, 0, 0, 0.06); }
+.hyprmac button.clip-pill:hover { background: rgba(0, 0, 0, 0.11); }
+.hyprmac button.clip-pill label { color: rgba(0, 0, 0, 0.82); }
+entry.clip-search { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.88); }
+entry.clip-search image { color: rgba(0, 0, 0, 0.45); }
+list.clip-list row:hover { background: rgba(0, 0, 0, 0.05); }
+list.clip-list row:selected { background: #0088FF; }
+.clip-kind { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.7); }
+.clip-text { color: rgba(0, 0, 0, 0.86); }
+.clip-time, .clip-foot, .clip-empty { color: rgba(60, 60, 67, 0.55); }
+/* (repetido: o ".cc label" acima, com prioridade maior, devolveria a sombra) */
+.ccg-side label,
+.ccg-main .ccg-head,
+.ccg-main .ccg-caption,
+.ccg-main .ccg-hint,
+.ccg-main .ccg-empty { text-shadow: none; }
+
+/* Forçar Encerrar no modo claro */
+.hyprmac-forcequit .fq-frame { border-color: rgba(0, 0, 0, 0.10); background-color: rgba(0, 0, 0, 0.02); }
+.hyprmac-forcequit .fq-hint  { color: rgba(0, 0, 0, 0.50); }
+
+/* Spotlight em vidro claro ("Liquid Glass/Light/Regular - Large"; no vídeo do macOS 27 o
+ * painel é claro com seleção cinza e texto escuro) */
+.spot-panel {
+  background-color: rgba(246, 246, 248, 0.70);
+  border-color: rgba(255, 255, 255, 0.70);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22),
+              inset 0 1px 1px rgba(255, 255, 255, 0.85);
+}
+.hyprmac .spot-glass { color: rgba(0, 0, 0, 0.50); }
+.hyprmac .spot-mode { background: rgba(0, 0, 0, 0.07); color: rgba(0, 0, 0, 0.75); }
+.hyprmac entry.spot-entry, .hyprmac entry.spot-entry:focus { color: rgba(0, 0, 0, 0.88); }
+.hyprmac .spot-hint { background: rgba(255, 255, 255, 0.85); color: rgba(0, 0, 0, 0.88); }
+.spot-sep { background: rgba(0, 0, 0, 0.10); }
+list.spot-list row:hover { background: rgba(0, 0, 0, 0.04); }
+list.spot-list row:selected { background: rgba(0, 0, 0, 0.10); }
+.hyprmac .spot-title { color: rgba(0, 0, 0, 0.88); }
+.hyprmac .spot-sub, .hyprmac .spot-foot { color: rgba(0, 0, 0, 0.50); }
+
+/* placeholder no claro: ardósia medida no Spotlight (spotlight-controles-1: ~78,109,132) */
+@define-color placeholder_text_color rgba(60, 80, 100, 0.80);
+
+/* Spotlight, modo Arquivos (referência clara: cápsula ≈ branco 70 %, texto ≈ preto 25 %,
+ * cabeçalho e nomes escuros, filete ≈ preto 7 %) */
+.hyprmac .spot-more { border-color: rgba(0, 0, 0, 0.45); color: rgba(0, 0, 0, 0.50); }
+.hyprmac button.spot-filter { background: rgba(255, 255, 255, 0.70); }
+.hyprmac button.spot-filter label { color: rgba(0, 0, 0, 0.25); }
+.hyprmac button.spot-filter:hover { background: rgba(255, 255, 255, 0.85); }
+.hyprmac button.spot-filter.active { background: rgba(255, 255, 255, 0.95); }
+.hyprmac button.spot-filter.active label { color: rgba(0, 0, 0, 0.75); }
+.hyprmac .spot-grid-hdr, .hyprmac .spot-cell-name { color: rgba(0, 0, 0, 0.75); }
+.spot-grid-sep { background: rgba(0, 0, 0, 0.07); }
+.hyprmac button.spot-cell:hover { background: rgba(0, 0, 0, 0.04); }
+.hyprmac button.spot-cell.selected { background: rgba(0, 0, 0, 0.10); }
+
+/* Spotlight claro: token e dica do tab (spotlight-busca-filtro-folders) */
+.hyprmac .spot-token { background: rgba(0, 0, 0, 0.07); }
+.hyprmac .spot-token-lbl { color: rgba(0, 0, 0, 0.80); }
+.hyprmac .spot-tab-hint { color: rgba(0, 0, 0, 0.45); }
+.hyprmac .spot-qfilters button.spot-filter label { color: rgba(0, 0, 0, 0.45); }
+
+/* Spotlight claro: cartão da conta (ui_0156: fundo 200,209,219 sobre o vidro 227,236,248 = ~11 %
+ * de preto; borda 165 ≈ 20 %) */
+.spot-calc { background: rgba(0, 0, 0, 0.05); }
+.spot-calc.selected { background: rgba(0, 0, 0, 0.11); border-color: rgba(0, 0, 0, 0.20); }
+.hyprmac .spot-calc-expr { color: rgba(0, 0, 0, 0.60); }
+.hyprmac .spot-calc-val  { color: rgba(0, 0, 0, 0.88); }
+.hyprmac button.spot-calc-copy { background: rgba(0, 0, 0, 0.10); }
+.hyprmac button.spot-calc-copy label { color: rgba(0, 0, 0, 0.70); }
+.cc .ccg-ph { color: rgba(0, 0, 0, 0.40); }

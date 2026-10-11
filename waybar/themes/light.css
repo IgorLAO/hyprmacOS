@@ -1,0 +1,44 @@
+/* hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro.
+ * Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x)
+ * só servem para ganhar especificidade sobre o style.css. */
+
+menu:not(.x),
+.menu:not(.x) {
+  background: rgba(246, 246, 248, 0.55);   /* vidro claro: o fundo ainda aparece */
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+menu:not(.x) menuitem label {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* atalhos e itens desabilitados: cinza (no claro o kit usa plus-darker;
+ * sem blend modes no GTK3, preto com alfa) */
+menu:not(.x) menuitem label.shortcut,
+menu:not(.x) menuitem:disabled label {
+  color: rgba(0, 0, 0, 0.42);
+}
+
+/* destaque do item: o mesmo azul #0069F9 dos menus do macOS 27 */
+menu:not(.x) menuitem:hover {
+  background: @menu-selection;
+}
+
+menu:not(.x) menuitem:hover label,
+menu:not(.x) menuitem:hover label.shortcut {
+  color: #ffffff;
+}
+
+menu:not(.x) separator {
+  background: rgba(0, 0, 0, 0.10);
+}
+
+tooltip:not(.x) {
+  background: rgba(250, 250, 252, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+tooltip:not(.x) label {
+  color: rgba(0, 0, 0, 0.86);
+}

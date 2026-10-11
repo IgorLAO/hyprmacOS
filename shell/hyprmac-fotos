@@ -1,0 +1,980 @@
+#!/usr/bin/env python3
+# Rascunho FreeLLM (FOT-01/FOT-02, emendado) completado e ajustado pelo orquestrador.
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk, GLib, Gio, Pango, GdkPixbuf
+import os
+import sys
+import json
+import time
+import cairo
+import hashlib
+import queue
+import subprocess
+import threading
+from datetime import datetime
+from cocoa_entry import CocoaEntryKeys
+from app_theme import bind_color_scheme
+
+# Vídeos: um quadro e a duração por ffmpeg/ffprobe, numa única thread de fundo com prioridade
+# mínima e tempo limite, com cache em disco — a biblioteca não pode pesar na máquina.
+VIDEO_CACHE = os.path.expanduser("~/.cache/hyprmac/fotos")
+_video_fila = queue.Queue()
+
+
+def _duracao_texto(segundos):
+    s = int(round(segundos))
+    return f"{s // 3600}:{s % 3600 // 60:02d}:{s % 60:02d}" if s >= 3600 else f"{s // 60}:{s % 60:02d}"
+
+
+def video_info(path):
+    """(png do quadro ou None, duração 'm:ss' ou None), com cache por caminho+mtime."""
+    try:
+        chave = hashlib.sha1(f"{path}:{os.path.getmtime(path)}".encode()).hexdigest()
+    except OSError:
+        return None, None
+    os.makedirs(VIDEO_CACHE, exist_ok=True)
+    png, meta = os.path.join(VIDEO_CACHE, chave + ".png"), os.path.join(VIDEO_CACHE, chave + ".json")
+    if os.path.exists(meta):
+        try:
+            with open(meta) as fh:
+                dur = json.load(fh).get("duracao")
+            return (png if os.path.exists(png) else None), dur
+        except (OSError, ValueError):
+            pass
+    dur = None
+    try:
+        out = subprocess.run(["nice", "-n", "19", "ffprobe", "-v", "error", "-show_entries",
+                              "format=duration", "-of", "csv=p=0", path],
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+        dur = _duracao_texto(float(out)) if out else None
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        pass
+    try:
+        subprocess.run(["nice", "-n", "19", "ffmpeg", "-v", "error", "-ss", "1", "-i", path,
+                        "-frames:v", "1", "-vf", "scale=256:-1", "-y", png],
+                       capture_output=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    with open(meta, "w") as fh:
+        json.dump({"duracao": dur}, fh)
+    return (png if os.path.exists(png) else None), dur
+
+
+def _video_trabalhador():
+    while True:
+        path, entregar = _video_fila.get()
+        png, dur = video_info(path)
+        GLib.idle_add(entregar, png, dur)
+
+
+threading.Thread(target=_video_trabalhador, daemon=True, name="fotos-video").start()
+
+def is_dark():
+    try:
+        settings = Gio.Settings.new("org.gnome.desktop.interface")
+        return "dark" in settings.get_string("color-scheme")
+    except Exception:
+        return True
+
+def get_pictures_dir():
+    env_dir = os.environ.get("HYPRMAC_FOTOS_DIR")
+    if env_dir and os.path.exists(env_dir):
+        return env_dir
+    return os.path.expanduser("~/Pictures")
+
+def get_media_files(directory):
+    extensions = ('.jpg', '.jpeg', '.png', '.heic', '.webp', '.gif', '.mp4', '.mov', '.webm', '.mkv')
+    files = []
+    if not os.path.exists(directory):
+        return files
+    for root, dirs, filenames in os.walk(directory):
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        for f in filenames:
+            if f.lower().endswith(extensions) and not f.startswith('.'):
+                path = os.path.join(root, f)
+                try:
+                    mtime = os.path.getmtime(path)
+                    files.append((path, mtime))
+                except Exception:
+                    pass
+    files.sort(key=lambda x: x[1], reverse=True)
+    return [f[0] for f in files]
+
+FAVORITOS_PATH = os.path.expanduser("~/.config/hyprmac/fotos.json")
+
+def load_favoritos():
+    if os.path.exists(FAVORITOS_PATH):
+        try:
+            with open(FAVORITOS_PATH, 'r') as f:
+                data = json.load(f)
+                return set(data.get("favoritos", []))
+        except Exception:
+            pass
+    return set()
+
+def save_favoritos(favoritos):
+    os.makedirs(os.path.dirname(FAVORITOS_PATH), exist_ok=True)
+    try:
+        with open(FAVORITOS_PATH, 'w') as f:
+            json.dump({"favoritos": list(favoritos)}, f)
+    except Exception:
+        pass
+
+def photo_date(path):
+    # Data local do arquivo; meses independentes do locale do desktop.
+    try:
+        date = datetime.fromtimestamp(os.path.getmtime(path))
+    except (OSError, ValueError, OverflowError):
+        return "Unknown Date"
+    months = ("January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December")
+    return f"{months[date.month - 1]} {date.day}, {date.year}"
+
+
+def animations_enabled():
+    try:
+        return Gio.Settings.new("org.gnome.desktop.interface").get_boolean("enable-animations")
+    except Exception:
+        return False
+
+
+class PhotoViewerState:
+    # Ordem congelada da grade durante a visita ao visualizador.
+    def __init__(self):
+        self.files = ()
+        self.index = None
+
+    @property
+    def current(self):
+        return self.files[self.index] if self.index is not None else None
+
+    def open(self, files, path):
+        ordered = tuple(files)
+        if path not in ordered:
+            return False
+        self.files = ordered
+        self.index = ordered.index(path)
+        return True
+
+    def move(self, delta):
+        if self.index is not None:
+            self.index = max(0, min(len(self.files) - 1, self.index + delta))
+        return self.current
+
+    def close(self):
+        path = self.current
+        self.index = None
+        return path
+
+
+def toggle_favorite_path(favorites, path):
+    if path is None:
+        return
+    if path in favorites:
+        favorites.remove(path)
+    else:
+        favorites.add(path)
+
+
+def round_pixbuf(pixbuf, radius=4):
+    if not pixbuf:
+        return None
+    w = pixbuf.get_width()
+    h = pixbuf.get_height()
+    surface = cairo.ImageSurface(cairo.Format.ARGB32, w, h)
+    cr = cairo.Context(surface)
+    cr.new_sub_path()
+    cr.arc(w - radius, radius, radius, -1.5708, 0)
+    cr.arc(w - radius, h - radius, radius, 0, 1.5708)
+    cr.arc(radius, h - radius, radius, 1.5708, 3.1416)
+    cr.arc(radius, radius, radius, 3.1416, 4.7124)
+    cr.close_path()
+    cr.clip()
+    Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0)
+    cr.paint()
+    return Gdk.pixbuf_get_from_surface(surface, 0, 0, w, h)
+
+def get_albums(base_dir):
+    albums = []
+    if not os.path.exists(base_dir):
+        return albums
+    for entry in os.scandir(base_dir):
+        if entry.is_dir() and not entry.name.startswith('.'):
+            media = get_media_files(entry.path)
+            thumb = None
+            if media:
+                try:
+                    pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(media[0], 20, 20, True)
+                    thumb = round_pixbuf(pb, 4)
+                except Exception:
+                    pass
+            albums.append((entry.name, entry.path, thumb))
+    return albums
+
+CSS_DATA = """
+.dark {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+.light {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+.sidebar-box {
+    background-color: #2A2A2C;
+}
+.light .sidebar-box {
+    background-color: #EDEDF0;
+}
+.sidebar-header {
+    background-color: transparent;
+}
+.sidebar-row {
+    padding: 0px 8px;
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+.sidebar-row.selected {
+    background-color: #3A3A3C;
+}
+.light .sidebar-row.selected {
+    background-color: #D1D1D6;
+}
+.sidebar-label {
+    font-size: 13px;
+    font-weight: normal;
+}
+.sidebar-header-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #8E8E93;
+    margin: 12px 16px 4px 16px;
+}
+.main-header {
+    border-bottom: 1px solid #2D2D2D;
+}
+.light .main-header {
+    border-bottom: 1px solid #E5E5EA;
+}
+.main-header-title {
+    font-size: 15px;
+    font-weight: bold;
+}
+.search-capsule {
+    border-radius: 16px;
+    padding: 4px 8px;
+}
+.light-btn {
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+}
+.light-btn.close { background-color: #FF5F56; }
+.light-btn.minimize { background-color: #FFBD2E; }
+.light-btn.zoom { background-color: #27C93F; }
+.sidebar-row:selected { background-color: #3A3A3C; }
+.light .sidebar-row:selected { background-color: #D1D1D6; }
+.sidebar-row:selected label { color: #F2F2F2; }
+.light .sidebar-row:selected label { color: #1D1D1F; }
+.sidebar-row:selected image { color: #0A84FF; }
+button.light-btn { min-width: 14px; min-height: 14px; padding: 0; border: none; border-radius: 999px;
+                   background-image: none; box-shadow: none; }
+button.light-btn.close { background-color: #FF5F57; }
+button.light-btn.minimize { background-color: #FEBC2E; }
+button.light-btn.zoom { background-color: #28C840; }
+flowboxchild { padding: 0; background: none; }
+.viewer { background-color: #000000; color: #FFFFFF; }
+.light .viewer { background-color: #FFFFFF; color: #000000; }
+.viewer-toolbar { padding: 8px 12px; }
+.viewer-toolbar button { background-image: none; background-color: transparent;
+    color: inherit; border: none; box-shadow: none; }
+.viewer-info { padding: 12px; }
+.viewer-play { font-size: 28px; padding: 12px 20px; }
+"""
+
+class SidebarRow(Gtk.ListBoxRow):
+    def __init__(self, label_text, icon_name, enabled=True, album_thumb=None):
+        super().__init__()
+        self.label_text = label_text
+        self.enabled = enabled
+        self.get_style_context().add_class("sidebar-row")
+        if not enabled:
+            self.set_sensitive(False)
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        box.set_size_request(-1, 30)
+        if album_thumb:
+            img = Gtk.Image()
+            img.set_from_pixbuf(album_thumb)
+            box.pack_start(img, False, False, 0)
+        elif icon_name:
+            img = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.MENU)
+            img.set_pixel_size(16)
+            box.pack_start(img, False, False, 0)
+        lbl = Gtk.Label(label=label_text)
+        lbl.get_style_context().add_class("sidebar-label")
+        lbl.set_halign(Gtk.Align.START)
+        box.pack_start(lbl, True, True, 0)
+        self.add(box)
+        self.show_all()
+
+class PhotoCell(Gtk.DrawingArea):
+    def __init__(self, filepath, is_video=False):
+        super().__init__()
+        self.filepath = filepath
+        self.is_video = is_video
+        self.pixbuf = None
+        self.duration = None
+        self.selected = False
+        self.favorite = False
+        self.viewer_mode = False
+        self.video_pending = False
+        self.connect("draw", self.on_draw)
+        self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+
+    def set_selected(self, selected):
+        self.selected = selected
+        self.queue_draw()
+
+    def set_pixbuf(self, pixbuf):
+        self.pixbuf = pixbuf
+        self.queue_draw()
+
+    def on_draw(self, widget, cr):
+        self._draw_base(widget, cr)
+        if self.is_video and self.duration:
+            # duração no canto inferior direito da imagem, branca com sombra (como no Photos)
+            w, h = widget.get_allocated_width(), widget.get_allocated_height()
+            if self.pixbuf:
+                esc = min(w / self.pixbuf.get_width(), h / self.pixbuf.get_height())
+                iw, ih = self.pixbuf.get_width() * esc, self.pixbuf.get_height() * esc
+            else:
+                iw, ih = w, h
+            x1, y1 = (w + iw) / 2, (h + ih) / 2
+            cr.select_font_face("SF Pro Text", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            cr.set_font_size(11)
+            ext = cr.text_extents(self.duration)
+            x, y = x1 - ext.x_advance - 7, y1 - 7
+            cr.set_source_rgba(0, 0, 0, 0.55)
+            cr.move_to(x + 0.5, y + 1)
+            cr.show_text(self.duration)
+            cr.set_source_rgb(1, 1, 1)
+            cr.move_to(x, y)
+            cr.show_text(self.duration)
+        if self.favorite:
+            w, h = widget.get_allocated_width(), widget.get_allocated_height()
+            scale = min(w / self.pixbuf.get_width(), h / self.pixbuf.get_height()) if self.pixbuf else 1
+            iw = self.pixbuf.get_width() * scale if self.pixbuf else w
+            ih = self.pixbuf.get_height() * scale if self.pixbuf else h
+            x, y = (w - iw) / 2 + 7, (h + ih) / 2 - 7
+            cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            cr.set_font_size(16)
+            cr.set_source_rgba(0, 0, 0, 0.65)
+            cr.move_to(x + 1, y + 1)
+            cr.show_text("♥")
+            cr.set_source_rgb(1, 1, 1)
+            cr.move_to(x, y)
+            cr.show_text("♥")
+        return False
+
+    def _draw_base(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        if self.pixbuf:
+            pw = self.pixbuf.get_width()
+            ph = self.pixbuf.get_height()
+            scale = min(w / pw, h / ph)
+            nw = pw * scale
+            nh = ph * scale
+            nx = (w - nw) / 2
+            ny = (h - nh) / 2
+            cr.save()
+            cr.translate(nx, ny)
+            cr.scale(scale, scale)          # ajusta à célula (antes pintava 256 px e cortava)
+            Gdk.cairo_set_source_pixbuf(cr, self.pixbuf, 0, 0)
+            cr.paint()
+            cr.restore()
+            if self.selected:
+                cr.set_source_rgb(0.039, 0.518, 1.0)
+                cr.set_line_width(3)
+                r = 6
+                cr.new_sub_path()
+                cr.arc(nx + nw - r, ny + r, r, -1.5708, 0)
+                cr.arc(nx + nw - r, ny + nh - r, r, 0, 1.5708)
+                cr.arc(nx + r, ny + nh - r, r, 1.5708, 3.1416)
+                cr.arc(nx + r, ny + r, r, 3.1416, 4.7124)
+                cr.close_path()
+                cr.stroke()
+        else:
+            if self.viewer_mode:
+                return
+            if self.is_video:
+                cr.set_source_rgb(0, 0, 0)
+                cr.rectangle(0, 0, w, h)
+                cr.fill()
+                cr.set_source_rgb(0, 0, 0)
+                cr.select_font_face("SF Pro Text", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+                cr.set_font_size(11)
+            else:
+                cr.set_source_rgb(0.15, 0.15, 0.15)
+                cr.rectangle(0, 0, w, h)
+                cr.fill()
+            if self.selected:
+                cr.set_source_rgb(0.039, 0.518, 1.0)
+                cr.set_line_width(3)
+                cr.rectangle(1.5, 1.5, w - 3, h - 3)
+                cr.stroke()
+
+class PhotosAppView(Gtk.Box):
+    def __init__(self, window=None):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL)
+        self.window = window
+        self._theme_settings = bind_color_scheme(self)
+        self.pictures_dir = get_pictures_dir()
+        self.all_files = get_media_files(self.pictures_dir)
+        self.favoritos = load_favoritos()
+        self.current_filter = "Library"
+        self.current_album_path = None
+        self.selected_cell = None
+        self.selected_filepath = None
+        self.viewer_state = PhotoViewerState()
+        self.grid_files = []
+        self.pixbuf_cache = {}
+        self.lazy_loads = []
+        self.build_ui()
+        self.on_sidebar_row_selected(self.sidebar_list, self.sidebar_list.get_selected_row())
+        self.load_items()
+
+    # semáforos: minimizar pede iconify, que o hyprglass repassa ao Dock (Genie)
+    def on_close_clicked(self, btn):
+        if self.window:
+            self.window.close()
+
+    def on_minimize_clicked(self, btn):
+        if self.window:
+            self.window.iconify()
+
+    def on_zoom_clicked(self, btn):
+        if self.window:
+            self.window.unmaximize() if self.window.is_maximized() else self.window.maximize()
+
+    def build_ui(self):
+        self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.sidebar.get_style_context().add_class("sidebar-box")
+        self.sidebar.set_size_request(240, -1)
+        
+        sidebar_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        sidebar_header.set_size_request(-1, 52)
+        sidebar_header.get_style_context().add_class("sidebar-header")
+        
+        lights = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
+        lights.set_valign(Gtk.Align.CENTER)
+        lights.set_margin_left(14)
+        
+        for cls, action in [("close", self.on_close_clicked), 
+                            ("minimize", self.on_minimize_clicked), 
+                            ("zoom", self.on_zoom_clicked)]:
+            btn = Gtk.Button()
+            btn.get_style_context().add_class("light-btn")
+            btn.get_style_context().add_class(cls)
+            btn.set_size_request(14, 14)
+            if action:
+                btn.connect("clicked", action)
+            lights.pack_start(btn, False, False, 0)
+            
+        sidebar_header.pack_start(lights, False, False, 0)
+        self.sidebar.pack_start(sidebar_header, False, False, 0)
+        
+        self.sidebar_list = Gtk.ListBox()
+        self.sidebar_list.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.sidebar_list.connect("row-selected", self.on_sidebar_row_selected)
+        
+        self.add_sidebar_section()
+        
+        scrolled_sidebar = Gtk.ScrolledWindow()
+        scrolled_sidebar.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled_sidebar.add(self.sidebar_list)
+        self.sidebar.pack_start(scrolled_sidebar, True, True, 0)
+        
+        self.pack_start(self.sidebar, False, False, 0)
+        
+        self.main_area = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.main_area.get_style_context().add_class("main-area")
+        self.main_area.set_hexpand(True)
+        
+        self.main_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.main_header.set_size_request(-1, 52)
+        self.main_header.get_style_context().add_class("main-header")
+        
+        self.header_title = Gtk.Label(label="Library")
+        self.header_title.get_style_context().add_class("main-header-title")
+        self.header_title.set_margin_left(16)
+        self.main_header.pack_start(self.header_title, False, False, 0)
+        
+        spacer = Gtk.Box()
+        self.main_header.pack_start(spacer, True, True, 0)
+        
+        self.zoom_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 3, 7, 1)
+        self.zoom_scale.set_value(5)
+        self.zoom_scale.set_size_request(100, -1)
+        self.zoom_scale.set_draw_value(False)
+        self.zoom_scale.set_valign(Gtk.Align.CENTER)
+        self.zoom_scale.set_margin_right(12)
+        self.zoom_scale.connect("value-changed", self.on_zoom_changed)
+        self.main_header.pack_start(self.zoom_scale, False, False, 0)
+        
+        self.search_entry = Gtk.SearchEntry()
+        self._search_cocoa_keys = CocoaEntryKeys(self.search_entry)
+        self.search_entry.set_placeholder_text("Search")
+        self.search_entry.get_style_context().add_class("search-capsule")
+        self.search_entry.set_size_request(200, 32)
+        self.search_entry.set_valign(Gtk.Align.CENTER)
+        self.search_entry.set_margin_right(16)
+        self.search_entry.connect("search-changed", self.on_search_changed)
+        self.main_header.pack_start(self.search_entry, False, False, 0)
+        
+        self.grid_page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.grid_page.pack_start(self.main_header, False, False, 0)
+        
+        self.scrolled_grid = Gtk.ScrolledWindow()
+        self.scrolled_grid.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        
+        self.flowbox = Gtk.FlowBox()
+        self.flowbox.set_homogeneous(True)
+        self.flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
+        self.flowbox.set_activate_on_single_click(False)
+        self.flowbox.set_min_children_per_line(5)
+        self.flowbox.set_max_children_per_line(5)
+        self.flowbox.set_column_spacing(8)
+        self.flowbox.set_row_spacing(8)
+        self.flowbox.set_margin_top(16)
+        self.flowbox.set_margin_bottom(16)
+        self.flowbox.set_margin_left(16)
+        self.flowbox.set_margin_right(16)
+
+        self.scrolled_grid.add(self.flowbox)
+        self.grid_page.pack_start(self.scrolled_grid, True, True, 0)
+        self.page_stack = Gtk.Stack()
+        self.page_stack.set_homogeneous(False)
+        self.page_stack.add_named(self.grid_page, "grid")
+        self.build_viewer()
+        self.page_stack.set_visible_child_name("grid")
+        self.main_area.pack_start(self.page_stack, True, True, 0)
+        self.pack_start(self.main_area, True, True, 0)
+
+        # Signals
+        self.flowbox.connect("child-activated", self.on_item_activated)
+        self.flowbox.connect("button-press-event", self.on_item_button_press)
+        if self.window:      # GTK 3: teclas pela janela
+            self.window.connect("key-press-event",
+                                lambda _w, e: self.on_key_pressed(None, e.keyval, e.hardware_keycode, e.state))
+
+    def build_viewer(self):
+        page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        page.get_style_context().add_class("viewer")
+        toolbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        toolbar.get_style_context().add_class("viewer-toolbar")
+        toolbar.set_size_request(-1, 52)
+        back = Gtk.Button(label="‹")
+        back.set_tooltip_text("Back to Library")
+        back.connect("clicked", lambda _b: self.close_viewer())
+        toolbar.pack_start(back, False, False, 0)
+        self.viewer_date = Gtk.Label()
+        self.viewer_date.set_xalign(0)
+        toolbar.pack_start(self.viewer_date, True, True, 0)
+        self.favorite_button = Gtk.Button(label="♡")
+        self.favorite_button.set_tooltip_text("Favorite")
+        self.favorite_button.connect("clicked", lambda _b: self.toggle_favorite())
+        toolbar.pack_start(self.favorite_button, False, False, 0)
+        info = Gtk.Button(label="ⓘ")
+        info.set_tooltip_text("Info")
+        info.connect("clicked", lambda _b: self.viewer_info.set_visible(not self.viewer_info.get_visible()))
+        toolbar.pack_start(info, False, False, 0)
+        page.pack_start(toolbar, False, False, 0)
+        overlay = Gtk.Overlay()
+        self.viewer_image = PhotoCell("")
+        self.viewer_image.viewer_mode = True
+        self.viewer_image.set_hexpand(True)
+        self.viewer_image.set_vexpand(True)
+        overlay.add(self.viewer_image)
+        self.play_button = Gtk.Button(label="▶")
+        self.play_button.get_style_context().add_class("viewer-play")
+        self.play_button.set_halign(Gtk.Align.CENTER)
+        self.play_button.set_valign(Gtk.Align.CENTER)
+        self.play_button.set_no_show_all(True)
+        self.play_button.connect("clicked", self.play_video)
+        overlay.add_overlay(self.play_button)
+        page.pack_start(overlay, True, True, 0)
+        self.viewer_info = Gtk.Label()
+        self.viewer_info.get_style_context().add_class("viewer-info")
+        self.viewer_info.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
+        self.viewer_info.set_no_show_all(True)
+        page.pack_start(self.viewer_info, False, False, 0)
+        self.page_stack.add_named(page, "viewer")
+
+    def switch_page(self, name):
+        self.page_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.page_stack.set_transition_duration(160 if animations_enabled() else 0)
+        self.page_stack.set_visible_child_name(name)
+
+    def open_viewer(self, path):
+        if self.viewer_state.open(self.grid_files, path):
+            self.update_viewer()
+            self.switch_page("viewer")
+            self.page_stack.child_focus(Gtk.DirectionType.TAB_FORWARD)
+
+    def update_viewer(self):
+        path = self.viewer_state.current
+        self.selected_filepath = path
+        self.viewer_date.set_text(photo_date(path))
+        self.favorite_button.set_label("♥" if path in self.favoritos else "♡")
+        self.viewer_info.set_text(f"{os.path.basename(path)}\n{photo_date(path)}")
+        cell = next((c.get_child() for c in self.flowbox.get_children()
+                     if c.get_child().filepath == path), None)
+        video = path.lower().endswith(('.mp4', '.mov', '.webm', '.mkv'))
+        pb = cell.pixbuf if video and cell else None
+        if video and cell and pb is None:
+            self._load_thumbnail_for_cell(cell, path)
+        if not video:
+            try:
+                pb = GdkPixbuf.Pixbuf.new_from_file(path)
+            except GLib.Error:
+                pb = None
+        self.viewer_image.set_pixbuf(pb)
+        self.play_button.set_visible(video)
+
+    def close_viewer(self):
+        path = self.viewer_state.close()
+        self.switch_page("grid")
+        self.viewer_info.hide()
+        for child in self.flowbox.get_children():
+            if child.get_child().filepath == path:
+                self.select_cell(child.get_child())
+                child.grab_focus()
+                break
+
+    def play_video(self, _button):
+        path = self.viewer_state.current
+        if path:
+            Gio.AppInfo.launch_default_for_uri(Gio.File.new_for_path(path).get_uri(), None)
+
+    def on_cell_button_press(self, cell, event):
+        if event.button == 1:
+            self.select_cell(cell)
+            cell.get_parent().grab_focus()
+            if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
+                self.open_viewer(cell.filepath)
+            return True
+        return False
+
+    def add_sidebar_section(self):
+        # Library item
+        library_row = SidebarRow("Library", "view-grid-symbolic")
+        self.sidebar_list.add(library_row)
+        self.sidebar_list.select_row(library_row)
+
+        # Collections header
+        pinned_header = Gtk.Label(label="Pinned")
+        pinned_header.get_style_context().add_class("sidebar-header-label")
+        pinned_header.set_xalign(0)
+        pinned_header.set_margin_top(12)
+        pinned_header.set_margin_bottom(4)
+        pinned_header.set_margin_start(16)
+        pinned_header.set_margin_end(16)
+        self.sidebar_list.add(pinned_header)
+
+        # Pinned items (non‑selectable)
+        pinned_items = [
+            ("Favorites", "starred-symbolic"),
+            ("Recently Saved", "document-open-recent-symbolic"),
+            ("Map", "map-symbolic"),
+            ("Videos", "video-x-generic-symbolic"),
+            ("Screenshots", "camera-photo-symbolic"),
+            ("People & Pets", "avatar-default-symbolic"),
+            ("Recently Deleted", "user-trash-symbolic"),
+        ]
+        for label, icon in pinned_items:
+            row = SidebarRow(label, icon, enabled=False)
+            self.sidebar_list.add(row)
+
+        # Albums header
+        albums_header = Gtk.Label(label="Albums")
+        albums_header.get_style_context().add_class("sidebar-header-label")
+        albums_header.set_xalign(0)
+        albums_header.set_margin_top(12)
+        albums_header.set_margin_bottom(4)
+        albums_header.set_margin_start(16)
+        albums_header.set_margin_end(16)
+        self.sidebar_list.add(albums_header)
+
+        # All Albums item
+        all_albums_row = SidebarRow("All Albums", "folder-pictures-symbolic")
+        self.sidebar_list.add(all_albums_row)
+
+        # Actual albums
+        for name, path, thumb in get_albums(self.pictures_dir):
+            row = SidebarRow(name, None, album_thumb=thumb)
+            row.album_path = path
+            self.sidebar_list.add(row)
+
+    def on_sidebar_row_selected(self, listbox, row):
+        if not hasattr(self, "header_title") or row is None:
+            return      # a lateral seleciona antes de a área principal existir
+        if hasattr(row, "album_path") and row.album_path is not None:
+            self.current_filter = "Album"
+            self.current_album_path = row.album_path
+            self.header_title.set_label(os.path.basename(row.album_path))
+        elif row.label_text == "Library":
+            self.current_filter = "Library"
+            self.current_album_path = None
+            self.header_title.set_label("Library")
+        else:
+            self.current_filter = row.label_text
+            self.current_album_path = None
+            self.header_title.set_label(row.label_text)
+        if self.viewer_state.current:
+            self.close_viewer()
+        self.load_items()
+
+    def load_items(self):
+        self.flowbox.foreach(lambda w: self.flowbox.remove(w))
+        for source in self.lazy_loads:
+            if GLib.MainContext.default().find_source_by_id(source):
+                GLib.source_remove(source)
+        self.lazy_loads.clear()
+        self.selected_cell = None
+        search = self.search_entry.get_text().lower().strip()
+        base = []
+        if self.current_filter == "Library":
+            base = self.all_files
+        elif self.current_filter == "Album" and self.current_album_path:
+            base = get_media_files(self.current_album_path)
+        elif self.current_filter == "Favorites":
+            base = [f for f in self.all_files if f in self.favoritos]
+        else:
+            base = []
+        if search:
+            base = [f for f in base if os.path.basename(f).lower().find(search) != -1]
+        self.grid_files = list(base)
+        visible_limit = 400
+        for i, filepath in enumerate(base):
+            cell = PhotoCell(filepath, is_video=filepath.lower().endswith(('.mp4', '.mov', '.webm', '.mkv')))
+            cell.favorite = filepath in self.favoritos
+            cell.connect("button-press-event", self.on_cell_button_press)
+            lado = self.cell_size()
+            cell.set_size_request(lado, lado)
+            self.flowbox.add(cell)
+            cell.get_parent().connect("focus-in-event", lambda child, _e: self.select_cell(child.get_child()))
+            if filepath == self.selected_filepath:
+                self.select_cell(cell)
+            if i < visible_limit:
+                lid = GLib.idle_add(self._load_thumbnail_for_cell, cell, filepath)
+                self.lazy_loads.append(lid)
+        self.flowbox.show_all()
+
+    def _load_thumbnail_for_cell(self, cell, filepath):
+        if cell.is_video:
+            if cell.video_pending:
+                return GLib.SOURCE_REMOVE
+            cell.video_pending = True
+            def entregar(png, dur, cell=cell):
+                cell.video_pending = False
+                cell.duration = dur
+                pb = None
+                if png:
+                    try:
+                        pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(png, 256, 256, True)
+                    except GLib.Error:
+                        pb = None
+                if cell.get_parent():
+                    cell.set_pixbuf(pb)
+                    if self.viewer_state.current == filepath:
+                        self.viewer_image.set_pixbuf(pb)
+                return False
+            _video_fila.put((filepath, entregar))
+            return GLib.SOURCE_REMOVE
+        if filepath in self.pixbuf_cache:
+            pixbuf = self.pixbuf_cache[filepath]
+        else:
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filepath, 256, 256, True)
+                self.pixbuf_cache[filepath] = pixbuf
+            except Exception:
+                pixbuf = None
+        if cell.get_parent():
+            cell.set_pixbuf(pixbuf)
+        return GLib.SOURCE_REMOVE
+
+    def on_item_button_press(self, widget, event):
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
+            child = self.flowbox.get_child_at_pos(int(event.x), int(event.y))
+            if child:
+                self.select_cell(child.get_child())
+        return False
+
+    def select_cell(self, cell):
+        if self.selected_cell:
+            self.selected_cell.set_selected(False)
+        self.selected_cell = cell
+        cell.set_selected(True)
+        self.selected_filepath = cell.filepath
+
+    def on_item_activated(self, flowbox, child):
+        cell = child.get_child()
+        if isinstance(cell, PhotoCell):
+            self.select_cell(cell)
+            self.open_viewer(cell.filepath)
+
+    def on_key_pressed(self, controller, keyval, keycode, state):
+        # A busca recebe texto sem disparar os atalhos da biblioteca.
+        if self.window and isinstance(self.window.get_focus(), Gtk.Entry):
+            return False
+        if self.viewer_state.current:
+            if keyval == Gdk.KEY_Escape:
+                self.close_viewer()
+                return True
+            if keyval in (Gdk.KEY_Left, Gdk.KEY_Right):
+                self.viewer_state.move(-1 if keyval == Gdk.KEY_Left else 1)
+                self.update_viewer()
+                return True
+        elif keyval in (Gdk.KEY_space, Gdk.KEY_Return, Gdk.KEY_KP_Enter):
+            if self.selected_filepath:
+                self.open_viewer(self.selected_filepath)
+                return True
+        if keyval in (Gdk.KEY_f, Gdk.KEY_F):
+            self.toggle_favorite()
+            return True
+        if keyval in (Gdk.KEY_Delete, Gdk.KEY_KP_Delete):
+            self.delete_selected()
+            return True
+        return False
+
+    def toggle_favorite(self):
+        if not self.selected_filepath:
+            return
+        toggle_favorite_path(self.favoritos, self.selected_filepath)
+        save_favoritos(self.favoritos)
+        self.favorite_button.set_label("♥" if self.selected_filepath in self.favoritos else "♡")
+        if self.current_filter == "Favorites":
+            self.load_items()
+        else:
+            for child in self.flowbox.get_children():
+                cell = child.get_child()
+                cell.favorite = cell.filepath in self.favoritos
+                cell.queue_draw()
+
+    def delete_selected(self):
+        if not self.selected_filepath:
+            return
+        dialog = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text="Move to Trash?",
+            secondary_text="Are you sure you want to move \"{}\" to the trash?".format(os.path.basename(self.selected_filepath))
+        )
+        response = dialog.run()
+        dialog.destroy()
+        if response == Gtk.ResponseType.YES:
+            try:
+                file = Gio.File.new_for_path(self.selected_filepath)
+                file.trash(None)
+                if self.selected_filepath in self.favoritos:
+                    self.favoritos.remove(self.selected_filepath)
+                    save_favoritos(self.favoritos)
+                self.all_files = get_media_files(self.pictures_dir)
+                if self.viewer_state.current:
+                    self.close_viewer()
+                self.selected_filepath = None
+                self.load_items()
+            except Exception as e:
+                print("Error trashing:", e)
+
+    def cell_size(self):
+        n = int(self.zoom_scale.get_value()) if hasattr(self, "zoom_scale") else 5
+        w = self.scrolled_grid.get_allocated_width() if hasattr(self, "scrolled_grid") else 0
+        if w < 200:
+            w = 860          # antes da primeira alocação (largura típica da área)
+        return max(80, int((w - 32 - 8 * (n - 1)) / n) - 2)
+
+    def on_zoom_changed(self, scale):
+        n = int(scale.get_value())
+        self.flowbox.set_min_children_per_line(n)
+        self.flowbox.set_max_children_per_line(n)
+        self.load_items()
+
+    def on_search_changed(self, entry):
+        self.load_items()
+
+
+def load_css():
+    provider = Gtk.CssProvider()
+    provider.load_from_data(CSS_DATA.encode())
+    Gtk.StyleContext.add_provider_for_screen(
+        Gdk.Screen.get_default(), provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_USER + 100)   # acima do tema GTK do usuário (gtk.css)
+
+
+class PhotosApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id="dev.hyprmac.Photos",
+                         flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.window = None
+
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
+
+    def do_activate(self):
+        if not self.window:
+            self.window = Gtk.ApplicationWindow(application=self)
+            self.window.set_decorated(False)
+            self.window.set_default_size(1100, 700)
+
+            load_css()
+
+            view = PhotosAppView(window=self.window)
+            self.window.add(view)
+            self.window.show_all()
+        self.window.present()
+
+    def do_shutdown(self):
+        Gtk.Application.do_shutdown(self)
+
+
+def run_snapshot(path, viewer=False):
+    load_css()
+    win = Gtk.OffscreenWindow()
+    win.set_size_request(1100, 700)
+    view = PhotosAppView(window=win)
+    win.add(view)
+    win.show_all()
+    if viewer:
+        first_photo = next((f for f in view.grid_files
+                            if not f.lower().endswith(('.mp4', '.mov', '.webm', '.mkv'))), None)
+        if first_photo:
+            view.open_viewer(first_photo)
+
+    def capture():
+        pb = win.get_pixbuf()
+        if pb:
+            pb.savev(path, "png", [], [])
+        Gtk.main_quit()
+
+    GLib.timeout_add_seconds(2, capture)
+    Gtk.main()
+
+
+def main():
+    if len(sys.argv) > 2 and sys.argv[1] in ("--snapshot", "--snapshot-viewer"):
+        snapshot_path = sys.argv[2]
+        run_snapshot(snapshot_path, viewer=sys.argv[1] == "--snapshot-viewer")
+        return 0
+    GLib.set_prgname("dev.hyprmac.Photos")
+    app = PhotosApp()
+    return app.run(sys.argv)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

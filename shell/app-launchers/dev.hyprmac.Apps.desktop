@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Apps
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Apps
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Apps.png
+StartupWMClass=dev.hyprmac.Apps
+Terminal=false
+Categories=Utility;

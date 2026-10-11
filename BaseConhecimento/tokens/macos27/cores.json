@@ -1,0 +1,552 @@
+[
+ {
+  "nome": "Fills/Dark Vibrant (use plus lighter)/1 Primary",
+  "hex": "#FFFFFF/0.14",
+  "css": "rgba(255, 255, 255, 0.14)"
+ },
+ {
+  "nome": "Fills/Dark Vibrant (use plus lighter)/2 Secondary",
+  "hex": "#FFFFFF/0.08",
+  "css": "rgba(255, 255, 255, 0.08)"
+ },
+ {
+  "nome": "Fills/Dark Vibrant (use plus lighter)/3 Tertiary",
+  "hex": "#FFFFFF/0.05",
+  "css": "rgba(255, 255, 255, 0.05)"
+ },
+ {
+  "nome": "Fills/Dark Vibrant (use plus lighter)/4 Quatenary",
+  "hex": "#FFFFFF/0.04",
+  "css": "rgba(255, 255, 255, 0.04)"
+ },
+ {
+  "nome": "Fills/Dark Vibrant (use plus lighter)/5 Quinary",
+  "hex": "#FFFFFF/0.03",
+  "css": "rgba(255, 255, 255, 0.03)"
+ },
+ {
+  "nome": "Fills/Dark/1 Primary",
+  "hex": "#FFFFFF/0.10",
+  "css": "rgba(255, 255, 255, 0.10)"
+ },
+ {
+  "nome": "Fills/Dark/2 Secondary",
+  "hex": "#FFFFFF/0.08",
+  "css": "rgba(255, 255, 255, 0.08)"
+ },
+ {
+  "nome": "Fills/Dark/3 Tertiary",
+  "hex": "#FFFFFF/0.05",
+  "css": "rgba(255, 255, 255, 0.05)"
+ },
+ {
+  "nome": "Fills/Dark/4 Quatenary",
+  "hex": "#FFFFFF/0.03",
+  "css": "rgba(255, 255, 255, 0.03)"
+ },
+ {
+  "nome": "Fills/Dark/5 Quinary",
+  "hex": "#FFFFFF/0.02",
+  "css": "rgba(255, 255, 255, 0.02)"
+ },
+ {
+  "nome": "Fills/Light Vibrant (use plus darker)/1 Primary",
+  "hex": "#000000/0.15",
+  "css": "rgba(0, 0, 0, 0.15)"
+ },
+ {
+  "nome": "Fills/Light Vibrant (use plus darker)/2 Secondary",
+  "hex": "#000000/0.07",
+  "css": "rgba(0, 0, 0, 0.07)"
+ },
+ {
+  "nome": "Fills/Light Vibrant (use plus darker)/3 Tertiary",
+  "hex": "#000000/0.05",
+  "css": "rgba(0, 0, 0, 0.05)"
+ },
+ {
+  "nome": "Fills/Light Vibrant (use plus darker)/4 Quatenary",
+  "hex": "#000000/0.03",
+  "css": "rgba(0, 0, 0, 0.03)"
+ },
+ {
+  "nome": "Fills/Light Vibrant (use plus darker)/5 Quinary",
+  "hex": "#000000/0.02",
+  "css": "rgba(0, 0, 0, 0.02)"
+ },
+ {
+  "nome": "Fills/Light/1 Primary",
+  "hex": "#000000/0.10",
+  "css": "rgba(0, 0, 0, 0.10)"
+ },
+ {
+  "nome": "Fills/Light/2 Secondary",
+  "hex": "#000000/0.08",
+  "css": "rgba(0, 0, 0, 0.08)"
+ },
+ {
+  "nome": "Fills/Light/3 Tertiary",
+  "hex": "#000000/0.05",
+  "css": "rgba(0, 0, 0, 0.05)"
+ },
+ {
+  "nome": "Fills/Light/4 Quatenary",
+  "hex": "#000000/0.03",
+  "css": "rgba(0, 0, 0, 0.03)"
+ },
+ {
+  "nome": "Fills/Light/5 Quinary",
+  "hex": "#000000/0.02",
+  "css": "rgba(0, 0, 0, 0.02)"
+ },
+ {
+  "nome": "Grays/Dark (use plus lighter)/Black",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "Grays/Dark (use plus lighter)/Grey",
+  "hex": "#A2A2A7",
+  "css": "rgba(162, 162, 167, 1.00)"
+ },
+ {
+  "nome": "Grays/Dark (use plus lighter)/White",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "Grays/Dark/Black",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "Grays/Dark/Grey",
+  "hex": "#98989D",
+  "css": "rgba(152, 152, 157, 1.00)"
+ },
+ {
+  "nome": "Grays/Dark/White",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "Grays/Light Vibrant (use plus darker)/Black",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "Grays/Light Vibrant (use plus darker)/Grey",
+  "hex": "#848489",
+  "css": "rgba(132, 132, 137, 1.00)"
+ },
+ {
+  "nome": "Grays/Light Vibrant (use plus darker)/White",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "Grays/Light/Black",
+  "hex": "#000000",
+  "css": "rgba(0, 0, 0, 1.00)"
+ },
+ {
+  "nome": "Grays/Light/Grey",
+  "hex": "#8E8E93",
+  "css": "rgba(142, 142, 147, 1.00)"
+ },
+ {
+  "nome": "Grays/Light/White",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark Vibrant (use plus lighter)/1 Primary",
+  "hex": "#FFFFFF/0.96",
+  "css": "rgba(255, 255, 255, 0.96)"
+ },
+ {
+  "nome": "Labels/Dark Vibrant (use plus lighter)/2 Secondary",
+  "hex": "#8A8A8A",
+  "css": "rgba(138, 138, 138, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark Vibrant (use plus lighter)/3 Tertiary",
+  "hex": "#4C4C4C",
+  "css": "rgba(76, 76, 76, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark Vibrant (use plus lighter)/4 Quaternary",
+  "hex": "#262626",
+  "css": "rgba(38, 38, 38, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark Vibrant (use plus lighter)/5 Quinary",
+  "hex": "#121212",
+  "css": "rgba(18, 18, 18, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark/1 Primary",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "Labels/Dark/2 Secondary",
+  "hex": "#FFFFFF/0.55",
+  "css": "rgba(255, 255, 255, 0.55)"
+ },
+ {
+  "nome": "Labels/Dark/3 Tertiary",
+  "hex": "#FFFFFF/0.25",
+  "css": "rgba(255, 255, 255, 0.25)"
+ },
+ {
+  "nome": "Labels/Dark/4 Quaternary",
+  "hex": "#FFFFFF/0.10",
+  "css": "rgba(255, 255, 255, 0.10)"
+ },
+ {
+  "nome": "Labels/Dark/5 Quinary",
+  "hex": "#FFFFFF/0.05",
+  "css": "rgba(255, 255, 255, 0.05)"
+ },
+ {
+  "nome": "Labels/Dark/6 Seximal",
+  "hex": "#FFFFFF/0.03",
+  "css": "rgba(255, 255, 255, 0.03)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/1 Primary",
+  "hex": "#363636",
+  "css": "rgba(54, 54, 54, 1.00)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/2 Secondary",
+  "hex": "#737373",
+  "css": "rgba(115, 115, 115, 1.00)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/3 Tertiary",
+  "hex": "#B2B2B2",
+  "css": "rgba(178, 178, 178, 1.00)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/4 Quaternary",
+  "hex": "#D9D9D9",
+  "css": "rgba(217, 217, 217, 1.00)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/5 Quinary",
+  "hex": "#E6E6E6",
+  "css": "rgba(230, 230, 230, 1.00)"
+ },
+ {
+  "nome": "Labels/Light Vibrant (use plus darker)/6 Seximal",
+  "hex": "#FAFAFA",
+  "css": "rgba(250, 250, 250, 1.00)"
+ },
+ {
+  "nome": "Labels/Light/1 Primary",
+  "hex": "#000000/0.85",
+  "css": "rgba(0, 0, 0, 0.85)"
+ },
+ {
+  "nome": "Labels/Light/2 Secondary",
+  "hex": "#000000/0.50",
+  "css": "rgba(0, 0, 0, 0.50)"
+ },
+ {
+  "nome": "Labels/Light/3 Tertiary",
+  "hex": "#000000/0.25",
+  "css": "rgba(0, 0, 0, 0.25)"
+ },
+ {
+  "nome": "Labels/Light/4 Quaternary",
+  "hex": "#000000/0.10",
+  "css": "rgba(0, 0, 0, 0.10)"
+ },
+ {
+  "nome": "Labels/Light/5 Quinary",
+  "hex": "#000000/0.05",
+  "css": "rgba(0, 0, 0, 0.05)"
+ },
+ {
+  "nome": "Labels/Light/6 Seximal",
+  "hex": "#000000/0.03",
+  "css": "rgba(0, 0, 0, 0.03)"
+ },
+ {
+  "nome": "Separators/Light",
+  "hex": "#3C3C43/0.29",
+  "css": "rgba(60, 60, 67, 0.29)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/1 Red",
+  "hex": "#FF4747",
+  "css": "rgba(255, 71, 71, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/10 Purple",
+  "hex": "#E647FC",
+  "css": "rgba(230, 71, 252, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/11 Pink",
+  "hex": "#FF4169",
+  "css": "rgba(255, 65, 105, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/12 Brown",
+  "hex": "#C29672",
+  "css": "rgba(194, 150, 114, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/2 Orange",
+  "hex": "#FF9E33",
+  "css": "rgba(255, 158, 51, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/3 Yellow",
+  "hex": "#FFE014",
+  "css": "rgba(255, 224, 20, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/4 Green",
+  "hex": "#3BDB63",
+  "css": "rgba(59, 219, 99, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/5 Mint",
+  "hex": "#2DE0CD",
+  "css": "rgba(45, 224, 205, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/6 Teal",
+  "hex": "#2DD7E0",
+  "css": "rgba(45, 215, 224, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/7 Cyan",
+  "hex": "#47D8FC",
+  "css": "rgba(71, 216, 252, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/8 Blue",
+  "hex": "#0A99FF",
+  "css": "rgba(10, 153, 255, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark (use plus lighter)/9 Indigo",
+  "hex": "#7163FF",
+  "css": "rgba(113, 99, 255, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/1 Red",
+  "hex": "#FF4245",
+  "css": "rgba(255, 66, 69, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/10 Purple",
+  "hex": "#DB34F2",
+  "css": "rgba(219, 52, 242, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/11 Pink",
+  "hex": "#FF375F",
+  "css": "rgba(255, 55, 95, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/12 Brown",
+  "hex": "#B78A66",
+  "css": "rgba(183, 138, 102, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/2 Orange",
+  "hex": "#FF9230",
+  "css": "rgba(255, 146, 48, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/3 Yellow",
+  "hex": "#FFD600",
+  "css": "rgba(255, 214, 0, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/4 Green",
+  "hex": "#30D158",
+  "css": "rgba(48, 209, 88, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/5 Mint",
+  "hex": "#00DAC3",
+  "css": "rgba(0, 218, 195, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/6 Teal",
+  "hex": "#00D2E0",
+  "css": "rgba(0, 210, 224, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/7 Cyan",
+  "hex": "#3CD3FE",
+  "css": "rgba(60, 211, 254, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/8 Blue",
+  "hex": "#0091FF",
+  "css": "rgba(0, 145, 255, 1.00)"
+ },
+ {
+  "nome": "System Colors/Dark/9 Indigo",
+  "hex": "#6D7CFF",
+  "css": "rgba(109, 124, 255, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/1 Red",
+  "hex": "#F52F32",
+  "css": "rgba(245, 47, 50, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/10 Purple",
+  "hex": "#B72BC9",
+  "css": "rgba(183, 43, 201, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/11 Pink",
+  "hex": "#F5234B",
+  "css": "rgba(245, 35, 75, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/12 Brown",
+  "hex": "#9E7354",
+  "css": "rgba(158, 115, 84, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/2 Orange",
+  "hex": "#F58625",
+  "css": "rgba(245, 134, 37, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/3 Yellow",
+  "hex": "#F5C200",
+  "css": "rgba(245, 194, 0, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/4 Green",
+  "hex": "#26BF4D",
+  "css": "rgba(38, 191, 77, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/5 Mint",
+  "hex": "#00BDA9",
+  "css": "rgba(0, 189, 169, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/6 Teal",
+  "hex": "#00B3BF",
+  "css": "rgba(0, 179, 191, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/7 Cyan",
+  "hex": "#00ABCF",
+  "css": "rgba(0, 171, 207, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/8 Blue",
+  "hex": "#0078F0",
+  "css": "rgba(0, 120, 240, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light Vibrant (use plus darker)/9 Indigo",
+  "hex": "#5C50E6",
+  "css": "rgba(92, 80, 230, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/1 Red",
+  "hex": "#FF383C",
+  "css": "rgba(255, 56, 60, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/10 Purple",
+  "hex": "#CB30E0",
+  "css": "rgba(203, 48, 224, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/11 Pink",
+  "hex": "#FF2D55",
+  "css": "rgba(255, 45, 85, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/12 Brown",
+  "hex": "#AC7F5E",
+  "css": "rgba(172, 127, 94, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/2 Orange",
+  "hex": "#FF8D28",
+  "css": "rgba(255, 141, 40, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/3 Yellow",
+  "hex": "#FFCC00",
+  "css": "rgba(255, 204, 0, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/4 Green",
+  "hex": "#34C759",
+  "css": "rgba(52, 199, 89, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/5 Mint",
+  "hex": "#00C8B3",
+  "css": "rgba(0, 200, 179, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/6 Teal",
+  "hex": "#00C3D0",
+  "css": "rgba(0, 195, 208, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/7 Cyan",
+  "hex": "#00C0E8",
+  "css": "rgba(0, 192, 232, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/8 Blue",
+  "hex": "#0088FF",
+  "css": "rgba(0, 136, 255, 1.00)"
+ },
+ {
+  "nome": "System Colors/Light/9 Indigo",
+  "hex": "#6155F5",
+  "css": "rgba(97, 85, 245, 1.00)"
+ },
+ {
+  "nome": "Window Backgrounds/Dark Background",
+  "hex": "#1E1E1E",
+  "css": "rgba(30, 30, 30, 1.00)"
+ },
+ {
+  "nome": "Window Backgrounds/Light Background",
+  "hex": "#FFFFFF",
+  "css": "rgba(255, 255, 255, 1.00)"
+ },
+ {
+  "nome": "x. Kit/Nested Symbol BG Dark",
+  "hex": "#366799",
+  "css": "rgba(54, 103, 153, 1.00)"
+ },
+ {
+  "nome": "x. Kit/Nested Symbol BG Light",
+  "hex": "#CCE6FF",
+  "css": "rgba(204, 230, 255, 1.00)"
+ },
+ {
+  "nome": "x. Kit/Symbol BG Dark",
+  "hex": "#333333",
+  "css": "rgba(51, 51, 51, 1.00)"
+ },
+ {
+  "nome": "x. Kit/Symbol BG Light",
+  "hex": "#CCCCCC",
+  "css": "rgba(204, 204, 204, 1.00)"
+ }
+]

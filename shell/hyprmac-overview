@@ -1,0 +1,1581 @@
+#!/usr/bin/env python3
+"""hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell).
+
+Comportamentos alvo (macOS Tahoe 26, ⌃↑; medidas locais ainda aproximadas):
+  • fundo = papel de parede, escurecido;
+  • no topo, a faixa das mesas (áreas de trabalho) em miniatura, com o nome embaixo
+    ("Desktop 1"…), a atual com contorno branco, e o botão "+" à direita;
+    recolhida mostra os nomes; expande ao passar o ponteiro;
+  • abaixo, as janelas da mesa atual espalhadas lado a lado, todas na mesma escala,
+    sem sobreposição, mantendo mais ou menos a ordem em que estavam na tela;
+  • passar o mouse: contorno na cor de destaque + ícone e título do app;
+  • clicar numa janela a traz para a frente e sai; clicar numa mesa vai para ela;
+    arrastar uma janela até uma mesa (ou até o "+") a move para lá;
+  • Esc, ⌃↑ ou clique no fundo saem. As janelas "voam" das posições reais para a
+    grade (≈250 ms) e voltam ao sair — movimento breve e sempre cancelável.
+
+Uma camada por monitor, cada uma com as próprias mesas (no Hyprland as áreas
+pertencem a um monitor, como "Monitores com Spaces separados" no macOS).
+As miniaturas vêm de `grim -T` (ext-image-copy-capture): cada janela é capturada
+isoladamente, inclusive as de outras mesas, então as miniaturas das mesas são reais.
+
+App Exposé (⌃↓): o mesmo, só com as janelas do app em foco, sem a faixa das mesas;
+as janelas ocultas do app (⌘H/⌘M, no scratchpad) ficam numa fileira menor embaixo,
+depois de uma linha fina, como as minimizadas no macOS. Clicar numa delas a traz de
+volta para a mesa atual.
+
+Uso:
+  hyprmac-overview            inicia o serviço (uma instância só) sem abrir
+  hyprmac-overview toggle     abre/fecha (inicia o serviço se preciso)
+  hyprmac-overview app        abre/fecha o App Exposé do app em foco
+  hyprmac-overview open       abre
+  hyprmac-overview close      fecha
+  hyprmac-overview quit       encerra o serviço
+"""
+import json
+import math
+import os
+import signal
+import subprocess
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
+
+import cairo
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("GtkLayerShell", "0.1")
+gi.require_version("Pango", "1.0")
+gi.require_version("PangoCairo", "1.0")
+from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango, PangoCairo  # noqa: E402
+from gi.repository import GtkLayerShell as LS  # noqa: E402
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(HERE)
+RUN = os.environ.get("XDG_RUNTIME_DIR", "/tmp")
+PIDFILE = os.path.join(RUN, "hyprmac-overview.pid")
+CONFIG_PATH = os.path.expanduser("~/.config/hyprmac/config.json")
+NAMESPACE = "hyprmac-overview"
+DEFAULT_WALLPAPER = os.path.join(ROOT, "wallpapers", "tahoe-light-1080p.jpg")
+
+# ───────────── métricas (px lógicos; tomadas em 1920×1080) ─────────────
+# Faixa das mesas medida na p. 17 de "macOS pour Windows" (Mission Control):
+# faixa ≈ 17 % da altura, miniaturas ≈ 8,5 % da largura começando a ≈ 4,5 % do topo,
+# "+" a ≈ 50 px da borda direita. Raios do kit macOS 27 (padroes/forma-e-espacamento.md):
+# janela 16 (aqui proporcional à escala), botão pequeno de vidro, cápsula para o título.
+BAND_FRAC = 0.17          # altura da faixa das mesas / altura da tela
+BAND_COLLAPSED = 44       # nomes sem miniaturas (aproximação local)
+DESK_W_FRAC = 0.085       # largura da miniatura da mesa / largura da tela
+DESK_TOP_FRAC = 0.044     # topo das miniaturas / altura da tela
+DESK_GAP = 40             # entre miniaturas
+DESK_RADIUS = 8
+DESK_RING = 3             # contorno branco da mesa atual
+LABEL_GAP = 8             # miniatura → nome
+LABEL_PX = 12             # "Desktop 1" (texto pequeno, Medium)
+PLUS = 44                 # botão "+" (quadrado arredondado de vidro)
+PLUS_R = 12
+PLUS_RIGHT = 28           # margem direita do "+"
+PAD_X = 56                # margens da área das janelas
+PAD_TOP = 24              # abaixo da faixa
+PAD_BOTTOM = 64
+GAP = 32                  # entre janelas na mesma fileira
+ROW_GAP = 52              # entre fileiras (cabe a cápsula do título)
+WIN_RADIUS = 16           # janela do macOS 27; escala junto com a miniatura
+RING = 4                  # contorno de destaque ao passar o mouse
+CAPSULE_H = 28
+CAPSULE_ICON = 18
+TITLE_PX = 13
+DIM = 0.24                # escurecimento do papel de parede
+BAND_DIM = 0.16           # a faixa das mesas é um pouco mais escura
+BLUR = 6                  # desfoque leve (fator de redução); o macOS quase não desfoca
+OPEN_MS = 260
+CLOSE_MS = 220
+RELAYOUT_MS = 220
+DRAG_START = 6            # px até virar arrasto
+APP_TOP_FRAC = 0.07       # App Exposé: margem de cima (sem faixa das mesas)
+SHELF_FRAC = 0.15         # altura da fileira das ocultas / altura da tela
+SHELF_GAP = 28            # linha → fileira das ocultas
+
+from accent_palette import accent_hex
+
+
+def overview_accent(iface):
+    dark = "prefer-dark" in iface.get_string("color-scheme")
+    color = accent_hex(iface.get_string("accent-color"), dark)
+    return tuple(int(color[i:i + 2], 16) / 255 for i in (1, 3, 5))
+
+
+FONT = "SF Pro, SF Pro Text, Inter Variable, Inter, sans-serif"
+
+
+# ───────────────────────────── utilidades ─────────────────────────────
+
+def load_config():
+    cfg = {"wallpaper": DEFAULT_WALLPAPER}
+    try:
+        with open(CONFIG_PATH) as f:
+            cfg.update(json.load(f))
+    except (OSError, ValueError):
+        pass
+    return cfg
+
+
+def run(args, timeout=3):
+    try:
+        return subprocess.run(args, capture_output=True, text=True, timeout=timeout).stdout
+    except (subprocess.TimeoutExpired, OSError):
+        return ""
+
+
+def hypr_json(what):
+    try:
+        return json.loads(run(["hyprctl", what, "-j"]))
+    except ValueError:
+        return {} if what in ("activeworkspace", "layers") else []
+
+
+def dispatch(*luas):
+    """Um ou mais dispatchers Lua do Hyprland 0.56, em sequência."""
+    if len(luas) == 1:
+        args = ["hyprctl", "dispatch", luas[0]]
+    else:
+        args = ["hyprctl", "--batch", " ; ".join("dispatch " + lua for lua in luas)]
+    subprocess.Popen(args, start_new_session=True,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def rounded_rect(cr, x, y, w, h, r):
+    r = max(0.0, min(r, w / 2, h / 2))
+    cr.new_sub_path()
+    cr.arc(x + w - r, y + r, r, -math.pi / 2, 0)
+    cr.arc(x + w - r, y + h - r, r, 0, math.pi / 2)
+    cr.arc(x + r, y + h - r, r, math.pi / 2, math.pi)
+    cr.arc(x + r, y + r, r, math.pi, 3 * math.pi / 2)
+    cr.close_path()
+
+
+def lerp(a, b, t):
+    return a + (b - a) * t
+
+
+def lerp_rect(a, b, t):
+    return tuple(lerp(p, q, t) for p, q in zip(a, b))
+
+
+def ease_out(t):           # abrir: rápido no começo, assenta suave
+    return 1 - (1 - t) ** 3
+
+
+def ease_in_out(t):
+    return 4 * t ** 3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+
+
+def inside(px, py, r):
+    x, y, w, h = r
+    return x <= px <= x + w and y <= py <= y + h
+
+
+def desktop_name(wid):
+    # Dock.app/en.lproj/Localizable.strings, Tahoe 26.6.1: DesktopNum = "Desktop %@".
+    return f"Desktop {wid}"
+
+
+def spaces_layout(width, height, count):
+    """Miniaturas centradas, reservando espaço para o botão de adicionar."""
+    top = round(height * DESK_TOP_FRAC)
+    available = max(1, width - 2 * PLUS_RIGHT - PLUS - 16)
+    gap = min(DESK_GAP, available / max(1, count * 4))
+    dw = min(round(width * DESK_W_FRAC),
+             max(1, (available - gap * max(0, count - 1)) / max(1, count)))
+    dh = max(1, dw * height / max(1, width))
+    total = count * dw + max(0, count - 1) * gap
+    x = PLUS_RIGHT + (available - total) / 2
+    rects = [(x + i * (dw + gap), top, dw, dh) for i in range(count)]
+    plus = (width - PLUS_RIGHT - PLUS, top + (dh - PLUS) / 2, PLUS, PLUS)
+    return rects, plus
+
+
+def space_hit(x, y, rects, plus, expansion):
+    """Mesmo destino para clique e arrasto; nomes também são alvos."""
+    for i, (dx, dy, dw, dh) in enumerate(rects):
+        label_y = lerp((BAND_COLLAPSED - LABEL_PX) / 2, dy + dh + LABEL_GAP, expansion)
+        # Mantém o nome clicável enquanto ele desce na expansão.
+        top = min(dy, (BAND_COLLAPSED - LABEL_PX) / 2) if expansion > 0 else label_y
+        if inside(x, y, (dx, top - 6, dw, label_y + LABEL_PX + 6 - top)):
+            return ("desk", i)
+    if expansion > 0 and inside(x, y, plus):
+        return ("plus",)
+    return None
+
+
+def scaled_surface(src, w, h):
+    """Redimensiona uma superfície cairo (filtro GOOD = média de caixa ao reduzir)."""
+    w, h = max(1, int(round(w))), max(1, int(round(h)))
+    out = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
+    cr = cairo.Context(out)
+    cr.scale(w / src.get_width(), h / src.get_height())
+    cr.set_source_surface(src, 0, 0)
+    cr.get_source().set_filter(cairo.FILTER_GOOD)
+    cr.paint()
+    return out
+
+
+def pixbuf_surface(pb):
+    return Gdk.cairo_surface_create_from_pixbuf(pb, 1, None) if pb else None
+
+
+def capture(args):
+    """grim → pixbuf (PPM pela saída padrão, sem arquivo temporário)."""
+    try:
+        data = subprocess.run(["grim", "-t", "ppm", *args, "-"], capture_output=True,
+                              timeout=1.5).stdout
+        if not data:
+            return None
+        loader = GdkPixbuf.PixbufLoader.new_with_type("pnm")
+        loader.write(data)
+        loader.close()
+        return loader.get_pixbuf()
+    except (subprocess.TimeoutExpired, OSError, GLib.Error):
+        return None
+
+
+def capture_scaled(args, sizes):
+    """Captura e já reduz na thread (o GdkPixbuf solta o GIL): → [pixbuf por tamanho].
+    Tamanho None = a captura como veio."""
+    pb = capture(args)
+    if pb is None:
+        return None
+    out = []
+    for size in sizes:
+        if size is None or (round(size[0]), round(size[1])) == (pb.get_width(), pb.get_height()):
+            out.append(pb)
+        else:
+            out.append(pb.scale_simple(max(1, round(size[0])), max(1, round(size[1])),
+                                       GdkPixbuf.InterpType.BILINEAR))
+    return out
+
+
+def pango_layout(cr, text, px, weight=Pango.Weight.MEDIUM, width=None):
+    layout = PangoCairo.create_layout(cr)
+    fd = Pango.FontDescription.from_string(FONT)
+    fd.set_absolute_size(px * Pango.SCALE)
+    fd.set_weight(weight)
+    layout.set_font_description(fd)
+    layout.set_text(text, -1)
+    if width:
+        layout.set_width(int(width * Pango.SCALE))
+        layout.set_ellipsize(Pango.EllipsizeMode.END)
+    return layout
+
+
+def show_text(cr, layout, x, y, alpha=1.0, shadow=True):
+    if shadow:   # sombra discreta para ler sobre qualquer papel de parede
+        cr.move_to(x, y + 1)
+        cr.set_source_rgba(0, 0, 0, 0.45 * alpha)
+        PangoCairo.show_layout(cr, layout)
+    cr.move_to(x, y)
+    cr.set_source_rgba(1, 1, 1, 0.92 * alpha)
+    PangoCairo.show_layout(cr, layout)
+
+
+# ───────────────────── ícones dos apps (.desktop) ─────────────────────
+# Mesma lógica do AppIndex do hyprmac-shell (cópia; aquele arquivo não é tocado).
+
+APP_NAMES = {
+    "kitty": "Kitty", "com.mitchellh.ghostty": "Ghostty", "firefox": "Firefox",
+    "brave-browser": "Brave", "brave-origin": "Brave", "org.kde.nautilus": "nautilus",
+    "org.gnome.nautilus": "Arquivos", "code": "Code", "spotify": "Spotify",
+}
+
+
+def app_name(cls):
+    if not cls:
+        return "Window"
+    known = APP_NAMES.get(cls.lower())
+    if known:
+        return known
+    base = cls.split(".")[-1] if "." in cls else cls
+    return base[:1].upper() + base[1:]
+
+
+def icon_pixbuf(name, size):
+    if not name:
+        return None
+    try:
+        if name.startswith("/"):
+            return GdkPixbuf.Pixbuf.new_from_file_at_scale(name, size, size, True)
+        return Gtk.IconTheme.get_default().load_icon(name, size, Gtk.IconLookupFlags.FORCE_SIZE)
+    except GLib.Error:
+        return None
+
+
+class AppIndex:
+    """Classe da janela → (nome, ícone) a partir dos .desktop instalados."""
+
+    def __init__(self, size=64):
+        self.size = size
+        self.built = False
+        self.cache = {}
+
+    def _build(self):
+        self.by_id, self.by_wm, self.by_exec = {}, {}, {}
+        for info in Gio.AppInfo.get_all():
+            if not hasattr(info, "get_startup_wm_class"):
+                continue
+            app_id = (info.get_id() or "").removesuffix(".desktop").lower()
+            if app_id:
+                self.by_id.setdefault(app_id, info)
+            wm = (info.get_startup_wm_class() or "").lower()
+            if wm:
+                self.by_wm.setdefault(wm, info)
+            args = [t for t in (info.get_commandline() or "").split() if not t.startswith("%")]
+            exe = os.path.basename(info.get_executable() or "").lower()
+            if exe and len(args) <= 1:
+                self.by_exec.setdefault(exe, info)
+        self.built = True
+
+    def lookup(self, cls):
+        c = (cls or "").lower()
+        if c in self.cache:
+            return self.cache[c]
+        if not self.built:
+            self._build()
+        short = c.split(".")[-1]
+        info = (self.by_id.get(c) or self.by_wm.get(c) or self.by_exec.get(c)
+                or self.by_id.get(short) or self.by_wm.get(short))
+        name = info.get_name() if info else app_name(cls)
+        pb = None
+        if info and info.get_icon():
+            look = Gtk.IconTheme.get_default().lookup_by_gicon(
+                info.get_icon(), self.size, Gtk.IconLookupFlags.FORCE_SIZE)
+            try:
+                pb = look.load_icon() if look else None
+            except GLib.Error:
+                pb = None
+        pb = pb or icon_pixbuf(c, self.size) or icon_pixbuf("application-x-executable", self.size)
+        self.cache[c] = (name, pixbuf_surface(pb))
+        return self.cache[c]
+
+
+# ───────────────────────────── papel de parede ─────────────────────────────
+
+class WallpaperCache:
+    """Papel de parede (mesma origem do hyprmac-shell: caminho ou "gnome") em três
+    versões por tamanho de tela: nítida, desfocada+escurecida e miniatura das mesas.
+
+    Papéis de parede enormes (o atual tem 30000×21059) levam segundos para decodificar,
+    então a versão no tamanho da tela é gerada em segundo plano (vipsthumbnail, se
+    houver) e guardada em ~/.cache/hyprmac/overview/. Até ficar pronta, fundo neutro."""
+
+    DIR = os.path.expanduser("~/.cache/hyprmac/overview")
+
+    def __init__(self):
+        self.ready = {}            # (chave, w, h) → pixbuf w×h
+        self.sizes = {}
+        self.pending = set()
+        try:
+            bg = Gio.Settings.new("org.gnome.desktop.background")
+            iface = Gio.Settings.new("org.gnome.desktop.interface")
+            self._keep = (bg, iface)
+            for st, key in ((bg, "picture-uri"), (bg, "picture-uri-dark"),
+                            (iface, "color-scheme")):
+                st.connect(f"changed::{key}", lambda *_: self.prefetch())
+        except Exception:
+            pass
+        self.wanted = set()
+
+    @staticmethod
+    def _path():
+        cfg = load_config()
+        if str(cfg.get("wallpaper")).lower() != "gnome":
+            return os.path.expanduser(cfg.get("wallpaper") or DEFAULT_WALLPAPER)
+        try:
+            bg = Gio.Settings.new("org.gnome.desktop.background")
+            dark = Gio.Settings.new("org.gnome.desktop.interface").get_string(
+                "color-scheme") == "prefer-dark"
+            uri = bg.get_string("picture-uri-dark" if dark else "picture-uri") \
+                or bg.get_string("picture-uri")
+            path = Gio.File.new_for_uri(uri).get_path() if uri else None
+            if path and path.endswith(".xml"):
+                import xml.etree.ElementTree as ET
+                node = ET.parse(path).getroot().find(".//file")
+                path = node.text.strip() if node is not None and node.text else None
+            return path or DEFAULT_WALLPAPER
+        except Exception:
+            return DEFAULT_WALLPAPER
+
+    @staticmethod
+    def _key():
+        path = WallpaperCache._path()
+        try:
+            return path, int(os.path.getmtime(path))
+        except OSError:
+            return DEFAULT_WALLPAPER, 0
+
+    def _file(self, key, w, h):
+        import hashlib
+        tag = hashlib.sha1(f"{key[0]}|{key[1]}".encode()).hexdigest()[:16]
+        return os.path.join(self.DIR, f"wall-{tag}-{w}x{h}.png")
+
+    @staticmethod
+    def _cover(pb, w, h):
+        pw, ph = pb.get_width(), pb.get_height()
+        s = max(w / pw, h / ph)
+        sw, sh = max(w, round(pw * s)), max(h, round(ph * s))
+        scaled = pb.scale_simple(sw, sh, GdkPixbuf.InterpType.HYPER)
+        return scaled.new_subpixbuf((sw - w) // 2, (sh - h) // 2, w, h)
+
+    def _render(self, key, w, h):
+        """(thread) gera o PNG w×h no cache em disco e devolve o pixbuf."""
+        out = self._file(key, w, h)
+        if not os.path.exists(out):
+            os.makedirs(self.DIR, exist_ok=True)
+            tmp = out + ".tmp.png"
+            pb = None
+            if subprocess.run(["sh", "-c", "command -v vipsthumbnail"],
+                              capture_output=True).returncode == 0:
+                subprocess.run(["vipsthumbnail", key[0], "-s", f"{w}x{h}", "--smartcrop",
+                                "centre", "-o", tmp], capture_output=True, timeout=60)
+                try:
+                    pb = GdkPixbuf.Pixbuf.new_from_file(tmp)
+                except GLib.Error:
+                    pb = None
+            if pb is None or (pb.get_width(), pb.get_height()) != (w, h):
+                _fmt, pw, ph = GdkPixbuf.Pixbuf.get_file_info(key[0])
+                s = min(1.0, max(w / pw, h / ph))
+                pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    key[0], math.ceil(pw * s) + 1, math.ceil(ph * s) + 1, True)
+                pb = self._cover(pb, w, h)
+            pb.savev(tmp, "png", ["compression"], ["1"])
+            os.replace(tmp, out)
+        return GdkPixbuf.Pixbuf.new_from_file(out)
+
+    def prefetch(self, sizes=None):
+        """Prepara (em segundo plano) o papel de parede atual nos tamanhos de tela."""
+        if sizes:
+            self.wanted |= set(sizes)
+        key = self._key()
+        for w, h in self.wanted:
+            k = (key, w, h)
+            if k in self.ready or k in self.pending:
+                continue
+            if os.path.exists(self._file(key, w, h)):
+                try:
+                    self.ready[k] = GdkPixbuf.Pixbuf.new_from_file(self._file(key, w, h))
+                    continue
+                except GLib.Error:
+                    pass
+            self.pending.add(k)
+
+            def work(k=k):
+                try:
+                    pb = self._render(*k)
+                except Exception as e:  # imagem ilegível: fica o fundo neutro
+                    print("papel de parede:", e, file=sys.stderr)
+                    pb = None
+                GLib.idle_add(lambda: self._done(k, pb))
+            import threading
+            threading.Thread(target=work, daemon=True).start()
+
+    def _done(self, k, pb):
+        self.pending.discard(k)
+        if pb is not None:
+            self.ready[k] = pb
+        return False
+
+    def get(self, w, h, dw, dh):
+        """→ (nítida, final [desfocada+escurecida], miniatura dw×dh)."""
+        key = self._key()
+        self.wanted.add((w, h))
+        pb = self.ready.get((key, w, h))
+        if pb is None:
+            self.prefetch()
+            if pb is None and os.path.exists(self._file(key, w, h)):
+                pb = self.ready[(key, w, h)] = GdkPixbuf.Pixbuf.new_from_file(self._file(key, w, h))
+        k = (key, w, h, dw, dh) if pb is not None else ("neutro", w, h, dw, dh)
+        if k not in self.sizes:
+            if pb is None:   # ainda gerando: fundo escuro neutro (não fica em cache)
+                pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, False, 8, w, h)
+                pb.fill(0x1c1c22ff)
+            small = pb.scale_simple(max(1, w // (BLUR * 2)), max(1, h // (BLUR * 2)),
+                                    GdkPixbuf.InterpType.HYPER)
+            mid = small.scale_simple(max(1, w // 2), max(1, h // 2), GdkPixbuf.InterpType.BILINEAR)
+            blur_pb = mid.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
+            sharp = pixbuf_surface(pb)
+            final = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h)
+            cr = cairo.Context(final)
+            Gdk.cairo_set_source_pixbuf(cr, pb, 0, 0)
+            cr.paint()
+            Gdk.cairo_set_source_pixbuf(cr, blur_pb, 0, 0)
+            cr.paint_with_alpha(0.85)
+            cr.set_source_rgba(0, 0, 0, DIM)
+            cr.paint()
+            thumb = pixbuf_surface(pb.scale_simple(dw, dh, GdkPixbuf.InterpType.HYPER))
+            self.sizes = {kk: v for kk, v in self.sizes.items() if kk[0] == key}
+            self.sizes[k] = (sharp, final, thumb)
+        return self.sizes[k]
+
+
+# ───────────────────────────── modelo ─────────────────────────────
+
+class Win:
+    """Uma janela da mesa atual de um monitor."""
+
+    def __init__(self, c, mon, apps):
+        self.addr = c["address"]
+        self.sid = c.get("stableId")
+        self.cls = c.get("class") or c.get("initialClass") or ""
+        self.title = c.get("title") or ""
+        self.name, self.icon = apps.lookup(self.cls)
+        x, y = c["at"]
+        w, h = c["size"]
+        self.real = (x - mon["x"], y - mon["y"], w, h)
+        self.grid = self.real
+        self.prev = None           # retângulo anterior (reorganização animada)
+        self.pbs = None            # capturas já reduzidas (grade, grande)
+        self.small = None          # superfície no tamanho da grade
+        self.big = None            # superfície maior, para o começo do voo
+        self.hidden = c["workspace"]["name"].startswith("special")   # oculta (App Exposé)
+
+
+class Desk:
+    def __init__(self, wid, name, current, extra):
+        self.id, self.name, self.current, self.extra = wid, name, current, extra
+        self.items = []            # [(superfície ou None, ícone, retângulo real)] de baixo p/ cima
+        self.thumb = None
+        self.rect = (0, 0, 0, 0)
+
+
+# ───────────────────────────── layout (sem sobreposição) ─────────────────────────────
+
+def layout_windows(wins, ax, ay, aw, ah):
+    """Distribui as janelas em fileiras, todas na MESMA escala (proporcionais), sem
+    sobreposição e preservando a ordem aproximada da tela (como o Mission Control
+    e a estratégia "unaligned" do GNOME): ordena por altura do centro, tenta 1..n
+    fileiras e fica com a que deixa as janelas maiores. Nunca amplia (escala ≤ 1)."""
+    n = len(wins)
+    if not n:
+        return 1.0
+    by_y = sorted(wins, key=lambda w: w.real[1] + w.real[3] / 2)
+    best = None
+    for rows in range(1, n + 1):
+        target = (sum(w.real[2] for w in wins) + GAP * (n - rows)) / rows
+        R, acc = [[]], 0.0
+        for w in by_y:
+            if R[-1] and acc + w.real[2] / 2 > target and len(R) < rows:
+                R.append([])
+                acc = 0.0
+            R[-1].append(w)
+            acc += w.real[2] + GAP
+        for r in R:
+            r.sort(key=lambda w: w.real[0] + w.real[2] / 2)
+        heights = [max(w.real[3] for w in r) for r in R]
+        s = min([(aw - GAP * (len(r) - 1)) / sum(w.real[2] for w in r) for r in R]
+                + [(ah - ROW_GAP * (len(R) - 1)) / sum(heights)] + [1.0])
+        if best is None or s > best[0] * 1.03:      # mais fileiras só se ganhar de verdade
+            best = (s, R, heights)
+    s, R, heights = best
+    total_h = s * sum(heights) + ROW_GAP * (len(R) - 1)
+    y = ay + (ah - total_h) / 2
+    for r, hr in zip(R, heights):
+        row_w = s * sum(w.real[2] for w in r) + GAP * (len(r) - 1)
+        x = ax + (aw - row_w) / 2
+        for w in r:
+            gw, gh = round(s * w.real[2]), round(s * w.real[3])
+            w.grid = (round(x), round(y + (s * hr - gh) / 2), gw, gh)
+            x += s * w.real[2] + GAP
+        y += s * hr + ROW_GAP
+    return s
+
+
+# ───────────────────────────── uma tela ─────────────────────────────
+
+class Screen:
+    """A camada do Mission Control num monitor."""
+
+    def __init__(self, ov, name, gmon):
+        self.ov, self.name = ov, name
+        self.win = Gtk.Window()
+        visual = self.win.get_screen().get_rgba_visual()
+        if visual:
+            self.win.set_visual(visual)
+        self.win.set_app_paintable(True)
+        LS.init_for_window(self.win)
+        LS.set_namespace(self.win, NAMESPACE)
+        LS.set_layer(self.win, LS.Layer.OVERLAY)
+        if gmon is not None:
+            LS.set_monitor(self.win, gmon)
+        for edge in (LS.Edge.TOP, LS.Edge.BOTTOM, LS.Edge.LEFT, LS.Edge.RIGHT):
+            LS.set_anchor(self.win, edge, True)
+        LS.set_exclusive_zone(self.win, -1)          # cobre a barra também
+        LS.set_keyboard_mode(self.win, LS.KeyboardMode.NONE)
+        self.area = Gtk.DrawingArea()
+        self.area.add_events(Gdk.EventMask.POINTER_MOTION_MASK | Gdk.EventMask.BUTTON_PRESS_MASK
+                             | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK)
+        self.area.connect("draw", self._draw)
+        self.area.connect("motion-notify-event", self._motion)
+        self.area.connect("button-press-event", self._press)
+        self.area.connect("button-release-event", self._release)
+        self.area.connect("leave-notify-event", self._leave)
+        self.win.add(self.area)
+        self.win.add_events(Gdk.EventMask.KEY_PRESS_MASK)
+        self.win.connect("key-press-event", self._key)
+        self.area.show()
+        self.wins, self.desks = [], []
+        self.hover = None              # ("win", i) | ("desk", i) | ("plus",) | ("close", i)
+        self.press = None
+        self.drag = None               # {"win": Win, "x", "y", "fx", "fy"}
+        self.relayout_t0 = None
+        self.band_t0 = None
+        self.band_from = self.band_to = 0.0
+
+    # ── dados ──
+    def prepare(self, mon, clients, workspaces, bar_h):
+        ov = self.ov
+        self.mon = mon
+        self.W = round(mon["width"] / mon.get("scale", 1))
+        self.H = round(mon["height"] / mon.get("scale", 1))
+        self.active = mon["activeWorkspace"]["id"]
+        self.app = ov.app_cls
+        self.band_t0 = None
+        self.band_from = self.band_to = 0.0
+        self.band_h = round(self.H * APP_TOP_FRAC) if self.app else BAND_COLLAPSED
+        self.dw = round(self.W * DESK_W_FRAC)
+        self.dh = round(self.dw * self.H / self.W)
+        self.bar_h = bar_h
+        self.sharp, self.final, self.wall_thumb = ov.wall.get(self.W, self.H, self.dw, self.dh)
+        self.bar = None
+
+        def stacking(c):   # de baixo para cima: lado a lado primeiro, flutuantes por cima
+            return (c.get("floating", False), -c.get("focusHistoryID", 0))
+
+        live = sorted((c for c in clients if c.get("mapped") and not c.get("hidden")
+                       and c["workspace"]["id"] > 0), key=stacking)
+        if self.app:
+            self.wins = [Win(c, mon, ov.apps) for c in live if c["workspace"]["id"] == self.active
+                         and (c.get("class") or c.get("initialClass")) == self.app]
+            ocultas = []
+            if mon.get("focused"):        # as ocultas aparecem na tela em foco
+                ocultas = [Win(c, mon, ov.apps) for c in clients
+                           if c.get("mapped") and c["workspace"]["name"].startswith("special")
+                           and (c.get("class") or c.get("initialClass")) == self.app]
+            self.shelf_y = None
+            area_h = self.H - self.band_h - PAD_TOP - PAD_BOTTOM
+            if ocultas:
+                sh = round(self.H * SHELF_FRAC)
+                area_h -= sh + SHELF_GAP
+                self.shelf_y = self.H - PAD_BOTTOM - sh
+                self._layout_shelf(ocultas, sh)
+            self.scale = layout_windows(self.wins, PAD_X, self.band_h + PAD_TOP,
+                                        self.W - 2 * PAD_X, area_h)
+            self.wins += ocultas
+        else:
+            self.shelf_y = None
+            self.wins = [Win(c, mon, ov.apps) for c in live if c["workspace"]["id"] == self.active]
+            self.scale = layout_windows(self.wins, PAD_X, self.band_h + PAD_TOP,
+                                        self.W - 2 * PAD_X, self.H - self.band_h - PAD_TOP - PAD_BOTTOM)
+
+        if self.app:                  # App Exposé: sem faixa das mesas
+            self.desks, self.other_clients = [], []
+            self.plus = (-1000, -1000, 0, 0)
+            self.hover, self.press, self.drag, self.relayout_t0 = None, None, None, None
+            return
+        # mesas deste monitor: as que têm janelas + a atual + as criadas pelo "+"
+        here = {w["id"]: w for w in workspaces if w["id"] > 0 and w["monitor"] == mon["name"]
+                and (w["windows"] > 0 or w["id"] == self.active)}
+        taken = {w["id"] for w in workspaces if w["monitor"] != mon["name"]}
+        extras = ov.extras.setdefault(mon["name"], set())
+        extras -= set(here) | taken
+        ids = sorted(set(here) | extras | {self.active})
+        self.desks = []
+        for wid in ids:
+            self.desks.append(Desk(wid, desktop_name(wid),
+                                   wid == self.active, wid in extras))
+        self.other_clients = [c for c in live if c["workspace"]["id"] != self.active
+                              and c["workspace"]["id"] in set(ids)]
+        self._place_desks()
+        self.hover, self.press, self.drag, self.relayout_t0 = None, None, None, None
+
+    def _layout_shelf(self, ocultas, sh):
+        """Fileira das ocultas: todas com a mesma altura, centradas, sem voo
+        (aparecem no lugar, já que não estavam na tela)."""
+        alt = sh
+        larg = [alt * w.real[2] / max(1, w.real[3]) for w in ocultas]
+        total = sum(larg) + GAP * (len(ocultas) - 1)
+        k = min(1.0, (self.W - 2 * PAD_X) / max(1, total))
+        x = (self.W - total * k) / 2
+        for w, lw in zip(ocultas, larg):
+            gw, gh = round(lw * k), round(alt * k)
+            w.grid = (round(x), self.H - PAD_BOTTOM - gh, gw, gh)
+            x += lw * k + GAP * k
+
+    def capture_jobs(self):
+        """[(argumentos do grim, tamanhos, destino)] para rodar em paralelo antes de mostrar."""
+        jobs = []
+        k = self.dw / self.W
+        for w in self.wins:
+            if w.sid:
+                gw, gh = w.grid[2], w.grid[3]
+                f = min(1.0, 2 * gw / max(1, w.real[2]))    # a "grande": até 2× a grade
+                jobs.append((["-T", w.sid], [(gw, gh), (w.real[2] * f, w.real[3] * f)],
+                             ("win", w)))
+        for c in self.other_clients:
+            if c.get("stableId"):
+                # tamanho real: o "-s" do grim reduz em software e fica 5× mais lento
+                jobs.append((["-T", c["stableId"]],
+                             [(c["size"][0] * k * 2, c["size"][1] * k * 2)], ("other", c)))
+        if self.bar_h:
+            m = self.mon
+            jobs.append((["-g", f"{m['x']},{m['y']} {self.W}x{self.bar_h}"], [None], ("bar", None)))
+        return jobs
+
+    def finish(self, results):
+        """Recebe as capturas da mesa atual e monta as superfícies. As janelas das
+        outras mesas começam como cartões com ícone e ganham a captura em other_ready()."""
+        for (kind, obj), pbs in results:
+            if kind == "win":
+                obj.pbs = pbs
+            elif kind == "bar":
+                self.bar = pixbuf_surface(pbs[0]) if pbs else None
+        for w in self.wins:
+            self._win_surfaces(w)
+        by_ws, self.slots = {}, {}
+        for c in self.other_clients:
+            x, y = c["at"]
+            rect = (x - self.mon["x"], y - self.mon["y"], *c["size"])
+            items = by_ws.setdefault(c["workspace"]["id"], [])
+            self.slots[c["address"]] = (c["workspace"]["id"], len(items))
+            items.append((None, self.ov.apps.lookup(c.get("class"))[1], rect))
+        for d in self.desks:
+            d.items = [(w.small, w.icon, w.real) for w in self.wins] if d.current \
+                else by_ws.get(d.id, [])
+            self._compose_desk(d)
+
+    def other_ready(self, c, pbs):
+        """Chegou a captura de uma janela de outra mesa: atualiza a miniatura."""
+        slot = self.slots.get(c["address"])
+        src = pixbuf_surface(pbs[0]) if pbs else None
+        if slot is None or src is None:
+            return
+        d = next((x for x in self.desks if x.id == slot[0]), None)
+        if d is None or slot[1] >= len(d.items):
+            return
+        _surf, icon, rect = d.items[slot[1]]
+        d.items[slot[1]] = (src, icon, rect)
+        self._compose_desk(d)
+        self.area.queue_draw()
+
+    @staticmethod
+    def _win_surfaces(w):
+        pbs = getattr(w, "pbs", None)
+        w.small, w.big = (pixbuf_surface(pbs[0]), pixbuf_surface(pbs[1])) if pbs else (None, None)
+        w.pbs = None
+
+    def _compose_desk(self, d):
+        dw, dh = self.dw, self.dh
+        surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, dw, dh)
+        cr = cairo.Context(surf)
+        rounded_rect(cr, 0, 0, dw, dh, DESK_RADIUS)
+        cr.clip()
+        cr.set_source_surface(self.wall_thumb, 0, 0)
+        cr.paint()
+        k = dw / self.W
+        for img, icon, (x, y, w, h) in d.items:
+            self._paint_window(cr, img, icon, (x * k, y * k, w * k, h * k),
+                               max(1.5, WIN_RADIUS * k), shadow=False)
+        d.thumb = surf
+
+    def _place_desks(self):
+        rects, self.plus = spaces_layout(self.W, self.H, len(self.desks))
+        for d, rect in zip(self.desks, rects):
+            d.rect = rect
+
+    def _band_expansion(self):
+        if self.band_t0 is None:
+            return self.band_to
+        t = min(1.0, (time.monotonic() - self.band_t0) * 1000 / RELAYOUT_MS)
+        return lerp(self.band_from, self.band_to, ease_out(t))
+
+    def _expand_band(self, expanded):
+        if self.app or float(expanded) == self.band_to:
+            return
+        current = self._band_expansion()
+        old = {id(w): self._win_rect(w, 1.0) for w in self.wins}
+        self.band_from, self.band_to = current, float(expanded)
+        self.band_h = round(self.H * BAND_FRAC) if expanded else BAND_COLLAPSED
+        layout_windows(self.wins, PAD_X, self.band_h + PAD_TOP,
+                       self.W - 2 * PAD_X, self.H - self.band_h - PAD_TOP - PAD_BOTTOM)
+        animate = self.ov.iface.get_boolean("enable-animations")
+        self.band_t0 = self.relayout_t0 = time.monotonic() if animate else None
+        for w in self.wins:
+            w.prev = old[id(w)] if animate else None
+            if w.small is not None:
+                w.small = scaled_surface(w.big or w.small, *w.grid[2:])
+        self.ov.kick()
+
+    def _leave(self, *_):
+        self._set_hover(None)
+        if not self.drag:
+            self._expand_band(False)
+        return False
+
+    # ── desenho ──
+    def _paint_window(self, cr, img, icon, rect, radius, shadow=True, alpha=1.0, interp=None):
+        x, y, w, h = rect
+        if w < 1 or h < 1:
+            return
+        if shadow:   # sombra de janela do macOS 27 aproximada (0 36 100 / 0 16 32)
+            for i in range(1, 5):
+                rounded_rect(cr, x - i * 2, y + 3 + i * 3, w + i * 4, h + i * 2, radius + i * 2)
+                cr.set_source_rgba(0, 0, 0, 0.055 * alpha)
+                cr.fill()
+        cr.save()
+        rounded_rect(cr, x, y, w, h, radius)
+        cr.clip()
+        if img is not None:
+            cr.translate(x, y)
+            cr.scale(w / img.get_width(), h / img.get_height())
+            cr.set_source_surface(img, 0, 0)
+            if interp is not None:
+                cr.get_source().set_filter(interp)
+            cr.paint_with_alpha(alpha)
+        else:        # sem captura: cartão com o ícone do app
+            cr.set_source_rgba(0.17, 0.17, 0.18, 0.92 * alpha)
+            cr.paint()
+            if icon is not None:
+                s = min(w, h) * 0.4 / icon.get_width()
+                cr.translate(x + (w - icon.get_width() * s) / 2, y + (h - icon.get_height() * s) / 2)
+                cr.scale(s, s)
+                cr.set_source_surface(icon, 0, 0)
+                cr.paint_with_alpha(alpha)
+        cr.restore()
+        if shadow:   # borda interna clara da janela escura do kit (1px branco/20 %)
+            rounded_rect(cr, x + 0.5, y + 0.5, w - 1, h - 1, max(0, radius - 0.5))
+            cr.set_source_rgba(1, 1, 1, 0.10 * alpha)
+            cr.set_line_width(1)
+            cr.stroke()
+
+    def _win_rect(self, w, e):
+        dst = w.grid
+        if self.relayout_t0 is not None and w.prev is not None:
+            r = min(1.0, (time.monotonic() - self.relayout_t0) * 1000 / RELAYOUT_MS)
+            dst = lerp_rect(w.prev, w.grid, ease_out(r))
+        return dst if self.ov.mode == "fade" or w.hidden else lerp_rect(w.real, dst, e)
+
+    def _draw(self, _area, cr):
+        ov = self.ov
+        e = ov.eased()
+        fade = ov.mode == "fade"
+        cr.set_operator(cairo.OPERATOR_SOURCE)
+        cr.set_source_rgba(0, 0, 0, 0)
+        cr.paint()
+        cr.set_operator(cairo.OPERATOR_OVER)
+        if fade:
+            cr.push_group()
+        geo = 1.0 if fade else e          # progresso geométrico
+
+        # fundo: papel de parede nítido → desfocado/escurecido
+        if geo >= 1.0:
+            cr.set_source_surface(self.final, 0, 0)
+            cr.paint()
+        else:
+            cr.set_source_surface(self.sharp, 0, 0)
+            cr.paint()
+            cr.set_source_surface(self.final, 0, 0)
+            cr.paint_with_alpha(geo)
+            if self.bar is not None:     # a barra de menus sobe e some, como no macOS
+                cr.set_source_surface(self.bar, 0, -self.bar_h * geo)
+                cr.paint_with_alpha(1 - geo)
+
+        if self.app:
+            self._draw_app(cr, geo, ov)
+            if fade:
+                cr.pop_group_to_source()
+                cr.paint_with_alpha(e)
+            return True
+
+        # faixa das mesas: desce do topo
+        band_h = lerp(BAND_COLLAPSED, round(self.H * BAND_FRAC), self._band_expansion())
+        oy = -band_h * (1 - geo)
+        grad = cairo.LinearGradient(0, 0, 0, band_h)
+        grad.add_color_stop_rgba(0, 0, 0, 0, BAND_DIM * geo)
+        grad.add_color_stop_rgba(0.85, 0, 0, 0, BAND_DIM * geo)
+        grad.add_color_stop_rgba(1, 0, 0, 0, 0)
+        cr.rectangle(0, 0, self.W, band_h)
+        cr.set_source(grad)
+        cr.fill()
+        cr.save()
+        cr.translate(0, oy)
+        self._draw_desks(cr, geo)
+        cr.restore()
+
+        # janelas
+        animating = ov.animating() or self.relayout_t0 is not None
+        interp = cairo.FILTER_BILINEAR if animating else cairo.FILTER_FAST
+        for w in self.wins:
+            if self.drag and self.drag["win"] is w:
+                continue
+            rect = self._win_rect(w, geo)
+            s = rect[2] / max(1, w.real[2])
+            img = w.big if (w.big is not None and rect[2] > w.grid[2] * 1.25) else w.small
+            self._paint_window(cr, img, w.icon, rect, max(4, WIN_RADIUS * s), interp=interp)
+
+        if ov.state == "open":
+            if not animating and self.hover and self.hover[0] == "win" and not self.drag:
+                self._draw_hover(cr, self.wins[self.hover[1]])
+            if self.drag:
+                self._draw_drag(cr)
+        if fade:
+            cr.pop_group_to_source()
+            cr.paint_with_alpha(e)
+        return True
+
+    def _draw_app(self, cr, geo, ov):
+        """App Exposé: só as janelas do app; as ocultas embaixo, após a linha."""
+        animating = ov.animating() or self.relayout_t0 is not None
+        interp = cairo.FILTER_BILINEAR if animating else cairo.FILTER_FAST
+        if self.shelf_y is not None:
+            y = self.shelf_y - SHELF_GAP / 2
+            cr.rectangle(PAD_X * 2, round(y), self.W - PAD_X * 4, 1)
+            cr.set_source_rgba(1, 1, 1, 0.22 * geo)
+            cr.fill()
+        for w in self.wins:
+            if self.drag and self.drag["win"] is w:
+                continue
+            rect = self._win_rect(w, geo)
+            s = rect[2] / max(1, w.real[2])
+            img = w.big if (w.big is not None and rect[2] > w.grid[2] * 1.25) else w.small
+            self._paint_window(cr, img, w.icon, rect, max(4, WIN_RADIUS * s), interp=interp,
+                               alpha=geo if w.hidden else 1.0)
+        if not animating and ov.state == "open" and self.hover and self.hover[0] == "win":
+            self._draw_hover(cr, self.wins[self.hover[1]])
+
+    def _draw_desks(self, cr, alpha):
+        expansion = self._band_expansion()
+        thumb_alpha = alpha * expansion
+        drag_target = self._desk_at(*self.drag_xy()) if self.drag else None
+        for i, d in enumerate(self.desks):
+            x, y, w, h = d.rect
+            hovered = (self.hover == ("desk", i) or self.hover == ("close", i)
+                       or drag_target == ("desk", i))
+            if (d.current or hovered) and expansion > 0:
+                ring = DESK_RING if d.current else 2
+                rounded_rect(cr, x - ring, y - ring, w + 2 * ring, h + 2 * ring, DESK_RADIUS + ring)
+                rounded_rect(cr, x, y, w, h, DESK_RADIUS)
+                cr.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+                cr.set_source_rgba(1, 1, 1, (0.95 if d.current else 0.55) * thumb_alpha)
+                cr.fill()
+                cr.set_fill_rule(cairo.FILL_RULE_WINDING)
+            if expansion > 0:
+                cr.save()
+                cr.translate(x, y)
+                cr.scale(w / self.dw, h / self.dh)
+                cr.set_source_surface(d.thumb, 0, 0)
+                cr.paint_with_alpha(thumb_alpha)
+                cr.restore()
+            if expansion == 1 and hovered and not d.current and not d.items and not self.drag:
+                cx, cy = x, y         # "×" para remover mesa vazia (canto sup. esquerdo)
+                cr.arc(cx, cy, 10, 0, 2 * math.pi)
+                cr.set_source_rgba(0.24, 0.24, 0.26, 0.95 * alpha)
+                cr.fill_preserve()
+                cr.set_source_rgba(1, 1, 1, 0.25 * alpha)
+                cr.set_line_width(1)
+                cr.stroke()
+                cr.set_source_rgba(1, 1, 1, 0.9 * alpha)
+                cr.set_line_width(1.6)
+                for a, b in ((-3.5, -3.5), (-3.5, 3.5)):
+                    cr.move_to(cx + a, cy + b)
+                    cr.line_to(cx - a, cy - b)
+                cr.stroke()
+            lay = pango_layout(cr, d.name, LABEL_PX, width=w)
+            lw, _lh = lay.get_pixel_size()
+            label_y = lerp((BAND_COLLAPSED - LABEL_PX) / 2, y + h + LABEL_GAP, expansion)
+            show_text(cr, lay, x + (w - lw) / 2, label_y, alpha)
+
+        # "+" (botão pequeno de vidro, raio 12)
+        if expansion == 0:
+            return
+        alpha = thumb_alpha
+        x, y, w, h = self.plus
+        on = self.hover == ("plus",) or (self.drag and self._desk_at(*self.drag_xy()) == ("plus",))
+        rounded_rect(cr, x, y, w, h, PLUS_R)
+        cr.set_source_rgba(1, 1, 1, (0.26 if on else 0.14) * alpha)
+        cr.fill_preserve()
+        cr.set_source_rgba(1, 1, 1, 0.22 * alpha)
+        cr.set_line_width(1)
+        cr.stroke()
+        cr.set_source_rgba(1, 1, 1, 0.92 * alpha)
+        cr.set_line_width(2)
+        cr.set_line_cap(cairo.LINE_CAP_ROUND)
+        cx, cy = x + w / 2, y + h / 2
+        cr.move_to(cx - 8, cy)
+        cr.line_to(cx + 8, cy)
+        cr.move_to(cx, cy - 8)
+        cr.line_to(cx, cy + 8)
+        cr.stroke()
+
+    def _draw_hover(self, cr, w):
+        x, y, gw, gh = w.grid
+        r = max(4, WIN_RADIUS * gw / max(1, w.real[2]))
+        acc = self.ov.accent
+        # contorno de destaque concêntrico (raio + espessura)
+        rounded_rect(cr, x - RING, y - RING, gw + 2 * RING, gh + 2 * RING, r + RING)
+        rounded_rect(cr, x, y, gw, gh, r)
+        cr.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        cr.set_source_rgb(*acc)
+        cr.fill()
+        cr.set_fill_rule(cairo.FILL_RULE_WINDING)
+        # cápsula: ícone do app + título da janela
+        text = w.title or w.name
+        maxw = min(max(gw, 260), 460)
+        lay = pango_layout(cr, text, TITLE_PX, width=maxw - CAPSULE_ICON - 30)
+        tw, th = lay.get_pixel_size()
+        cw = 10 + CAPSULE_ICON + 6 + tw + 12
+        cx = min(max(8, x + (gw - cw) / 2), self.W - cw - 8)
+        cy = min(y + gh + 10, self.H - CAPSULE_H - 8)
+        rounded_rect(cr, cx, cy, cw, CAPSULE_H, CAPSULE_H / 2)
+        cr.set_source_rgba(0.12, 0.12, 0.13, 0.78)
+        cr.fill_preserve()
+        cr.set_source_rgba(1, 1, 1, 0.16)
+        cr.set_line_width(1)
+        cr.stroke()
+        if w.icon is not None:
+            cr.save()
+            s = CAPSULE_ICON / w.icon.get_width()
+            cr.translate(cx + 10, cy + (CAPSULE_H - CAPSULE_ICON) / 2)
+            cr.scale(s, s)
+            cr.set_source_surface(w.icon, 0, 0)
+            cr.get_source().set_filter(cairo.FILTER_GOOD)
+            cr.paint()
+            cr.restore()
+        show_text(cr, lay, cx + 10 + CAPSULE_ICON + 6, cy + (CAPSULE_H - th) / 2, shadow=False)
+
+    def drag_xy(self):
+        return (self.drag["x"], self.drag["y"]) if self.drag else (-1, -1)
+
+    def _drag_rect(self):
+        d = self.drag
+        w = d["win"]
+        gs = w.grid[2] / max(1, w.real[2])
+        ks = self.dw / self.W                       # escala das miniaturas das mesas
+        # encolhe ao se aproximar da faixa das mesas, como no macOS
+        f = min(1.0, max(0.0, (d["y"] - self.band_h) / 160))
+        s = lerp(ks * 1.15, gs, f)
+        ww, hh = w.real[2] * s, w.real[3] * s
+        return (d["x"] - ww * d["fx"], d["y"] - hh * d["fy"], ww, hh), s
+
+    def _draw_drag(self, cr):
+        w = self.drag["win"]
+        rect, s = self._drag_rect()
+        self._paint_window(cr, w.small, w.icon, rect, max(3, WIN_RADIUS * s), alpha=0.95,
+                           interp=cairo.FILTER_BILINEAR)
+
+    # ── acerto do ponteiro ──
+    def _desk_at(self, x, y):
+        if self.app:
+            return None
+        expansion = self._band_expansion()
+        for i, d in enumerate(self.desks):
+            if (expansion == 1 and not self.drag and
+                    math.hypot(x - d.rect[0], y - d.rect[1]) <= 11 and not d.current and not d.items):
+                return ("close", i)
+        return space_hit(x, y, [d.rect for d in self.desks], self.plus, expansion)
+
+    def _hit(self, x, y):
+        hit = self._desk_at(x, y)
+        if hit:
+            if hit[0] == "close" and self.hover not in (("desk", hit[1]), ("close", hit[1])):
+                return ("desk", hit[1])
+            return hit
+        for i in range(len(self.wins) - 1, -1, -1):
+            if inside(x, y, self.wins[i].grid):
+                return ("win", i)
+        return None
+
+    def _set_hover(self, h):
+        if os.environ.get("HYPRMAC_OVERVIEW_HOVER") is not None and self.ov.state == "open":
+            return                          # testes/prints: hover fixo
+        if h != self.hover:
+            self.hover = h
+            self.area.queue_draw()
+
+    # ── eventos ──
+    def _motion(self, _w, ev):
+        if self.ov.state != "open":
+            return False
+        band_h = max(self.band_h, lerp(BAND_COLLAPSED, round(self.H * BAND_FRAC),
+                                     self._band_expansion()))
+        if not self.app and self.press and self.press[0] and self.press[0][0] == "win":
+            if not self.drag and math.hypot(ev.x - self.press[1], ev.y - self.press[2]) > DRAG_START:
+                w = self.wins[self.press[0][1]]
+                gx, gy, gw, gh = self._win_rect(w, 1.0)
+                self.drag = {"win": w, "fx": (self.press[1] - gx) / gw,
+                             "fy": (self.press[2] - gy) / gh}
+            if self.drag:
+                self.drag["x"], self.drag["y"] = ev.x, ev.y
+                self._expand_band(ev.y <= band_h)
+                self.area.queue_draw()
+                return True
+        self._expand_band(ev.y <= band_h)
+        self._set_hover(self._hit(ev.x, ev.y))
+        return True
+
+    def _press(self, _w, ev):
+        if ev.button != 1 or self.ov.state != "open":
+            return True
+        self.press = (self._hit(ev.x, ev.y), ev.x, ev.y)
+        return True
+
+    def _release(self, _w, ev):
+        if ev.button != 1 or self.press is None:
+            return True
+        target, self.press = self.press[0], None
+        if self.drag:
+            w, self.drag = self.drag["win"], None
+            drop = self._desk_at(ev.x, ev.y)
+            if drop and drop[0] in ("desk", "close"):
+                d = self.desks[drop[1]]
+                if not d.current:
+                    self._move_to(w, d)
+            elif drop == ("plus",):
+                d = self._new_desk()
+                self._move_to(w, d)
+            self.area.queue_draw()
+            return True
+        if self.ov.state != "open" or target != self._hit(ev.x, ev.y):
+            return True
+        if target is None:
+            self.ov.close()                         # clique no fundo
+        elif target[0] == "win":
+            self.ov.close(focus=self.wins[target[1]])
+        elif target[0] == "desk":
+            d = self.desks[target[1]]
+            if d.current:
+                self.ov.close()
+            else:
+                self.ov.close(workspace=(d.id, self.mon["name"]))
+        elif target[0] == "close":
+            d = self.desks[target[1]]
+            self.ov.extras.get(self.mon["name"], set()).discard(d.id)
+            self.desks.remove(d)
+            self._place_desks()
+            self.hover = None
+            self.area.queue_draw()
+        elif target[0] == "plus":
+            self._new_desk()
+        return True
+
+    def _new_desk(self):
+        wid = self.ov.next_workspace_id()
+        self.ov.extras.setdefault(self.mon["name"], set()).add(wid)
+        d = Desk(wid, desktop_name(wid), False, True)
+        self._compose_desk(d)
+        self.desks.append(d)
+        self._place_desks()
+        self.area.queue_draw()
+        return d
+
+    def _move_to(self, w, d):
+        dispatch(f'hl.dsp.window.move({{ workspace = {d.id}, follow = false, '
+                 f'window = "address:{w.addr}" }})')
+        cur = next((x for x in self.desks if x.current), None)
+        self.wins.remove(w)
+        d.items.append((w.small, w.icon, w.real))
+        self._compose_desk(d)
+        if cur is not None:
+            cur.items = [it for it in cur.items if it[2] is not w.real]
+            self._compose_desk(cur)
+        # as que ficaram se reorganizam (animado)
+        old = {id(x): self._win_rect(x, 1.0) for x in self.wins}
+        layout_windows(self.wins, PAD_X, self.band_h + PAD_TOP,
+                       self.W - 2 * PAD_X, self.H - self.band_h - PAD_TOP - PAD_BOTTOM)
+        for x in self.wins:
+            if x.small is not None and (x.small.get_width(), x.small.get_height()) != x.grid[2:]:
+                x.small = scaled_surface(x.big or x.small, x.grid[2], x.grid[3])
+            x.prev = old[id(x)] if self.ov.iface.get_boolean("enable-animations") else None
+        self.hover = None
+        self.relayout_t0 = (time.monotonic() if self.ov.iface.get_boolean("enable-animations")
+                            else None)
+        self.ov.kick()
+
+    def _key(self, _w, ev):
+        k, ctrl = ev.keyval, ev.state & Gdk.ModifierType.CONTROL_MASK
+        if k == Gdk.KEY_Escape or (ctrl and k in (Gdk.KEY_Up, Gdk.KEY_Down)):
+            self.ov.close()
+        elif k in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_space):
+            if self.hover and self.hover[0] == "win":
+                self.ov.close(focus=self.wins[self.hover[1]])
+            else:
+                self.ov.close()
+        elif k in (Gdk.KEY_Left, Gdk.KEY_Right, Gdk.KEY_Up, Gdk.KEY_Down, Gdk.KEY_Tab):
+            self._navigate(k)
+        return True
+
+    def _navigate(self, k):
+        if not self.wins:
+            return
+        if not (self.hover and self.hover[0] == "win"):
+            self._set_hover(("win", len(self.wins) - 1))   # a janela em foco (topo da pilha)
+            return
+        cur = self.wins[self.hover[1]].grid
+        cx, cy = cur[0] + cur[2] / 2, cur[1] + cur[3] / 2
+        if k == Gdk.KEY_Tab:
+            self._set_hover(("win", (self.hover[1] + 1) % len(self.wins)))
+            return
+        dirs = {Gdk.KEY_Left: (-1, 0), Gdk.KEY_Right: (1, 0), Gdk.KEY_Up: (0, -1),
+                Gdk.KEY_Down: (0, 1)}
+        ux, uy = dirs[k]
+        best, best_d = None, None
+        for i, w in enumerate(self.wins):
+            x, y, ww, hh = w.grid
+            dx, dy = x + ww / 2 - cx, y + hh / 2 - cy
+            along = dx * ux + dy * uy
+            if along <= 1:
+                continue
+            dist = along + 2 * abs(dx * uy + dy * ux)
+            if best_d is None or dist < best_d:
+                best, best_d = i, dist
+        if best is not None:
+            self._set_hover(("win", best))
+
+
+# ───────────────────────────── controlador ─────────────────────────────
+
+class Overview:
+    def __init__(self):
+        self.apps = AppIndex(64)
+        self.wall = WallpaperCache()
+        self.screens = {}
+        self.extras = {}          # mesas criadas pelo "+" (ainda vazias), por monitor
+        self.state = "closed"     # closed | opening | open | closing
+        self.mode = "fly"         # fly | fade
+        self.app_cls = None       # App Exposé: classe do app (None = Mission Control)
+        self.t, self.t0, self.dir = 0.0, 0.0, 1
+        self.after = None
+        self.tick_id = None
+        self.tick_owner = None
+        self.gen = 0
+        self.accent = (0.0, 122 / 255, 1.0)
+        self.iface = Gio.Settings.new("org.gnome.desktop.interface")
+        self.pool = ThreadPoolExecutor(max_workers=8)
+
+    def warm(self):
+        """Pré-aquece no início do serviço (índice de apps, papel de parede) para a
+        primeira abertura ser tão rápida quanto as outras."""
+        self.apps.lookup("")
+        sizes = {(round(m["width"] / m.get("scale", 1)), round(m["height"] / m.get("scale", 1)))
+                 for m in hypr_json("monitors")}
+        self.wall.prefetch(sizes)
+        key = self.wall._key()
+        for W, H in sizes:
+            if (key, W, H) in self.wall.ready:
+                dw = round(W * DESK_W_FRAC)
+                self.wall.get(W, H, dw, round(dw * H / W))
+        return False
+
+    # ── animação ──
+    def duration(self):
+        return (OPEN_MS if self.dir > 0 else CLOSE_MS) / 1000
+
+    def eased(self):
+        return ease_out(self.t) if self.dir > 0 else ease_in_out(self.t)
+
+    def animating(self):
+        return self.state in ("opening", "closing")
+
+    def kick(self):
+        owner = next((s for s in self.screens.values() if s.win.get_mapped()), None)
+        if owner is None:
+            GLib.timeout_add(16, lambda: self._tick() and True)   # sem relógio de quadros
+            return
+        if self.tick_id is None or self.tick_owner is not owner:
+            self.tick_owner = owner
+            self.tick_id = owner.area.add_tick_callback(lambda *_: self._tick())
+
+    def _tick(self):
+        now = time.monotonic()
+        busy = False
+        if self.animating():
+            frac = (now - self.t0) / max(1e-3, self.duration())
+            if self.dir > 0:
+                self.t = min(1.0, self.start_t + frac)
+                if self.t >= 1.0:
+                    self.state = "open"
+                    debug_hover = os.environ.get("HYPRMAC_OVERVIEW_HOVER")   # testes/prints
+                    scr = getattr(self, "focused", None)
+                    if debug_hover is not None and scr is not None and scr.wins:
+                        scr.hover = ("win", int(debug_hover) % len(scr.wins))
+            else:
+                self.t = max(0.0, self.start_t - frac)
+                if self.t <= 0.0:
+                    self._hidden()
+                    self.tick_id = None
+                    return False
+            busy = self.animating()
+        for s in self.screens.values():
+            if s.band_t0 is not None:
+                if (now - s.band_t0) * 1000 >= RELAYOUT_MS:
+                    s.band_t0 = None
+                else:
+                    busy = True
+            if s.relayout_t0 is not None:
+                if (now - s.relayout_t0) * 1000 >= RELAYOUT_MS:
+                    s.relayout_t0 = None
+                    for w in s.wins:
+                        w.prev = None
+                else:
+                    busy = True
+            s.area.queue_draw()
+        if not busy:
+            self.tick_id = None
+        return busy
+
+    def _animate(self, direction):
+        # inverter no meio (cancelar) não pode dar salto: acha o t da nova curva
+        # que dá o mesmo progresso visível da curva antiga
+        v = self.eased()
+        self.dir = direction
+        f = ease_out if direction > 0 else ease_in_out
+        lo, hi = 0.0, 1.0
+        for _ in range(24):
+            mid = (lo + hi) / 2
+            lo, hi = (mid, hi) if f(mid) < v else (lo, mid)
+        self.t = (lo + hi) / 2
+        self.start_t = self.t
+        self.t0 = time.monotonic()
+        if not self.iface.get_boolean("enable-animations"):
+            self.t = 1.0 if direction > 0 else 0.0     # Reduzir Movimento: sem voo
+            self.start_t = self.t
+        self.state = "opening" if direction > 0 else "closing"
+        self.kick()
+
+    # ── abrir/fechar ──
+    def toggle(self):
+        if self.state in ("open", "opening"):
+            self.close()
+        elif self.state == "closing" and self.after is None:
+            self.mode = "fly"
+            self._animate(+1)                          # desfaz o fechamento em curso
+        elif self.state == "closed":
+            self.open()
+
+    def toggle_app(self):
+        """⌃↓: App Exposé do app em foco; de novo (ou com o Mission Control aberto) fecha."""
+        if self.state != "closed":
+            self.close()
+            return
+        ativa = hypr_json("activewindow") or {}
+        cls = ativa.get("class") or ativa.get("initialClass")
+        if not cls:
+            return
+        self.open(app=cls)
+
+    def open(self, app=None):
+        if self.state != "closed":
+            if self.state == "closing" and self.after is None:
+                self._animate(+1)
+            return
+        t0 = time.monotonic()
+        mons = hypr_json("monitors")
+        if not mons:
+            return
+        clients = hypr_json("clients")
+        workspaces = hypr_json("workspaces")
+        layers = hypr_json("layers")
+        try:
+            self.accent = overview_accent(self.iface)
+        except Exception:
+            self.accent = (0.0, 122 / 255, 1.0)
+        self.app_cls = app
+        self._sync_screens(mons)
+        focused = next((m for m in mons if m.get("focused")), mons[0])
+        jobs = []
+        for m in mons:
+            bar = [l for lv in layers.get(m["name"], {}).get("levels", {}).values() for l in lv
+                   if l.get("namespace") == "waybar" and l.get("y", 1) == 0]
+            scr = self.screens[m["name"]]
+            scr.prepare(m, clients, workspaces, bar[0]["h"] if bar else 0)
+            jobs += [(scr, *job) for job in scr.capture_jobs()]
+        self.gen += 1
+        jobs.sort(key=lambda j: j[3][0] == "other")      # as da mesa atual primeiro
+        futures = [(scr, dest, self.pool.submit(capture_scaled, args, sizes))
+                   for scr, args, sizes, dest in jobs]
+        t1 = time.monotonic()
+        results = {}
+        for scr, dest, fut in futures:
+            if dest[0] == "other":     # não espera: chega enquanto a faixa desce
+                fut.add_done_callback(lambda f, scr=scr, c=dest[1], gen=self.gen: GLib.idle_add(
+                    self._other_ready, gen, scr, c, f))
+                continue
+            try:
+                pb = fut.result(timeout=1.5)
+            except Exception:
+                pb = None
+            results.setdefault(scr.name, []).append((dest, pb))
+        t2 = time.monotonic()
+        for m in mons:
+            scr = self.screens[m["name"]]
+            scr.finish(results.get(m["name"], []))
+            LS.set_keyboard_mode(scr.win, LS.KeyboardMode.EXCLUSIVE if m is focused
+                                 else LS.KeyboardMode.NONE)
+        self.mode, self.after, self.t = "fly", None, 0.0
+        self.state = "opening"
+        self.focused = self.screens[focused["name"]]
+        for m in mons:
+            self.screens[m["name"]].win.show()
+        self._animate(+1)
+        if os.environ.get("HYPRMAC_OVERVIEW_DEBUG"):
+            print(f"abrir: {(time.monotonic() - t0) * 1000:.0f} ms (dados {(t1 - t0) * 1000:.0f}, "
+                  f"capturas {(t2 - t1) * 1000:.0f}, superfícies {(time.monotonic() - t2) * 1000:.0f})"
+                  f", {len(jobs)} capturas",
+                  file=sys.stderr, flush=True)
+        auto = os.environ.get("HYPRMAC_OVERVIEW_AUTOCLOSE")   # testes: fecha sozinho (ms)
+        if auto:
+            GLib.timeout_add(int(auto), lambda g=self.gen: g == self.gen and self.close() and False)
+
+    def close(self, focus=None, workspace=None):
+        """Fecha. focus=Win → foca a janela (ela volta voando ao lugar);
+        workspace=(id, monitor) → vai para a mesa (esmaece, a troca do Hyprland desliza atrás)."""
+        if self.state in ("closed", "closing"):
+            return
+        if focus is not None:
+            if focus.hidden:          # oculta: volta para a mesa atual antes do foco
+                ws = (hypr_json("activeworkspace") or {}).get("id", 1)
+                dispatch(f'hl.dsp.window.move({{ workspace = {ws}, follow = false, '
+                         f'window = "address:{focus.addr}" }})')
+            dispatch(f'hl.dsp.focus({{ window = "address:{focus.addr}" }})')
+            self.after = "focus"
+            for s in self.screens.values():      # a escolhida volta por cima das outras
+                if focus in s.wins:
+                    s.wins.remove(focus)
+                    s.wins.append(focus)
+        elif workspace is not None:
+            wid, mon = workspace
+            exists = any(w["id"] == wid for w in hypr_json("workspaces"))
+            if exists:
+                dispatch(f"hl.dsp.focus({{ workspace = {wid} }})")
+            else:      # mesa nova: cria no monitor certo
+                dispatch(f'hl.dsp.focus({{ monitor = "{mon}" }})',
+                         f"hl.dsp.focus({{ workspace = {wid} }})")
+            self.extras.get(mon, set()).discard(wid)
+            self.mode, self.after = "fade", "workspace"
+        else:
+            self.after = None
+        for s in self.screens.values():
+            s.hover, s.drag, s.press = None, None, None
+        self._animate(-1)
+
+    def _hidden(self):
+        self.state = "closed"
+        self.after = None
+        self.t = 0.0
+        for s in self.screens.values():
+            s.win.hide()
+            for w in s.wins:            # libera as superfícies grandes
+                w.big = w.small = None
+            for d in s.desks:
+                d.thumb, d.items = None, []
+
+    def _other_ready(self, gen, scr, c, fut):
+        if gen == self.gen and self.state != "closed":
+            try:
+                scr.other_ready(c, fut.result())
+            except Exception as e:
+                print("captura:", e, file=sys.stderr)
+        return False
+
+    def next_workspace_id(self):
+        used = {w["id"] for w in hypr_json("workspaces")}
+        for ex in self.extras.values():
+            used |= ex
+        return max([i for i in used if i > 0] + [0]) + 1
+
+    def _sync_screens(self, mons):
+        names = {m["name"] for m in mons}
+        if names == set(self.screens):
+            return
+        for s in self.screens.values():
+            s.win.destroy()
+        display = Gdk.Display.get_default()
+        gmons = [display.get_monitor(i) for i in range(display.get_n_monitors())]
+        self.screens = {}
+        for m in mons:
+            gm = next((g for g in gmons if (g.get_geometry().x, g.get_geometry().y)
+                       == (m["x"], m["y"])), None)
+            self.screens[m["name"]] = Screen(self, m["name"], gm)
+        self.tick_id = None
+
+
+# ───────────────────────────── principal ─────────────────────────────
+
+def running_pid():
+    try:
+        with open(PIDFILE) as f:
+            pid = int(f.read())
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            if b"hyprmac-overview" not in f.read():
+                return None
+        return pid
+    except (OSError, ValueError):
+        return None
+
+
+SIGNALS = {"toggle": signal.SIGUSR1, "close": signal.SIGUSR2, "open": signal.SIGHUP,
+           "app": signal.SIGWINCH, "quit": signal.SIGTERM}
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "daemon"
+    if cmd in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return
+    if cmd not in SIGNALS and cmd != "daemon":
+        print(f"comando desconhecido: {cmd}", file=sys.stderr)
+        sys.exit(2)
+    pid = running_pid()
+    if pid:
+        if cmd in SIGNALS:
+            os.kill(pid, SIGNALS[cmd])
+        else:
+            print("hyprmac-overview já está rodando (pid %d)" % pid, file=sys.stderr)
+        return
+    if cmd in ("close", "quit"):
+        return
+    # sem serviço rodando: este processo vira o serviço (e abre, se pedido)
+    GLib.set_prgname(NAMESPACE)
+    ov = Overview()
+    try:
+        gi.require_version("GLibUnix", "2.0")
+        from gi.repository import GLibUnix
+        signal_add = GLibUnix.signal_add
+    except (ValueError, ImportError):
+        signal_add = GLib.unix_signal_add
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, lambda: ov.toggle() or True)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR2, lambda: ov.close() or True)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGHUP, lambda: ov.open() or True)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGWINCH, lambda: ov.toggle_app() or True)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, lambda: Gtk.main_quit() or False)
+    signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, lambda: Gtk.main_quit() or False)
+    with open(PIDFILE, "w") as f:      # só depois dos sinais: um toggle cedo não mata o processo
+        f.write(str(os.getpid()))
+    if cmd in ("toggle", "open"):
+        GLib.idle_add(lambda: ov.open() and False)
+    elif cmd == "app":
+        GLib.idle_add(lambda: ov.toggle_app() and False)
+    else:
+        GLib.idle_add(ov.warm)
+    try:
+        Gtk.main()
+    finally:
+        try:
+            if running_pid() == os.getpid():
+                os.remove(PIDFILE)
+        except OSError:
+            pass
+
+
+if __name__ == "__main__":
+    main()

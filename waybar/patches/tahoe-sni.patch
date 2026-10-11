@@ -1,0 +1,458 @@
+--- a/include/modules/sni/item.hpp
++++ b/include/modules/sni/item.hpp
+@@ -38,6 +38,14 @@
+   std::string category;
+   std::string id;
+ 
++  sigc::signal<void> changed;
++  bool matches(const std::string& key) const;
++  std::string status;
++  Json::Value policy;
++  Glib::RefPtr<Gdk::Pixbuf> attention_pixmap, overlay_pixmap;
++  void refreshVisibility();
++  void onMenuHide();
++
+   std::string title;
+   std::string icon_name;
+   Glib::RefPtr<Gdk::Pixbuf> icon_pixmap;
+@@ -58,6 +66,8 @@
+   bool item_is_menu = true;
+ 
+  private:
++  void onPropertiesChanged(const Gio::DBus::Proxy::MapChangedProperties& properties,
++                           const std::vector<Glib::ustring>& invalidated);
+   void onConfigure(GdkEventConfigure* ev);
+   void proxyReady(Glib::RefPtr<Gio::AsyncResult>& result);
+   void setProperty(const Glib::ustring& name, Glib::VariantBase& value);
+--- a/include/modules/sni/tray.hpp
++++ b/include/modules/sni/tray.hpp
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <fmt/format.h>
++#include <giomm/file.h>
+ 
+ #include "AModule.hpp"
+ #include "bar.hpp"
+@@ -13,10 +14,16 @@
+ class Tray : public AModule {
+  public:
+   Tray(const std::string&, const Bar&, const Json::Value&);
+-  virtual ~Tray() = default;
++  virtual ~Tray();
+   auto update() -> void override;
+ 
+  private:
++  Json::Value policy_;
++  void reloadPolicy();
++  Glib::RefPtr<Gio::FileMonitor> policy_monitor_;
++  sigc::connection policy_idle_;
++  std::string policy_path_;
++  void reorderItems();
+   void onAdd(std::unique_ptr<Item>& item);
+   void onRemove(std::unique_ptr<Item>& item);
+ 
+--- a/src/modules/sni/item.cpp
++++ b/src/modules/sni/item.cpp
+@@ -56,6 +56,12 @@
+ 
+   auto& window = const_cast<Bar&>(bar).window;
+   window.signal_configure_event().connect_notify(sigc::mem_fun(*this, &Item::onConfigure));
++  policy = config;
++  if (config["item-margin"].isUInt()) {
++    event_box.set_margin_top(config["item-margin"].asUInt());
++    event_box.set_margin_bottom(config["item-margin"].asUInt());
++  }
++  g_object_set_data(G_OBJECT(event_box.gobj()), "hyprmac-sni-item", this);
+   event_box.add(image);
+   event_box.add_events(Gdk::BUTTON_PRESS_MASK | Gdk::SCROLL_MASK | Gdk::SMOOTH_SCROLL_MASK);
+   event_box.signal_button_press_event().connect(sigc::mem_fun(*this, &Item::handleClick));
+@@ -81,7 +87,9 @@
+   }
+   if (this->dbus_menu != nullptr) {
+     g_object_weak_unref(G_OBJECT(this->dbus_menu), (GWeakNotify)onMenuDestroyed, this);
++    g_object_unref(dbus_menu);
+     this->dbus_menu = nullptr;
++    this->gtk_menu = nullptr;
+   }
+ }
+ 
+@@ -95,7 +103,21 @@
+   return false;
+ }
+ 
+-void Item::onConfigure(GdkEventConfigure* ev) { this->updateImage(); }
++void Item::onPropertiesChanged(const Gio::DBus::Proxy::MapChangedProperties& properties,
++                               const std::vector<Glib::ustring>& invalidated) {
++  for (const auto& [name, value] : properties) {
++    setProperty(name, const_cast<Glib::VariantBase&>(value));
++  }
++  refreshVisibility();
++  updateImage();
++  changed.emit();
++  // Invalidated properties need the same asynchronous GetAll used by SNI signals.
++  if (!invalidated.empty()) {
++    onSignal("", "NewIcon", Glib::VariantContainerBase());
++  }
++}
++
++void Item::onConfigure(GdkEventConfigure* ev) { if (!id.empty()) this->updateImage(); }
+ 
+ void Item::proxyReady(Glib::RefPtr<Gio::AsyncResult>& result) {
+   try {
+@@ -109,12 +131,15 @@
+     }
+ 
+     this->proxy_->signal_signal().connect(sigc::mem_fun(*this, &Item::onSignal));
++    this->proxy_->signal_properties_changed().connect(sigc::mem_fun(*this, &Item::onPropertiesChanged));
+ 
+     if (this->id.empty() || this->category.empty()) {
+       spdlog::error("Invalid Status Notifier Item: {}, {}", bus_name, object_path);
+       return;
+     }
++    this->refreshVisibility();
+     this->updateImage();
++    changed.emit();
+ 
+   } catch (const Glib::Error& err) {
+     spdlog::error("Failed to create DBus Proxy for {} {}: {}", bus_name, object_path, err.what());
+@@ -184,11 +209,11 @@
+     } else if (name == "OverlayIconName") {
+       overlay_icon_name = get_variant<std::string>(value);
+     } else if (name == "OverlayIconPixmap") {
+-      // TODO: overlay_icon_pixmap
++      overlay_pixmap = this->extractPixBuf(value.gobj());
+     } else if (name == "AttentionIconName") {
+       attention_icon_name = get_variant<std::string>(value);
+     } else if (name == "AttentionIconPixmap") {
+-      // TODO: attention_icon_pixmap
++      attention_pixmap = this->extractPixBuf(value.gobj());
+     } else if (name == "AttentionMovieName") {
+       attention_movie_name = get_variant<std::string>(value);
+     } else if (name == "ToolTip") {
+@@ -202,8 +227,13 @@
+         icon_theme->set_search_path({icon_theme_path});
+       }
+     } else if (name == "Menu") {
+-      menu = get_variant<std::string>(value);
+-      makeMenu();
++      auto new_menu = get_variant<std::string>(value);
++      if (new_menu != menu) {
++        if (gtk_menu) gtk_menu->popdown();
++        if (dbus_menu) g_object_unref(dbus_menu);  // weak callback clears both pointers
++        menu = new_menu;
++        makeMenu();
++      }
+     } else if (name == "ItemIsMenu") {
+       item_is_menu = get_variant<bool>(value);
+     }
+@@ -218,17 +248,36 @@
+ 
+ void Item::setStatus(const Glib::ustring& value) {
+   Glib::ustring lower = value.lowercase();
+-  event_box.set_visible(show_passive_ || lower.compare("passive") != 0);
++  status = value;
++  refreshVisibility();
+ 
+   auto style = event_box.get_style_context();
+-  for (const auto& class_name : style->list_classes()) {
+-    style->remove_class(class_name);
+-  }
++  style->remove_class("active");
++  style->remove_class("passive");
++  style->remove_class("needs-attention");
+   if (lower.compare("needsattention") == 0) {
+     // convert status to dash-case for CSS
+     lower = "needs-attention";
+   }
+   style->add_class(lower);
++}
++
++bool Item::matches(const std::string& key) const {
++  return key.rfind("title:", 0) == 0 ? title == key.substr(6) : id == key;
++}
++
++void Item::refreshVisibility() {
++  bool hidden = false;
++  for (const auto& key : policy["hidden-items"]) {
++    if (key.isString() && matches(key.asString())) hidden = true;
++  }
++  if (hidden && gtk_menu) gtk_menu->popdown();
++  event_box.set_visible(!hidden && (show_passive_ || status != "Passive"));
++}
++
++void Item::onMenuHide() {
++  event_box.get_style_context()->remove_class("menu-open");
++  event_box.unset_state_flags(Gtk::StateFlags::STATE_FLAG_PRELIGHT);
+ }
+ 
+ void Item::setCustomIcon(const std::string& id) {
+@@ -266,12 +315,12 @@
+     auto properties = properties_variant.get();
+ 
+     for (const auto& [name, value] : properties) {
+-      if (update_pending_.count(name.raw())) {
+-        setProperty(name, const_cast<Glib::VariantBase&>(value));
+-      }
+-    }
+-
++      setProperty(name, const_cast<Glib::VariantBase&>(value));
++    }
++
++    this->refreshVisibility();
+     this->updateImage();
++    changed.emit();
+   } catch (const Glib::Error& err) {
+     spdlog::warn("Failed to update properties: {}", err.what());
+   } catch (const std::exception& err) {
+@@ -287,8 +336,8 @@
+ static const std::map<std::string_view, std::set<std::string_view>> signal2props = {
+     {"NewTitle", {"Title"}},
+     {"NewIcon", {"IconName", "IconPixmap"}},
+-    // {"NewAttentionIcon", {"AttentionIconName", "AttentionIconPixmap", "AttentionMovieName"}},
+-    // {"NewOverlayIcon", {"OverlayIconName", "OverlayIconPixmap"}},
++    {"NewAttentionIcon", {"AttentionIconName", "AttentionIconPixmap", "AttentionMovieName"}},
++    {"NewOverlayIcon", {"OverlayIconName", "OverlayIconPixmap"}},
+     {"NewIconThemePath", {"IconThemePath"}},
+     {"NewToolTip", {"ToolTip"}},
+     {"NewStatus", {"Status"}},
+@@ -326,7 +375,7 @@
+   gint height;
+   guchar* array = nullptr;
+   while (g_variant_iter_loop(it, "(ii@ay)", &width, &height, &val)) {
+-    if (width > 0 && height > 0 && val != nullptr && width * height > lwidth * lheight) {
++    if (width > 0 && height > 0 && width <= 4096 && height <= 4096 && val != nullptr && width * height > lwidth * lheight) {
+       auto size = g_variant_get_size(val);
+       /* Sanity check */
+       if (size == 4U * width * height) {
+@@ -365,6 +414,29 @@
+ 
+ void Item::updateImage() {
+   auto pixbuf = getIconPixbuf();
++  auto suppliedIcon = [this](const std::string& name) {
++    if (!name.empty() && name.front() == '/') return Gdk::Pixbuf::create_from_file(name);
++    return getIconByName(name, getScaledIconSize());
++  };
++  if (status == "NeedsAttention") {
++    if (attention_pixmap) pixbuf = attention_pixmap;
++    if (!attention_icon_name.empty()) {
++      try { pixbuf = suppliedIcon(attention_icon_name); }
++      catch (const Glib::Error&) { /* retain supplied pixmap or normal icon */ }
++    }
++  }
++  auto overlay = overlay_pixmap;
++  if (!overlay_icon_name.empty()) {
++    try { overlay = suppliedIcon(overlay_icon_name); }
++    catch (const Glib::Error&) { /* use pixmap if available */ }
++  }
++  if (overlay) {
++    pixbuf = pixbuf->copy();
++    overlay->composite(pixbuf, 0, 0, pixbuf->get_width(), pixbuf->get_height(), 0, 0,
++                       double(pixbuf->get_width()) / overlay->get_width(),
++                       double(pixbuf->get_height()) / overlay->get_height(),
++                       Gdk::InterpType::INTERP_BILINEAR, 255);
++  }
+   auto scaled_icon_size = getScaledIconSize();
+ 
+   // If the loaded icon is not square, assume that the icon height should match the
+@@ -456,6 +528,7 @@
+       g_object_weak_ref(G_OBJECT(dbus_menu), (GWeakNotify)onMenuDestroyed, this);
+       gtk_menu = Glib::wrap(GTK_MENU(dbus_menu));
+       gtk_menu->attach_to_widget(event_box);
++      gtk_menu->signal_hide().connect(sigc::mem_fun(*this, &Item::onMenuHide));
+     }
+   }
+   // Manually reset prelight to make sure the tray item doesn't stay in a hover state even though
+@@ -470,8 +543,15 @@
+   if ((ev->button == 1 && item_is_menu) || ev->button == 3) {
+     makeMenu();
+     if (gtk_menu != nullptr) {
++      event_box.get_style_context()->add_class("menu-open");
+ #if GTK_CHECK_VERSION(3, 22, 0)
+-      gtk_menu->popup_at_pointer(reinterpret_cast<GdkEvent*>(ev));
++      int x = 0, y = 0;
++      auto& window = const_cast<Bar&>(bar_).window;
++      event_box.translate_coordinates(window, 0, 0, x, y);
++      GdkRectangle anchor{x, 0, event_box.get_allocated_width(), window.get_allocated_height()};
++      gtk_menu_popup_at_rect(GTK_MENU(gtk_menu->gobj()), window.get_window()->gobj(), &anchor,
++                             GDK_GRAVITY_SOUTH_WEST, GDK_GRAVITY_NORTH_WEST,
++                             reinterpret_cast<GdkEvent*>(ev));
+ #else
+       gtk_menu->popup(ev->button, ev->time);
+ #endif
+--- a/src/modules/sni/tray.cpp
++++ b/src/modules/sni/tray.cpp
+@@ -3,6 +3,8 @@
+ #include <spdlog/spdlog.h>
+ 
+ #include <algorithm>
++#include <fstream>
++#include <glibmm/miscutils.h>
+ 
+ #include "modules/sni/icon_manager.hpp"
+ 
+@@ -26,6 +28,25 @@
+   if (config["show-passive-items"].isBool()) {
+     show_passive_ = config["show-passive-items"].asBool();
+   }
++  policy_ = config_;
++  // Watch the directory: preferences are written with atomic rename.
++  if (config_["policy-file"].isString()) {
++    policy_path_ = Glib::get_user_config_dir() + "/hyprmac/" + config_["policy-file"].asString();
++    try {
++      auto directory = Gio::File::create_for_path(Glib::path_get_dirname(policy_path_));
++      policy_monitor_ = directory->monitor_directory();
++      policy_monitor_->signal_changed().connect([this](const auto& file, const auto& other,
++                                                       Gio::FileMonitorEvent) {
++        if ((file && file->get_path() == policy_path_) || (other && other->get_path() == policy_path_)) {
++          if (!policy_idle_.connected()) {
++            policy_idle_ = Glib::signal_idle().connect([this]() { reloadPolicy(); return false; });
++          }
++        }
++      });
++    } catch (const Glib::Error& error) {
++      spdlog::warn("SNI preferences monitor: {}", static_cast<std::string>(error.what()));
++    }
++  }
+   nb_hosts_ += 1;
+   if (config_["icons"].isObject()) {
+     IconManager::instance().setIconsConfig(config_["icons"]);
+@@ -33,12 +54,47 @@
+   dp.emit();
+ }
+ 
++Tray::~Tray() {
++  policy_idle_.disconnect();
++  if (policy_monitor_) policy_monitor_->cancel();
++}
++
++void Tray::reloadPolicy() {
++  std::ifstream stream(policy_path_);
++  if (!stream) return;
++  stream.seekg(0, std::ios::end);
++  if (stream.tellg() > 65536) { spdlog::warn("SNI preferences exceed 64 KiB"); return; }
++  stream.seekg(0);
++  Json::Value root;
++  Json::CharReaderBuilder builder;
++  std::string error;
++  if (!Json::parseFromStream(builder, stream, &root, &error) || !root["tray"].isObject()) {
++    spdlog::warn("Invalid SNI preferences: {}", error);
++    return;
++  }
++  const auto& policy = root["tray"];
++  for (const auto* name : {"hidden-items", "order-items"}) {
++    if (!policy[name].isNull() && !policy[name].isArray()) return;
++    for (const auto& value : policy[name]) if (!value.isString()) return;
++  }
++  for (const auto* name : {"hidden-items", "order-items"}) policy_[name] = policy[name];
++  for (auto* widget : box_.get_children()) {
++    auto* item = static_cast<Item*>(g_object_get_data(G_OBJECT(widget->gobj()), "hyprmac-sni-item"));
++    if (item) { item->policy = policy_; item->refreshVisibility(); }
++  }
++  reorderItems();
++  dp.emit();
++}
++
+ void Tray::onAdd(std::unique_ptr<Item>& item) {
++  item->policy = policy_;
+   if (config_["reverse-direction"].isBool() && config_["reverse-direction"].asBool()) {
+     box_.pack_end(item->event_box);
+   } else {
+     box_.pack_start(item->event_box);
+   }
++  item->changed.connect([this]() { reorderItems(); dp.emit(); });
++  reorderItems();
+   dp.emit();
+ }
+ 
+@@ -47,16 +103,28 @@
+   dp.emit();
+ }
+ 
++void Tray::reorderItems() {
++  auto children = box_.get_children();
++  auto rank = [this](Gtk::Widget* w) {
++    auto item = static_cast<Item*>(g_object_get_data(G_OBJECT(w->gobj()), "hyprmac-sni-item"));
++    int i = 0;
++    for (const auto& key : policy_["order-items"]) {
++      if (key.isString() && item && item->matches(key.asString())) return i;
++      ++i;
++    }
++    return i;
++  };
++  std::stable_sort(children.begin(), children.end(), [&](auto a, auto b) { return rank(a) < rank(b); });
++  int position = 0;
++  for (auto w : children) box_.reorder_child(*w, position++);
++}
++
+ auto Tray::update() -> void {
+   // Show tray only when items are available
+   std::vector<Gtk::Widget*> children = box_.get_children();
+-  if (show_passive_) {
+-    event_box_.set_visible(!children.empty());
+-  } else {
+-    event_box_.set_visible(!std::all_of(children.begin(), children.end(), [](Gtk::Widget* child) {
+-      return child->get_style_context()->has_class("passive");
+-    }));
+-  }
++  event_box_.set_visible(std::any_of(children.begin(), children.end(), [](Gtk::Widget* child) {
++    return child->get_visible();
++  }));
+ 
+   // Call parent update
+   AModule::update();
+--- a/src/modules/sni/watcher.cpp
++++ b/src/modules/sni/watcher.cpp
+@@ -11,8 +11,7 @@
+                                        "org.kde.StatusNotifierWatcher",
+                                        sigc::mem_fun(*this, &Watcher::busAcquired),
+                                        Gio::DBus::SlotNameAcquired(), Gio::DBus::SlotNameLost(),
+-                                       Gio::DBus::BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT |
+-                                           Gio::DBus::BUS_NAME_OWNER_FLAGS_REPLACE)),
++                                       Gio::DBus::BUS_NAME_OWNER_FLAGS_NONE)),
+       watcher_(sn_watcher_skeleton_new()) {}
+ 
+ Watcher::~Watcher() {
+@@ -26,7 +25,9 @@
+   }
+   Gio::DBus::unown_name(bus_name_id_);
+   auto iface = G_DBUS_INTERFACE_SKELETON(watcher_);
++  g_signal_handlers_disconnect_by_data(watcher_, this);
+   g_dbus_interface_skeleton_unexport(iface);
++  g_clear_object(&watcher_);
+ }
+ 
+ void Watcher::busAcquired(const Glib::RefPtr<Gio::DBus::Connection>& conn, Glib::ustring name) {
+@@ -167,6 +168,9 @@
+     sn_watcher_emit_item_unregistered(watch->watcher->watcher_, tmp);
+     g_free(tmp);
+   }
++  // Removing from the list transfers cleanup here. Otherwise a later name change
++  // can call into a destroyed Watcher after a bar reload (upstream 0.15.0).
++  gfWatchFree(watch);
+ }
+ 
+ void Watcher::updateRegisteredItems(SnWatcher* obj) {
+--- a/src/modules/sni/host.cpp
++++ b/src/modules/sni/host.cpp
+@@ -28,7 +28,7 @@
+     Gio::DBus::unwatch_name(watcher_id_);
+     watcher_id_ = 0;
+   }
+-  g_cancellable_cancel(cancellable_);
++  if (cancellable_) g_cancellable_cancel(cancellable_);
+   g_clear_object(&cancellable_);
+   g_clear_object(&watcher_);
+ }
+@@ -51,9 +51,10 @@
+ }
+ 
+ void Host::nameVanished(const Glib::RefPtr<Gio::DBus::Connection>& conn, const Glib::ustring name) {
+-  g_cancellable_cancel(cancellable_);
++  if (cancellable_) g_cancellable_cancel(cancellable_);
+   g_clear_object(&cancellable_);
+   g_clear_object(&watcher_);
++  for (auto& item : items_) on_remove_(item);
+   items_.clear();
+ }
+ 

@@ -1,0 +1,5706 @@
+[
+ {
+  "nome": "Content Area/Dark/01 - Bordered/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.07"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/01 - Bordered/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.16"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/01 - Bordered/04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/02 - Bordered Tinted/01 - Idle",
+  "opacidade": 0.2,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/02 - Bordered Tinted/03 - Clicked",
+  "opacidade": 0.28,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/02 - Bordered Tinted/04 - Disabled",
+  "opacidade": 0.12,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/03 - Bordered Destructive/01 - Idle",
+  "opacidade": 0.22,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4245"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/03 - Bordered Destructive/03 - Clicked",
+  "opacidade": 0.28,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4245"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/03 - Bordered Destructive/04 - Disabled",
+  "opacidade": 0.12,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4245"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/04 - Prominent (Default)/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/04 - Prominent (Default)/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/04 - Prominent (Default)/04 - Disabled",
+  "opacidade": 0.4,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/05 - Prominent (Default) Destructive/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4245"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/05 - Prominent (Default) Destructive/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4747"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/05 - Prominent (Default) Destructive/04 - Disabled",
+  "opacidade": 0.4,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4747"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, Off, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, Off, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, Off, 04 - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, Off, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, Off, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, Off, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Controls/Inactive, On, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.50"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Default, 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.55"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Fills/Selected 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Input Fields/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1E1E1E"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#FFFFFF/0.04",
+    "espessura": 1,
+    "posição": "fora"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Input Fields/03 - Focus Ring",
+  "opacidade": 0.5,
+  "bordas": [
+   {
+    "cor": "#0091FF",
+    "espessura": 3.5,
+    "posição": "fora",
+    "mistura": "plus-lighter"
+   },
+   {
+    "cor": "#0091FF",
+    "espessura": 1,
+    "posição": "dentro",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Input Fields/04 - Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1E1E1E/0.50"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#000000/0.04",
+    "espessura": 1,
+    "posição": "fora"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.00",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/03 - Clicked",
+  "sombras": [
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#F2F2F2",
+    "x": 0,
+    "y": 20,
+    "desfoque": 20,
+    "espalhamento": -20
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 0,
+    "brightness": 1,
+    "distortion": 0.12,
+    "depth": 0.3,
+    "chromaticAberrationMultiplier": 0.4,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/03 - Clicked - Glow",
+  "bordas": [
+   {
+    "cor": "#000000/0.20",
+    "espessura": 1,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/03 - Clicked - Shadow",
+  "bordas": [
+   {
+    "cor": "#000000",
+    "espessura": 1,
+    "posição": "dentro"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "gaussian",
+    "raio": 3,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Knobs - Toggle/04 - Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Segmented Control/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Segmented Control/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Segmented Control/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Filled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Filled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Unfilled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Unfilled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Active, Unfilled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Inactive, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Inactive, Filled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Inactive, Unfilled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Inactive, Unfilled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Tick Mark - Centerpoint, Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Tick Mark - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Dark/Tracks/Tick Mark - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/01 - Bordered/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.08"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/01 - Bordered/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.16"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/01 - Bordered/04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.04"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/02 - Bordered Tinted/01 - Idle",
+  "opacidade": 0.22,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/02 - Bordered Tinted/03 - Clicked",
+  "opacidade": 0.28,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/02 - Bordered Tinted/04 - Disabled",
+  "opacidade": 0.1,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/03 - Bordered Destructive/01 - Idle",
+  "opacidade": 0.2,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF383C"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/03 - Bordered Destructive/03 - Clicked",
+  "opacidade": 0.28,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF383C"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/03 - Bordered Destructive/04 - Disabled",
+  "opacidade": 0.1,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF383C"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/04 - Prominent (Default)/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/04 - Prominent (Default)/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/04 - Prominent (Default)/04 - Disabled",
+  "opacidade": 0.4,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/05 - Prominent (Default) Destructive/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF383C"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/05 - Prominent (Default) Destructive/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F52F32"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/05 - Prominent (Default) Destructive/04 - Disabled",
+  "opacidade": 0.4,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F52F32"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, Off, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, Off, 03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, Off, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, Off, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, Off, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, Off, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.14"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.06",
+    "mistura": "plus-darker"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.13"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Controls/Inactive, On, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.50"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Default, 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.55"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Fills/Selected 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Input Fields/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#000000/0.05",
+    "espessura": 1,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Input Fields/03 - Focus Ring",
+  "opacidade": 0.5,
+  "bordas": [
+   {
+    "cor": "#0088FF",
+    "espessura": 3.5,
+    "posição": "fora"
+   },
+   {
+    "cor": "#0088FF",
+    "espessura": 1,
+    "posição": "dentro"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Input Fields/04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.50"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#000000/0.04",
+    "espessura": 1,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Sliders/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 1,
+    "desfoque": 5,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 3,
+    "desfoque": 36,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.00",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FF0000"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/03 - Clicked",
+  "sombras": [
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#F2F2F2",
+    "x": 0,
+    "y": 20,
+    "desfoque": 20,
+    "espalhamento": -20
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 0,
+    "brightness": 1,
+    "distortion": 0.12,
+    "depth": 0.3,
+    "chromaticAberrationMultiplier": 0.4,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/03 - Clicked - Glow",
+  "bordas": [
+   {
+    "cor": "#D9D9D9",
+    "espessura": 1,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   },
+   {
+    "cor": "#FFFFFF/0.45",
+    "espessura": 0.5,
+    "posição": "fora"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/03 - Clicked - Shadow",
+  "bordas": [
+   {
+    "cor": "#000000",
+    "espessura": 1,
+    "posição": "dentro"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "gaussian",
+    "raio": 3,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Knobs - Toggle/04 - Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Segmented Control/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Segmented Control/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Segmented Control/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Filled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.08"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Filled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.02"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Unfilled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Unfilled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Active, Unfilled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Inactive, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Inactive, Filled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Inactive, Unfilled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Inactive, Unfilled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Tick Mark - Centerpoint, Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Tick Mark - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Content Area/Light/Tracks/Tick Mark - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Color Area Outline",
+  "bordas": [
+   {
+    "cor": "#000000/0.10",
+    "espessura": 0.5,
+    "posição": "dentro"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Focus Ring",
+  "mistura": "plus-darker",
+  "bordas": [
+   {
+    "cor": "#0088FF/0.25",
+    "espessura": 3.5,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   },
+   {
+    "cor": "#0088FF/0.15",
+    "espessura": 1,
+    "posição": "fora",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Colored - 1 Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#FFFFFF/0.18",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 10
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Colored - 4 Disabled",
+  "opacidade": 0.3,
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.18",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 10
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Neutral - 1 Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.70"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Neutral - 4 Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.22"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Primary - 1 Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Dark/Primary - 4 Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Colored - 1 Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.18",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 10
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Colored - 4 Disabled",
+  "opacidade": 0.3,
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0088FF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.18",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 10
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Neutral - 1 Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.70"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Neutral - 4 Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.22"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Primary - 1 Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Glyphs/Light/Primary - 4 Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Global/Progress Indicator Fill Fade Mask",
+  "preenchimentos": [
+   {
+    "tipo": "gradiente",
+    "gradiente": "linear({1, 0.5}→{0.0467012099365383, 0.499999999999999}: #000000 0.00, #000000/0.40 0.40, #000000/0.00 1.00)"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "zoom",
+    "raio": 15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Dock",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#454545/0.50",
+    "mistura": "luminosity"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.10",
+    "mistura": "plus-darker"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.25",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#161616/0.70",
+    "x": 0,
+    "y": -12,
+    "desfoque": 12,
+    "espalhamento": -12
+   },
+   {
+    "cor": "#161616",
+    "x": 1,
+    "y": 16,
+    "desfoque": 16,
+    "espalhamento": -16
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 1,
+    "brightness": 1,
+    "distortion": 0.08,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Menus",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#5A5A5A/0.50",
+    "mistura": "luminosity"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.30",
+    "x": 0,
+    "y": 4,
+    "desfoque": 24,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#0D0D0D",
+    "x": 0,
+    "y": -4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#0D0D0D",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#666666/0.40",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 1
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 20,
+    "saturação": 1.2,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Notification",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#666666/0.10",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 4,
+    "desfoque": 16,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#ABABAB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#222222",
+    "x": 0,
+    "y": -6,
+    "desfoque": 4,
+    "espalhamento": -6
+   },
+   {
+    "cor": "#222222",
+    "x": 0,
+    "y": 6,
+    "desfoque": 4,
+    "espalhamento": -6
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -1
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -1
+   },
+   {
+    "cor": "#FFFFFF/0.20",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.2,
+    "espalhamento": -1.2
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 10,
+    "brightness": 1,
+    "distortion": 0.1,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Large",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.50"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.50",
+    "mistura": "luminosity"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.45",
+    "x": 0,
+    "y": 18,
+    "desfoque": 48,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#A6A6A6/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#343434",
+    "x": 0,
+    "y": -4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#343434",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.20",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.2,
+    "espalhamento": -1.2
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 30,
+    "saturação": 1.2,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Medium",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.50"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.90",
+    "mistura": "luminosity"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.45",
+    "x": 0,
+    "y": 18,
+    "desfoque": 48,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#A6A6A6/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#343434",
+    "x": 0,
+    "y": -4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#343434",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.20",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.2,
+    "espalhamento": -1.2
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 30,
+    "saturação": 1.2,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Small",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000",
+    "mistura": "screen"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#999999/0.17"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#B2B2B2",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#B2B2B2",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.04",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#A6A6A6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#1A1A1A",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#1A1A1A",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Small - Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#E6E6E6",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#CCCCCC",
+    "x": -1,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#CCCCCC",
+    "x": 1,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.5
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Small - Tint New",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.96"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FF383C",
+    "mistura": "plus-darker"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#B2B2B2",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#B2B2B2",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.04",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#CCCCCC",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#CCCCCC",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Dark/Regular - Small - Tinted",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000",
+    "mistura": "screen"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#D9D9D9",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#000000/0.04",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Dock",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#4D4D4D/0.30",
+    "mistura": "luminosity"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A/0.10",
+    "mistura": "plus-darker"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.25",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#161616/0.70",
+    "x": 0,
+    "y": -12,
+    "desfoque": 12,
+    "espalhamento": -12
+   },
+   {
+    "cor": "#161616",
+    "x": 1,
+    "y": 16,
+    "desfoque": 16,
+    "espalhamento": -16
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0.5,
+    "espalhamento": -0.5
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 1,
+    "brightness": 1,
+    "distortion": 0.08,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Menus",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#E6E6E6/0.55",
+    "mistura": "luminosity"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.30",
+    "x": 0,
+    "y": 4,
+    "desfoque": 24,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.20",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#0D0D0D",
+    "x": 0,
+    "y": -4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#0D0D0D",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#666666/0.15",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 1
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 20,
+    "saturação": 0.8,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Notification",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#BFBFBF/0.25",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A",
+    "mistura": "plus-lighter"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 4,
+    "desfoque": 16,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#ABABAB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#222222",
+    "x": 0,
+    "y": -6,
+    "desfoque": 4,
+    "espalhamento": -6
+   },
+   {
+    "cor": "#222222",
+    "x": 0,
+    "y": 6,
+    "desfoque": 4,
+    "espalhamento": -6
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -1
+   },
+   {
+    "cor": "#676767",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -1
+   },
+   {
+    "cor": "#FFFFFF/0.20",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.2,
+    "espalhamento": -1.2
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 15,
+    "brightness": 1,
+    "distortion": 0.1,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Large",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.70",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#BFBFBF/0.10",
+    "mistura": "darken"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.25",
+    "x": 0,
+    "y": 18,
+    "desfoque": 46,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": -4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.25,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#DBDBDB/0.50",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 30,
+    "saturação": 1.4,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Medium",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.70",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#BFBFBF/0.10",
+    "mistura": "darken"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.25",
+    "x": 0,
+    "y": 18,
+    "desfoque": 46,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": -4,
+    "desfoque": 2,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": 4,
+    "desfoque": 8,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": -1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#272727",
+    "x": 0,
+    "y": 1,
+    "desfoque": 1.5,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 0,
+    "y": 2,
+    "desfoque": 0.25,
+    "espalhamento": -1.2
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0.3,
+    "espalhamento": 0.3
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 30,
+    "saturação": 1.4,
+    "brightness": 1,
+    "distortion": 0.3,
+    "depth": 0.9,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Small",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.25"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#444444/0.60",
+    "mistura": "plus-lighter"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#F8F8F8/0.20",
+    "mistura": "luminosity"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#D9D9D9",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#666666",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#171717",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": 0,
+    "y": 40,
+    "desfoque": 30,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#282828",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#282828",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#000000/0.02",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "saturação": 2,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Small - Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.02"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#EBEBEB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#F2F2F2",
+    "x": -0.75,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#F2F2F2",
+    "x": 0.75,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.25
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Small - Tinted",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.96"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FF383C",
+    "mistura": "plus-darker"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#D9D9D9",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#000000/0.04",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#DBDBDB",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Light/Regular - Small - Tinted",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF",
+    "mistura": "multiply"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#D9D9D9",
+    "x": 20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": -20,
+    "y": 0,
+    "desfoque": 20,
+    "espalhamento": -30
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#999999",
+    "x": 0,
+    "y": 4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": -1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#262626",
+    "x": 0,
+    "y": 1,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": -40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#111111",
+    "x": 0,
+    "y": 40,
+    "desfoque": 10,
+    "espalhamento": -40
+   },
+   {
+    "cor": "#000000/0.04",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 6,
+    "brightness": 1,
+    "distortion": 0.4,
+    "depth": 0.8,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Liquid Glass/Lock Screen Time",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F8F8F8/0.25",
+    "mistura": "luminosity"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A",
+    "mistura": "plus-lighter"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": -4,
+    "desfoque": 0.5,
+    "espalhamento": -4
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": -0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#333333",
+    "x": 0,
+    "y": 0.5,
+    "desfoque": 0,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#404040",
+    "x": 0,
+    "y": -10,
+    "desfoque": 5,
+    "espalhamento": -10
+   },
+   {
+    "cor": "#404040",
+    "x": 0,
+    "y": 10,
+    "desfoque": 5,
+    "espalhamento": -10
+   },
+   {
+    "cor": "#000000/0.02",
+    "x": 0,
+    "y": 8,
+    "desfoque": 15,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#D9D9D9",
+    "x": 0,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": 0.5
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": -1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   },
+   {
+    "cor": "#E6E6E6",
+    "x": 1.25,
+    "y": 0,
+    "desfoque": 0,
+    "espalhamento": -0.75
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "glass",
+    "raio": 3,
+    "saturação": 1.4,
+    "brightness": 1,
+    "distortion": 0.2,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 1
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Dark/Regular",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#2C2C2C/0.61"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.9,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Dark/Thick",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#2C2C2C/0.71"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.9,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Dark/Thin",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#292929/0.49"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.9,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Dark/Ultra Thick",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#2C2C2C/0.82"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.9,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Dark/Ultra Thin",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#292929/0.40"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.8,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Light/Regular",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#ECECEC/0.63"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.45,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Light/Thick",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#ECECEC/0.76"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 2,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Light/Thin",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#ECECEC/0.50"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.45,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Light/Ultra Thick",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#ECECEC/0.88"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 2,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Materials/Light/Ultra Thin",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#ECECEC/0.38"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 60,
+    "saturação": 1.45,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/01 - Bordered/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.12",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/01 - Bordered/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.12",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.13",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/01 - Bordered/04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.06",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/04 - Prominent (Default)/01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/04 - Prominent (Default)/03 - Clicked",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/04 - Prominent (Default)/04 - Disabled",
+  "opacidade": 0.4,
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/05 - Prominent (Default) Destructive/01 - Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F52F32"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/05 - Prominent (Default) Destructive/03 - Clicked",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4747"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/05 - Prominent (Default) Destructive/04 - Disabled",
+  "opacidade": 0.5,
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4747"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, Off, 01 - Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, Off, 03 - Clicked",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, Off, 04 - Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0091FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, Off, 01 - Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, Off, 03 - Clicked",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, Off, 04 - Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, On, 01 - Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, On, 03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.06",
+    "mistura": "plus-lighter"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.13"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Controls/Inactive, On, 04 - Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 01 - Primary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 02 - Secondary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.50"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 03 - Tertiary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 04 - Quaternary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 05 - Quinary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Default, 06 - Seximal",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.55"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Fills/Selected 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Knobs - Toggle/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Knobs - Toggle/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.00",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Knobs - Toggle/04 - Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Segmented Control/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Segmented Control/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.14",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Segmented Control/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Active, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Active, Filled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0A99FF"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.08"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Active, Filled, 04 - Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Active, Unfilled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Inactive, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.22"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Inactive, Filled, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Inactive, Unfilled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.04",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03",
+    "mistura": "plus-lighter"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Tick Mark - Centerpoint, Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#D9D9D9"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Tick Mark - Disabled",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1A1A1A"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Dark/Tracks/Tick Mark - Idle",
+  "mistura": "plus-lighter",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#404040"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/01 - Bordered/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.12",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/01 - Bordered/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.12",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.13",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/01 - Bordered/04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.06",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/04 - Prominent (Default)/01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/04 - Prominent (Default)/03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/04 - Prominent (Default)/04 - Disabled",
+  "opacidade": 0.4,
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/05 - Prominent (Default) Destructive/01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FF4747"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/05 - Prominent (Default) Destructive/03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F52F32"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/05 - Prominent (Default) Destructive/04 - Disabled",
+  "opacidade": 0.5,
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F52F32"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, Off, 01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, Off, 03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, Off, 04 - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.02",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, Off, 01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, Off, 03 - Clicked",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.19"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, Off, 04 - Disabled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, On, 01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#EBEBEB",
+    "mistura": "plus-darker"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.13"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Controls/Inactive, On, 04 - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 01 - Primary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 02 - Secondary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.50"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 03 - Tertiary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 04 - Quaternary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 05 - Quinary",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Default, 06 - Seximal",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 01 - Primary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 02 - Secondary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.55"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 03 - Tertiary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.25"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 04 - Quaternary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.10"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 05 - Quinary",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Fills/Selected 06 - Seximal",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.03"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Knobs - Toggle/01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Knobs - Toggle/03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.00",
+    "mistura": "lighten"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Knobs - Toggle/04 - Disabled",
+  "opacidade": 0.5,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.65"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.45",
+    "mistura": "lighten"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF/0.35"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 44,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 4,
+    "espalhamento": -0.5
+   },
+   {
+    "cor": "#000000/0.05",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": -0.25
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": 1.75,
+    "y": 2.5,
+    "desfoque": 1,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF",
+    "x": -1.75,
+    "y": -2.5,
+    "desfoque": 2,
+    "espalhamento": -1.5
+   },
+   {
+    "cor": "#FFFFFF/0.10",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 7.5,
+    "saturação": 1.15,
+    "brightness": 1,
+    "distortion": 0.6,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0,
+    "isCustomGlass": 0
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Segmented Control/Active, On, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Segmented Control/Active, On, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Segmented Control/Active, On, 04 - Disabled",
+  "opacidade": 0.45,
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.03",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Active, Filled, 01 - Idle",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Active, Filled, 03 - Clicked",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0078F0"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Active, Filled, 04 - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.02"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Active, Unfilled",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.20",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Inactive, Filled, 01 - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.15"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Inactive, Filled, 04 - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.05"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Inactive, Unfilled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.20",
+    "mistura": "overlay"
+   },
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.07",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Tick Mark - Centerpoint, Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.85",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Tick Mark - Disabled",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.10",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Over-Glass/Light/Tracks/Tick Mark - Idle",
+  "mistura": "plus-darker",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000/0.25",
+    "mistura": "plus-darker"
+   }
+  ]
+ },
+ {
+  "nome": "Panels/Dark",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1E1E1E"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#FFFFFF/0.20",
+    "espessura": 1,
+    "posição": "dentro"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.40",
+    "x": 0,
+    "y": 16,
+    "desfoque": 33,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Panels/Light",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.30",
+    "x": 0,
+    "y": 5,
+    "desfoque": 20,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Sidebar/Background/Dark/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#0C0C0C/0.85"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 80,
+    "saturação": 2,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Sidebar/Background/Dark/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#2E2E2E/0.85"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 70,
+    "saturação": 1.8,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Sidebar/Background/Light/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FAFAFA/0.80"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 100,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Sidebar/Background/Light/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#F4F4F4"
+   }
+  ],
+  "desfoques": [
+   {
+    "tipo": "background",
+    "raio": 100,
+    "brightness": 1,
+    "distortion": 0.5,
+    "depth": 0.5,
+    "chromaticAberrationMultiplier": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Dark/No Sidebar/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1E1E1E"
+   }
+  ],
+  "bordas": [
+   {
+    "cor": "#FFFFFF/0.20",
+    "espessura": 1,
+    "posição": "dentro"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.40",
+    "x": 0,
+    "y": 16,
+    "desfoque": 33,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Dark/No Sidebar/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#1E1E1E"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.20",
+    "x": 0,
+    "y": 16,
+    "desfoque": 32,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Dark/With Sidebar/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000",
+    "mistura": "screen"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.40",
+    "x": 0,
+    "y": 36,
+    "desfoque": 100,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Dark/With Sidebar/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#000000",
+    "mistura": "screen"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.20",
+    "x": 0,
+    "y": 16,
+    "desfoque": 32,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Light/No Sidebar/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.40",
+    "x": 0,
+    "y": 36,
+    "desfoque": 100,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Light/No Sidebar/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.20",
+    "x": 0,
+    "y": 16,
+    "desfoque": 32,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Light/With Sidebar/Active",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF",
+    "mistura": "multiply"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.40",
+    "x": 0,
+    "y": 36,
+    "desfoque": 100,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ },
+ {
+  "nome": "Windows/Light/With Sidebar/Inactive",
+  "preenchimentos": [
+   {
+    "tipo": "cor",
+    "cor": "#FFFFFF",
+    "mistura": "multiply"
+   }
+  ],
+  "sombras": [
+   {
+    "cor": "#000000/0.20",
+    "x": 0,
+    "y": 16,
+    "desfoque": 32,
+    "espalhamento": 0
+   },
+   {
+    "cor": "#000000/0.80",
+    "x": 0,
+    "y": 0,
+    "desfoque": 1,
+    "espalhamento": 0
+   }
+  ]
+ }
+]

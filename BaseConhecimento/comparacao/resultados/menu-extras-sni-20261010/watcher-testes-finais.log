@@ -1,0 +1,50 @@
+test_existing_watcher_is_not_replaced_and_host_registers (test_sni_watcher.ExternalWatcher.test_existing_watcher_is_not_replaced_and_host_registers) ... dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.a11y.Bus' requested by ':1.2' (uid=1000 pid=197822 comm="/home/igor/.cache/hyprmac/waybar-tahoe/waybar -c /")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.gtk.vfs.Daemon' requested by ':1.1' (uid=1000 pid=197822 comm="/home/igor/.cache/hyprmac/waybar-tahoe/waybar -c /")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.gtk.vfs.Daemon'
+fusermount3: failed to access mountpoint /run/user/1000/gvfs: Permission denied
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.1' (uid=1000 pid=197822 comm="/home/igor/.cache/hyprmac/waybar-tahoe/waybar -c /")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.6' (uid=1000 pid=197882 comm="/usr/lib/xdg-desktop-portal")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.portal.Documents' requested by ':1.6' (uid=1000 pid=197882 comm="/usr/lib/xdg-desktop-portal")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.freedesktop.portal.Documents'
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.6' (uid=1000 pid=197882 comm="/usr/lib/xdg-desktop-portal")
+
+(xdg-desktop-portal-gtk:197930): Gtk-WARNING **: 21:24:04.665: Theme parsing error: gtk.css:2:63: Failed to import: Error opening file /home/igor/Projects/hyprmac/gtk/gtk3.css: No such file or directory
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+** (xdg-desktop-portal-gtk:197930): WARNING **: 21:24:04.695: AT-SPI: Could not obtain desktop path or name
+
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+
+** (xdg-desktop-portal-gtk:197930): WARNING **: 21:24:04.698: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (xdg-desktop-portal-gtk:197930): WARNING **: 21:24:04.698: atk-bridge: get_device_events_reply: unknown signature
+
+(/usr/lib/xdg-desktop-portal:197882): xdg-desktop-portal-WARNING **: 21:24:04.707: Failed to load RealtimeKit property: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable
+
+(/usr/lib/xdg-desktop-portal:197882): xdg-desktop-portal-WARNING **: 21:24:04.707: Failed to load RealtimeKit property: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable
+
+(/usr/lib/xdg-desktop-portal:197882): xdg-desktop-portal-WARNING **: 21:24:04.708: Failed to load RealtimeKit property: GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Successfully activated service 'org.freedesktop.portal.Desktop'
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+ok
+test_item_exit_after_three_reloads_keeps_bar_alive (test_sni_watcher.ExternalWatcher.test_item_exit_after_three_reloads_keeps_bar_alive) ... dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activating service name='org.freedesktop.systemd1' requested by ':1.4' (uid=1000 pid=197858 comm="/usr/bin/dbus-broker-launch --config-file=/usr/sha")
+dbus-daemon[197698]: [session uid=1000 pid=197698 pidfd=5] Activated service 'org.freedesktop.systemd1' failed: Process org.freedesktop.systemd1 exited with status 1
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.581s
+
+OK
+A connection to the bus can't be made

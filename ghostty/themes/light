@@ -1,0 +1,22 @@
+# hyprmac — ghostty, Terminal do macOS no modo claro
+cursor-color = #1d1d1f
+cursor-text = #ffffff
+foreground = #1d1d1f
+background = #ffffff
+selection-background = #b3d7ff
+palette = 0=#1d1d1f
+palette = 8=#8e8e93
+palette = 1=#d70015
+palette = 9=#ff383c
+palette = 2=#248a3d
+palette = 10=#28a745
+palette = 3=#a05a00
+palette = 11=#c77c02
+palette = 4=#0040dd
+palette = 12=#0088ff
+palette = 5=#8944ab
+palette = 13=#af52de
+palette = 6=#0071a4
+palette = 14=#1f8fc2
+palette = 7=#6e6e73
+palette = 15=#3a3a3c

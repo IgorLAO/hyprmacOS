@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# hyprmac — VPN do NetworkManager
+#   vpn status        JSON contínuo para a Waybar (atualiza a cada mudança de rede)
+#   vpn toggle        conecta a primeira VPN, ou desconecta a ativa
+#   vpn up|down NOME  conecta/desconecta a VPN NOME
+# As senhas vêm do chaveiro pelo agente do hyprmac-shell, como no GNOME.
+set -uo pipefail
+
+ICON=$'\U000f0582'   # md-vpn
+
+vpns()   { nmcli -t -f NAME,TYPE connection show | awk -F: '$2=="vpn"||$2=="wireguard"{print $1}'; }
+active() { nmcli -t -f NAME,TYPE connection show --active | awk -F: '$2=="vpn"||$2=="wireguard"{print $1; exit}'; }
+
+up() {
+  if ! out=$(nmcli connection up id "$1" 2>&1); then
+    notify-send -a VPN -i network-vpn "Não foi possível conectar à VPN “$1”" \
+      "$(printf '%s' "$out" | tail -n1)"
+    return 1
+  fi
+}
+
+case "${1:-status}" in
+  status)
+    emit() {
+      local a; a=$(active)
+      if [ -n "$a" ]; then
+        printf '{"text":"%s","tooltip":"VPN “%s” conectada","class":"connected"}\n' "$ICON" "$a"
+      else
+        printf '{"text":"","class":"off"}\n'
+      fi
+    }
+    last=""
+    { echo; nmcli monitor; } | while read -r _; do
+      cur=$(emit)
+      [ "$cur" != "$last" ] && { echo "$cur"; last=$cur; }
+    done
+    ;;
+  toggle)
+    a=$(active)
+    if [ -n "$a" ]; then nmcli connection down id "$a" >/dev/null
+    else v=$(vpns | head -n1); [ -n "$v" ] && up "$v"; fi
+    ;;
+  up)   up "$2" ;;
+  down) nmcli connection down id "$2" >/dev/null ;;
+  *) echo "uso: $0 [status|toggle|up NOME|down NOME]" >&2; exit 2 ;;
+esac

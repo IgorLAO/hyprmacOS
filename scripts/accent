@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""hyprmac — cor de destaque do sistema (Ajustes ▸ Aparência ▸ Cor de Destaque do macOS).
+
+  accent                 reaplica a cor atual (usado por scripts/theme ao trocar claro/escuro)
+  accent <cor>           blue · purple · pink · red · orange · yellow · green · graphite
+  accent list            lista as cores
+
+Destaques controlAccent*Color extraídos do Tahoe 26.6.1. Hover (20% de branco)
+e seleção não azul (16% de preto) são aproximações locais; #0069F9 vem do kit 27. Grava a escolha no GNOME
+(org.gnome.desktop.interface accent-color — "graphite" vira "slate") e gera:
+  gtk/accent3.css, gtk/accent4.css   (importados logo depois da paleta)
+  waybar/accent.css, wofi/accent.css  (importados no topo do style.css)
+O hyprmac-shell e o Mission Control leem o accent-color do GNOME e acompanham sozinhos.
+"""
+import os
+import subprocess
+import sys
+
+H = os.path.expanduser("~/Projects/hyprmac")
+
+# Compartilhada com Ajustes, menu do shell e Mission Control.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "shell"))
+from accent_palette import CORES
+
+GNOME = {"graphite": "slate"}
+DO_GNOME = {"slate": "graphite", "teal": "blue"}
+SELECAO_AZUL = "#0069F9"      # kit 27, sem confirmação Tahoe 26; demais cores são aproximações
+
+
+def rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def hexa(c):
+    return "#%02X%02X%02X" % tuple(max(0, min(255, round(v))) for v in c)
+
+
+def misturar(a, b, t):
+    return tuple(x + (y - x) * t for x, y in zip(a, b))
+
+
+def tons(nome, escuro):
+    base = rgb(CORES[nome][0 if escuro else 1])
+    claro = hexa(misturar(base, (255, 255, 255), 0.2))       # hover: 20 % mais claro
+    sel = SELECAO_AZUL if nome == "blue" else hexa(misturar(base, (0, 0, 0), 0.16))
+    return hexa(base), claro, sel
+
+
+def cor_atual():
+    v = subprocess.run(["gsettings", "get", "org.gnome.desktop.interface", "accent-color"],
+                       capture_output=True, text=True).stdout.strip().strip("'")
+    v = DO_GNOME.get(v, v)
+    return v if v in CORES else "blue"
+
+
+def modo_escuro():
+    v = subprocess.run(["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+                       capture_output=True, text=True).stdout
+    return "prefer-dark" in v
+
+
+def escrever(caminho, texto):
+    try:
+        with open(caminho) as f:
+            if f.read() == texto:
+                return
+    except OSError:
+        pass
+    with open(caminho, "w") as f:
+        f.write(texto)
+
+
+def aplicar(nome):
+    escuro = modo_escuro()
+    a, hi, sel = tons(nome, escuro)
+    r, g, b = rgb(a)
+    cab = f"/* gerado por scripts/accent — cor de destaque: {nome} ({'escuro' if escuro else 'claro'}) */\n"
+    gtk = (cab
+           + f"@define-color mac_accent      {a};\n"
+           + f"@define-color mac_accent_hi   {hi};\n"
+           + f"@define-color mac_selection   {sel};\n"
+           + f"@define-color theme_selected_bg_color {a};\n"
+           + f"@define-color accent_color    {hi if escuro else a};\n"
+           + f"@define-color accent_bg_color {a};\n")
+    escrever(os.path.join(H, "gtk", "accent3.css"), gtk)
+    escrever(os.path.join(H, "gtk", "accent4.css"),
+             gtk + f":root {{\n  --accent-bg-color: {a};\n  --accent-color: {hi if escuro else a};\n}}\n")
+    escrever(os.path.join(H, "waybar", "accent.css"),
+             cab + f"@define-color accent         {a};\n@define-color menu-selection {sel};\n")
+    escrever(os.path.join(H, "wofi", "accent.css"), cab + f"@define-color accent {a};\n")
+    subprocess.run(["gsettings", "set", "org.gnome.desktop.interface", "accent-color",
+                    GNOME.get(nome, nome)], stderr=subprocess.DEVNULL)
+    subprocess.run(["kwriteconfig6", "--file", "kdeglobals", "--group", "General", "--key",
+                    "AccentColor", f"{r},{g},{b}"], stderr=subprocess.DEVNULL)
+    subprocess.run(["pkill", "-SIGUSR2", "-x", "waybar"], stderr=subprocess.DEVNULL)
+
+
+def main():
+    arg = sys.argv[1] if len(sys.argv) > 1 else None
+    if arg == "list":
+        print("\n".join(CORES))
+        return 0
+    if arg and arg not in CORES:
+        print(f"cor desconhecida: {arg} (use: {', '.join(CORES)})", file=sys.stderr)
+        return 2
+    aplicar(arg or cor_atual())
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

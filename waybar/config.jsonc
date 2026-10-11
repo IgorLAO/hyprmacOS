@@ -1,0 +1,592 @@
+// hyprmac — Waybar inspirada no macOS Tahoe
+{
+  "layer": "top",
+  "position": "top",
+  "height": 34,   // referência (MacBook Pro 16", 2056 pt): a barra mede ~34 pt
+  "spacing": 0,
+  "exclusive": true,
+  "reload_style_on_change": true,
+  // Filtros/ordem SNI gerados por scripts/menu-extras; ausência é permitida.
+  "include": ["~/.config/hyprmac/menu-extras.json"],
+
+  "modules-left": [
+    "custom/apple",
+    "hyprland/window",
+    "custom/menu-arquivo",
+    "custom/menu-arquivo-mesa",
+    "custom/menu-editar",
+    "custom/menu-editar-mesa",
+    "custom/menu-selecao",
+    "custom/menu-formatar",
+    "custom/menu-visualizar",
+    "custom/menu-ir",
+    "custom/menu-codigo-ir",
+    "custom/menu-executar",
+    "custom/menu-terminal",
+    "custom/menu-reproducao",
+    "custom/menu-historico",
+    "custom/menu-favoritos",
+    "custom/menu-desenvolver",
+    "custom/menu-janela",
+    "custom/menu-ajuda"
+  ],
+  "modules-center": [],
+  // Ordem da referência do Tahoe (BaseConhecimento/referencias/telas/
+  // safari-escuro-barra-de-menus-abas.png): extras de terceiros à esquerda, depois
+  // os do sistema, e por último fonte de entrada, Foco, Wi‑Fi, Spotlight, Central e relógio.
+  // O título da música (cffi/nowplaying) saiu da barra: no Tahoe fica só o ícone ▶;
+  // para trazer de volta, recoloque "cffi/nowplaying" depois de "mpris".
+  // Como o padrão do Mac na referência: sem indicador de áreas de trabalho
+  // (Mission Control, ⌃↑, mostra as mesas) e sem Bluetooth/Som na barra (ficam
+  // na Central de Controle). "hyprland/workspaces", "bluetooth" e "pulseaudio"
+  // continuam configurados abaixo para quem quiser recolocar.
+  "modules-right": [
+    "custom/camera",
+    "privacy",
+    "tray",
+    "mpris",
+    "battery",
+    "custom/vpn",
+    "custom/input",
+    "custom/focus",
+    "network",
+    "custom/spotlight",
+    "custom/controlcenter",
+    "custom/notifdot",
+    "custom/clock"
+  ],
+
+  // ─────────────────────────── esquerda ───────────────────────────
+
+  "custom/apple": {
+    "format": "",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/apple.xml",
+    "menu-actions": {
+      "about":    "~/Projects/hyprmac/shell/hyprmac-ajustes about",
+      "settings": "~/Projects/hyprmac/shell/hyprmac-ajustes",
+      "forcequit": "~/Projects/hyprmac/shell/hyprmac-shell force-quit",
+      "sleep":    "systemctl suspend",
+      "lock":     "~/Projects/hyprmac/shell/hyprmac-lock",
+      "reboot":   "systemctl reboot",
+      "poweroff": "systemctl poweroff",
+      "logout":   "hyprctl dispatch 'hl.dsp.exit()'"
+    }
+  },
+
+  // Nome do app em foco, em negrito; o clique abre o menu do app como no macOS.
+  // Montado na hora pelo hyprmac-shell, com o nome real ("About Brave",
+  // "Hide Brave", "Quit Brave"); Hide/Hide Others/Show All/Quit usam scripts/janela.
+  "hyprland/window": {
+    "format": "{class}",
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command app-menu",
+    // false: como no Mac, a barra de todas as telas mostra o app ativo
+    "separate-outputs": false,
+    "icon": false,
+    "tooltip": false,
+    // o jsoncpp ordena as chaves: as regras específicas com pontos ficam entre
+    // parênteses para virem antes da genérica "[a-zA-Z0-9-]+…" (que corta o prefixo)
+    "rewrite": {
+      // sem janela em foco (mesa): o app ativo é o Finder, como no Mac
+      "^$": "Finder",
+      "kitty": "Kitty",
+      "(com\\.mitchellh\\.ghostty)": "Ghostty",
+      "(org\\.mozilla\\.)?firefox": "Firefox",
+      // o gerenciador de arquivos faz o papel do Finder (Dock, menu Go): mesmo nome
+      "(org\\.kde\\.nautilus|org\\.gnome\\.Nautilus)": "Finder",
+      "(brave-browser|Brave-browser|brave-origin)": "Brave",
+      "(Code|code|code-oss|code-url-handler)": "Code",
+      "(google-chrome|Google-chrome)": "Google Chrome",
+      "(chromium|Chromium)": "Chromium",
+      "(spotify|Spotify)": "Spotify",
+      "(discord|Discord|vesktop)": "Discord",
+      "(pavucontrol|org\\.pulseaudio\\.pavucontrol)": "Controle de Volume",
+      "nm-connection-editor": "Conexões de Rede",
+      "(blueman-manager|.blueman-manager-wrapped)": "Bluetooth",
+      "(dev\\.hyprmac\\.about)": "Sobre",
+      "(dev\\.hyprmac\\.Settings)": "System Settings",
+      "(hyprmac-preview|dev\\.hyprmac\\.Preview|org\\.gnome\\.Papers|org\\.gnome\\.Loupe)": "Preview",
+      "(dev\\.hyprmac\\.Notes)": "Notes",
+      "(dev\\.hyprmac\\.Journal)": "Journal",
+      "(dev\\.hyprmac\\.Photos)": "Photos",
+      "org\\.gnome\\.Snapshot": "Photo Booth",
+      "(org\\.gnome\\.Calculator|dev\\.hyprmac\\.Calculator)": "Calculator",
+      "org\\.gnome\\.TextEditor": "TextEdit",
+      "[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.(.+)": "$1"
+    }
+  },
+
+  "custom/menu-arquivo": {
+    "exec": "~/.config/waybar/scripts/app-menu.py File '.'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/arquivo.xml",
+    "menu-actions": {
+      "newterm":  "ghostty",
+      "files":    "nautilus",
+      "launcher": "~/Projects/hyprmac/scripts/spotlight",
+      "close":    "hyprctl dispatch 'hl.dsp.window.close()'"
+    }
+  },
+
+  // mesma coisa sem janela em foco (Finder): itens indisponíveis esmaecidos
+  "custom/menu-arquivo-mesa": {
+    "exec": "~/.config/waybar/scripts/app-menu.py File '^$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/arquivo-mesa.xml",
+    "menu-actions": {
+      "newfinder": "sh -c 'nautilus \"$HOME\"'",
+      "newfolder": "sh -c 'd=\"$(xdg-user-dir DESKTOP)\"; n=\"untitled folder\"; i=2; while [ -e \"$d/$n\" ]; do n=\"untitled folder $i\"; i=$((i+1)); done; mkdir \"$d/$n\"'",
+      "find": "~/Projects/hyprmac/scripts/spotlight mode files"
+    }
+  },
+
+  // atalhos enviados à janela em foco (o menu da barra não tira o foco dela)
+  "custom/menu-editar": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Edit '.'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/editar.xml",
+    "menu-actions": {
+      "undo":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"z\" })'",
+      "redo":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"z\" })'",
+      "cut":       "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"x\" })'",
+      "copy":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"c\" })'",
+      "paste":     "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"v\" })'",
+      // colar sem formatação (Ctrl+Shift+Alt+V nos apps que suportam)
+      "pastestyle": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT ALT\", key = \"v\" })'",
+      "delete":    "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"Delete\" })'",
+      "selectall": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"a\" })'",
+      "find":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"f\" })'",
+      // histórico da área de transferência no Spotlight (Super+Shift+V)
+      "clipboard": "~/Projects/hyprmac/scripts/spotlight clipboard",
+      // Emoji & Symbols (Tahoe: último item do Edit) — seletor do Plasma
+      "emoji":     "plasma-emojier"
+    }
+  },
+
+  // mesma coisa sem janela em foco (Finder): itens indisponíveis esmaecidos
+  "custom/menu-editar-mesa": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Edit '^$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/editar-mesa.xml",
+    "menu-actions": {
+      "undo":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"z\" })'",
+      "redo":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"z\" })'",
+      "cut":       "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"x\" })'",
+      "copy":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"c\" })'",
+      "paste":     "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"v\" })'",
+      // colar sem formatação (Ctrl+Shift+Alt+V nos apps que suportam)
+      "pastestyle": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT ALT\", key = \"v\" })'",
+      "delete":    "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"Delete\" })'",
+      "selectall": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"a\" })'",
+      "find":      "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"f\" })'",
+      // histórico da área de transferência no Spotlight (Super+Shift+V)
+      "clipboard": "~/Projects/hyprmac/scripts/spotlight clipboard",
+      // Emoji & Symbols (Tahoe: último item do Edit) — seletor do Plasma
+      "emoji":     "plasma-emojier"
+    }
+  },
+
+  // View: montado na hora pelo hyprmac-shell, com rótulos de estado
+  // ("Enter/Exit Full Screen", "Show/Hide Scratchpad", "Use Light/Dark Appearance")
+  "custom/menu-visualizar": {
+    "format": "View",
+    "tooltip": false,
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command view-menu"
+  },
+
+  // Menus do VS Code (Selection entre Edit e View; Go, Run e Terminal entre View e
+  // Window), como no Code para Mac: só aparecem com o Code em foco
+  "custom/menu-selecao": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Selection '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/selecao.xml",
+    "menu-actions": {
+      "selectall": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"a\" })'",
+      "expand": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"SHIFT ALT\", key = \"Right\" })'",
+      "shrink": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"SHIFT ALT\", key = \"Left\" })'",
+      "copyup": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"SHIFT ALT\", key = \"Up\" })'",
+      "copydown": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"SHIFT ALT\", key = \"Down\" })'",
+      "moveup": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"ALT\", key = \"Up\" })'",
+      "movedown": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"ALT\", key = \"Down\" })'",
+      "cursorup": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"Up\" })'",
+      "cursordown": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"Down\" })'",
+      "nextocc": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"d\" })'"
+    }
+  },
+
+  "custom/menu-codigo-ir": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Go '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/codigo-ir.xml",
+    "menu-actions": {
+      "back": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL ALT\", key = \"minus\" })'",
+      "forward": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"minus\" })'",
+      "file": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"p\" })'",
+      "symbolws": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"t\" })'",
+      "symbol": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"o\" })'",
+      "definition": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"F12\" })'",
+      "line": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"g\" })'",
+      "nextproblem": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"F8\" })'"
+    }
+  },
+
+  "custom/menu-executar": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Run '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/executar.xml",
+    "menu-actions": {
+      "debug": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"F5\" })'",
+      "run": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"F5\" })'",
+      "stop": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"SHIFT\", key = \"F5\" })'",
+      "breakpoint": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"\", key = \"F9\" })'"
+    }
+  },
+
+  "custom/menu-terminal": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Terminal '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/terminal.xml",
+    "menu-actions": {
+      "new": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"grave\" })'",
+      "split": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"5\" })'",
+      "toggle": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"grave\" })'"
+    }
+  },
+
+  // Menu Playback do Spotify (entre View e Window, como no Spotify para Mac)
+  "custom/menu-reproducao": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Playback '^(spotify|Spotify)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/reproducao.xml",
+    "menu-actions": {
+      "play": "playerctl -p spotify play-pause",
+      "next": "playerctl -p spotify next",
+      "previous": "playerctl -p spotify previous",
+      "seekf": "playerctl -p spotify position 10+",
+      "seekb": "playerctl -p spotify position 10-",
+      "shuffle": "playerctl -p spotify shuffle toggle",
+      "repeat": "sh -c 'case $(playerctl -p spotify loop) in None) playerctl -p spotify loop Playlist;; Playlist) playerctl -p spotify loop Track;; *) playerctl -p spotify loop None;; esac'",
+      "volup": "playerctl -p spotify volume 0.1+",
+      "voldown": "playerctl -p spotify volume 0.1-"
+    }
+  },
+
+  // Menu Format do Notes (shell/hyprmac-notas), entre Edit e View como no Tahoe; as ações
+  // chegam ao app pelo D-Bus padrão do GApplication (org.gtk.Actions)
+  "custom/menu-formatar": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Format '^dev\\.hyprmac\\.Notes$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/notas-formatar.xml",
+    "menu-actions": {
+      "checklist": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate checklist '[]' '{}'",
+      "markchecked": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate mark-checked '[]' '{}'",
+      "checkall": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate check-all '[]' '{}'",
+      "uncheckall": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate uncheck-all '[]' '{}'",
+      "movechecked": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate move-checked-bottom '[]' '{}'",
+      "deletechecked": "gdbus call --session --dest dev.hyprmac.Notes --object-path /dev/hyprmac/Notes --method org.gtk.Actions.Activate delete-checked '[]' '{}'"
+    }
+  },
+
+  // Menu Go do Finder (mesa vazia ou nautilus/Nautilus em foco), entre View e Window
+  "custom/menu-ir": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Go '^(|org\\.kde\\.nautilus|org\\.gnome\\.Nautilus)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/ir.xml",
+    "menu-actions": {
+      "recents": "nautilus recentlyused:/files",
+      "documents": "sh -c 'nautilus \"$(xdg-user-dir DOCUMENTS)\"'",
+      "desktop": "sh -c 'nautilus \"$(xdg-user-dir DESKTOP)\"'",
+      "downloads": "sh -c 'nautilus \"$(xdg-user-dir DOWNLOAD)\"'",
+      "home": "nautilus \"$HOME\"",
+      "computer": "nautilus /",
+      "network": "nautilus remote:/",
+      "applications": "nautilus applications:/",
+      "gotofolder": "~/Projects/hyprmac/scripts/spotlight mode files",
+      "server": "nautilus remote:/"
+    }
+  },
+
+  // Menus do navegador, como os do Safari na referência (History, Bookmarks,
+  // Develop entre View e Window): só aparecem com um navegador em foco
+  // (scripts/app-menu.py); os itens mandam o atalho equivalente do Chromium/Firefox.
+  "custom/menu-historico": {
+    "exec": "~/.config/waybar/scripts/app-menu.py History '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/historico.xml",
+    "menu-actions": {
+      "history": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"h\" })'",
+      "back": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"ALT\", key = \"Left\" })'",
+      "forward": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"ALT\", key = \"Right\" })'",
+      "home": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"ALT\", key = \"Home\" })'",
+      "reopen": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"t\" })'",
+      "clear": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"Delete\" })'"
+    }
+  },
+  "custom/menu-favoritos": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Bookmarks '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/favoritos.xml",
+    "menu-actions": {
+      "show": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"o\" })'",
+      "add": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"d\" })'",
+      "addtabs": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"d\" })'",
+      "bar": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"b\" })'"
+    }
+  },
+  "custom/menu-desenvolver": {
+    "exec": "~/.config/waybar/scripts/app-menu.py Develop '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 11,
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/desenvolver.xml",
+    "menu-actions": {
+      "inspector": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"i\" })'",
+      "console": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"j\" })'",
+      "source": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL\", key = \"u\" })'",
+      "origin": "hyprctl dispatch 'hl.dsp.send_shortcut({ mods = \"CTRL SHIFT\", key = \"r\" })'"
+    }
+  },
+  "custom/menu-janela": {
+    "format": "Window",
+    "tooltip": false,
+    // menu montado na hora pelo hyprmac-shell (lista as áreas de trabalho)
+    "on-click": "~/Projects/hyprmac/shell/hyprmac-shell window-menu"
+  },
+
+  "custom/menu-ajuda": {
+    "format": "Help",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/menus/ajuda.xml",
+    "menu-actions": {
+      "search":     "~/Projects/hyprmac/scripts/spotlight mode actions",
+      "help":       "xdg-open /home/igor/Projects/hyprmac/BaseConhecimento/README.md",
+      "hyprwiki":   "xdg-open https://wiki.hypr.land",
+      "waybarwiki": "xdg-open https://github.com/Alexays/Waybar/wiki"
+    }
+  },
+
+  // ─────────────────────────── direita ───────────────────────────
+
+  // Câmera em uso: cápsula verde (como no Tahoe), por scripts/camera.sh, já
+  // que o módulo privacy do Waybar 0.15 só tem screenshare, audio-in e audio-out
+  "custom/camera": {
+    "exec": "~/.config/waybar/scripts/camera.sh",
+    "return-type": "json"
+  },
+
+  // câmera (verde no Tahoe) não existe no módulo: o Waybar 0.15 só tem
+  // screenshare, audio-in e audio-out
+  "privacy": {
+    "icon-size": 12,
+    "icon-spacing": 4,
+    "transition-duration": 250,
+    "modules": [
+      { "type": "screenshare", "tooltip": true },
+      { "type": "audio-in",    "tooltip": true }
+    ]
+  },
+
+  // à direita do play/pause: nome da música + barrinhas no ritmo do áudio;
+  // some quando nada toca.
+  // Clique abre o player do hyprmac-shell. Compilar: make -C waybar/cffi
+  "cffi/nowplaying": {
+    "module_path": "/home/igor/Projects/hyprmac/waybar/cffi/nowplaying.so"
+  },
+
+  "mpris": {
+    "format": "{status_icon}",
+    "format-stopped": "",
+    "status-icons": { "playing": "󰐍", "paused": "󰏦" },
+    "tooltip-format": "{title}\n{artist}",
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
+  },
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": { "active": "󰧞", "default": "󰧟" },
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "tooltip": false
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "policy-file": "menu-extras.json", // extensão local: preferências sem reiniciar a barra
+    "item-margin": 7,   // extensão local: GTK EventBox ignora a margem/padding do CSS
+    "spacing": 2,
+    "show-passive-items": false,
+    "reverse-direction": false,
+    "smooth-scrolling-threshold": 1
+  },
+
+  "battery": {
+    "states": { "warning": 20, "critical": 10 },
+    "format": "{capacity}%  {icon}",
+    "format-charging": "{capacity}%  󰂄",
+    "format-icons": ["󰁺", "󰁼", "󰁾", "󰂀", "󰂂", "󰁹"],
+    "tooltip-format": "{timeTo}"
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-off": "",
+    "format-disabled": "",
+    "format-connected": "󰂱",
+    "tooltip-format": "Bluetooth: {status}",
+    "tooltip-format-connected": "Conectado a {device_alias}",
+    // clique: menu Bluetooth do hyprmac-shell (como no Tahoe); direito: o app
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-bluetooth",
+    "on-click-right": "/home/igor/Projects/hyprmac/shell/hyprmac-ajustes bluetooth"
+  },
+
+  // Aparece só com uma VPN conectada (atualiza na hora via "nmcli monitor")
+  "custom/vpn": {
+    "exec": "~/Projects/hyprmac/scripts/vpn status",
+    "return-type": "json",
+    "on-click": "~/Projects/hyprmac/scripts/vpn toggle",
+    "on-click-right": "/home/igor/Projects/hyprmac/shell/hyprmac-ajustes network"
+  },
+
+  "network": {
+    "format-wifi": "{icon}",
+    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-ethernet": "󰓡",
+    "format-linked": "󰓡",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid}  ·  {signalStrength}%\n{ipaddr}",
+    "tooltip-format-ethernet": "Ethernet · {ifname}\n{ipaddr}",
+    "tooltip-format-disconnected": "Desconectado",
+    // clique: menu Wi‑Fi do hyprmac-shell (como no Tahoe); direito: o app
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-wifi",
+    "on-click-right": "/home/igor/Projects/hyprmac/shell/hyprmac-ajustes network"
+  },
+
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "tooltip-format": "Som · {volume}%\n{desc}",
+    "scroll-step": 5,
+    // clique: menu Som do hyprmac-shell (slider + saídas); direito: mudo
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-sound",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+
+  // Fonte de entrada ("BR" num quadrado contornado, como no Tahoe); o clique
+  // troca para o próximo layout, se houver mais de um
+  "custom/input": {
+    "exec": "~/.config/waybar/scripts/input-source.sh",
+    "return-type": "json",
+    "on-click": "hyprctl switchxkblayout current next"
+  },
+
+  // Foco (lua): aparece só com Não Perturbe ligado; o hyprmac-shell cria o
+  // arquivo e manda o sinal. Clique abre a Central de Controle.
+  "custom/focus": {
+    "exec": "[ -e \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-dnd\" ] && echo '{\"text\":\"󰽥\",\"class\":\"on\",\"tooltip\":\"Do Not Disturb\"}' || echo '{\"text\":\"\",\"class\":\"off\"}'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 10,
+    "on-click": "~/Projects/hyprmac/shell/hyprmac-shell toggle-cc"
+  },
+
+  "custom/spotlight": {
+    "format": "󰍉",
+    "tooltip": false,
+    "on-click": "~/Projects/hyprmac/scripts/spotlight"
+  },
+
+  "custom/controlcenter": {
+    "exec": "~/.config/waybar/scripts/cc-state.sh",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 8,
+    "tooltip": false,
+    "on-click": "~/Projects/hyprmac/shell/hyprmac-shell toggle-cc",
+    // botão direito: menu do hyprmac-shell com rótulos de estado ("Turn Wi‑Fi Off"…)
+    "on-click-right": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command cc-menu"
+  },
+
+  // relógio + ponto de notificações no mesmo "pill"
+  "group/clock": {
+    "orientation": "horizontal",
+    "modules": ["custom/clock", "custom/notifdot"]
+  },
+
+  "custom/clock": {
+    "exec": "~/.config/waybar/scripts/clock.py",
+    // abre a Central de Notificações do hyprmac-shell
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-nc",
+    "return-type": "json",
+    "restart-interval": 5
+  },
+
+  // ponto verde: há notificações na Central (o hyprmac-shell cria o arquivo
+  // e manda o sinal). Sem notificações fica transparente, sem mudar a largura.
+  "custom/notifdot": {
+    "exec": "[ -e \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-notifs\" ] && echo '{\"text\":\" \",\"class\":\"on\"}' || echo '{\"text\":\" \"}'",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 9,
+    "tooltip": false,
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-nc"
+  }
+}

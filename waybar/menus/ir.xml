@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Go do Finder: aparece com a mesa (sem janela) ou o gerenciador de arquivos em
+     foco, como no Mac. Abre os lugares no gerenciador de arquivos (nautilus). -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="recents"><property name="label">Recents</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="documents"><property name="label">Documents</property></object></child>
+    <child><object class="GtkMenuItem" id="desktop"><property name="label">Desktop</property></object></child>
+    <child><object class="GtkMenuItem" id="downloads"><property name="label">Downloads</property></object></child>
+    <child><object class="GtkMenuItem" id="home"><property name="label">Home</property></object></child>
+    <child><object class="GtkMenuItem" id="computer"><property name="label">Computer</property></object></child>
+    <child><object class="GtkMenuItem" id="network"><property name="label">Network</property></object></child>
+    <child><object class="GtkMenuItem" id="applications"><property name="label">Applications</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="gotofolder"><property name="label">Go to Folder…</property></object></child>
+    <child><object class="GtkMenuItem" id="server"><property name="label">Connect to Server…</property></object></child>
+  </object>
+</interface>

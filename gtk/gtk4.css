@@ -1,0 +1,406 @@
+/* hyprmac — GTK 4 / libadwaita no modo escuro do macOS Tahoe
+ * Carregado por ~/.config/gtk-4.0/gtk.css. As cores vêm de palette4.css
+ * (cópia de palette4-dark.css ou palette4-light.css, trocada por scripts/theme). */
+
+@import url("palette4.css");
+@import url("accent4.css");   /* cor de destaque (scripts/accent) */
+@import url("a11y4.css");     /* Reduzir Transparência / Aumentar Contraste */
+
+/* ───────────── janela ───────────── */
+
+window.csd,
+window.csd > .titlebar,
+window.csd.background {
+  border-radius: 22px;
+}
+
+window.csd {
+  box-shadow: none;    /* a sombra vem do Hyprland */
+  outline: none;
+}
+
+/* Fonte do sistema: SF Pro (família "SF Pro" do kit). Só na janela: os filhos
+ * herdam, e quem pede monospace explicitamente continua com a fonte própria.
+ * O tamanho segue o gtk-font-name / font-name do GNOME. */
+window {
+  font-family: "SF Pro", "SF Pro Text", "Inter Variable", "Inter", sans-serif;
+}
+
+/* ───────────── barra de título / toolbar ───────────── */
+
+/* Barra unificada do kit (Windows/Dark/Unified Toolbar): 52 de altura,
+ * padding 8, controles de 36 — a referência mede o mesmo (~53) */
+headerbar {
+  min-height: 52px;
+  padding: 0 8px;
+  box-shadow: inset 0 -1px alpha(@mac_ink, 0.08);
+}
+
+headerbar .title,
+windowtitle .title {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+windowtitle .subtitle {
+  font-size: 11px;
+  color: @mac_label_2;
+}
+
+/* botões da toolbar: cápsulas de vidro */
+headerbar button:not(.suggested-action):not(.destructive-action),
+headerbar menubutton > button,
+headerbar splitbutton > button,
+headerbar splitbutton > menubutton > button {
+  min-height: 36px;
+  min-width: 36px;
+  border-radius: 999px;
+  background-color: alpha(@mac_ink, 0.06);
+  box-shadow: inset 0 0 0 1px alpha(@mac_ink, 0.10),
+              inset 0 1px alpha(@mac_ink, 0.06);
+}
+
+headerbar button:not(.suggested-action):not(.destructive-action):hover {
+  background-color: alpha(@mac_ink, 0.11);
+}
+
+headerbar button:not(.suggested-action):not(.destructive-action):active,
+headerbar button:checked {
+  background-color: alpha(@mac_ink, 0.16);
+}
+
+/* ───────────── controles da janela (semáforo) ─────────────
+ * Kit macOS 27 (Titlebars/Dark/Window Controls/Standard): círculos de 14 com
+ * 9 de vão, fechar #FF5C60, minimizar #FAC800, zoom #35C759, anel 0,5
+ * #000/0.45; janela inativa: os três #FFF/0.17. Ficam à esquerda
+ * (gtk-decoration-layout=close,minimize,maximize:) e o símbolo só aparece
+ * com o ponteiro sobre o grupo, como no Mac. Na barra unificada o primeiro
+ * círculo fica a 18 da borda (padding de 8 da barra + 10 aqui). */
+
+windowcontrols {
+  margin: 0 6px 0 10px;
+  border-spacing: 9px;
+}
+
+/* "headerbar … :not(…)" para vencer a regra das cápsulas da toolbar */
+windowcontrols > button,
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action),
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):hover,
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):active,
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):disabled {
+  min-width: 14px;
+  min-height: 14px;
+  padding: 0;
+  margin: 19px 0;             /* centra os 14 na barra de 52 (o GTK estica o botão) */
+  border-radius: 999px;
+  background-image: none;
+  box-shadow: 0 0 0 0.5px alpha(black, 0.45);
+  color: transparent;
+  opacity: 1;
+  filter: none;
+}
+
+windowcontrols > button > image,
+windowcontrols > button:hover > image,
+windowcontrols > button:active > image {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  min-width: 14px;
+  min-height: 14px;
+  -gtk-icon-size: 8px;
+  color: transparent;
+}
+
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action).close    { background-color: #ff5c60; }
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action).minimize { background-color: #fac800; }
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action).maximize { background-color: #35c759; }
+
+windowcontrols:hover > button > image { color: alpha(black, 0.55); }
+headerbar windowcontrols > button:not(.suggested-action):not(.destructive-action):active { filter: brightness(0.8); }
+
+window:backdrop headerbar windowcontrols:not(:hover) > button:not(.suggested-action):not(.destructive-action),
+headerbar windowcontrols:backdrop:not(:hover) > button:not(.suggested-action):not(.destructive-action) {
+  background-color: alpha(white, 0.17);
+  box-shadow: 0 0 0 0.5px alpha(white, 0.03);
+}
+
+/* ───────────── barra lateral ───────────── */
+
+.navigation-sidebar,
+placessidebar,
+.sidebar-pane {
+  background-color: @mac_sidebar;
+}
+
+.navigation-sidebar > row,
+placessidebar row {
+  min-height: 28px;
+  margin: 1px 8px;
+  padding: 0 8px;
+  border-radius: 7px;
+}
+
+.navigation-sidebar > row:hover {
+  background-color: alpha(@mac_ink, 0.05);
+}
+
+/* seleção da barra lateral é cinza translúcido, não azul */
+.navigation-sidebar > row:selected,
+placessidebar row:selected {
+  background-color: alpha(@mac_ink, 0.11);
+  color: @mac_label;
+}
+
+/* ───────────── controles ───────────── */
+
+button {
+  border-radius: 8px;
+}
+
+button.pill {
+  border-radius: 999px;
+}
+
+button.suggested-action {
+  background-color: @mac_accent;
+  color: #ffffff;
+}
+
+entry,
+spinbutton,
+.entry,
+searchentry {
+  min-height: 28px;
+  border-radius: 8px;
+  background-color: alpha(@mac_ink, 0.05);
+  box-shadow: inset 0 0 0 1px alpha(@mac_ink, 0.10);
+}
+
+searchentry,
+entry.search {
+  border-radius: 999px;
+}
+
+entry:focus-within,
+searchentry:focus-within {
+  outline: 3px solid @mac_focus;
+  outline-offset: 0;
+}
+
+/* interruptor no tamanho e cor do macOS */
+switch {
+  min-width: 36px;
+  min-height: 20px;
+  padding: 1px;
+  border-radius: 999px;
+  background-color: alpha(@mac_ink, 0.16);
+}
+switch:checked {
+  background-color: @mac_accent;
+}
+switch > slider {
+  min-width: 20px;
+  min-height: 20px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+switch image { opacity: 0; }
+
+check {
+  border-radius: 4px;
+}
+
+scale > trough {
+  min-height: 4px;
+  background-color: alpha(@mac_ink, 0.16);
+}
+scale > trough > slider {
+  min-width: 20px;
+  min-height: 20px;
+  background-color: @mac_knob;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+}
+
+/* listas agrupadas (preferências) como as do Ajustes do Sistema */
+.boxed-list,
+list.boxed-list,
+.card {
+  border-radius: 12px;
+  background-color: alpha(@mac_ink, 0.05);
+  box-shadow: inset 0 0 0 1px alpha(@mac_ink, 0.07);
+}
+
+preferencesgroup > box > label.heading,
+.heading {
+  font-weight: 700;
+}
+
+/* ───────────── menus, popovers, tooltips ───────────── */
+
+popover > contents {
+  border-radius: 14px;
+  padding: 5px;
+  box-shadow: 0 0 0 1px alpha(@mac_ink, 0.14), 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* Menus (kit macOS 27, página Menus): raio 12, padding 6/5/5 (o destaque fica
+ * a 5px da borda e o texto a 16), vidro "Menus" aproximado com @mac_menu
+ * translúcido — o Hyprland desfoca os popups — + filete, aro e realce no topo */
+popover.menu > contents,
+popover.menu > arrow {
+  background-color: @mac_menu;
+}
+
+popover.menu > contents {
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+  box-shadow: 0 0 0 1px @mac_menu_edge,
+              inset 0 0 0 1px @mac_menu_rim,
+              inset 0 1px 0 alpha(@mac_ink, 0.10),
+              0 4px 24px rgba(0, 0, 0, 0.30);
+}
+
+/* itens: 24 de altura, SF Pro Medium 13, destaque raio 8 que passa 11px do texto */
+popover.menu modelbutton {
+  min-height: 24px;
+  padding: 0 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* destaque: #0069F9 do kit (mais escuro que o azul do sistema), texto branco */
+popover.menu modelbutton:hover,
+popover.menu modelbutton:selected {
+  background-color: @mac_selection;
+  color: #ffffff;
+}
+
+/* atalhos: Medium 13 cinza (#4C4C4C plus-lighter no kit ≈ rótulo secundário) */
+popover.menu modelbutton accelerator {
+  color: @mac_label_2;
+}
+popover.menu modelbutton:hover accelerator,
+popover.menu modelbutton:selected accelerator {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* separador: 11 de altura com linha de 1px alinhada ao texto */
+popover.menu separator {
+  min-height: 1px;
+  margin: 5px 11px;
+}
+
+/* tooltip do kit: SF Pro Medium 11, padding 3/6 */
+tooltip {
+  padding: 3px 6px;
+  border-radius: 8px;
+  background-color: @mac_tooltip;
+  box-shadow: 0 0 0 1px alpha(@mac_ink, 0.12);
+}
+tooltip label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* barras de rolagem do kit (Scrollbars): cápsula de 6px num trilho de 12,
+ * #FFF/0.55 (escuro) / #000/0.50 (claro) */
+scrollbar slider {
+  min-width: 6px;
+  min-height: 6px;
+  margin: 3px;
+  border-radius: 999px;
+  background-color: @mac_scroll;
+}
+scrollbar slider:hover,
+scrollbar.dragging slider {
+  background-color: alpha(@mac_ink, 0.70);
+}
+
+/* diálogos ("folhas") */
+dialog.alert .dialog-contents,
+window.dialog.message {
+  border-radius: 16px;
+}
+
+/* abas: controle segmentado */
+notebook > header {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 6px;
+}
+notebook > header > tabs {
+  background: alpha(@mac_ink, 0.06);
+  border-radius: 9px;
+  padding: 2px;
+}
+notebook > header > tabs > tab {
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 7px;
+  box-shadow: none;
+  color: @mac_label_2;
+}
+notebook > header > tabs > tab:checked {
+  background: alpha(@mac_ink, 0.16);
+  color: alpha(@mac_ink, 0.92);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+notebook > header.top > tabs > tab:checked,
+notebook > header > tabs > tab:checked { border: none; }
+
+/* ───────────── barra de abas (AdwTabBar: Ghostty, Nautilus…) ─────────────
+ * Como a do Safari na referência (safari-escuro-barra-de-menus-abas.png): faixa de
+ * 34 um tom acima da janela (#333 sobre #202020 = tinta a 8,5 %), abas em cápsula
+ * de 31, a ativa mais clara (#565656 = tinta a 24 %), sem sublinhado nem bordas. */
+tabbar .box {
+  background-color: alpha(@mac_ink, 0.085);
+  min-height: 34px;
+  padding: 2px 4px;
+  box-shadow: none;
+  border: none;
+}
+tabbar tab {
+  min-height: 30px;
+  margin: 0 2px;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+}
+tabbar tab:hover    { background-color: alpha(@mac_ink, 0.06); }
+tabbar tab:selected { background-color: alpha(@mac_ink, 0.24); }
+tabbar tab label    { font-size: 12px; }
+tabbar tabbox > separator { background: alpha(@mac_ink, 0.10); margin: 8px 0; }
+
+/* ───────────── Finder (Nautilus) ─────────────
+ * Medido em referencias/telas/tahoe-dark.jpeg (Finder do Tahoe, Retina 2×; px/2 = pt):
+ * linhas de 32 com a cápsula de seleção ocupando a linha toda, recuo de 10 da lateral,
+ * raio 8; seleção cinza #2D2F33 sobre #1F2124 (tinta ≈ 6 %) com texto e ícone na cor de
+ * destaque (#2B91F6 na captura); cabeçalhos Favorites/Locations em 11 semibold, cinza
+ * (#A0A3A8 ≈ tinta a 60 %). A lateral flutuante de vidro do Tahoe não é reproduzida aqui:
+ * vidro de janela só vem do compositor (vidro.janela). */
+window.nautilus-window .navigation-sidebar > row {
+  min-height: 32px;
+  margin: 0 10px;
+  padding: 0 8px;
+  border-radius: 8px;
+}
+window.nautilus-window .navigation-sidebar > row:selected {
+  background-color: alpha(@mac_ink, 0.06);
+}
+window.nautilus-window .navigation-sidebar > row:selected label,
+window.nautilus-window .navigation-sidebar > row:selected image {
+  color: @mac_accent;
+}
+window.nautilus-window .navigation-sidebar .heading,
+window.nautilus-window .navigation-sidebar > row.header label {
+  font-size: 11px;
+  font-weight: 600;
+  color: alpha(@mac_ink, 0.6);
+}
+/* o Finder não tem título na barra da lateral, só os semáforos */
+window.nautilus-window .sidebar-pane headerbar .title { opacity: 0; }

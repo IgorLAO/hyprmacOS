@@ -1,0 +1,28 @@
+{
+  "id": "dev.hyprmac.Clock",
+  "name": "Clock",
+  "icon": "shell/icons/tahoe26/factory/Clock.png",
+  "layout": "window",
+  "size": [
+    560,
+    520
+  ],
+  "sidebar_items": [],
+  "status": "partial",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.clock",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Clock.json",
+    "menu_state": "absent",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Clock.app/Contents/Resources/AppIcon.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": {
+    "kind": "python_panel",
+    "module": "app_factory_clock",
+    "class": "ClockPanel"
+  },
+  "toolbar_items": [],
+  "transition_ms": 0
+}

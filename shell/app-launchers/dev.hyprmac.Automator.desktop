@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Automator
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Automator
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Automator.png
+StartupWMClass=dev.hyprmac.Automator
+Terminal=false
+Categories=Utility;

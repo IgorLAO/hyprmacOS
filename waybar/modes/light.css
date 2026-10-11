@@ -1,0 +1,118 @@
+/* hyprmac — barra de menus clara e fosca (estilo macOS com vidro claro)
+ * Copiado para waybar/mode.css pelo script scripts/bar-style.
+ * Os seletores usam window#waybar:not(.x) só para ganhar especificidade
+ * sobre o style.css, que é carregado depois deste arquivo. */
+
+window#waybar:not(.x) {
+  background: rgba(246, 246, 248, 0.64);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+window#waybar:not(.x) #custom-apple,
+window#waybar:not(.x) #window,
+window#waybar:not(.x) #custom-menu-arquivo,
+window#waybar:not(.x) #custom-menu-editar,
+window#waybar:not(.x) #custom-menu-visualizar,
+window#waybar:not(.x) #custom-menu-janela,
+window#waybar:not(.x) #custom-menu-ajuda,
+window#waybar:not(.x) #mpris,
+window#waybar:not(.x) #hyprmac-nowplaying,
+window#waybar:not(.x) #workspaces,
+window#waybar:not(.x) #tray,
+window#waybar:not(.x) #tray > widget,
+window#waybar:not(.x) #battery,
+window#waybar:not(.x) #bluetooth,
+window#waybar:not(.x) #custom-vpn,
+window#waybar:not(.x) #network,
+window#waybar:not(.x) #pulseaudio,
+window#waybar:not(.x) #custom-spotlight,
+window#waybar:not(.x) #custom-controlcenter,
+window#waybar:not(.x) #custom-focus,
+window#waybar:not(.x) #custom-input,
+window#waybar:not(.x) #custom-clock,
+window#waybar:not(.x) #clock {
+  color: rgba(0, 0, 0, 0.85);
+  text-shadow: none;
+}
+
+/* seleção: cápsula preta a 8% (kit: #000/0.08 plus-darker) */
+window#waybar:not(.x) #custom-apple:hover,
+window#waybar:not(.x) #window:hover,
+window#waybar:not(.x) #custom-menu-arquivo:hover,
+window#waybar:not(.x) #custom-menu-editar:hover,
+window#waybar:not(.x) #custom-menu-visualizar:hover,
+window#waybar:not(.x) #custom-menu-janela:hover,
+window#waybar:not(.x) #custom-menu-ajuda:hover,
+window#waybar:not(.x) #tray > widget:hover,
+window#waybar:not(.x) #mpris:hover,
+window#waybar:not(.x) #hyprmac-nowplaying:hover,
+window#waybar:not(.x) #workspaces:hover,
+window#waybar:not(.x) #battery:hover,
+window#waybar:not(.x) #bluetooth:hover,
+window#waybar:not(.x) #custom-vpn:hover,
+window#waybar:not(.x) #network:hover,
+window#waybar:not(.x) #pulseaudio:hover,
+window#waybar:not(.x) #custom-spotlight:hover,
+window#waybar:not(.x) #custom-controlcenter:hover,
+window#waybar:not(.x) #clock:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+window#waybar:not(.x) #network.disconnected,
+window#waybar:not(.x) #bluetooth.disabled,
+window#waybar:not(.x) #pulseaudio.muted,
+window#waybar:not(.x) #mpris.paused {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+window#waybar:not(.x) #workspaces button {
+  color: rgba(0, 0, 0, 0.30);
+  text-shadow: none;
+}
+window#waybar:not(.x) #workspaces button.active,
+window#waybar:not(.x) #workspaces button:hover {
+  color: rgba(0, 0, 0, 0.86);
+}
+
+window#waybar:not(.x) #custom-controlcenter {
+  background-image: url("icons/controlcenter-dark.svg");
+}
+window#waybar:not(.x) #custom-controlcenter.active {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+window#waybar:not(.x) #custom-input { border-color: rgba(0, 0, 0, 0.85); }
+
+/* menus próprios de cada app (VS Code, mesa/Finder, navegador, Spotify) */
+window#waybar:not(.x) #custom-menu-arquivo-mesa,
+window#waybar:not(.x) #custom-menu-editar-mesa,
+window#waybar:not(.x) #custom-menu-selecao,
+window#waybar:not(.x) #custom-menu-codigo-ir,
+window#waybar:not(.x) #custom-menu-executar,
+window#waybar:not(.x) #custom-menu-terminal,
+window#waybar:not(.x) #custom-menu-reproducao,
+window#waybar:not(.x) #custom-menu-ir,
+window#waybar:not(.x) #custom-menu-historico,
+window#waybar:not(.x) #custom-menu-favoritos,
+window#waybar:not(.x) #custom-menu-desenvolver {
+  color: rgba(0, 0, 0, 0.85);
+  text-shadow: none;
+}
+window#waybar:not(.x) #custom-menu-arquivo-mesa:hover,
+window#waybar:not(.x) #custom-menu-editar-mesa:hover,
+window#waybar:not(.x) #custom-menu-selecao:hover,
+window#waybar:not(.x) #custom-menu-codigo-ir:hover,
+window#waybar:not(.x) #custom-menu-executar:hover,
+window#waybar:not(.x) #custom-menu-terminal:hover,
+window#waybar:not(.x) #custom-menu-reproducao:hover,
+window#waybar:not(.x) #custom-menu-ir:hover,
+window#waybar:not(.x) #custom-menu-historico:hover,
+window#waybar:not(.x) #custom-menu-favoritos:hover,
+window#waybar:not(.x) #custom-menu-desenvolver:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* SNI: estado de menu aberto, sem alterar os ícones fornecidos pelo app. */
+window#waybar:not(.x) #tray > widget.menu-open {
+  background-color: rgba(0, 0, 0, 0.14);
+}

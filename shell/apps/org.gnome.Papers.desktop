@@ -1,0 +1,22 @@
+[Desktop Entry]
+NoDisplay=true
+Name=Document Viewer
+Comment=View multi-page documents
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=pdf;djvu;tiff;document;presentation;viewer;papers;
+TryExec=papers
+Exec=papers %U
+StartupNotify=true
+Terminal=false
+Type=Application
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+Icon=org.gnome.Papers
+Categories=GNOME;GTK;Office;Viewer;Graphics;2DGraphics;VectorGraphics;
+MimeType=application/vnd.comicbook-rar;application/vnd.comicbook+zip;application/x-cb7;application/x-cbr;application/x-cbt;application/x-cbz;application/x-ext-cb7;application/x-ext-cbr;application/x-ext-cbt;application/x-ext-cbz;application/x-ext-djv;application/x-ext-djvu;image/vnd.djvu;image/vnd.djvu+multipage;application/pdf;application/x-bzpdf;application/x-ext-pdf;application/x-gzpdf;application/x-xzpdf;application/illustrator;image/tiff;
+Actions=new-window;
+# Translators: Do NOT translate or transliterate this text (these are enum types)!
+X-Purism-FormFactor=Workstation;Mobile;
+
+[Desktop Action new-window]
+Name=New Window
+Exec=papers

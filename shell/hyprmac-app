@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""Launch a manifest based HyprMac application by its app ID."""
+
+import argparse
+import os
+
+from app_factory_registry import load_manifest
+from app_factory_window import run_app
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("app_id")
+    parser.add_argument("--smoke", action="store_true", help="Open and close automatically for validation")
+    args = parser.parse_args()
+    manifest = load_manifest(args.app_id)
+    backend = manifest.get("backend")
+    if backend and backend["kind"] == "external":
+        if args.smoke:
+            parser.error("--smoke is only available for factory windows")
+        os.execvp(backend["argv"][0], backend["argv"])
+    return run_app(manifest, smoke=args.smoke)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Tips
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Tips
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Tips.png
+StartupWMClass=dev.hyprmac.Tips
+Terminal=false
+Categories=Utility;

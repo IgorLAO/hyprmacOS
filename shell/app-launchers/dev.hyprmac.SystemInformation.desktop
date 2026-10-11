@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=System Information
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.SystemInformation
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/SystemInformation.png
+StartupWMClass=dev.hyprmac.SystemInformation
+Terminal=false
+Categories=Utility;

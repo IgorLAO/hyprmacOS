@@ -1,0 +1,2153 @@
+{
+  "schema": 1,
+  "base": "macOS Tahoe / 27",
+  "items": [
+    {
+      "id": "ref-03gv9eretsydh3ic3etkffp-12-p5yz-1920-webp",
+      "arquivo": "referencias/telas/03gv9eretsydh3ic3etkffp-12_p5yz.1920.webp",
+      "categoria": "desktop",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "03gv9eretsydh3ic3etkffp 12_p5yz.1920",
+      "descricao": "03gv9eretsydh3ic3etkffp 12_p5yz.1920",
+      "ancoras_visuais": [
+        "desktop",
+        "macOS Tahoe"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1280,
+        "altura": 720
+      },
+      "proporcao": 1.7778,
+      "bytes": 30682,
+      "sha256": "83083a84b13493f5d31ee0827988660339dc7d14e548fa8fe4c2779daf0118bd",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-1-awn03udmtrar6fupfqimuq-jpg",
+      "arquivo": "referencias/telas/1_AWn03UdmtRaR6fupfQIMUQ.jpg",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "edit"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Controls Gallery opened beside Control Center in edit mode",
+      "descricao": "Search bar, category sidebar on left, What's New card, suggestions in 3 sizes (small circle, wide tile, 2×2 square), \"Drag a control to place it in Control Center or Menu Bar…\", blue Done button",
+      "ancoras_visuais": [
+        "Control Center",
+        "tiles",
+        "sliders",
+        "Search bar, category sidebar on left, What's New card, suggestions in 3 sizes (small circle, wide tile, 2×2 square), \"Drag a control to place it in Control Center or Menu Bar…\", blue Done button"
+      ],
+      "usar_para": [
+        "control center"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1180,
+        "altura": 764
+      },
+      "proporcao": 1.5445,
+      "bytes": 100560,
+      "sha256": "c6189fada057378c313ac6810e48b3e84dd0eafb3079f4f95475573a1534159e",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-1-utwwdud5paebw7xrmuweoa-jpg",
+      "arquivo": "referencias/telas/1_UTWwDUD5PaEbW7XRmuWEoA.jpg",
+      "categoria": "desktop",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Desktop with Widgets",
+      "descricao": "Concentric battery rings (clear glass), white calendar widget (today highlighted in red circle), blue gradient weather forecast; Dock; light menu bar",
+      "ancoras_visuais": [
+        "desktop",
+        "Dock",
+        "widgets",
+        "Concentric battery rings (clear glass), white calendar widget (today highlighted in red circle), blue gradient weather forecast; Dock; light menu bar"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1299,
+        "altura": 841
+      },
+      "proporcao": 1.5446,
+      "bytes": 79472,
+      "sha256": "98b764f60478f6744c6b8281146c8699c4b5265159b5e8ac342888b5d214c547",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-apple-intelligence-live-translation-250609-webp",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Apple-Intelligence-Live-Translation-250609.webp",
+      "categoria": "app_window",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "FaceTime with live transcription",
+      "descricao": "Dark translucent card in corner with \"Stop\"; **green camera privacy indicator** in top menu bar",
+      "ancoras_visuais": [
+        "application window",
+        "toolbar",
+        "window chrome",
+        "Dark translucent card in corner with \"Stop\"; **green camera privacy indicator** in top menu bar"
+      ],
+      "usar_para": [
+        "app window"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 358398,
+      "sha256": "a8153de6b75f21d8ba2db57c3df9b225221e2913932224def781502d41b04869",
+      "triagem": "atlas/app_window.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-apple-intelligence-shortcuts-notes-250609-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Apple-Intelligence-Shortcuts-Notes-250609.jpg",
+      "categoria": "app_window",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Notes + Shortcuts side-by-side",
+      "descricao": "Toolbar buttons in segmented glass capsules; inactive window with dimmed gray stoplights; actions sidebar with categories",
+      "ancoras_visuais": [
+        "application window",
+        "toolbar",
+        "window chrome",
+        "Toolbar buttons in segmented glass capsules; inactive window with dimmed gray stoplights; actions sidebar with categories"
+      ],
+      "usar_para": [
+        "app window"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 304010,
+      "sha256": "7de21245e265385768f478af3d30c49fd99a6cf5dcb5a98a5d43d15c0009f1c0",
+      "triagem": "atlas/app_window.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-apple-music-250609-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Apple-Music-250609.jpg",
+      "categoria": "app_window",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Music App + widgets + Dock",
+      "descricao": "**Recessed floating glass sidebar** with stoplights; mini-player in **floating glass capsule** at window footer; calendar/weather widgets in glass; full Dock",
+      "ancoras_visuais": [
+        "application window",
+        "toolbar",
+        "window chrome",
+        "**Recessed floating glass sidebar** with stoplights; mini-player in **floating glass capsule** at window footer; calendar/weather widgets in glass; full Dock"
+      ],
+      "usar_para": [
+        "app window"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 446096,
+      "sha256": "32843ae4525c4ca8de0c667e12ab64656b43e0d6ca7ea1738c20ca9caa3bb58e",
+      "triagem": "atlas/app_window.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-control-center-250609-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Control-Center-250609.jpg",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Native Control Center (Light mode, Blue wave)",
+      "descricao": "Clear glass tiles; Bluetooth/AirDrop active = solid white circle + blue glyph; Wi-Fi medium tile with \"Home\"; Now Playing 2×2 with large album art; Focus medium tile; Display (blue) and Sound sliders (white + AirPlay trigger); 4 small circles (Dark Mode, Calculator, Timer, Screenshot); Edit Controls pill; Menu bar trigger enclosed in glass capsule; Clock \"Tue Apr 1 9:41 AM\"",
+      "ancoras_visuais": [
+        "Control Center",
+        "tiles",
+        "sliders",
+        "Clear glass tiles; Bluetooth/AirDrop active = solid white circle + blue glyph; Wi-Fi medium tile with \"Home\"; Now Playing 2×2 with large album art; Focus medium tile; Display (blue) and Sound sliders (white + AirPlay trigger); 4 small circles (Dark Mode, Calculator, Timer, Screenshot); Edit Controls pill; Menu bar trigger enclosed in glass capsule; Clock \"Tue Apr 1 9:41 AM\""
+      ],
+      "usar_para": [
+        "control center"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 147546,
+      "sha256": "adfb665fc61de94497a34396b2078a5eb5c6a73539a3a9634765a83f408acde2",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-control-center-250609-big-jpg-large-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Control-Center-250609_big.jpg.large.jpg",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Same screen, high resolution",
+      "descricao": "Same details at higher scale",
+      "ancoras_visuais": [
+        "Control Center",
+        "tiles",
+        "sliders",
+        "Same details at higher scale"
+      ],
+      "usar_para": [
+        "control center"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 980,
+        "altura": 653
+      },
+      "proporcao": 1.5008,
+      "bytes": 95611,
+      "sha256": "5a2e6be58f20b270f80899d25fa0ea59c0941e3a08ba28e1317576d86a15c5d9",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-lock-screen-250609-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Lock-Screen-250609.jpg",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "lock_screen"
+      ],
+      "prioridade": "canonical",
+      "titulo": "Lock Screen",
+      "descricao": "Small date banner at top, **huge glass clock**, avatar + username + \"Touch ID or Enter Password\", minimal status extras in top-right corner",
+      "ancoras_visuais": [
+        "large glass clock",
+        "date",
+        "avatar",
+        "Touch ID or Enter Password",
+        "Small date banner at top, **huge glass clock**, avatar + username + \"Touch ID or Enter Password\", minimal status extras in top-right corner"
+      ],
+      "usar_para": [
+        "lock screen geometry",
+        "clock",
+        "avatar",
+        "status icons"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 115499,
+      "sha256": "133bc1bc337ca401ec14676348f75d157e8e7cd8d42ee5dc8aeaf66b0a51d6ef",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-apple-wwdc25-macos-tahoe-26-phone-incoming-call-250609-jpg",
+      "arquivo": "referencias/telas/Apple-WWDC25-macOS-Tahoe-26-Phone-incoming-call-250609.jpg",
+      "categoria": "notification",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Incoming Call Banner",
+      "descricao": "Large rounded card with caller contact photo, circular glass action buttons, red/green decline/accept triggers; Preview window with tinted toolbar",
+      "ancoras_visuais": [
+        "notification",
+        "banner",
+        "status",
+        "Large rounded card with caller contact photo, circular glass action buttons, red/green decline/accept triggers; Preview window with tinted toolbar"
+      ],
+      "usar_para": [
+        "notification"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 3840,
+        "altura": 2560
+      },
+      "proporcao": 1.5,
+      "bytes": 261889,
+      "sha256": "b6d6ef283da19f34645952fe7cc43af0b1f70d308cdfe5d8ffee2387f37ced13",
+      "triagem": "atlas/notification.jpg"
+    },
+    {
+      "id": "ref-edit-controls-in-macos-control-center-jpg",
+      "arquivo": "referencias/telas/Edit-Controls-in-macOS-Control-Center.jpg",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "edit"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Control Center on natural desktop, \"Edit Controls\" pointer",
+      "descricao": "**Sliders with large white capsule knob**; medium tiles \"Dark Mode / Off\", \"Voice Memo\"; active timer tinted in blue; menu bar with weather, battery %, tray icons",
+      "ancoras_visuais": [
+        "Control Center",
+        "tiles",
+        "sliders",
+        "**Sliders with large white capsule knob**; medium tiles \"Dark Mode / Off\", \"Voice Memo\"; active timer tinted in blue; menu bar with weather, battery %, tray icons"
+      ],
+      "usar_para": [
+        "control center"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 948,
+        "altura": 1348
+      },
+      "proporcao": 0.7033,
+      "bytes": 50773,
+      "sha256": "781fde5a8ac655740bbaafdfc6891813036a37c85d1c0c12e0d8b043f01b141b",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-wu6d54fr94lsaxw5qmn84n-jpg",
+      "arquivo": "referencias/telas/WU6D54fr94LsaXw5qmN84N.jpg",
+      "categoria": "desktop",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "MacBook with default Tahoe desktop",
+      "descricao": "Calendar + Weather + Photo widget stacked on left; centered Dock; transparent menu bar",
+      "ancoras_visuais": [
+        "desktop",
+        "Dock",
+        "widgets",
+        "Calendar + Weather + Photo widget stacked on left; centered Dock; transparent menu bar"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1280,
+        "altura": 720
+      },
+      "proporcao": 1.7778,
+      "bytes": 110985,
+      "sha256": "d941a8de575c871778c251a71f48abcef5929aea7d7b20510ac2516067bb1271",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-ajustes-aparencia-claro-cor-pastas-png",
+      "arquivo": "referencias/telas/ajustes-aparencia-claro-cor-pastas.png",
+      "categoria": "settings",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Settings ▸ Appearance in light mode with \"Folder color\" menu",
+      "descricao": "Light glass dropdown: Automatic, color options with color dots, separator, \"Choose Color…\"; Multicolor option; light blue sidebar selection pill",
+      "ancoras_visuais": [
+        "System Settings",
+        "popover",
+        "form",
+        "Light glass dropdown: Automatic, color options with color dots, separator, \"Choose Color…\"; Multicolor option; light blue sidebar selection pill"
+      ],
+      "usar_para": [
+        "settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 557,
+        "altura": 486
+      },
+      "proporcao": 1.1461,
+      "bytes": 125006,
+      "sha256": "c2766cb11663ebe9b5ec6e97e0bffd30c4528acc20b2304277ee47946a89bdb4",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-general-escuro-aguas-vivas-png",
+      "arquivo": "referencias/telas/ajustes-general-escuro-aguas-vivas.png",
+      "categoria": "settings",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "settings"
+      ],
+      "prioridade": "secondary",
+      "titulo": "ajustes general escuro aguas vivas",
+      "descricao": "ajustes general escuro aguas vivas",
+      "ancoras_visuais": [
+        "Settings sidebar",
+        "General pane",
+        "wallpaper behind window",
+        "dark glass"
+      ],
+      "usar_para": [
+        "System Settings layout",
+        "sidebar",
+        "dark materials"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 780,
+        "altura": 438
+      },
+      "proporcao": 1.7808,
+      "bytes": 398148,
+      "sha256": "f276c9668e6da222e891506d5633540a9e4f24e0208f4aa45173f3c2acdb0971",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-clock-appearance-downlink-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-clock-appearance-downlink.png",
+      "categoria": "settings",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Settings ▸ Wallpaper with Clock Appearance… popover",
+      "descricao": "441×178 pt popover, radius ~20 pt, arrow centered on button; \"Show large clock\" + \"On Lock Screen ⌃⌄\"; **6 font styles**; Weight slider (218 pt wide); live lock screen preview",
+      "ancoras_visuais": [
+        "System Settings",
+        "popover",
+        "form",
+        "441×178 pt popover, radius ~20 pt, arrow centered on button; \"Show large clock\" + \"On Lock Screen ⌃⌄\"; **6 font styles**; Weight slider (218 pt wide); live lock screen preview"
+      ],
+      "usar_para": [
+        "settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1024,
+        "altura": 843
+      },
+      "proporcao": 1.2147,
+      "bytes": 427970,
+      "sha256": "8151ee319627bceea541e9cfa726aa31c56d6b940cef7320c8a8c8fad8f1990b",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-clock-appearance-escuro-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-clock-appearance-escuro.png",
+      "categoria": "settings",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "popover",
+        "lock_screen"
+      ],
+      "prioridade": "canonical",
+      "titulo": "ajustes wallpaper clock appearance escuro",
+      "descricao": "ajustes wallpaper clock appearance escuro",
+      "ancoras_visuais": [
+        "six clock styles",
+        "Weight slider",
+        "On Lock Screen",
+        "dark settings"
+      ],
+      "usar_para": [
+        "Clock Appearance popover",
+        "weight slider",
+        "lock screen settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1200,
+        "altura": 516
+      },
+      "proporcao": 2.3256,
+      "bytes": 325614,
+      "sha256": "7aa2686b89b35bcb3f4af2e97a047161929df4112ec6bbf8db46284320594022",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-clock-appearance-pequeno-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-clock-appearance-pequeno.png",
+      "categoria": "settings",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "popover",
+        "lock_screen"
+      ],
+      "prioridade": "secondary",
+      "titulo": "ajustes wallpaper clock appearance pequeno",
+      "descricao": "ajustes wallpaper clock appearance pequeno",
+      "ancoras_visuais": [
+        "Show large clock",
+        "clock style selector",
+        "Weight slider",
+        "Done"
+      ],
+      "usar_para": [
+        "Clock Appearance controls",
+        "popover proportions"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 580,
+        "altura": 344
+      },
+      "proporcao": 1.686,
+      "bytes": 159339,
+      "sha256": "b033ce0af408cd74ed1386a5b76002dac36d47e60b718615b1dfb429f8401aba",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-landscape-claro-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-landscape-claro.png",
+      "categoria": "settings",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light"
+      ],
+      "prioridade": "secondary",
+      "titulo": "ajustes wallpaper landscape claro",
+      "descricao": "ajustes wallpaper landscape claro",
+      "ancoras_visuais": [
+        "System Settings",
+        "popover",
+        "form"
+      ],
+      "usar_para": [
+        "settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1670,
+        "altura": 1714
+      },
+      "proporcao": 0.9743,
+      "bytes": 2056369,
+      "sha256": "e2ef4887cd86db883f5e79efe13099b2abd801662ca446313959f154db4ba350",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-landscape-escuro-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-landscape-escuro.png",
+      "categoria": "settings",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Settings ▸ Wallpaper (Dark mode)",
+      "descricao": "Thumbnail preview 160×100 pt; options form (Name · Fill Screen · Show on all Spaces); \"Screen Saver…\" (113 pt) and \"Clock Appearance…\" (145.5 pt) buttons aligned right",
+      "ancoras_visuais": [
+        "System Settings",
+        "popover",
+        "form",
+        "Thumbnail preview 160×100 pt; options form (Name · Fill Screen · Show on all Spaces); \"Screen Saver…\" (113 pt) and \"Clock Appearance…\" (145.5 pt) buttons aligned right"
+      ],
+      "usar_para": [
+        "settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1670,
+        "altura": 1556
+      },
+      "proporcao": 1.0733,
+      "bytes": 1957286,
+      "sha256": "94b1d73fc037525cd6c8ef839744f3e3d285a035552289750e8c256082e67327",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-ajustes-wallpaper-screen-saver-folha-claro-png",
+      "arquivo": "referencias/telas/ajustes-wallpaper-screen-saver-folha-claro.png",
+      "categoria": "settings",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Modal sheet Screen Saver… (Light mode)",
+      "descricao": "Modal card 520×313 pt centered over window; light veil over parent; preview 168×105 pt; options form; blue Done button",
+      "ancoras_visuais": [
+        "System Settings",
+        "popover",
+        "form",
+        "Modal card 520×313 pt centered over window; light veil over parent; preview 168×105 pt; options form; blue Done button"
+      ],
+      "usar_para": [
+        "settings"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1536,
+        "altura": 999
+      },
+      "proporcao": 1.5375,
+      "bytes": 1376379,
+      "sha256": "6c53c167a7613b55f36b0db0126c3790115a6bdbce33c837bfd1d02a89712a62",
+      "triagem": "atlas/settings.jpg"
+    },
+    {
+      "id": "ref-bloqueio-26-final-relogio-estencil-png",
+      "arquivo": "referencias/telas/bloqueio-26-final-relogio-estencil.png",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Lock Screen, macOS 26.0 final (Wed Sep 17), 1512 pt Retina",
+      "descricao": "Clock in glass **stencil** styling; avatar 48.3 pt vertically centered; date adding $\\approx 95$ luminance to background (`plus-lighter`)",
+      "ancoras_visuais": [
+        "lock screen",
+        "clock",
+        "authentication",
+        "Clock in glass **stencil** styling; avatar 48.3 pt vertically centered; date adding $\\approx 95$ luminance to background (`plus-lighter`)"
+      ],
+      "usar_para": [
+        "lock screen"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 2000,
+        "altura": 1301
+      },
+      "proporcao": 1.5373,
+      "bytes": 1301331,
+      "sha256": "c1f836046c10aa6f3a5411f6b5a3561919a831ebcb1a273e94d660f62dfe7f7e",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-bloqueio-beta-praia-abc-carregando-png",
+      "arquivo": "referencias/telas/bloqueio-beta-praia-abc-carregando.png",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "beta"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Beta lock screen, \"Tahoe Day\" wallpaper",
+      "descricao": "\"ABC\" + keyboard glyph, battery **with lightning bolt** (charging state), Wi-Fi; SF clock tinted with accent",
+      "ancoras_visuais": [
+        "lock screen",
+        "clock",
+        "authentication",
+        "\"ABC\" + keyboard glyph, battery **with lightning bolt** (charging state), Wi-Fi; SF clock tinted with accent"
+      ],
+      "usar_para": [
+        "lock screen"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 2000,
+        "altura": 1299
+      },
+      "proporcao": 1.5396,
+      "bytes": 2359345,
+      "sha256": "1089f68cada5c1678b4af938f4ccdc719d08331d2ca40d81f7c0b45038f327b9",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-bloqueio-relogio-data-por-extenso-png",
+      "arquivo": "referencias/telas/bloqueio-relogio-data-por-extenso.png",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "clock_style"
+      ],
+      "prioridade": "secondary",
+      "titulo": "bloqueio relogio data por extenso",
+      "descricao": "bloqueio relogio data por extenso",
+      "ancoras_visuais": [
+        "long date",
+        "large translucent clock",
+        "wallpaper contrast"
+      ],
+      "usar_para": [
+        "lock screen typography",
+        "date format",
+        "large clock"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 852,
+        "altura": 546
+      },
+      "proporcao": 1.5604,
+      "bytes": 494064,
+      "sha256": "ee9c578c6388bd45b368872303be07469c44747c5dcf082c5d99f7a4c3f03a17",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-bloqueio-relogio-estencil-vidro-montanhas-png",
+      "arquivo": "referencias/telas/bloqueio-relogio-estencil-vidro-montanhas.png",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Glass stencil clock over landscape",
+      "descricao": "Stencil cuts with floating flags in numeral \"1\"; pure white date",
+      "ancoras_visuais": [
+        "lock screen",
+        "clock",
+        "authentication",
+        "Stencil cuts with floating flags in numeral \"1\"; pure white date"
+      ],
+      "usar_para": [
+        "lock screen"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1210,
+        "altura": 710
+      },
+      "proporcao": 1.7042,
+      "bytes": 1168550,
+      "sha256": "52ae2d2ed4c58875983c4867a03c44ab36ed8d6860d6edb1fd67aae93d07513d",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-bloqueio-varios-usuarios-relogio-serifa-png",
+      "arquivo": "referencias/telas/bloqueio-varios-usuarios-relogio-serifa.png",
+      "categoria": "lock_screen",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Multi-user Lock Screen",
+      "descricao": "Serif typography (New York font style) for clock and date; vertical list of user accounts; \"91%\" battery percentage label",
+      "ancoras_visuais": [
+        "lock screen",
+        "clock",
+        "authentication",
+        "Serif typography (New York font style) for clock and date; vertical list of user accounts; \"91%\" battery percentage label"
+      ],
+      "usar_para": [
+        "lock screen"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1920,
+        "altura": 1080
+      },
+      "proporcao": 1.7778,
+      "bytes": 1107522,
+      "sha256": "e9dd14061c56435ee89af2e6c0b48fa0c6cc43a08fa16d13f2e82945b6af3498",
+      "triagem": "atlas/lock_screen.jpg"
+    },
+    {
+      "id": "ref-cc-comparacao-hyprmac-x-tahoe-png",
+      "arquivo": "referencias/telas/cc-comparacao-hyprmac-x-tahoe.png",
+      "categoria": "comparison",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "side_by_side"
+      ],
+      "prioridade": "golden",
+      "titulo": "Direct user side-by-side comparison",
+      "descricao": "hyprmac shell on right vs native Tahoe on left",
+      "ancoras_visuais": [
+        "native Tahoe versus hyprmac",
+        "composition",
+        "proportions",
+        "material",
+        "hyprmac shell on right vs native Tahoe on left"
+      ],
+      "usar_para": [
+        "visual regression",
+        "side-by-side review"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 735,
+        "altura": 678
+      },
+      "proporcao": 1.0841,
+      "bytes": 315937,
+      "sha256": "75a902c50b5ca478c692a0d607d79ca8a25751e37619fd3e1ff5859b4d57e03d",
+      "triagem": "atlas/comparison.jpg"
+    },
+    {
+      "id": "ref-cc-edicao-galeria-sobre-azul-png",
+      "arquivo": "referencias/telas/cc-edicao-galeria-sobre-azul.png",
+      "categoria": "control_center",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "edit",
+        "gallery"
+      ],
+      "prioridade": "canonical",
+      "titulo": "cc edicao galeria sobre azul",
+      "descricao": "cc edicao galeria sobre azul",
+      "ancoras_visuais": [
+        "gallery beside Control Center",
+        "search",
+        "categories",
+        "Done"
+      ],
+      "usar_para": [
+        "Controls Gallery",
+        "edit mode",
+        "glass panel"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 832,
+        "altura": 610
+      },
+      "proporcao": 1.3639,
+      "bytes": 319511,
+      "sha256": "1bcc47a6cdfa7bffc363579d6460669393a2c6812a5620a1983a7010067566cb",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-cc-sobre-janela-clara-png",
+      "arquivo": "referencias/telas/cc-sobre-janela-clara.png",
+      "categoria": "control_center",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "overlay"
+      ],
+      "prioridade": "secondary",
+      "titulo": "cc sobre janela clara",
+      "descricao": "cc sobre janela clara",
+      "ancoras_visuais": [
+        "vertical Control Center",
+        "clear glass",
+        "underlying app window"
+      ],
+      "usar_para": [
+        "Control Center over window",
+        "layer contrast"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 575,
+        "altura": 627
+      },
+      "proporcao": 0.9171,
+      "bytes": 186100,
+      "sha256": "d1f3c18fce91c0407d5bd13b23401d18815b73bfda197c92ee2b8497891bbc63",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-cc-tahoe-alvo-usuario-png",
+      "arquivo": "referencias/telas/cc-tahoe-alvo-usuario.png",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "target"
+      ],
+      "prioridade": "golden",
+      "titulo": "Native Tahoe Control Center (Target specification)",
+      "descricao": "Wi-Fi/Bluetooth/AirDrop in medium capsules, \"Not Playing\" card top-right, round toggles, Focus, wide Display / Keyboard / Sound sliders, \"Edit Controls\" pill, location privacy indicator above",
+      "ancoras_visuais": [
+        "Wi-Fi/Bluetooth/AirDrop",
+        "Not Playing",
+        "Focus",
+        "Display/Keyboard/Sound sliders",
+        "Edit Controls",
+        "Wi-Fi/Bluetooth/AirDrop in medium capsules, \"Not Playing\" card top-right, round toggles, Focus, wide Display / Keyboard / Sound sliders, \"Edit Controls\" pill, location privacy indicator above"
+      ],
+      "usar_para": [
+        "Control Center layout",
+        "tile proportions",
+        "sliders",
+        "target comparison"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 496,
+        "altura": 491
+      },
+      "proporcao": 1.0102,
+      "bytes": 229132,
+      "sha256": "ecb6694a47ccdb54937ed9d5ebccaa385e3155d2a01384004a1166ac2a068e81",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-clear-dark-1-webp",
+      "arquivo": "referencias/telas/clear-dark-1.webp",
+      "categoria": "desktop",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Settings ▸ Appearance, Clear style",
+      "descricao": "Default/Dark/Clear/Tinted options, purple accent color, folder color selector, widgets rendered in purple glass",
+      "ancoras_visuais": [
+        "desktop",
+        "macOS Tahoe",
+        "Default/Dark/Clear/Tinted options, purple accent color, folder color selector, widgets rendered in purple glass"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 800,
+        "altura": 521
+      },
+      "proporcao": 1.5355,
+      "bytes": 48392,
+      "sha256": "4d61b5d5427824739a689f0fac877ca032c083e6e04cc2702634afaf2df45606",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-dark-icons-widgets-macos-1-webp",
+      "arquivo": "referencias/telas/dark-icons-widgets-macos-1.webp",
+      "categoria": "desktop",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Settings ▸ Appearance, Dark style",
+      "descricao": "Same settings panel, showing Always/Auto toggles",
+      "ancoras_visuais": [
+        "desktop",
+        "macOS Tahoe",
+        "Same settings panel, showing Always/Auto toggles"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 800,
+        "altura": 521
+      },
+      "proporcao": 1.5355,
+      "bytes": 47784,
+      "sha256": "db996537f9ae10b0a488206e589beb7076e7814a31fcc16d22ad383f91c8ee8b",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-escuro-menu-contexto-sobre-rosa-png",
+      "arquivo": "referencias/telas/escuro-menu-contexto-sobre-rosa.png",
+      "categoria": "menu_bar",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "overlay"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Finder context menu in Dark mode over vibrant sky",
+      "descricao": "Backdrop hue preserved; leading icons on each item (Open, Move to Trash, Get Info, Rename…), circular color tag markers, \"Customize Folder…\", selection pill in dark violet",
+      "ancoras_visuais": [
+        "menu bar",
+        "menus",
+        "window",
+        "Backdrop hue preserved; leading icons on each item (Open, Move to Trash, Get Info, Rename…), circular color tag markers, \"Customize Folder…\", selection pill in dark violet"
+      ],
+      "usar_para": [
+        "menu bar"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 640,
+        "altura": 733
+      },
+      "proporcao": 0.8731,
+      "bytes": 235317,
+      "sha256": "554c684a078a3af018c19028fe86400fab25158e2a8bcde7540717bdc05bcd94",
+      "triagem": "atlas/menu_bar.jpg"
+    },
+    {
+      "id": "ref-escuro-spotlight-apps-sobre-claro-png",
+      "arquivo": "referencias/telas/escuro-spotlight-apps-sobre-claro.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "light",
+        "overlay"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Spotlight Apps mode in Dark mode over light wallpaper",
+      "descricao": "Panel darkens significantly while retaining backdrop hue; shows category sections with \"Show More\" and 5-icon grid",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay",
+        "Panel darkens significantly while retaining backdrop hue; shows category sections with \"Show More\" and 5-icon grid"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 653,
+        "altura": 592
+      },
+      "proporcao": 1.103,
+      "bytes": 230016,
+      "sha256": "1cada4621fed5b552f6681acd8d2123ef82a7c8bf1edf56bc50658550996c9aa",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-images-jpeg",
+      "arquivo": "referencias/telas/images.jpeg",
+      "categoria": "desktop",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "images",
+      "descricao": "images",
+      "ancoras_visuais": [
+        "desktop",
+        "macOS Tahoe"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 353,
+        "altura": 566
+      },
+      "proporcao": 0.6237,
+      "bytes": 30384,
+      "sha256": "ca9aa1114254a2c11381c2c373f4882feee342adc93cae827a8c5cb3ae89aa5b",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-macos-tahoe-home-screen-jpg",
+      "arquivo": "referencias/telas/macos-tahoe-home-screen.jpg",
+      "categoria": "control_center",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "light",
+        "edit",
+        "widgets",
+        "dock"
+      ],
+      "prioridade": "canonical",
+      "titulo": "Control Center in Edit Mode + Desktop widgets + Dock",
+      "descricao": "\"−\" badge in top-left corner of each control; **ghost/dashed circles** for vacant grid slots; wide weather widget in glass; white Shortcuts widget; photo widget; Dock with section divider and running indicator dots",
+      "ancoras_visuais": [
+        "minus badges",
+        "ghost/dashed circles",
+        "weather widget",
+        "running dots",
+        "\"−\" badge in top-left corner of each control; **ghost/dashed circles** for vacant grid slots; wide weather widget in glass; white Shortcuts widget; photo widget; Dock with section divider and running indicator dots"
+      ],
+      "usar_para": [
+        "edit mode",
+        "ghost slots",
+        "widget layout",
+        "Dock"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1500,
+        "altura": 975
+      },
+      "proporcao": 1.5385,
+      "bytes": 131018,
+      "sha256": "0fa8c32d1403e5d0d8027e1436a7cf7527b2f32e9ed226ecbdaaa9fcd84ae5f5",
+      "triagem": "atlas/control_center.jpg"
+    },
+    {
+      "id": "ref-macos-tahoe-looking-good-in-black-avif",
+      "arquivo": "referencias/telas/macos-tahoe-looking-good-in-black.avif",
+      "categoria": "app_window",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "macos tahoe looking good in black",
+      "descricao": "macos tahoe looking good in black",
+      "ancoras_visuais": [
+        "application window",
+        "toolbar",
+        "window chrome"
+      ],
+      "usar_para": [
+        "app window"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1600,
+        "altura": 900
+      },
+      "proporcao": 1.7778,
+      "bytes": 112662,
+      "sha256": "5f5598a9d18c63edac135afb1b4d1fa9639b34a77a80bf4ee0279ccd5311c202",
+      "triagem": "atlas/app_window.jpg"
+    },
+    {
+      "id": "ref-macos-tahoe-looking-good-in-black-jpg",
+      "arquivo": "referencias/telas/macos-tahoe-looking-good-in-black.jpg",
+      "categoria": "app_window",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Dark Terminal + Finder, Clear icons in Dock",
+      "descricao": "Terminal window with 16 pt continuous squircle radius and stoplights; gray folder icons; monochromatic glass icons",
+      "ancoras_visuais": [
+        "application window",
+        "toolbar",
+        "window chrome",
+        "Terminal window with 16 pt continuous squircle radius and stoplights; gray folder icons; monochromatic glass icons"
+      ],
+      "usar_para": [
+        "app window"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1600,
+        "altura": 900
+      },
+      "proporcao": 1.7778,
+      "bytes": 71170,
+      "sha256": "e742780fe534b43f3909f6d508ced7bef7848086d8fc3ab18b9452f01fb12a6a",
+      "triagem": "atlas/app_window.jpg"
+    },
+    {
+      "id": "ref-osd-volume-alto-falantes-png",
+      "arquivo": "referencias/telas/osd-volume-alto-falantes.png",
+      "categoria": "osd",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "Tahoe Volume OSD",
+      "descricao": "Glass panel docked under sound icon with active output name (\"MacBook Air Speakers\"), thin slider with dotted calibration marks, flanking speaker icons",
+      "ancoras_visuais": [
+        "OSD",
+        "slider",
+        "system feedback",
+        "Glass panel docked under sound icon with active output name (\"MacBook Air Speakers\"), thin slider with dotted calibration marks, flanking speaker icons"
+      ],
+      "usar_para": [
+        "osd"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 655,
+        "altura": 239
+      },
+      "proporcao": 2.7406,
+      "bytes": 99308,
+      "sha256": "830e1eeee77651311baf105e173f0b3f51b93e1637b57a20a93271513090f532",
+      "triagem": "atlas/osd.jpg"
+    },
+    {
+      "id": "ref-osd-volume-arrastando-png",
+      "arquivo": "referencias/telas/osd-volume-arrastando.png",
+      "categoria": "osd",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "osd volume arrastando",
+      "descricao": "osd volume arrastando",
+      "ancoras_visuais": [
+        "OSD",
+        "slider",
+        "system feedback"
+      ],
+      "usar_para": [
+        "osd"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 625,
+        "altura": 217
+      },
+      "proporcao": 2.8802,
+      "bytes": 93202,
+      "sha256": "72dfb2c1c358722d31d1227798d7d8baf9a7e9aa0f678bce6f9a2a9d85c6d3f5",
+      "triagem": "atlas/osd.jpg"
+    },
+    {
+      "id": "ref-safari-escuro-barra-de-menus-abas-png",
+      "arquivo": "referencias/telas/safari-escuro-barra-de-menus-abas.png",
+      "categoria": "menu_bar",
+      "classificacao_fonte": "manual_index",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "safari",
+        "window",
+        "tabs"
+      ],
+      "prioridade": "golden",
+      "titulo": "Dark Safari with native menu bar and tab bar",
+      "descricao": "**Menu bar**: App name \"Safari\" in Heavy bold, menus in Semibold 13 pt, background tinted with indigo desktop color; monochrome status extras on right, **active item in light lilac capsule**, input source \"BR\" inside circled badge, clock \"Sun 12:07\"; **Window**: Stoplights, sidebar toggle in capsule, back/forward combined capsule, address bar in **central capsule**, share/tabs grouped in capsule; **Tab bar**: Active tab in lighter capsule, tabs with favicons and truncated text; **Metrics** (MacBook Pro 16\" Retina 2056 pt, 0.617 px/pt): Menu bar ~34 pt; Apple logo at 23 pt from edge (13×16 glyph); app name at 58 pt; 26 pt between menu titles; extras ~16 pt with ~39 pt pitch, active capsule 36×20 pt; clock ~23 pt from right edge; **window touches menu bar and display sides (margin 0)**, corner ~22 pt, active inner glow ~24% white",
+      "ancoras_visuais": [
+        "menu bar 34 pt",
+        "Safari Heavy 13 pt",
+        "active lilac capsule",
+        "window touches edges",
+        "22 pt squircle",
+        "**Menu bar**: App name \"Safari\" in Heavy bold, menus in Semibold 13 pt, background tinted with indigo desktop color; monochrome status extras on right, **active item in light lilac capsule**, input source \"BR\" inside circled badge, clock \"Sun 12:07\"; **Window**: Stoplights, sidebar toggle in capsule, back/forward combined capsule, address bar in **central capsule**, share/tabs grouped in capsule; **Tab bar**: Active tab in lighter capsule, tabs with favicons and truncated text; **Metrics** (MacBook Pro 16\" Retina 2056 pt, 0.617 px/pt): Menu bar ~34 pt; Apple logo at 23 pt from edge (13×16 glyph); app name at 58 pt; 26 pt between menu titles; extras ~16 pt with ~39 pt pitch, active capsule 36×20 pt; clock ~23 pt from right edge; **window touches menu bar and display sides (margin 0)**, corner ~22 pt, active inner glow ~24% white"
+      ],
+      "usar_para": [
+        "menu bar",
+        "window geometry",
+        "tabs",
+        "active capsule",
+        "window gaps"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1276,
+        "altura": 140
+      },
+      "proporcao": 9.1143,
+      "bytes": 99675,
+      "sha256": "6560dd8f0895af84a78b2c8ff13961cf18f3249bb7bcf375cc6980b1d1ced8b1",
+      "triagem": "atlas/menu_bar.jpg"
+    },
+    {
+      "id": "ref-spotlight-abrir-1-png",
+      "arquivo": "referencias/telas/spotlight-abrir-1.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight abrir 1",
+      "descricao": "spotlight abrir 1",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-abrir",
+        "ordem": 1,
+        "total": 2
+      },
+      "dimensoes_px": {
+        "largura": 621,
+        "altura": 173
+      },
+      "proporcao": 3.5896,
+      "bytes": 84660,
+      "sha256": "db6e8d35533ffa81752cbca07d5489a6f0d9594e6934de1b616de0cd8b902401",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-abrir-2-png",
+      "arquivo": "referencias/telas/spotlight-abrir-2.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight abrir 2",
+      "descricao": "spotlight abrir 2",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-abrir",
+        "ordem": 2,
+        "total": 2
+      },
+      "dimensoes_px": {
+        "largura": 574,
+        "altura": 144
+      },
+      "proporcao": 3.9861,
+      "bytes": 67653,
+      "sha256": "b3e196bdb8be3b8954669311296013898d97680a5843b686f17efafab54b77d0",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-clique-modo-1-png",
+      "arquivo": "referencias/telas/spotlight-clique-modo-1.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight clique modo 1",
+      "descricao": "spotlight clique modo 1",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-clique-modo",
+        "ordem": 1,
+        "total": 5
+      },
+      "dimensoes_px": {
+        "largura": 777,
+        "altura": 165
+      },
+      "proporcao": 4.7091,
+      "bytes": 104951,
+      "sha256": "9865f049484570596768be49cfd6a7b0c9876cc561de92869b3c55b74c7aaef6",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-clique-modo-2-png",
+      "arquivo": "referencias/telas/spotlight-clique-modo-2.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight clique modo 2",
+      "descricao": "spotlight clique modo 2",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-clique-modo",
+        "ordem": 2,
+        "total": 5
+      },
+      "dimensoes_px": {
+        "largura": 599,
+        "altura": 258
+      },
+      "proporcao": 2.3217,
+      "bytes": 121185,
+      "sha256": "53040b483102e5554ebe698db658dbcf4348745755bc736fa2d6e680bfdeef22",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-clique-modo-3-png",
+      "arquivo": "referencias/telas/spotlight-clique-modo-3.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight clique modo 3",
+      "descricao": "spotlight clique modo 3",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-clique-modo",
+        "ordem": 3,
+        "total": 5
+      },
+      "dimensoes_px": {
+        "largura": 489,
+        "altura": 296
+      },
+      "proporcao": 1.652,
+      "bytes": 79649,
+      "sha256": "e8ec901e4314de0237fe00e74709703027481c62dc671d3c60c2a41ef8703f96",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-clique-modo-4-png",
+      "arquivo": "referencias/telas/spotlight-clique-modo-4.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight clique modo 4",
+      "descricao": "spotlight clique modo 4",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-clique-modo",
+        "ordem": 4,
+        "total": 5
+      },
+      "dimensoes_px": {
+        "largura": 586,
+        "altura": 483
+      },
+      "proporcao": 1.2133,
+      "bytes": 124831,
+      "sha256": "b655d9e368c15fea175eec50f028f17361d9d46a4d33daef62fefec2fd725487",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-clique-modo-5-png",
+      "arquivo": "referencias/telas/spotlight-clique-modo-5.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight clique modo 5",
+      "descricao": "spotlight clique modo 5",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-clique-modo",
+        "ordem": 5,
+        "total": 5
+      },
+      "dimensoes_px": {
+        "largura": 611,
+        "altura": 506
+      },
+      "proporcao": 1.2075,
+      "bytes": 226933,
+      "sha256": "463298adf827e6a9ff0818407a46720e131debcaa39c4a501c1087bbb693a0f3",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-1-png",
+      "arquivo": "referencias/telas/spotlight-controles-1.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 1",
+      "descricao": "spotlight controles 1",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 1,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 477,
+        "altura": 149
+      },
+      "proporcao": 3.2013,
+      "bytes": 61685,
+      "sha256": "aa119f51f7c01e7c9d9fed6d0d5fb3879ed5806e3e08c0e24b0abb8a4c00d395",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-2-png",
+      "arquivo": "referencias/telas/spotlight-controles-2.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 2",
+      "descricao": "spotlight controles 2",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 2,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 576,
+        "altura": 150
+      },
+      "proporcao": 3.84,
+      "bytes": 70482,
+      "sha256": "b63b32b52c17244156a13f9b2f7c3ea3d136192ef8b9dd33751e245a0f9ef9f9",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-3-png",
+      "arquivo": "referencias/telas/spotlight-controles-3.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 3",
+      "descricao": "spotlight controles 3",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 3,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 643,
+        "altura": 182
+      },
+      "proporcao": 3.533,
+      "bytes": 97936,
+      "sha256": "1a8d0945977c9c74b0290b72fad8fcc9b84fcdffbdac290af80e54f680dfd73c",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-4-png",
+      "arquivo": "referencias/telas/spotlight-controles-4.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 4",
+      "descricao": "spotlight controles 4",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 4,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 700,
+        "altura": 88
+      },
+      "proporcao": 7.9545,
+      "bytes": 53170,
+      "sha256": "d6e565a04d3655307a463a3627ba78ab5ba6025a162e579e98e567eb09afce47",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-5-png",
+      "arquivo": "referencias/telas/spotlight-controles-5.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 5",
+      "descricao": "spotlight controles 5",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 5,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 796,
+        "altura": 110
+      },
+      "proporcao": 7.2364,
+      "bytes": 85176,
+      "sha256": "3e6556f0a9985bbf821ba58bc62da9c7ff9cf2a275e70191b62c3b207381df30",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-controles-6-png",
+      "arquivo": "referencias/telas/spotlight-controles-6.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight controles 6",
+      "descricao": "spotlight controles 6",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-controles",
+        "ordem": 6,
+        "total": 6
+      },
+      "dimensoes_px": {
+        "largura": 743,
+        "altura": 99
+      },
+      "proporcao": 7.5051,
+      "bytes": 63133,
+      "sha256": "1d8fcfee780014daf2fda7db323414147008cd59aa77b32738a935c088c60bc1",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-1-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-1.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 1",
+      "descricao": "spotlight modo apps 1",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 1,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 363,
+        "altura": 282
+      },
+      "proporcao": 1.2872,
+      "bytes": 87247,
+      "sha256": "cb9829723811acaf0824d774254000ba362c9098055ec29b49ca0f18996b53ef",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-2-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-2.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 2",
+      "descricao": "spotlight modo apps 2",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 2,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 340,
+        "altura": 264
+      },
+      "proporcao": 1.2879,
+      "bytes": 65890,
+      "sha256": "a1ce94a1e71fbf04fad496c1b313b3f9a890c7dfd84f315e9468609027f7ac2d",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-3-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-3.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 3",
+      "descricao": "spotlight modo apps 3",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 3,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 501,
+        "altura": 343
+      },
+      "proporcao": 1.4606,
+      "bytes": 110196,
+      "sha256": "57593dfb73066bd312b47090ccc4f58740d4a0e1f6a7bd902f8e22d32e306fce",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-4-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-4.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 4",
+      "descricao": "spotlight modo apps 4",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 4,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 439,
+        "altura": 357
+      },
+      "proporcao": 1.2297,
+      "bytes": 95400,
+      "sha256": "5bc6aabd341190a9a3dfe39af827cd4ab8f1acb63352a567c92b3e9c03570210",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-5-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-5.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 5",
+      "descricao": "spotlight modo apps 5",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 5,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 455,
+        "altura": 354
+      },
+      "proporcao": 1.2853,
+      "bytes": 98324,
+      "sha256": "93f82c6591298cb006403d7e86b7f6d57c40300565643e35c376e088ab3eb872",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-6-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-6.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 6",
+      "descricao": "spotlight modo apps 6",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 6,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 480,
+        "altura": 376
+      },
+      "proporcao": 1.2766,
+      "bytes": 163774,
+      "sha256": "6e5d738fd195da7fdcdb641b9a6c251f910b38577b3412eb6d71972c61ae336d",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-7-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-7.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 7",
+      "descricao": "spotlight modo apps 7",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 7,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 399,
+        "altura": 314
+      },
+      "proporcao": 1.2707,
+      "bytes": 134516,
+      "sha256": "09755dbc0d2ad7b61afb08214c466f3693136ff7f0d80581e9fdf524514277ec",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-8-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-8.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 8",
+      "descricao": "spotlight modo apps 8",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 8,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 376,
+        "altura": 375
+      },
+      "proporcao": 1.0027,
+      "bytes": 140579,
+      "sha256": "e3fad6870190cf096dcbdc26b1ce416be3757223928788c088b66223f36a37b0",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-spotlight-modo-apps-9-png",
+      "arquivo": "referencias/telas/spotlight-modo-apps-9.png",
+      "categoria": "spotlight",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light",
+        "animation"
+      ],
+      "prioridade": "secondary",
+      "titulo": "spotlight modo apps 9",
+      "descricao": "spotlight modo apps 9",
+      "ancoras_visuais": [
+        "spotlight",
+        "search",
+        "overlay"
+      ],
+      "usar_para": [
+        "spotlight"
+      ],
+      "sequencia": {
+        "grupo": "spotlight-modo-apps",
+        "ordem": 9,
+        "total": 9
+      },
+      "dimensoes_px": {
+        "largura": 431,
+        "altura": 351
+      },
+      "proporcao": 1.2279,
+      "bytes": 150278,
+      "sha256": "ebe810f6e4f5ad2d64bab49037b403d4ac14949cc40e8d302ab1c377eb35eec4",
+      "triagem": "atlas/spotlight.jpg"
+    },
+    {
+      "id": "ref-tahoe-dark-jpeg",
+      "arquivo": "referencias/telas/tahoe-dark.jpeg",
+      "categoria": "desktop",
+      "classificacao_fonte": "curated_seed",
+      "confianca": "alta",
+      "estado": [
+        "dark",
+        "desktop",
+        "finder"
+      ],
+      "prioridade": "canonical",
+      "titulo": "tahoe dark",
+      "descricao": "tahoe dark",
+      "ancoras_visuais": [
+        "dark Control Center",
+        "Finder sidebar",
+        "Dock badges",
+        "menu bar extras"
+      ],
+      "usar_para": [
+        "dark theme",
+        "window decoration",
+        "Dock",
+        "Control Center",
+        "widgets"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 2560,
+        "altura": 1656
+      },
+      "proporcao": 1.5459,
+      "bytes": 751004,
+      "sha256": "9e33c15902fa11d3bd9ddb524ad4cfae0b444ee2f299000dd4eb16dad4377e4c",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-tahoe-novidades-mosaico-png",
+      "arquivo": "referencias/telas/tahoe-novidades-mosaico.png",
+      "categoria": "desktop",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "reference"
+      ],
+      "prioridade": "secondary",
+      "titulo": "tahoe novidades mosaico",
+      "descricao": "tahoe novidades mosaico",
+      "ancoras_visuais": [
+        "desktop",
+        "macOS Tahoe"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 2000,
+        "altura": 1125
+      },
+      "proporcao": 1.7778,
+      "bytes": 1574388,
+      "sha256": "3c7b07c1576e64334d920939fb986ebcfea11c13d9b46626d7041463935eb19d",
+      "triagem": "atlas/desktop.jpg"
+    },
+    {
+      "id": "ref-tahoe-photos-central-dock-claro-png",
+      "arquivo": "referencias/telas/tahoe-photos-central-dock-claro.png",
+      "categoria": "desktop",
+      "classificacao_fonte": "filename_inference",
+      "confianca": "media",
+      "estado": [
+        "light"
+      ],
+      "prioridade": "secondary",
+      "titulo": "tahoe photos central dock claro",
+      "descricao": "tahoe photos central dock claro",
+      "ancoras_visuais": [
+        "desktop",
+        "Dock",
+        "widgets"
+      ],
+      "usar_para": [
+        "desktop"
+      ],
+      "sequencia": null,
+      "dimensoes_px": {
+        "largura": 1632,
+        "altura": 1074
+      },
+      "proporcao": 1.5196,
+      "bytes": 2680592,
+      "sha256": "38eac1525140ded5131889909ea70987b9c501994fdd90133500d2ea5c974c6c",
+      "triagem": "atlas/desktop.jpg"
+    }
+  ]
+}

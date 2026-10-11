@@ -1,0 +1,33 @@
+{
+  "id": "dev.hyprmac.SystemInformation",
+  "name": "System Information",
+  "icon": "shell/icons/tahoe26/factory/SystemInformation.png",
+  "layout": "sidebar",
+  "size": [
+    960,
+    680
+  ],
+  "sidebar_items": [],
+  "status": "partial",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.SystemProfiler",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/System Information.json",
+    "menu_state": "structured",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Utilities/System Information.app/Contents/Resources/ASP.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": {
+    "kind": "python_panel",
+    "module": "app_factory_system_info",
+    "class": "SystemInfoPanel"
+  },
+  "toolbar_items": [
+    {
+      "label": "Refresh",
+      "action": "refresh"
+    }
+  ],
+  "transition_ms": 0
+}

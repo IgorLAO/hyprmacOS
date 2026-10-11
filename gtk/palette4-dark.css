@@ -1,0 +1,81 @@
+/* hyprmac — paleta GTK 4 / libadwaita, modo escuro */
+
+/* ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */
+
+:root {
+  /* Destaque padrão AppKit Tahoe 26.6.1; accent.css sobrescreve a escolha. */
+  --accent-bg-color: #007aff;
+  --accent-fg-color: #ffffff;
+  --accent-color: #3395ff;
+
+  --destructive-bg-color: #ff4245;
+  --success-bg-color: #30d158;
+  --warning-bg-color: #ffd600;
+  --error-bg-color: #ff4245;
+
+  --window-bg-color: #323232;
+  --window-fg-color: rgba(255, 255, 255, 0.847058824);
+  --view-bg-color: #1e1e1e;
+  --view-fg-color: rgba(255, 255, 255, 0.847058824);
+
+  --headerbar-bg-color: #1e1e1e;
+  --headerbar-fg-color: rgba(255, 255, 255, 0.847058824);
+  --headerbar-backdrop-color: #1e1e1e;
+  --headerbar-border-color: rgba(255, 255, 255, 0.08);
+  --headerbar-shade-color: transparent;
+
+  --sidebar-bg-color: #262628;
+  --sidebar-fg-color: rgba(255, 255, 255, 0.847058824);
+  --sidebar-backdrop-color: #262628;
+  --sidebar-border-color: rgba(255, 255, 255, 0.08);
+  --sidebar-shade-color: transparent;
+  --secondary-sidebar-bg-color: #232325;
+
+  --card-bg-color: rgba(255, 255, 255, 0.05);
+  --card-fg-color: rgba(255, 255, 255, 0.847058824);
+  --card-shade-color: rgba(0, 0, 0, 0.25);
+
+  --dialog-bg-color: #2a2a2d;
+  --dialog-fg-color: rgba(255, 255, 255, 0.847058824);
+
+  --popover-bg-color: rgba(40, 40, 43, 0.97);
+  --popover-fg-color: rgba(255, 255, 255, 0.847058824);
+  --popover-shade-color: rgba(0, 0, 0, 0.3);
+
+  --thumbnail-bg-color: #2a2a2d;
+  --border-color: rgba(255, 255, 255, 0.10);
+  --shade-color: rgba(0, 0, 0, 0.25);
+  --scrollbar-outline-color: transparent;
+
+  --window-radius: 16px;
+}
+
+/* nomes antigos, para apps GTK 4 sem libadwaita */
+@define-color accent_bg_color   #007aff;
+@define-color accent_color      #3395ff;
+@define-color window_bg_color   #323232;
+@define-color window_fg_color   rgba(255, 255, 255, 0.847058824);
+@define-color view_bg_color     #1e1e1e;
+@define-color headerbar_bg_color #1e1e1e;
+@define-color sidebar_bg_color  #262628;
+@define-color popover_bg_color  rgba(40, 40, 43, 0.97);
+@define-color theme_selected_bg_color #007aff;
+
+/* nomes do hyprmac usados no gtk4.css */
+@define-color mac_ink      #ffffff;
+@define-color mac_accent   #007aff;
+@define-color mac_selection #0069f9;   /* seleção de menu do kit */
+@define-color mac_label    rgba(255, 255, 255, 0.847058824);
+@define-color mac_label_2  rgba(255, 255, 255, 0.549019608);
+@define-color mac_label_3  rgba(255, 255, 255, 0.247058824);
+@define-color mac_knob     #e9e9ea;
+@define-color mac_tooltip  rgba(44, 44, 47, 0.97);
+@define-color mac_sidebar  #262628;
+/* menus: vidro "Menus" do kit (#5A5A5A/0.50 luminosity) aproximado; o Hyprland desfoca o popup */
+@define-color mac_menu      rgba(40, 40, 44, 0.74);
+@define-color mac_menu_rim  rgba(102, 102, 102, 0.40);
+@define-color mac_menu_edge rgba(0, 0, 0, 0.80);
+@define-color mac_scroll    rgba(255, 255, 255, 0.55);   /* barra de rolagem do kit */
+
+/* keyboardFocusIndicatorColor: DarkAqua.car, Tahoe 26.6.1 (25G76). */
+@define-color mac_focus rgba(37, 173, 255, 0.498039216);

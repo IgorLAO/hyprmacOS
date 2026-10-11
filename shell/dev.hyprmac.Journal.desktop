@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Journal
+Comment=Journal
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-diario
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/Journal.png
+Categories=Office;Utility;
+Keywords=journal;diary;
+StartupWMClass=dev.hyprmac.Journal
+StartupNotify=true

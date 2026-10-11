@@ -1,0 +1,830 @@
+#!/usr/bin/env python3
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, Gdk, GLib, Gio, Pango
+import os
+import sys
+import time
+import tempfile
+import datetime
+import re
+import cairo
+from cocoa_entry import CocoaEntryKeys
+from app_theme import bind_color_scheme
+
+# Importar notes_store
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import notes_store
+
+def is_dark():
+    try:
+        settings = Gio.Settings.new("org.gnome.desktop.interface")
+        return "dark" in settings.get_string("color-scheme")
+    except Exception:
+        return True
+
+def load_css(is_dark_theme):
+    css_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "notas.css")
+    if os.path.exists(css_path):
+        with open(css_path, "r") as f:
+            css_data = f.read()
+        provider = Gtk.CssProvider()
+        provider.load_from_data(css_data.encode())
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
+
+MARGEM = 24          # recuo do editor (título em x = margem)
+CHECK_D = 17         # círculo da lista: 17 de diâmetro, centro em margem + 10, texto em margem + 24
+
+
+class NotesTextView(Gtk.TextView):
+    """Editor: desenha os círculos das listas de verificação acima do texto, como no Notes."""
+
+    def do_draw_layer(self, layer, cr):
+        if layer != Gtk.TextViewLayer.ABOVE_TEXT:
+            return
+        buf = self.get_buffer()
+        it = buf.get_start_iter()
+        while True:
+            fim = it.copy()
+            fim.forward_to_line_end()
+            texto = buf.get_text(it, fim, True)
+            if notes_store.is_check(texto):
+                r = self.get_iter_location(it)
+                cx, cy = MARGEM + 10, r.y + r.height / 2
+                rad = CHECK_D / 2
+                if notes_store.is_checked(texto):
+                    cr.set_source_rgb(0.898, 0.690, 0.0)          # #E5B000
+                    cr.new_sub_path()
+                    cr.arc(cx, cy, rad, 0, 6.2832)
+                    cr.fill()
+                    cr.set_source_rgb(1, 1, 1)
+                    cr.set_line_width(1.6)
+                    cr.move_to(cx - 4, cy + 0.2)
+                    cr.line_to(cx - 1.2, cy + 3)
+                    cr.line_to(cx + 4, cy - 3)
+                    cr.stroke()
+                else:
+                    cr.set_source_rgba(0.6, 0.6, 0.62, 1)
+                    cr.set_line_width(1.2)
+                    cr.new_sub_path()
+                    cr.arc(cx, cy, rad - 0.6, 0, 6.2832)
+                    cr.stroke()
+            if not it.forward_line():
+                break
+
+
+class NoteRow(Gtk.ListBoxRow):
+    def __init__(self, note):
+        super().__init__()
+        self.note = note
+        
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        box.set_size_request(184, 56)
+        box.get_style_context().add_class("note-card")
+        
+        title_lbl = Gtk.Label(label=note.title)
+        title_lbl.set_halign(Gtk.Align.START)
+        title_lbl.get_style_context().add_class("note-card-title")
+        title_lbl.set_ellipsize(Pango.EllipsizeMode.END)
+        
+        sub_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        
+        time_lbl = Gtk.Label(label=notes_store.list_time(note.mtime))
+        time_lbl.get_style_context().add_class("note-card-time")
+        
+        preview_lbl = Gtk.Label(label=note.preview)
+        preview_lbl.set_halign(Gtk.Align.START)
+        preview_lbl.get_style_context().add_class("note-card-preview")
+        preview_lbl.set_ellipsize(Pango.EllipsizeMode.END)
+        preview_lbl.set_hexpand(True)
+        
+        sub_box.pack_start(time_lbl, False, False, 0)
+        sub_box.pack_start(preview_lbl, True, True, 0)
+        
+        box.pack_start(title_lbl, False, False, 0)
+        box.pack_start(sub_box, False, False, 0)
+        
+        self.add(box)
+        self.show_all()
+
+
+class FolderRow(Gtk.ListBoxRow):
+    def __init__(self, path, name, count, deleted=False):
+        super().__init__()
+        self.path = path
+        self.deleted = deleted
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        box.get_style_context().add_class("folder-card")
+        icon = Gtk.Image.new_from_icon_name(
+            "user-trash-symbolic" if deleted else "folder-symbolic", Gtk.IconSize.MENU)
+        icon.get_style_context().add_class("folder-icon")
+        box.pack_start(icon, False, False, 0)
+        self.label = Gtk.Label(label=name, xalign=0)
+        self.label.set_ellipsize(Pango.EllipsizeMode.END)
+        self.label.set_width_chars(1)
+        box.pack_start(self.label, True, True, 0)
+        self.entry = Gtk.Entry()
+        self.entry.set_width_chars(1)
+        self.entry.get_style_context().add_class("folder-name-entry")
+        self.entry.set_no_show_all(True)
+        box.pack_start(self.entry, True, True, 0)
+        count_label = Gtk.Label(label=str(count))
+        count_label.get_style_context().add_class("folder-count")
+        box.pack_end(count_label, False, False, 0)
+        self.add(box)
+        self.show_all()
+
+
+class NotesView(Gtk.Box):
+    def __init__(self, store, window=None):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL)
+        self.store = store
+        self.window = window
+        self.current_note = None
+        self.auto_save_id = None
+        self.selected_folder = os.path.realpath(store.root)
+        self.selected_deleted = False
+        
+        # Aplicar classe de tema
+        self._theme_settings = bind_color_scheme(self)
+        
+        self.build_ui()
+        self.update_notes_list()
+        self.connect("destroy", lambda _: self.flush_current_note())
+        
+    def build_ui(self):
+        # Barra Superior
+        header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        header.get_style_context().add_class("header-bar")
+        header.set_size_request(-1, 52)
+        
+        # Permitir arrastar a janela pela barra superior
+        if self.window:
+            header.connect("button-press-event", self.on_header_drag)
+            
+        # Semáforos
+        lights = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
+        lights.get_style_context().add_class("lights")
+        lights.set_valign(Gtk.Align.CENTER)
+        
+        for cls, action in [("close", self.on_close_clicked), 
+                            ("minimize", self.on_minimize_clicked), 
+                            ("zoom", self.on_zoom_clicked)]:
+            btn = Gtk.Button()
+            btn.get_style_context().add_class("light-btn")
+            btn.get_style_context().add_class(cls)
+            btn.set_size_request(14, 14)
+            if action:
+                btn.connect("clicked", action)
+            lights.pack_start(btn, False, False, 0)
+            
+        header.pack_start(lights, False, False, 0)
+        
+        # Botão Mostrar/Ocultar Pastas (ocultas nas referências)
+        self.toggle_list_btn = Gtk.Button.new_from_icon_name("sidebar-show-symbolic", Gtk.IconSize.BUTTON)
+        self.toggle_list_btn.get_style_context().add_class("toggle-list-btn")
+        self.toggle_list_btn.set_valign(Gtk.Align.CENTER)
+        self.toggle_list_btn.set_tooltip_text("Show Folders")
+        self.toggle_list_btn.connect("clicked", self.on_toggle_list_clicked)
+        header.pack_start(self.toggle_list_btn, False, False, 0)
+        
+        # Bloco de Título e Contagem
+        title_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        title_box.set_valign(Gtk.Align.CENTER)
+        title_lbl = Gtk.Label(label="Notes")
+        self.title_label = title_lbl
+        title_lbl.get_style_context().add_class("notes-title")
+        title_lbl.set_halign(Gtk.Align.START)
+        self.count_label = Gtk.Label(label="0 notes")
+        self.count_label.get_style_context().add_class("notes-count")
+        self.count_label.set_halign(Gtk.Align.START)
+        title_box.pack_start(title_lbl, False, False, 0)
+        title_box.pack_start(self.count_label, False, False, 0)
+        header.pack_start(title_box, False, False, 0)
+        
+        # Espaçador flexível
+        spacer = Gtk.Box()
+        header.pack_start(spacer, True, True, 0)
+        
+        # Cápsula 1: Compor Nota
+        capsule1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        capsule1.get_style_context().add_class("capsule")
+        capsule1.set_valign(Gtk.Align.CENTER)
+        new_note_btn = Gtk.Button.new_from_icon_name("document-new-symbolic", Gtk.IconSize.BUTTON)
+        new_note_btn.connect("clicked", lambda _: self.create_new_note())
+        capsule1.pack_start(new_note_btn, False, False, 0)
+        header.pack_start(capsule1, False, False, 0)
+        
+        # Cápsula 2: Formatação e Ferramentas
+        capsule2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        capsule2.get_style_context().add_class("capsule")
+        capsule2.set_valign(Gtk.Align.CENTER)
+        
+        btn_aa = Gtk.Button(label="Aa")
+        btn_checklist = Gtk.Button.new_from_icon_name("object-select-symbolic", Gtk.IconSize.BUTTON)
+        btn_checklist.connect("clicked", lambda _: self.toggle_checklist_on_current_line())
+        btn_table = Gtk.Button.new_from_icon_name("insert-object-symbolic", Gtk.IconSize.BUTTON)
+        btn_table.set_sensitive(False)
+        btn_attach = Gtk.Button.new_from_icon_name("mail-attachment-symbolic", Gtk.IconSize.BUTTON)
+        btn_attach.set_sensitive(False)
+        
+        capsule2.pack_start(btn_aa, False, False, 0)
+        capsule2.pack_start(btn_checklist, False, False, 0)
+        capsule2.pack_start(btn_table, False, False, 0)
+        capsule2.pack_start(btn_attach, False, False, 0)
+        header.pack_start(capsule2, False, False, 0)
+        
+        # Cápsula 3: Compartilhar e Mais
+        capsule3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        capsule3.get_style_context().add_class("capsule")
+        capsule3.set_valign(Gtk.Align.CENTER)
+        
+        btn_share = Gtk.Button.new_from_icon_name("send-to-symbolic", Gtk.IconSize.BUTTON)
+        btn_share.set_sensitive(False)
+        btn_more = Gtk.Button.new_from_icon_name("view-more-symbolic", Gtk.IconSize.BUTTON)
+        
+        capsule3.pack_start(btn_share, False, False, 0)
+        capsule3.pack_start(btn_more, False, False, 0)
+        header.pack_start(capsule3, False, False, 0)
+        
+        # Campo de Busca
+        self.search_entry = Gtk.SearchEntry()
+        self._search_cocoa_keys = CocoaEntryKeys(self.search_entry)
+        self.search_entry.get_style_context().add_class("search-capsule")
+        self.search_entry.set_valign(Gtk.Align.CENTER)
+        self.search_entry.set_width_chars(25)
+        self.search_entry.connect("search-changed", lambda _: self.update_notes_list())
+        header.pack_start(self.search_entry, False, False, 0)
+        
+        self.pack_start(header, False, False, 0)
+        
+        # Conteúdo Principal (Pastas + Lista + Editor)
+        self.content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.content_box.set_homogeneous(False)
+        self.pack_start(self.content_box, True, True, 0)
+
+        self.folders_sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.folders_sidebar.set_size_request(200, -1)
+        self.folders_sidebar.get_style_context().add_class("folders-sidebar")
+        self.folders_sidebar.set_no_show_all(True)
+        section = Gtk.Label(label="On My Mac", xalign=0)
+        section.get_style_context().add_class("folders-section")
+        self.folders_sidebar.pack_start(section, False, False, 0)
+        folders_scroll = Gtk.ScrolledWindow()
+        folders_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.folders_list = Gtk.ListBox()
+        self.folders_list.connect("row-selected", self.on_folder_selected)
+        folders_scroll.add(self.folders_list)
+        self.folders_sidebar.pack_start(folders_scroll, True, True, 0)
+        self.new_folder_btn = Gtk.Button()
+        self.new_folder_btn.get_style_context().add_class("new-folder-btn")
+        footer = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        footer.pack_start(Gtk.Image.new_from_icon_name("list-add-symbolic", Gtk.IconSize.MENU),
+                          False, False, 0)
+        footer.pack_start(Gtk.Label(label="New Folder"), False, False, 0)
+        self.new_folder_btn.add(footer)
+        self.new_folder_btn.connect("clicked", lambda _: self.create_new_folder())
+        self.folders_sidebar.pack_end(self.new_folder_btn, False, False, 0)
+        for child in self.folders_sidebar.get_children():
+            child.show_all()
+        self.content_box.pack_start(self.folders_sidebar, False, False, 0)
+        
+        # Sidebar de Notas
+        self.notes_sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.notes_sidebar.set_size_request(204, -1)
+        self.notes_sidebar.get_style_context().add_class("sidebar")
+        
+        scrolled_list = Gtk.ScrolledWindow()
+        scrolled_list.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.notes_list = Gtk.ListBox()
+        self.notes_list.set_header_func(self.update_headers)
+        self.notes_list.connect("row-selected", self.on_note_selected)
+        scrolled_list.add(self.notes_list)
+        self.notes_sidebar.pack_start(scrolled_list, True, True, 0)
+        
+        self.content_box.pack_start(self.notes_sidebar, False, False, 0)
+        
+        # Editor
+        editor_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        editor_box.get_style_context().add_class("editor-area")
+        
+        self.header_date_lbl = Gtk.Label()
+        self.header_date_lbl.get_style_context().add_class("editor-date")
+        self.header_date_lbl.set_halign(Gtk.Align.CENTER)
+        editor_box.pack_start(self.header_date_lbl, False, False, 0)
+        
+        scrolled_editor = Gtk.ScrolledWindow()
+        self.textview = NotesTextView()
+        self.textview.get_style_context().add_class("editor-textview")
+        self.textview.set_left_margin(MARGEM)
+        self.textview.set_right_margin(24)
+        self.textview.set_top_margin(12)
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD)
+        
+        # Configurar tags
+        buffer = self.textview.get_buffer()
+        buffer.create_tag("titulo", weight=Pango.Weight.BOLD, size=20 * Pango.SCALE)
+        buffer.create_tag("marcador", invisible=True)
+        buffer.create_tag("item", left_margin=MARGEM + 24, pixels_above_lines=3, pixels_below_lines=3)
+        
+        buffer.connect("changed", self.on_buffer_changed)
+        self.textview.connect("button-press-event", self.on_textview_button_press)
+        
+        scrolled_editor.add(self.textview)
+        editor_box.pack_start(scrolled_editor, True, True, 0)
+        
+        editor_box.set_hexpand(True)
+        self.notes_sidebar.set_hexpand(False)
+        self.notes_sidebar.set_halign(Gtk.Align.START)
+        self.content_box.pack_start(editor_box, True, True, 0)
+        
+        # Conectar atalhos globais
+        self.connect("key-press-event", self.on_key_press)
+        
+    def on_header_drag(self, widget, event):
+        if event.button == 1:
+            self.window.begin_move_drag(event.button, event.x_root, event.y_root, event.time)
+            return True
+        return False
+        
+    def on_close_clicked(self, btn):
+        if self.window:
+            self.window.close()
+            
+    def on_minimize_clicked(self, btn):
+        if self.window:
+            self.window.iconify()
+            
+    def on_zoom_clicked(self, btn):
+        if self.window:
+            if self.window.is_maximized():
+                self.window.unmaximize()
+            else:
+                self.window.maximize()
+                
+    def on_toggle_list_clicked(self, btn):
+        visible = self.folders_sidebar.get_visible()
+        self.folders_sidebar.set_visible(not visible)
+        self.toggle_list_btn.set_tooltip_text("Show Folders" if visible else "Hide Folders")
+
+    def flush_current_note(self):
+        if self.auto_save_id:
+            GLib.source_remove(self.auto_save_id)
+            self.auto_save_id = None
+            if self.current_note and not self.selected_deleted:
+                self.store.save(self.current_note)
+
+    def update_folders_list(self):
+        self.folders_list.handler_block_by_func(self.on_folder_selected)
+        for row in self.folders_list.get_children():
+            self.folders_list.remove(row)
+        for folder in self.store.list_folders():
+            self.folders_list.add(FolderRow(folder.path, folder.name, folder.count))
+        deleted = self.store.recently_deleted()
+        if deleted:
+            self.folders_list.add(FolderRow(None, "Recently Deleted", len(deleted), True))
+        for row in self.folders_list.get_children():
+            if row.deleted == self.selected_deleted and (row.deleted or row.path == self.selected_folder):
+                self.folders_list.select_row(row)
+                break
+        self.folders_list.handler_unblock_by_func(self.on_folder_selected)
+
+    def on_folder_selected(self, listbox, row):
+        if row is None:
+            return
+        self.flush_current_note()
+        self.selected_deleted = row.deleted
+        self.selected_folder = row.path
+        self.title_label.set_text(row.label.get_text())
+        self.update_notes_list()
+
+    def create_new_folder(self):
+        self.flush_current_note()
+        path = self.store.create_folder()
+        self.selected_folder, self.selected_deleted = path, False
+        self.title_label.set_text(os.path.basename(path))
+        self.update_notes_list()
+        for row in self.folders_list.get_children():
+            if row.path != path:
+                continue
+            row.label.hide()
+            row.entry.set_text(os.path.basename(path))
+            row.entry.show()
+            row.entry.connect("activate", self.finish_folder_rename, row)
+            row.entry.connect("focus-out-event", self.on_folder_rename_focus_out, row)
+            row.entry.connect("key-press-event", self.on_folder_rename_key, row)
+            row.entry.grab_focus()
+            row.entry.select_region(0, -1)
+            break
+
+    def finish_folder_rename(self, entry, row):
+        if not entry.get_visible():
+            return
+        try:
+            old_path = row.path
+            path = self.store.rename_folder(row.path, entry.get_text())
+        except (OSError, ValueError) as error:
+            entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "dialog-warning-symbolic")
+            entry.set_tooltip_text(str(error))
+            return
+        row.path = path
+        row.label.set_text(os.path.relpath(path, self.store.root))
+        entry.hide()
+        row.label.show()
+        if self.selected_folder == old_path:
+            self.selected_folder = path
+            self.title_label.set_text(row.label.get_text())
+
+    def on_folder_rename_focus_out(self, entry, event, row):
+        self.finish_folder_rename(entry, row)
+        return False
+
+    def on_folder_rename_key(self, entry, event, row):
+        if event.keyval == Gdk.KEY_Escape:
+            entry.hide()
+            row.label.show()
+            self.folders_list.grab_focus()
+            return True
+        return False
+        
+    def update_headers(self, row, before):
+        if not before:
+            label = notes_store.group_label(row.note.mtime)
+            row.set_header(self.create_header_widget(label))
+        else:
+            label_before = notes_store.group_label(before.note.mtime)
+            label_current = notes_store.group_label(row.note.mtime)
+            if label_before != label_current:
+                row.set_header(self.create_header_widget(label_current))
+            else:
+                row.set_header(None)
+                
+    def create_header_widget(self, text):
+        lbl = Gtk.Label(label=text)
+        lbl.set_halign(Gtk.Align.FILL)
+        lbl.set_xalign(0)
+        lbl.get_style_context().add_class("group-header")
+        lbl.show()
+        return lbl
+        
+    def update_notes_list(self):
+        # Salvar nota selecionada
+        selected_row = self.notes_list.get_selected_row()
+        selected_path = selected_row.note.path if selected_row else None
+        
+        # reconstruir a lista não pode recarregar o editor nem salvar de novo (laço)
+        self._rebuilding = True
+        # Limpar lista
+        for child in self.notes_list.get_children():
+            self.notes_list.remove(child)
+            
+        query = self.search_entry.get_text()
+        notes = self.store.recently_deleted() if self.selected_deleted else self.store.load(self.selected_folder)
+        filtered_notes = [n for n in notes if notes_store.Store.matches(n, query)]
+        
+        for note in filtered_notes:
+            row = NoteRow(note)
+            self.notes_list.add(row)
+            
+        self.notes_list.show_all()
+        
+        count = len(filtered_notes)
+        self.count_label.set_text(f"{count} notes" if count != 1 else "1 note")
+        
+        # Restaurar seleção
+        alvo = None
+        for row in self.notes_list.get_children():
+            if selected_path and row.note.path == selected_path:
+                alvo = row
+                break
+        self._rebuilding = False
+        if alvo is not None:
+            self.notes_list.handler_block_by_func(self.on_note_selected)
+            self.notes_list.select_row(alvo)
+            self.notes_list.handler_unblock_by_func(self.on_note_selected)
+            alvo.note.text = self.current_note.text if self.current_note else alvo.note.text
+            self.current_note = alvo.note        # mesma nota: mantém editor e cursor
+        else:
+            children = self.notes_list.get_children()
+            if children:
+                self.notes_list.select_row(children[0])
+            else:
+                self.on_note_selected(self.notes_list, None)
+        self.textview.set_editable(not self.selected_deleted)
+        self.update_folders_list()
+                
+    def on_note_selected(self, listbox, row):
+        if getattr(self, "_rebuilding", False):
+            return
+        if self.auto_save_id:
+            GLib.source_remove(self.auto_save_id)
+            self.auto_save_id = None
+            self.store.save(self.current_note)   # salva a nota que está saindo
+            
+        if row:
+            self.current_note = row.note
+            self.header_date_lbl.set_text(notes_store.header_date(self.current_note.mtime))
+            
+            # Atualizar TextView sem disparar o sinal "changed" recursivamente
+            buffer = self.textview.get_buffer()
+            buffer.handler_block_by_func(self.on_buffer_changed)
+            buffer.set_text(self.current_note.text)
+            self.update_tags(buffer)
+            buffer.handler_unblock_by_func(self.on_buffer_changed)
+        else:
+            self.current_note = None
+            self.header_date_lbl.set_text("")
+            self.textview.get_buffer().set_text("")
+            
+    def on_buffer_changed(self, buffer):
+        if self.current_note and not self.selected_deleted:
+            start, end = buffer.get_bounds()
+            self.current_note.text = buffer.get_text(start, end, True)
+            
+            # Atualizar tags dinamicamente
+            buffer.handler_block_by_func(self.on_buffer_changed)
+            self.update_tags(buffer)
+            buffer.handler_unblock_by_func(self.on_buffer_changed)
+            
+            if self.auto_save_id:
+                GLib.source_remove(self.auto_save_id)
+            self.auto_save_id = GLib.timeout_add(500, self.save_current_note)
+            
+    def save_current_note(self):
+        self.auto_save_id = None
+        if self.current_note and not self.selected_deleted:
+            self.store.save(self.current_note)
+            self.update_notes_list()
+        return False
+        
+    def update_tags(self, buffer):
+        start, end = buffer.get_bounds()
+        buffer.remove_all_tags(start, end)
+        
+        # Primeira linha (título)
+        start_iter = buffer.get_start_iter()
+        end_iter = start_iter.copy()
+        end_iter.forward_to_line_end()
+        buffer.apply_tag_by_name("titulo", start_iter, end_iter)
+        
+        # Checklists
+        iter_line = buffer.get_start_iter()
+        while True:
+            line_start = iter_line.copy()
+            iter_line.forward_to_line_end()
+            line_end = iter_line.copy()
+            
+            text = buffer.get_text(line_start, line_end, True)
+            if text.startswith("- [ ] ") or text.startswith("- [x] ") or text.startswith("- [X] "):
+                marcador_end = line_start.copy()
+                marcador_end.forward_chars(6)
+                buffer.apply_tag_by_name("marcador", line_start, marcador_end)
+                buffer.apply_tag_by_name("item", line_start, line_end)
+                
+            if not iter_line.forward_line():
+                break
+                
+    def on_textview_draw(self, textview, cr):
+        buffer = textview.get_buffer()
+        iter_line = buffer.get_start_iter()
+        while True:
+            line_start = iter_line.copy()
+            iter_line.forward_to_line_end()
+            line_end = iter_line.copy()
+            
+            text = buffer.get_text(line_start, line_end, True)
+            if text.startswith("- [ ] ") or text.startswith("- [x] ") or text.startswith("- [X] "):
+                rect = textview.get_iter_location(line_start)
+                _, rect_y = textview.buffer_to_window_coords(Gtk.TextWindowType.TEXT, 0, rect.y)
+                
+                cx = 12
+                cy = rect_y + rect.height / 2
+                r = 8.5
+                
+                if text.startswith("- [ ] "):
+                    cr.set_source_rgba(0.6, 0.6, 0.6, 1.0)
+                    cr.set_line_width(1.5)
+                    cr.arc(cx, cy, r - 0.75, 0, 2 * 3.14159)
+                    cr.stroke()
+                else:
+                    cr.set_source_rgba(0.9, 0.69, 0.0, 1.0) # #E5B000
+                    cr.arc(cx, cy, r, 0, 2 * 3.14159)
+                    cr.fill()
+                    
+                    cr.set_source_rgba(1.0, 1.0, 1.0, 1.0)
+                    cr.set_line_width(1.5)
+                    cr.move_to(cx - 4, cy)
+                    cr.line_to(cx - 1, cy + 3)
+                    cr.line_to(cx + 4, cy - 3)
+                    cr.stroke()
+                    
+            if not iter_line.forward_line():
+                break
+        return False
+        
+    def on_textview_button_press(self, textview, event):
+        if self.selected_deleted:
+            return False
+        if event.button == 1 and MARGEM <= event.x <= MARGEM + 22:      # sobre o círculo
+            _, y = textview.window_to_buffer_coords(Gtk.TextWindowType.TEXT, int(event.x), int(event.y))
+            res = textview.get_iter_at_location(MARGEM + 30, y)
+            iter_click = res[1] if isinstance(res, tuple) else res
+            line_start = iter_click.copy()
+            line_start.set_line_offset(0)
+            line_end = line_start.copy()
+            line_end.forward_to_line_end()
+            
+            text = textview.get_buffer().get_text(line_start, line_end, True)
+            if text.startswith("- [ ] ") or text.startswith("- [x] ") or text.startswith("- [X] "):
+                new_text = notes_store.toggle_check(text)
+                textview.get_buffer().begin_user_action()
+                textview.get_buffer().delete(line_start, line_end)
+                textview.get_buffer().insert(line_start, new_text)
+                textview.get_buffer().end_user_action()
+                return True
+        return False
+        
+    def create_new_note(self):
+        self.flush_current_note()
+        if self.selected_deleted:
+            self.selected_folder = os.path.realpath(self.store.root)
+            self.selected_deleted = False
+            self.title_label.set_text("Notes")
+        self.search_entry.set_text("")
+        note = self.store.new(self.selected_folder)
+        self.update_notes_list()
+        for row in self.notes_list.get_children():
+            if row.note.path == note.path:
+                self.notes_list.select_row(row)
+                break
+        self.textview.grab_focus()
+        
+    def toggle_checklist_on_current_line(self):
+        if self.selected_deleted:
+            return
+        buffer = self.textview.get_buffer()
+        insert_mark = buffer.get_insert()
+        iter_current = buffer.get_iter_at_mark(insert_mark)
+        line_start = iter_current.copy()
+        line_start.set_line_offset(0)
+        line_end = line_start.copy()
+        line_end.forward_to_line_end()
+        
+        text = buffer.get_text(line_start, line_end, True)
+        if notes_store.is_check(text):
+            new_text = notes_store.checklist_off(text)
+        else:
+            new_text = notes_store.toggle_check(text)
+            
+        buffer.begin_user_action()
+        buffer.delete(line_start, line_end)
+        buffer.insert(line_start, new_text)
+        buffer.end_user_action()
+        
+    def mark_checked_current_line(self):
+        """Format ▸ Mark as Checked (⇧⌘U): alterna o item da linha do cursor."""
+        if self.selected_deleted:
+            return
+        buffer = self.textview.get_buffer()
+        ini = buffer.get_iter_at_mark(buffer.get_insert())
+        ini.set_line_offset(0)
+        fim = ini.copy()
+        fim.forward_to_line_end()
+        texto = buffer.get_text(ini, fim, True)
+        if notes_store.is_check(texto):
+            buffer.begin_user_action()
+            buffer.delete(ini, fim)
+            buffer.insert(ini, notes_store.toggle_check(texto))
+            buffer.end_user_action()
+
+    def transform_note(self, fn):
+        """Format ▸ More: aplica fn ao texto inteiro da nota (salva pelo "changed")."""
+        if not self.current_note or self.selected_deleted:
+            return
+        buffer = self.textview.get_buffer()
+        antes = buffer.get_text(*buffer.get_bounds(), True)
+        depois = fn(antes)
+        if depois != antes:
+            buffer.begin_user_action()
+            buffer.set_text(depois)
+            buffer.end_user_action()
+
+    def delete_selected_note(self):
+        if self.selected_deleted:
+            return
+        selected_row = self.notes_list.get_selected_row()
+        if selected_row:
+            self.flush_current_note()
+            self.store.delete(selected_row.note)
+            self.update_notes_list()
+            
+    def on_key_press(self, widget, event):
+        state = event.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK)
+        keyval = event.keyval
+        
+        if state:
+            if keyval == Gdk.KEY_n or keyval == Gdk.KEY_N:
+                self.create_new_note()
+                return True
+            elif keyval == Gdk.KEY_f or keyval == Gdk.KEY_F:
+                self.search_entry.grab_focus()
+                return True
+            elif (event.state & Gdk.ModifierType.SHIFT_MASK) and (keyval == Gdk.KEY_l or keyval == Gdk.KEY_L):
+                self.toggle_checklist_on_current_line()
+                return True
+                
+        if widget == self.notes_list and keyval == Gdk.KEY_BackSpace:
+            self.delete_selected_note()
+            return True
+            
+        return False
+
+class NotesApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id="dev.hyprmac.Notes", flags=Gio.ApplicationFlags.FLAGS_NONE)
+        
+    def do_activate(self):
+        win = Gtk.ApplicationWindow(application=self)
+        win.set_title("Notes")
+        win.set_decorated(False)
+        win.set_default_size(1000, 650)
+        
+        # Carregar CSS
+        load_css(is_dark())
+        
+        store = notes_store.Store()
+        view = NotesView(store, window=win)
+        win.add(view)
+        win.show_all()
+        self.view = view
+        # ações do menu Format da barra (Waybar → gdbus org.gtk.Actions.Activate)
+        acoes = {
+            "checklist": lambda: self.view.toggle_checklist_on_current_line(),
+            "mark-checked": lambda: self.view.mark_checked_current_line(),
+            "check-all": lambda: self.view.transform_note(lambda t: notes_store.set_all(t, True)),
+            "uncheck-all": lambda: self.view.transform_note(lambda t: notes_store.set_all(t, False)),
+            "move-checked-bottom": lambda: self.view.transform_note(notes_store.move_checked_to_bottom),
+            "delete-checked": lambda: self.view.transform_note(notes_store.delete_checked),
+        }
+        for nome, fn in acoes.items():
+            if not self.lookup_action(nome):
+                acao = Gio.SimpleAction.new(nome, None)
+                acao.connect("activate", lambda _a, _p, f=fn: f())
+                self.add_action(acao)
+
+def run_snapshot(output_path, folders=False):
+    """Testes: desenha a janela fora da tela com 3 notas de exemplo e salva o PNG."""
+    temp = tempfile.TemporaryDirectory()
+    temp_dir = temp.name
+    store = notes_store.Store(root=temp_dir)
+    ontem = store.new()
+    ontem.text = "Shopping\nCoffee, bread and apples"
+    store.save(ontem)
+    t = time.time() - 86400
+    os.utime(ontem.path, (t, t))
+    outra = store.new()
+    outra.text = "Ideas\nA calmer Dock animation"
+    store.save(outra)
+    todo = store.new()
+    todo.text = "To Do List\n- [ ] Install a game\n- [x] Install QOL Apps\n- [ ] "
+    store.save(todo)
+    if folders:
+        for name, text in [("Personal", "Weekend\nCoffee with friends"),
+                           ("Work", "Meeting\nReview the project")]:
+            note = store.new(store.create_folder(name))
+            note.text = text
+            store.save(note)
+    load_css(is_dark())
+    off = Gtk.OffscreenWindow()
+    off.set_default_size(1000, 650)
+    off.set_size_request(1000, 650)
+    view = NotesView(store, window=off)
+    off.add(view)
+    off.show_all()
+    if folders:
+        view.on_toggle_list_clicked(view.toggle_list_btn)
+    end = time.time() + 2.0
+    while time.time() < end:
+        while Gtk.events_pending():
+            Gtk.main_iteration_do(False)
+        time.sleep(0.02)
+    off.get_pixbuf().savev(output_path, "png", [], [])
+    off.destroy()
+    temp.cleanup()
+    print(output_path)
+
+
+def main():
+    GLib.set_prgname("dev.hyprmac.Notes")
+    if len(sys.argv) > 2 and sys.argv[1] in ("--snapshot", "--snapshot-folders"):
+        return run_snapshot(sys.argv[2], folders=sys.argv[1] == "--snapshot-folders")
+    return NotesApp().run(sys.argv[:1])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

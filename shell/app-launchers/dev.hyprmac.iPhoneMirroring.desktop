@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=iPhone Mirroring
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.iPhoneMirroring
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/iPhoneMirroring.png
+StartupWMClass=dev.hyprmac.iPhoneMirroring
+Terminal=false
+Categories=Utility;

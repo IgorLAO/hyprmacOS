@@ -1,0 +1,24 @@
+{
+  "id": "dev.hyprmac.Dictionary",
+  "name": "Dictionary",
+  "icon": "shell/icons/tahoe26/factory/Dictionary.png",
+  "layout": "sidebar",
+  "size": [
+    800,
+    600
+  ],
+  "sidebar_items": [],
+  "status": "coming_soon",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.Dictionary",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Dictionary.json",
+    "menu_state": "structured",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Dictionary.app/Contents/Resources/AppIconLoc.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": null,
+  "toolbar_items": [],
+  "transition_ms": 160
+}

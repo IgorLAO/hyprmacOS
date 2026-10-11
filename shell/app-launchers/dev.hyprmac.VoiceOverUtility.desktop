@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=VoiceOver Utility
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.VoiceOverUtility
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/VoiceOverUtility.png
+StartupWMClass=dev.hyprmac.VoiceOverUtility
+Terminal=false
+Categories=Utility;

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Menu Apple. Itens com atalho: GtkMenuItem > GtkBox > rótulo + atalho (classe "shortcut",
+     cinza à direita). A ação continua ligada pelo id do GtkMenuItem. ⌘ = Super; os atalhos
+     que só existem dentro dos apps aparecem com ⌃ (Ctrl), que é a tecla real.
+-->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child><object class="GtkMenuItem" id="about"><property name="label">About This Mac</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep1"/></child>
+    <child><object class="GtkMenuItem" id="settings"><property name="label">System Settings…</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep2"/></child>
+    <child><object class="GtkMenuItem" id="forcequit"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Force Quit…</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌥⌘⎋</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep3"/></child>
+    <child><object class="GtkMenuItem" id="sleep"><property name="label">Sleep</property></object></child>
+    <child><object class="GtkMenuItem" id="reboot"><property name="label">Restart…</property></object></child>
+    <child><object class="GtkMenuItem" id="poweroff"><property name="label">Shut Down…</property></object></child>
+    <child><object class="GtkSeparatorMenuItem" id="sep4"/></child>
+    <child><object class="GtkMenuItem" id="lock"><child><object class="GtkBox"><property name="visible">True</property><property name="spacing">24</property>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">Lock Screen</property><property name="xalign">0</property></object><packing><property name="expand">True</property></packing></child>
+      <child><object class="GtkLabel"><property name="visible">True</property><property name="label">⌃⌘Q</property><property name="xalign">1</property><style><class name="shortcut"/></style></object></child>
+    </object></child></object></child>
+    <child><object class="GtkMenuItem" id="logout"><property name="label">Log Out Igor…</property></object></child>
+  </object>
+</interface>

@@ -1,0 +1,24 @@
+{
+  "id": "dev.hyprmac.Magnifier",
+  "name": "Magnifier",
+  "icon": "shell/icons/tahoe26/factory/Magnifier.png",
+  "layout": "window",
+  "size": [
+    800,
+    600
+  ],
+  "sidebar_items": [],
+  "status": "coming_soon",
+  "layout_evidence": "provisional",
+  "bundle_id": "com.apple.Magnifier",
+  "evidence": {
+    "inventory": "BaseConhecimento/referencias/tahoe-apps-70.json",
+    "menu_extraction": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/minerar/codex-2026-10-11/menus/Magnifier.json",
+    "menu_state": "absent",
+    "icon_source": "/home/igor/.local/share/hyprmac-pesquisa/macos-26.6.1/mnt/root/System/Applications/Utilities/Magnifier.app/Contents/Resources/AppIconMac.icns",
+    "layout_status": "provisional; runtime Tahoe 26 window reference pending"
+  },
+  "backend": null,
+  "toolbar_items": [],
+  "transition_ms": 160
+}

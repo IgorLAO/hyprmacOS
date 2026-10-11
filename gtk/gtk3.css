@@ -1,0 +1,615 @@
+/* hyprmac — GTK 3 no modo escuro do macOS Tahoe
+ * Aplicado por cima do Adwaita-dark (embutido no GTK, nada instalado).
+ * Carregado por ~/.config/gtk-3.0/gtk.css. As cores vêm de palette3.css
+ * (cópia de palette3-dark.css ou palette3-light.css, trocada por scripts/theme). */
+
+@import url("palette3.css");
+@import url("accent3.css");   /* cor de destaque (scripts/accent) */
+@import url("a11y3.css");     /* Reduzir Transparência / Aumentar Contraste */
+
+/* ───────────── base ───────────── */
+
+* {
+  outline-color: @mac_focus;
+  outline-width: 3px;
+  outline-offset: -1px;
+  outline-style: solid;
+  -gtk-outline-radius: 8px;
+}
+
+window,
+.background {
+  background-color: @mac_window;
+  color: @mac_label;
+}
+
+/* Fonte do sistema: SF Pro (família "SF Pro" do kit, variável). Só na janela
+ * (e nos popups): os filhos herdam, e quem pede "monospace" explicitamente
+ * (.monospace, terminais) continua com a fonte própria. O tamanho segue o
+ * gtk-font-name do settings.ini. */
+window,
+tooltip,
+menu,
+popover {
+  font-family: "SF Pro", "SF Pro Text", "Inter Variable", "Inter", sans-serif;
+}
+
+window.csd,
+window.csd decoration {
+  border-radius: 22px;
+}
+
+/* Menus: a janela que carrega o menu fica transparente — senão os cantos
+ * arredondados do menu aparecem sobre um quadrado opaco */
+window.popup,
+window.popup.background,
+window.popup decoration {
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+}
+
+decoration,
+window.csd decoration,
+window.csd:backdrop decoration {
+  box-shadow: none;   /* a sombra vem do Hyprland */
+  border: none;
+  margin: 0;
+}
+
+label.dim-label,
+.dim-label,
+label.subtitle,
+.subtitle {
+  color: @mac_label_2;
+  opacity: 1;
+}
+
+separator {
+  background: @mac_separator;
+  min-width: 1px;
+  min-height: 1px;
+}
+
+selection,
+*:selected,
+.view:selected,
+text selection {
+  background-color: alpha(@mac_accent, 0.85);
+  color: #ffffff;
+}
+
+/* ───────────── barra de título / toolbar unificada ───────────── */
+
+headerbar,
+.titlebar:not(headerbar) {
+  background: @mac_toolbar;
+  border: none;
+  border-bottom: 1px solid @mac_separator;
+  box-shadow: none;
+  min-height: 52px;           /* kit: barra unificada de 52, padding 8 */
+  padding: 0 8px 0 14px;      /* semáforo a 18 da borda (14 + 4,5 de margem) */
+  color: @mac_label;
+}
+
+headerbar:backdrop,
+.titlebar:backdrop {
+  background: @mac_toolbar;
+  color: @mac_label_2;
+}
+
+headerbar .title,
+.titlebar .title {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+headerbar .subtitle {
+  font-size: 11px;
+}
+
+/* botões da toolbar: cápsulas de vidro, como no Tahoe */
+headerbar button:not(.titlebutton),
+headerbar .linked > button {
+  min-height: 36px;           /* controles de 36 do kit */
+  min-width: 36px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid @mac_stroke;
+  background: @mac_control_lo;
+  box-shadow: inset 0 1px alpha(@mac_ink, 0.06);
+  color: @mac_label;
+  -gtk-icon-shadow: none;
+  text-shadow: none;
+}
+
+headerbar button:not(.titlebutton):hover {
+  background: @mac_control;
+}
+
+headerbar button:not(.titlebutton):active,
+headerbar button:not(.titlebutton):checked {
+  background: @mac_control_hi;
+}
+
+headerbar .linked > button:not(:first-child) { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+headerbar .linked > button:not(:last-child)  { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right-width: 0; }
+
+headerbar entry {
+  min-height: 36px;
+  border-radius: 999px;
+}
+
+/* ───────────── controles da janela (semáforo) ─────────────
+ * Igual ao gtk4.css: kit macOS 27, círculos de 14 com 9 de vão, à esquerda;
+ * o símbolo só aparece com o ponteiro sobre o grupo. O Brave/Chromium no
+ * modo de tema "GTK" desenha os botões da janela com estas regras. */
+
+headerbar button.titlebutton,
+.titlebar button.titlebutton,
+headerbar button.titlebutton:hover,
+.titlebar button.titlebutton:hover,
+headerbar button.titlebutton:active,
+.titlebar button.titlebutton:active {
+  min-width: 14px;
+  min-height: 14px;
+  padding: 0;
+  margin: 19px 4.5px;         /* centra os 14 na barra de 52 (o GTK estica o botão) */
+  border: none;
+  border-radius: 999px;
+  background-image: none;
+  box-shadow: 0 0 0 0.5px alpha(black, 0.45);
+  color: transparent;
+  -gtk-icon-shadow: none;
+  -gtk-icon-transform: scale(0.6);
+  opacity: 1;
+}
+
+headerbar button.titlebutton.close,
+.titlebar button.titlebutton.close       { background-color: #ff5c60; }
+headerbar button.titlebutton.minimize,
+.titlebar button.titlebutton.minimize    { background-color: #fac800; }
+headerbar button.titlebutton.maximize,
+.titlebar button.titlebutton.maximize    { background-color: #35c759; }
+
+headerbar .left:hover > button.titlebutton,
+headerbar box:hover > button.titlebutton,
+.titlebar box:hover > button.titlebutton { color: alpha(black, 0.55); }
+
+headerbar button.titlebutton:backdrop:not(:hover),
+.titlebar button.titlebutton:backdrop:not(:hover) {
+  background-color: alpha(white, 0.17);
+  box-shadow: 0 0 0 0.5px alpha(white, 0.03);
+}
+
+/* separador entre o semáforo e o resto da barra: só espaço */
+headerbar .left > separator.titlebutton,
+headerbar .right > separator.titlebutton {
+  min-width: 0;
+  margin: 0 6px;
+  background: none;
+  border: none;
+}
+
+/* ───────────── barra lateral ───────────── */
+
+placessidebar,
+.sidebar,
+stacksidebar,
+.navigation-sidebar {
+  background-color: @mac_sidebar;
+  border: none;
+  border-right: 1px solid @mac_separator;
+}
+
+placessidebar,
+placessidebar > viewport,
+placessidebar > viewport > list,
+placessidebar list,
+.sidebar list,
+stacksidebar list,
+.navigation-sidebar {
+  background-color: @mac_sidebar;
+  padding: 6px 0;
+}
+
+placessidebar row,
+.sidebar row,
+stacksidebar row,
+.navigation-sidebar > row {
+  min-height: 28px;
+  margin: 1px 8px;
+  padding: 0 8px;
+  border-radius: 7px;
+  color: @mac_label;
+}
+
+placessidebar row:hover,
+.sidebar row:hover,
+stacksidebar row:hover,
+.navigation-sidebar > row:hover {
+  background: alpha(@mac_ink, 0.05);
+}
+
+/* seleção da barra lateral é cinza translúcido, não azul */
+placessidebar row:selected,
+.sidebar row:selected,
+stacksidebar row:selected,
+.navigation-sidebar > row:selected {
+  background: alpha(@mac_ink, 0.11);
+  color: @mac_label;
+}
+
+placessidebar row image { color: @mac_accent; }
+
+/* cabeçalhos de seção ("Favoritos", "Locais") */
+placessidebar .sidebar-label.dim-label,
+.sidebar .dim-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: @mac_label_3;
+}
+
+/* ───────────── botões ───────────── */
+
+button {
+  min-height: 24px;
+  padding: 2px 12px;
+  border-radius: 8px;
+  border: 1px solid @mac_stroke;
+  background-image: none;
+  background-color: @mac_control;
+  box-shadow: inset 0 1px alpha(@mac_ink, 0.07), 0 1px 1px rgba(0, 0, 0, 0.18);
+  color: @mac_label;
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+  transition: background-color 120ms ease-out;
+}
+
+button:hover        { background-color: @mac_control_hi; }
+button:active,
+button:checked      { background-color: alpha(@mac_ink, 0.20); }
+button:disabled     { background-color: @mac_control_lo; color: @mac_label_3; box-shadow: none; }
+
+button.flat,
+button.image-button.flat {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+button.flat:hover { background: alpha(@mac_ink, 0.07); }
+
+button.suggested-action,
+button.default {
+  background-color: @mac_accent;
+  border-color: alpha(@mac_ink, 0.12);
+  color: #ffffff;
+}
+button.suggested-action:hover { background-color: @mac_accent_hi; }
+
+button.destructive-action {
+  background-color: @mac_destructive;
+  border-color: alpha(@mac_ink, 0.12);
+  color: #ffffff;
+}
+
+/* ───────────── campos de texto ───────────── */
+
+entry,
+spinbutton:not(.vertical),
+.entry {
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  border: 1px solid @mac_stroke;
+  background-color: alpha(@mac_ink, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.15);
+  color: @mac_label;
+  caret-color: @mac_accent;
+}
+
+entry:focus,
+spinbutton:focus {
+  border-color: @mac_accent;
+  box-shadow: 0 0 0 3px @mac_focus;
+}
+
+entry image { color: @mac_label_2; }
+
+entry.search {
+  border-radius: 999px;
+}
+
+/* ───────────── listas e visualizações ───────────── */
+
+.view,
+textview text,
+iconview,
+treeview.view,
+list {
+  background-color: @mac_view;
+  color: @mac_label;
+}
+
+treeview.view:hover { background-color: alpha(@mac_ink, 0.04); }
+
+treeview.view:selected,
+iconview:selected,
+list row:selected,
+flowbox flowboxchild:selected {
+  background-color: @mac_selection;
+  color: #ffffff;
+  border-radius: 6px;
+}
+
+treeview.view header button {
+  background: @mac_view;
+  border: none;
+  border-right: 1px solid @mac_separator;
+  border-bottom: 1px solid @mac_separator;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: @mac_label_2;
+}
+
+list row {
+  border-radius: 6px;
+}
+
+/* ───────────── menus, popovers, tooltips ───────────── */
+
+/* Menus (kit macOS 27, página Menus): contêiner raio 12, padding 6/5/5 — o
+ * destaque azul fica a 5px da borda e o texto a 16 (5 + 11 do item). Material
+ * = vidro "Menus" aproximado (@mac_menu translúcido; o Hyprland desfoca popups)
+ * + filete externo + aro interno + realce no topo. A sombra grande (0 4 24) não
+ * cabe na janela do popup do GTK3, então fica só uma sombra curta. */
+menu,
+.menu,
+.context-menu {
+  background-color: @mac_menu;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+  margin: 4px;
+  box-shadow: 0 0 0 1px @mac_menu_edge,
+              inset 0 0 0 1px @mac_menu_rim,
+              inset 0 1px 0 alpha(@mac_ink, 0.10),
+              0 2px 4px rgba(0, 0, 0, 0.20);
+}
+
+/* itens: 24 de altura, SF Pro Medium 13, destaque raio 8 que passa 11px do texto */
+menu menuitem,
+.menu menuitem,
+.context-menu menuitem {
+  min-height: 24px;
+  padding: 0 11px;
+  border-radius: 8px;
+  color: @mac_label;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* destaque: #0069F9 do kit (mais escuro que o azul do sistema), texto branco */
+menu menuitem:hover,
+.menu menuitem:hover,
+.context-menu menuitem:hover {
+  background-color: @mac_selection;
+  color: #ffffff;
+}
+
+menu menuitem:disabled,
+menu menuitem:disabled label { color: @mac_label_3; }
+
+/* atalhos: Medium 13 cinza (#4C4C4C plus-lighter no kit ≈ rótulo secundário) */
+menu menuitem accelerator { color: @mac_label_2; }
+menu menuitem:hover accelerator { color: rgba(255, 255, 255, 0.75); }
+
+/* separador: 11 de altura com linha de 1px alinhada ao texto */
+menu separator,
+.menu separator,
+.context-menu separator {
+  min-height: 1px;
+  margin: 5px 11px;
+  background: @mac_separator;
+}
+
+popover,
+popover.background {
+  background-color: @mac_popover;
+  border: 1px solid alpha(@mac_ink, 0.14);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* popover usado como menu: mesmas medidas dos menus */
+popover.menu {
+  border-radius: 12px;
+  padding: 6px 5px 5px 5px;
+}
+
+popover modelbutton {
+  min-height: 24px;
+  padding: 0 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+popover modelbutton:hover {
+  background-color: @mac_selection;
+  color: #ffffff;
+}
+
+/* tooltip do kit: SF Pro Medium 11, padding 3/6 */
+tooltip,
+tooltip.background {
+  background-color: @mac_tooltip;
+  border: 1px solid alpha(@mac_ink, 0.12);
+  border-radius: 8px;
+  padding: 3px 6px;
+  text-shadow: none;
+}
+tooltip * { padding: 0; }
+tooltip label { color: @mac_label; font-size: 11px; font-weight: 500; }
+
+/* ───────────── controles ───────────── */
+
+/* interruptor */
+switch {
+  min-width: 36px;
+  min-height: 20px;
+  padding: 1px;
+  border-radius: 999px;
+  border: none;
+  background: alpha(@mac_ink, 0.16);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  color: transparent;
+  font-size: 0;
+}
+switch:checked { background: @mac_accent; }
+switch slider {
+  min-width: 20px;
+  min-height: 20px;
+  margin: 0;
+  border-radius: 999px;
+  border: none;
+  background: @mac_knob;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* caixas de seleção e rádio */
+check,
+radio {
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0 6px 0 0;
+  border: 1px solid alpha(@mac_ink, 0.22);
+  background: alpha(@mac_ink, 0.08);
+  background-image: none;
+  box-shadow: none;
+  color: #ffffff;
+}
+check { border-radius: 4px; }
+radio { border-radius: 999px; }
+check:checked,
+check:indeterminate,
+radio:checked {
+  background-color: @mac_accent;
+  border-color: @mac_accent;
+}
+
+/* deslizantes */
+scale trough {
+  min-height: 4px;
+  min-width: 4px;
+  border-radius: 999px;
+  border: none;
+  background: alpha(@mac_ink, 0.16);
+}
+scale highlight {
+  border-radius: 999px;
+  border: none;
+  background: @mac_accent;
+}
+scale slider {
+  min-width: 20px;
+  min-height: 20px;
+  margin: -8px;
+  border-radius: 999px;
+  border: none;
+  background: @mac_knob;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+}
+
+progressbar trough {
+  min-height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: alpha(@mac_ink, 0.12);
+}
+progressbar progress {
+  min-height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: @mac_accent;
+}
+
+/* combobox / dropdown: botão com chevron azul, como o pop-up do macOS */
+combobox button.combo,
+button.combo {
+  padding-right: 4px;
+}
+combobox arrow,
+button.combo arrow {
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 5px;
+  background: @mac_accent;
+  color: #ffffff;
+  -gtk-icon-transform: scale(0.8);
+}
+
+/* abas: controle segmentado */
+notebook > header {
+  background: transparent;
+  border: none;
+  padding: 6px;
+}
+notebook > header tabs {
+  background: alpha(@mac_ink, 0.06);
+  border-radius: 9px;
+  padding: 2px;
+}
+notebook > header tab {
+  min-height: 22px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 7px;
+  box-shadow: none;
+  color: @mac_label_2;
+}
+notebook > header tab:checked {
+  background: alpha(@mac_ink, 0.16);
+  color: @mac_label;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+notebook > stack:not(:only-child) {
+  background: @mac_view;
+}
+
+/* barras de rolagem do kit (Scrollbars): cápsula de 6px num trilho de 12,
+ * #FFF/0.55 (escuro) / #000/0.50 (claro). Mesmo tamanho no indicador flutuante. */
+scrollbar {
+  background: transparent;
+  border: none;
+}
+scrollbar slider,
+scrollbar.overlay-indicator:not(.dragging):not(.hovering) slider {
+  min-width: 6px;
+  min-height: 6px;
+  margin: 0;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  background-color: @mac_scroll;
+}
+scrollbar slider:hover,
+scrollbar slider:active { background-color: alpha(@mac_ink, 0.70); }
+
+/* barra de status / ação */
+actionbar > revealer > box,
+.bottom-bar {
+  background: @mac_toolbar;
+  border-top: 1px solid @mac_separator;
+}
+
+/* diálogos */
+messagedialog .titlebar,
+dialog .dialog-action-area button {
+  border-radius: 8px;
+}
+messagedialog.csd.background {
+  border-radius: 16px;
+}

@@ -1,0 +1,5 @@
+.venv/
+models/
+backups/
+base.db-wal
+base.db-shm

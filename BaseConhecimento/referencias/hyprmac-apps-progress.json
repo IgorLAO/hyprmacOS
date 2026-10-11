@@ -1,0 +1,1067 @@
+{
+  "schema": 1,
+  "source": "BaseConhecimento/referencias/tahoe-apps-70.json",
+  "apps": [
+    {
+      "id": "dev.hyprmac.ActivityMonitor",
+      "name": "Activity Monitor",
+      "bundle_id": "com.apple.ActivityMonitor",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_linux_backend_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.AirPortUtility",
+      "name": "AirPort Utility",
+      "bundle_id": "com.apple.airport.airportutility",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.AppStore",
+      "name": "App Store",
+      "bundle_id": "com.apple.AppStore",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Apps",
+      "name": "Apps",
+      "bundle_id": "com.apple.apps.launcher",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.AudioMIDISetup",
+      "name": "Audio MIDI Setup",
+      "bundle_id": "com.apple.audio.AudioMIDISetup",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Automator",
+      "name": "Automator",
+      "bundle_id": "com.apple.Automator",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.BluetoothFileExchange",
+      "name": "Bluetooth File Exchange",
+      "bundle_id": "com.apple.BluetoothFileExchange",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Books",
+      "name": "Books",
+      "bundle_id": "com.apple.iBooksX",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.BootCampAssistant",
+      "name": "Boot Camp Assistant",
+      "bundle_id": "com.apple.bootcampassistant",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Calculator",
+      "name": "Calculator",
+      "bundle_id": "com.apple.calculator",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Calendar",
+      "name": "Calendar",
+      "bundle_id": "com.apple.iCal",
+      "group": "C",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_local_backend_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Chess",
+      "name": "Chess",
+      "bundle_id": "com.apple.Chess",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Clock",
+      "name": "Clock",
+      "bundle_id": "com.apple.clock",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_local_controls_tested",
+      "integration": "hyprland_class_validated",
+      "fidelity": "window_reference_missing",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "hyprland_window"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.ColorSyncUtility",
+      "name": "ColorSync Utility",
+      "bundle_id": "com.apple.ColorSyncUtility",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Console",
+      "name": "Console",
+      "bundle_id": "com.apple.Console",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_journal_read_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Contacts",
+      "name": "Contacts",
+      "bundle_id": "com.apple.AddressBook",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.ControlCenter",
+      "name": "ControlCenter",
+      "bundle_id": "com.apple.controlcenter",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Dictionary",
+      "name": "Dictionary",
+      "bundle_id": "com.apple.Dictionary",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.DigitalColorMeter",
+      "name": "Digital Color Meter",
+      "bundle_id": "com.apple.DigitalColorMeter",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.DiskUtility",
+      "name": "Disk Utility",
+      "bundle_id": "com.apple.DiskUtility",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_udisks2_read_only_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close",
+        "udisks2_object_manager"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Dock",
+      "name": "Dock",
+      "bundle_id": "com.apple.dock",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.FaceTime",
+      "name": "FaceTime",
+      "bundle_id": "com.apple.FaceTime",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.FindMy",
+      "name": "FindMy",
+      "bundle_id": "com.apple.findmy",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Finder",
+      "name": "Finder",
+      "bundle_id": "com.apple.finder",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.FontBook",
+      "name": "Font Book",
+      "bundle_id": "com.apple.FontBook",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Freeform",
+      "name": "Freeform",
+      "bundle_id": "com.apple.freeform",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Games",
+      "name": "Games",
+      "bundle_id": "com.apple.games",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Grapher",
+      "name": "Grapher",
+      "bundle_id": "com.apple.grapher",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Home",
+      "name": "Home",
+      "bundle_id": "com.apple.Home",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.ImageCapture",
+      "name": "Image Capture",
+      "bundle_id": "com.apple.Image_Capture",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.ImagePlayground",
+      "name": "Image Playground",
+      "bundle_id": "com.apple.GenerativePlaygroundApp",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Journal",
+      "name": "Journal",
+      "bundle_id": "com.apple.journal",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Magnifier",
+      "name": "Magnifier",
+      "bundle_id": "com.apple.Magnifier",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Mail",
+      "name": "Mail",
+      "bundle_id": "com.apple.mail",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Maps",
+      "name": "Maps",
+      "bundle_id": "com.apple.Maps",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Messages",
+      "name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.MigrationAssistant",
+      "name": "Migration Assistant",
+      "bundle_id": "com.apple.MigrateAssistant",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.MissionControl",
+      "name": "Mission Control",
+      "bundle_id": "com.apple.exposelauncher",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Music",
+      "name": "Music",
+      "bundle_id": "com.apple.Music",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "hyprland_class_validated",
+      "fidelity": "screenshot_compared_gaps_remain",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "hyprland_window"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.News",
+      "name": "News",
+      "bundle_id": "com.apple.news",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Notes",
+      "name": "Notes",
+      "bundle_id": "com.apple.Notes",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.NotificationCenter",
+      "name": "NotificationCenter",
+      "bundle_id": "com.apple.notificationcenterui",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Passwords",
+      "name": "Passwords",
+      "bundle_id": "com.apple.Passwords",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Phone",
+      "name": "Phone",
+      "bundle_id": "com.apple.mobilephone",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.PhotoBooth",
+      "name": "Photo Booth",
+      "bundle_id": "com.apple.PhotoBooth",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Photos",
+      "name": "Photos",
+      "bundle_id": "com.apple.Photos",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Podcasts",
+      "name": "Podcasts",
+      "bundle_id": "com.apple.podcasts",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Preview",
+      "name": "Preview",
+      "bundle_id": "com.apple.Preview",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.PrintCenter",
+      "name": "Print Center",
+      "bundle_id": "com.apple.printcenter",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.QuickTimePlayer",
+      "name": "QuickTime Player",
+      "bundle_id": "com.apple.QuickTimePlayerX",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_gstreamer_wav_tested_video_unverified",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close",
+        "gstreamer_wav_eos"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Reminders",
+      "name": "Reminders",
+      "bundle_id": "com.apple.reminders",
+      "group": "C",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_linux_backend_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.ScreenSharing",
+      "name": "Screen Sharing",
+      "bundle_id": "com.apple.ScreenSharing",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Screenshot",
+      "name": "Screenshot",
+      "bundle_id": "com.apple.screenshot.launcher",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.ScriptEditor",
+      "name": "Script Editor",
+      "bundle_id": "com.apple.ScriptEditor2",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Shortcuts",
+      "name": "Shortcuts",
+      "bundle_id": "com.apple.shortcuts",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Siri",
+      "name": "Siri",
+      "bundle_id": "com.apple.siri.launcher",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Spotlight",
+      "name": "Spotlight",
+      "bundle_id": "com.apple.Spotlight",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.Stickies",
+      "name": "Stickies",
+      "bundle_id": "com.apple.Stickies",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Stocks",
+      "name": "Stocks",
+      "bundle_id": "com.apple.stocks",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.SystemInformation",
+      "name": "System Information",
+      "bundle_id": "com.apple.SystemProfiler",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_linux_backend_tested",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.SystemSettings",
+      "name": "System Settings",
+      "bundle_id": "com.apple.systempreferences",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.TV",
+      "name": "TV",
+      "bundle_id": "com.apple.TV",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Terminal",
+      "name": "Terminal",
+      "bundle_id": "com.apple.Terminal",
+      "group": "B",
+      "visual": "existing_ghostty_adapter",
+      "functionality": "linux_terminal_verified",
+      "integration": "hyprland_class_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "ghostty_window"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.TextEdit",
+      "name": "TextEdit",
+      "bundle_id": "com.apple.TextEdit",
+      "group": "A",
+      "visual": "partial_existing_unverified",
+      "functionality": "unverified",
+      "integration": "existing_unreviewed",
+      "fidelity": "not_assessed",
+      "validation": []
+    },
+    {
+      "id": "dev.hyprmac.TimeMachine",
+      "name": "Time Machine",
+      "bundle_id": "com.apple.backup.launcher",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Tips",
+      "name": "Tips",
+      "bundle_id": "com.apple.helpviewer",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.VoiceMemos",
+      "name": "VoiceMemos",
+      "bundle_id": "com.apple.VoiceMemos",
+      "group": "B",
+      "visual": "partial_provisional_scaffold",
+      "functionality": "partial_recording_untested_hardware",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.VoiceOverUtility",
+      "name": "VoiceOver Utility",
+      "bundle_id": "com.apple.VoiceOverUtility",
+      "group": "B",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.Weather",
+      "name": "Weather",
+      "bundle_id": "com.apple.weather",
+      "group": "C",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index",
+        "gtk_smoke_close"
+      ]
+    },
+    {
+      "id": "dev.hyprmac.iPhoneMirroring",
+      "name": "iPhone Mirroring",
+      "bundle_id": "com.apple.ScreenContinuity",
+      "group": "D",
+      "visual": "coming_soon_scaffold",
+      "functionality": "coming_soon",
+      "integration": "xdg_index_validated",
+      "fidelity": "not_assessed",
+      "validation": [
+        "manifest",
+        "desktop",
+        "icon_png_256",
+        "gio_app_index"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+/* hyprmac — Notes (Notes do macOS Tahoe 26).
+ * Medido em BaseConhecimento/referencias/desejos/notes-app-escuro.png (1×): barra de 52,
+ * semáforos 14 (passo 23), botão da lista e cápsulas de 36 (raio 18, branco 7 %), lista de
+ * 204 com cartões 184×56 raio 10, cabeçalho de grupo 15 semibold, editor com data 11 cinza,
+ * título 20 bold, cursor amarelo. */
+.dark { background-color: #1E1E1E; color: #F2F2F2; }
+.light { background-color: #FFFFFF; color: #1D1D1F; }
+.dark, .light { font-family: "SF Pro Text", "SF Pro", sans-serif; font-size: 13px; }
+
+.header-bar { padding: 0 8px 0 18px; min-height: 52px; }
+.dark .header-bar { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.light .header-bar { border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+
+.lights { margin-right: 6px; }
+.light-btn { min-width: 14px; min-height: 14px; padding: 0; border-radius: 999px; border: none;
+             box-shadow: none; background-image: none; }
+.light-btn.close { background-color: #FF5F57; }
+.light-btn.minimize { background-color: #FEBC2E; }
+.light-btn.zoom { background-color: #28C840; }
+
+.toggle-list-btn, .capsule { min-height: 36px; border-radius: 18px; }
+.toggle-list-btn { min-width: 36px; padding: 0; }
+.dark .toggle-list-btn, .dark .capsule { background-color: rgba(255, 255, 255, 0.07); }
+.light .toggle-list-btn, .light .capsule { background-color: rgba(0, 0, 0, 0.05); }
+.capsule { padding: 0 6px; margin-left: 8px; }
+.capsule button, .toggle-list-btn { background: none; border: none; box-shadow: none;
+                                    color: inherit; min-height: 36px; min-width: 32px; padding: 0 4px; }
+.capsule button:disabled { opacity: 0.35; }
+.capsule button:hover, .toggle-list-btn:hover { background-color: rgba(127, 127, 127, 0.12);
+                                                border-radius: 18px; }
+
+.notes-title { font-weight: 700; font-size: 13px; }
+.notes-count { font-size: 11px; }
+.dark .notes-count { color: #98989D; }
+.light .notes-count { color: #86868B; }
+
+.search-capsule { min-height: 36px; min-width: 320px; border-radius: 18px; border: none;
+                  box-shadow: none; padding: 0 12px; margin-left: 8px; }
+.dark .search-capsule { background-color: rgba(255, 255, 255, 0.07); color: #F2F2F2; }
+.light .search-capsule { background-color: rgba(0, 0, 0, 0.05); color: #1D1D1F; }
+
+.sidebar { min-width: 204px; }
+.dark .sidebar { background-color: #262626; border-right: 1px solid rgba(255, 255, 255, 0.08); }
+.light .sidebar { background-color: #F5F5F5; border-right: 1px solid rgba(0, 0, 0, 0.08); }
+.sidebar list, .sidebar row { background: none; }
+.sidebar row { padding: 0; }
+.group-header { font-weight: 600; font-size: 15px; padding: 18px 16px 10px; }
+.dark .group-header { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.light .group-header { border-bottom: 1px solid rgba(0, 0, 0, 0.08); }
+.note-card { margin: 6px 10px; padding: 9px 14px; border-radius: 10px; min-height: 56px; }
+.sidebar row:selected .note-card { background-color: rgba(255, 255, 255, 0.12); }
+.light .sidebar row:selected .note-card { background-color: rgba(0, 0, 0, 0.08); }
+.sidebar row:selected { background: none; }
+.note-card-title { font-weight: 700; font-size: 13px; }
+.note-card-time, .note-card-preview { font-size: 11px; }
+.dark .note-card-preview { color: #98989D; }
+.light .note-card-preview { color: #86868B; }
+
+.editor-date { font-size: 11px; padding-top: 10px; }
+.dark .editor-date { color: #98989D; }
+.light .editor-date { color: #86868B; }
+.editor-textview, .editor-textview text { background: none; caret-color: #E5B000; font-size: 13px; }
+.dark .editor-textview text { color: #F2F2F2; }
+.light .editor-textview text { color: #1D1D1F; }
+/* botões do app sem o miolo do tema GTK */
+.header-bar button { min-width: 0; min-height: 0; background-image: none; box-shadow: none;
+                     text-shadow: none; -gtk-icon-shadow: none; outline: none; }
+.capsule button { min-width: 32px; min-height: 36px; padding: 0 6px; border-radius: 18px;
+                  background-color: transparent; border: none; }
+.header-bar button.light-btn { min-width: 14px; min-height: 14px; padding: 0; border: none; }
+/* cartão 184×56 e filete do grupo em toda a largura da lista (referência) */
+.note-card { min-height: 38px; padding: 9px 14px; margin: 4px 10px; }
+.group-header { padding: 16px 16px 9px; }
+/* rótulos com a cor do app, não a do tema GTK (no claro sumiam) */
+.dark label { color: #F2F2F2; }
+.light label { color: #1D1D1F; }
+.dark .notes-count, .dark .note-card-preview, .dark .editor-date { color: #98989D; }
+.light .notes-count, .light .note-card-preview, .light .editor-date { color: #86868B; }
+
+/* Pastas: medidas solicitadas; as referências atuais mostram esta lateral oculta. */
+.folders-sidebar { min-width: 200px; }
+.dark .folders-sidebar { background-color: #262626; border-right: 1px solid rgba(255, 255, 255, 0.08); }
+.light .folders-sidebar { background-color: #F5F5F5; border-right: 1px solid rgba(0, 0, 0, 0.08); }
+.folders-section { font-size: 11px; font-weight: 600; padding: 16px 16px 8px; }
+.folders-sidebar list, .folders-sidebar row { background: none; }
+.folders-sidebar row { padding: 0; }
+.folder-card { margin: 2px 8px; padding: 6px 8px; min-height: 20px; border-radius: 8px; }
+.dark .folders-sidebar row:selected .folder-card { background-color: rgba(255, 255, 255, 0.12); }
+.light .folders-sidebar row:selected .folder-card { background-color: rgba(0, 0, 0, 0.08); }
+.folder-icon { color: #E5B000; -gtk-icon-shadow: none; }
+.dark .folders-section, .dark .folder-count { color: #98989D; }
+.light .folders-section, .light .folder-count { color: #86868B; }
+.folder-name-entry { min-width: 0; min-height: 20px; padding: 0; border-radius: 3px;
+                     background-image: none; box-shadow: none; font-size: 13px; }
+.dark .folder-name-entry { background-color: #333333; color: #F2F2F2; }
+.light .folder-name-entry { background-color: #FFFFFF; color: #1D1D1F; }
+.new-folder-btn { margin: 8px; padding: 6px 8px; min-height: 20px; background: none;
+                  border: none; border-radius: 8px; box-shadow: none; color: inherit;
+                  text-shadow: none; -gtk-icon-shadow: none; }
+.new-folder-btn:hover { background-color: rgba(127, 127, 127, 0.12); }

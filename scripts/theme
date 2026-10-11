@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# hyprmac — alterna o tema do sistema entre claro e escuro
+#   theme [toggle|light|dark]
+#
+# Troca de uma vez: preferência do GNOME/portal (apps GTK 4/libadwaita e o
+# papel de parede claro/escuro), paletas do GTK 3/4, esquema de cores do KDE/Qt,
+# ícones, ghostty, menus da barra e Spotlight. O hyprmac-shell acompanha sozinho.
+set -euo pipefail
+
+H="$HOME/Projects/hyprmac"
+mode="${1:-toggle}"
+current=$(gsettings get org.gnome.desktop.interface color-scheme)
+if [ "$mode" = toggle ]; then
+  [ "$current" = "'prefer-dark'" ] && mode=light || mode=dark
+fi
+
+case "$mode" in
+  dark)
+    scheme=prefer-dark;  prefer_dark=true;  icons=WhiteSur-dark; kde=HyprmacTahoeDark;  accent=0,122,255 ;;
+  light)
+    scheme=prefer-light; prefer_dark=false; icons=WhiteSur;      kde=HyprmacTahoeLight; accent=0,122,255 ;;
+  *)
+    echo "uso: $0 [toggle|light|dark]" >&2; exit 2 ;;
+esac
+
+# GTK 3 / 4: paleta do hyprmac + preferência do tema base
+cp "$H/gtk/palette3-$mode.css" "$H/gtk/palette3.css"
+cp "$H/gtk/palette4-$mode.css" "$H/gtk/palette4.css"
+for v in 3.0 4.0; do
+  ini="$HOME/.config/gtk-$v/settings.ini"
+  [ -f "$ini" ] || continue
+  sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$prefer_dark/;
+          s/^gtk-icon-theme-name=.*/gtk-icon-theme-name=$icons/" "$ini"
+done
+gsettings set org.gnome.desktop.interface icon-theme "$icons"
+
+# KDE / Qt (nautilus, Configurações…): atualizam na hora
+plasma-apply-colorscheme "$kde" >/dev/null 2>&1 || true
+kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icons"
+kwriteconfig6 --file kdeglobals --group General --key AccentColor "$accent"
+
+# ghostty: troca as cores e recarrega todas as janelas abertas
+cp "$H/ghostty/themes/$mode" "$H/ghostty/theme"
+pkill -USR2 -x ghostty || true
+
+# Barra (menus e dicas) e Spotlight: claro = arquivo do tema, escuro = vazio
+if [ "$mode" = light ]; then
+  cp "$H/waybar/themes/light.css" "$H/waybar/theme.css"
+  cp "$H/wofi/themes/light.css"   "$H/wofi/theme.css"
+else
+  : > "$H/waybar/theme.css"
+  : > "$H/wofi/theme.css"
+fi
+pkill -SIGUSR2 -x waybar || true
+
+# Contorno das janelas (kit macOS 27, ver hypr/hyprmac.lua): o filete preto por fora é
+# igual nos dois modos; o aro interno branco 20% (glow) só existe no escuro
+[ "$mode" = dark ] && glow=true || glow=false
+hyprctl eval "hl.config({ general = { col = { active_border = \"rgba(00000080)\", inactive_border = \"rgba(00000080)\" } }, decoration = { glow = { enabled = $glow } } })" >/dev/null || true
+
+# Liquid Glass (hyprglass): as camadas usam o tema global do plugin (vidro claro/escuro)
+hyprctl eval "if hl.plugin.hyprglass then hl.plugin.hyprglass.config({ default_theme = \"$mode\" }) end" >/dev/null 2>&1 || true
+
+# Por último a preferência global: libadwaita, portal, papel de parede do GNOME
+# e o hyprmac-shell reagem a esta mudança
+gsettings set org.gnome.desktop.interface color-scheme "$scheme"
+
+# Cor de destaque nos tons do modo novo (claro e escuro têm tons diferentes)
+"$H/scripts/accent" || true
+"$H/scripts/acessibilidade" || true

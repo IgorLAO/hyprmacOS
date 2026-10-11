@@ -1,0 +1,471 @@
+[
+ {
+  "nome": "01 LargeTitle/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 26,
+  "entrelinha": 32,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "01 LargeTitle/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 26,
+  "entrelinha": 32,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "02 Title1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 22,
+  "entrelinha": 26,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "02 Title1/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 26,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "03 Title2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "03 Title2/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "04 Title3/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "04 Title3/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 20,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "05 Headline/Default",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "05 Headline/Emphasized",
+  "fonte": "SFPro-Heavy",
+  "tamanho": 13,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "06 Body/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "06 Body/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 13,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "07 Callout/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "07 Callout/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 12,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "08 Subheadline/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 11,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "08 Subheadline/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 11,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "09 Footnote/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "09 Footnote/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "10 Caption1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "10 Caption1/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "11 Caption2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "11 Caption2/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/01 LargeTitle/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 26,
+  "entrelinha": 34,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/01 LargeTitle/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 26,
+  "entrelinha": 34,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/02 Title1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/02 Title1/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 28,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/03 Title2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 24,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/03 Title2/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 24,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/04 Title3/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 22,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/04 Title3/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 22,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/05 Headline/Default",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/05 Headline/Emphasized",
+  "fonte": "SFPro-Heavy",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/06 Body/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/06 Body/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 13,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/07 Callout/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 17,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/07 Callout/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 12,
+  "entrelinha": 17,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/08 Subheadline/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 11,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/08 Subheadline/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 11,
+  "entrelinha": 16,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/09 Footnote/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/09 Footnote/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/10 Caption1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/10 Caption1/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/11 Caption2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Loose Leading/11 Caption2/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 15,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Secondary Style",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 22,
+  "cor": "#333333/0.62"
+ },
+ {
+  "nome": "Tight Leading/01 LargeTitle/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 26,
+  "entrelinha": 30,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/01 LargeTitle/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 26,
+  "entrelinha": 30,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/02 Title1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 22,
+  "entrelinha": 24,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/02 Title1/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 22,
+  "entrelinha": 24,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/03 Title2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 17,
+  "entrelinha": 20,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/03 Title2/Emphasized",
+  "fonte": "SFPro-Bold",
+  "tamanho": 17,
+  "entrelinha": 20,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/04 Title3/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 15,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/04 Title3/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 15,
+  "entrelinha": 18,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/05 Headline/Default",
+  "fonte": "SFPro-Bold",
+  "tamanho": 13,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/05 Headline/Emphasized",
+  "fonte": "SFPro-Heavy",
+  "tamanho": 13,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/06 Body/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 13,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/06 Body/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 13,
+  "entrelinha": 14,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/07 Callout/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 12,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/07 Callout/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 12,
+  "entrelinha": 13,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/08 Subheadline/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 11,
+  "entrelinha": 12,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/08 Subheadline/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 11,
+  "entrelinha": 12,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/09 Footnote/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/09 Footnote/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/10 Caption1/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/10 Caption1/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/11 Caption2/Default",
+  "fonte": "SFPro-Regular",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ },
+ {
+  "nome": "Tight Leading/11 Caption2/Emphasized",
+  "fonte": "SFPro-Semibold",
+  "tamanho": 10,
+  "entrelinha": 11,
+  "cor": "#000000/0.85"
+ }
+]

@@ -1,0 +1,20 @@
+/* hyprmac — Aumentar Contraste (Acessibilidade ▸ Tela no macOS)
+ * Bordas de 1 px bem visíveis em volta de vidros e controles, texto secundário
+ * mais forte. Carregado por cima do style.css quando a opção está ligada. */
+menu.hyprmac-menu, .hyprmac-menu menu, .xmenu, .osd, .notif, .switcher-panel,
+.ccg, .clip-panel, .wg-panel, .spot-panel, .card {
+  border-color: @shell_contrast_border;
+}
+.notif .time, .notif .body, .ccg-caption, .ccg-hint, .wg-size, .fq-hint,
+.nc-app, .xmenu .xm-sub, .hyprmac .spot-sub, .hyprmac .spot-foot {
+  color: @shell_contrast_label;
+}
+/* Clear mantém conteúdo branco independentemente do tema da leitura. */
+.cc .tile, .cc .circle, .cc .edit-pill, .media-panel {
+  border-color: rgba(255, 255, 255, 0.70);
+}
+.cc .subtitle, .media-panel .subtitle { color: rgba(255, 255, 255, 0.92); }
+.xmenu button.xm-item:hover .xm-sub { color: #ffffff; }
+menu.hyprmac-menu separator, .hyprmac-menu menu separator, .xmenu .xm-sep {
+  background: @shell_contrast_separator;
+}

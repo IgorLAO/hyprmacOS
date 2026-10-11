@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Notes
+Comment=Notes
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-notas
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/Notes.png
+Categories=Office;Utility;
+Keywords=notes;checklist;
+StartupWMClass=dev.hyprmac.Notes
+StartupNotify=true

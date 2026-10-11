@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Console
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Console
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Console.png
+StartupWMClass=dev.hyprmac.Console
+Terminal=false
+Categories=Utility;

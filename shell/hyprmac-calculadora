@@ -1,0 +1,426 @@
+#!/usr/bin/env python3
+"""Calculator Basic; a lógica pode ser importada sem GTK ou display."""
+import sys
+from decimal import Decimal, DecimalException, ROUND_HALF_UP, localcontext
+
+APP_ID = "dev.hyprmac.Calculator"
+OPERATORS = {"+": "+", "-": "−", "*": "×", "/": "÷"}
+WIDTH, HEIGHT = 292, 452
+
+
+def format_number(value):
+    """Nove algarismos no visor; o acumulador mantém a precisão."""
+    if not value.is_finite():
+        return "Error"
+    if not value:
+        return "0"
+    with localcontext() as ctx:
+        ctx.prec = 9
+        ctx.rounding = ROUND_HALF_UP
+        rounded = +value
+        exponent = rounded.adjusted()
+        if exponent >= 9 or exponent < -8:
+            mantissa = format(rounded.scaleb(-exponent), "f").rstrip("0").rstrip(".")
+            return f"{mantissa}e{exponent}"
+        text = format(rounded, "f")
+        return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+class Calculator:
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.value = Decimal(0)
+        self.entry = "0"
+        self.entering = False
+        self.accumulator = None
+        self.operator = None
+        self.repeat = None
+        self.expression = ""
+        self.error = False
+        self.fresh = True
+
+    @property
+    def display(self):
+        if self.error:
+            return "Error"
+        text = format_number(self.value)
+        if self.entering and "." in self.entry and "e" not in text:
+            # Preservar o separador e os zeros digitados.
+            digits = self.entry.lstrip("-").replace(".", "").lstrip("0")
+            if len(digits) <= 9:
+                return self.entry
+        return text
+
+    @property
+    def clear_label(self):
+        return "AC" if self.fresh else "C"
+
+    @property
+    def active_operator(self):
+        return self.operator if not self.entering else None
+
+    def _fail(self):
+        self.reset()
+        self.error = True
+        self.fresh = False
+
+    def _calculate(self, left, operator, right):
+        with localcontext() as ctx:
+            ctx.prec = 80
+            ctx.rounding = ROUND_HALF_UP
+            if operator == "+":
+                return left + right
+            if operator == "-":
+                return left - right
+            if operator == "*":
+                return left * right
+            return left / right
+
+    def press(self, key):
+        aliases = {"×": "*", "÷": "/", "−": "-", ",": ".", "⌫": "Backspace"}
+        key = aliases.get(key, key)
+        if key == "AC":
+            self.reset()
+            return
+        if key == "C":
+            if self.error:
+                self.reset()
+            else:
+                self.value = Decimal(0)
+                self.entry = "0"
+                self.entering = False
+                self.repeat = None
+                self.fresh = True
+                if self.operator is None:
+                    self.expression = ""
+            return
+        if self.error:
+            if key in "0123456789." and len(key) == 1:
+                self.reset()
+            else:
+                return
+        try:
+            self._press(key)
+        except DecimalException:
+            self._fail()
+
+    def _press(self, key):
+        if len(key) == 1 and key in "0123456789.":
+            if not self.entering:
+                self.entry = "0"
+                self.entering = True
+                self.repeat = None
+                if self.operator is None:
+                    self.expression = ""
+            if key == ".":
+                if "." not in self.entry:
+                    self.entry += "."
+            else:
+                sign = "-" if self.entry.startswith("-") else ""
+                if self.entry.lstrip("-") == "0":
+                    self.entry = sign + key
+                else:
+                    self.entry += key
+            self.value = Decimal(self.entry)
+            self.fresh = False
+        elif key == "Backspace":
+            if self.entering:
+                self.entry = self.entry[:-1]
+                if self.entry in ("", "-"):
+                    self.entry = "0"
+                self.value = Decimal(self.entry)
+            elif self.operator:
+                self.operator = None
+                self.accumulator = None
+                self.expression = ""
+        elif key == "+/−":
+            if self.operator and not self.entering:
+                self.value = Decimal(0)
+            self.value = self.value.copy_negate()
+            if self.entering:
+                self.entry = self.entry[1:] if self.entry.startswith("-") else "-" + self.entry
+            else:
+                self.entry = format(self.value, "f")
+                self.entering = True
+            self.fresh = False
+        elif key == "%":
+            with localcontext() as ctx:
+                ctx.prec = 80
+                factor = self.accumulator if self.operator in ("+", "-") else Decimal(1)
+                self.value = self.value * factor / Decimal(100)
+            self.entry = format(self.value, "f")
+            self.entering = True
+            self.fresh = False
+        elif key in OPERATORS:
+            if self.operator and self.entering:
+                self.value = self._calculate(self.accumulator, self.operator, self.value)
+            self.accumulator = self.value
+            self.operator = key
+            self.entering = False
+            self.repeat = None
+            self.expression = f"{format_number(self.value)} {OPERATORS[key]}"
+            self.fresh = False
+        elif key == "=":
+            if self.operator:
+                left, op, right = self.accumulator, self.operator, self.value
+                self.repeat = (op, right)
+            elif self.repeat:
+                left, (op, right) = self.value, self.repeat
+            else:
+                self.entering = False
+                return
+            self.value = self._calculate(left, op, right)
+            self.expression = f"{format_number(left)} {OPERATORS[op]} {format_number(right)} ="
+            self.operator = None
+            self.accumulator = None
+            self.entering = False
+            self.fresh = False
+
+
+# Propriedades GTK 3; medidas locais ainda sem confronto visual Tahoe.
+CSS = b"""
+.calculator { font-family: "SF Pro Text", "SF Pro", sans-serif; padding: 16px; }
+.calculator.dark { background-color: #1E1E1E; color: #FFFFFF; }
+.calculator.light { background-color: #FAFAFA; color: #1D1D1F; }
+.calculator button { background-image: none; border: none; box-shadow: none;
+    text-shadow: none; padding: 0; margin: 0; outline-width: 0; }
+.calculator .key { min-width: 56px; min-height: 56px; border-radius: 28px;
+    font-size: 25px; font-weight: normal; }
+.calculator.dark .digit { background-color: #333333; color: #FFFFFF; }
+.calculator.light .digit { background-color: #E5E5EA; color: #1D1D1F; }
+.calculator.dark .function { background-color: #737373; color: #FFFFFF; }
+.calculator.light .function { background-color: #D1D1D6; color: #1D1D1F; }
+.calculator .operator { background-color: #FF9F0A; color: #FFFFFF; }
+.calculator .operator.selected { background-color: #FFFFFF; color: #FF9F0A; }
+.calculator .key:hover { box-shadow: inset 0 0 0 56px rgba(255,255,255,0.10); }
+.calculator .key:active { box-shadow: inset 0 0 0 56px rgba(255,255,255,0.22); }
+.calculator .mode { opacity: 0.45; }
+.calculator .expression { font-size: 14px; opacity: 0.6; }
+.calculator .result { font-family: "SF Pro Display", "SF Pro", sans-serif; }
+.calculator .light-btn { min-width: 14px; min-height: 14px; border-radius: 7px; }
+.calculator .close { background-color: #FF5F57; }
+.calculator .minimize { background-color: #FEBC2E; }
+.calculator .zoom { background-color: #28C840; }
+"""
+
+
+def gtk_types():
+    # Importação tardia para testar a lógica sem PyGObject.
+    import gi
+    gi.require_version("Gtk", "3.0")
+    gi.require_version("Gdk", "3.0")
+    from gi.repository import Gtk, Gdk, Gio, GLib, Pango
+
+    class CalculatorView(Gtk.Box):
+        def __init__(self, window):
+            super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+            self.window = window
+            self.model = Calculator()
+            self.get_style_context().add_class("calculator")
+            self.settings = None
+            schema_source = Gio.SettingsSchemaSource.get_default()
+            schema = schema_source.lookup("org.gnome.desktop.interface", True) if schema_source else None
+            if schema and schema.has_key("color-scheme"):
+                self.settings = Gio.Settings.new_full(schema, None, None)
+                self.settings.connect("changed::color-scheme", self.update_theme)
+            self.update_theme()
+
+            header = Gtk.EventBox()
+            header.set_size_request(-1, 22)
+            header.connect("button-press-event", self.drag)
+            lights = Gtk.Box(spacing=9)
+            lights.set_valign(Gtk.Align.CENTER)
+            for name, action in [("close", lambda: window.close()),
+                                 ("minimize", lambda: window.iconify()),
+                                 ("zoom", self.zoom)]:
+                button = Gtk.Button()
+                button.set_size_request(14, 14)
+                button.set_valign(Gtk.Align.CENTER)
+                button.get_style_context().add_class("light-btn")
+                button.get_style_context().add_class(name)
+                button.get_accessible().set_name(name.capitalize())
+                button.connect("clicked", lambda _b, fn=action: fn())
+                lights.pack_start(button, False, False, 0)
+            header.add(lights)
+            self.pack_start(header, False, False, 0)
+
+            self.expression = Gtk.Label(xalign=1)
+            self.expression.get_style_context().add_class("expression")
+            self.expression.set_ellipsize(Pango.EllipsizeMode.START)
+            self.expression.set_size_request(-1, 20)
+            self.pack_start(self.expression, False, False, 0)
+            self.result = Gtk.Label(label="0", xalign=1)
+            self.result.get_style_context().add_class("result")
+            self.result.set_size_request(-1, 56)
+            self.result.set_width_chars(1)
+            self.result.connect("size-allocate", lambda *_: self.fit_result())
+            self.pack_start(self.result, False, False, 0)
+
+            grid = Gtk.Grid(column_spacing=12, row_spacing=8)
+            grid.set_halign(Gtk.Align.CENTER)
+            grid.set_row_homogeneous(True)
+            grid.set_column_homogeneous(True)
+            keys = [("AC", "+/−", "%", "÷"), ("7", "8", "9", "×"),
+                    ("4", "5", "6", "−"), ("1", "2", "3", "+"),
+                    ("mode", "0", ".", "=")]
+            self.buttons = {}
+            tips = {"AC": "All Clear", "+/−": "Change Sign", "%": "Percent",
+                    "÷": "Divide", "×": "Multiply", "−": "Subtract", "+": "Add",
+                    "=": "Equals", "mode": "Change Calculator mode"}
+            for row, items in enumerate(keys):
+                for col, key in enumerate(items):
+                    button = Gtk.Button(label=key if key != "mode" else None)
+                    button.set_can_focus(False)
+                    style = button.get_style_context()
+                    style.add_class("key")
+                    style.add_class("operator" if col == 3 else "function" if row == 0 else "digit")
+                    if key == "mode":
+                        button.set_image(Gtk.Image.new_from_icon_name("accessories-calculator-symbolic", Gtk.IconSize.LARGE_TOOLBAR))
+                        style.add_class("mode")
+                        button.set_sensitive(False)
+                    else:
+                        button.connect("clicked", lambda _b, k=key: self.press(k))
+                    button.set_tooltip_text(tips.get(key, key))
+                    button.get_accessible().set_name(tips.get(key, key))
+                    grid.attach(button, col, row, 1, 1)
+                    self.buttons[key] = button
+            self.pack_start(grid, False, False, 0)
+            window.connect("key-press-event", self.on_key)
+            self.refresh()
+
+        def update_theme(self, *_):
+            dark = self.settings and "dark" in self.settings.get_string("color-scheme")
+            style = self.get_style_context()
+            style.remove_class("light" if dark else "dark")
+            style.add_class("dark" if dark else "light")
+
+        def zoom(self):
+            if self.window.is_maximized():
+                self.window.unmaximize()
+            else:
+                self.window.maximize()
+
+        def drag(self, _widget, event):
+            if event.button == 1:
+                self.window.begin_move_drag(1, int(event.x_root), int(event.y_root), event.time)
+                return True
+            return False
+
+        def fit_result(self):
+            layout = self.result.create_pango_layout(self.model.display)
+            desc = Pango.FontDescription("SF Pro Display")
+            width = max(1, self.result.get_allocated_width())
+            for size in range(48, 11, -1):
+                desc.set_absolute_size(size * Pango.SCALE)
+                layout.set_font_description(desc)
+                if layout.get_pixel_size()[0] <= width:
+                    break
+            if getattr(self, "font_size", None) != size:
+                self.font_size = size
+                attrs = Pango.AttrList()
+                attrs.insert(Pango.attr_size_new_absolute(size * Pango.SCALE))
+                self.result.set_attributes(attrs)
+
+        def refresh(self):
+            self.result.set_text(self.model.display)
+            self.expression.set_text(self.model.expression)
+            self.buttons["AC"].set_label(self.model.clear_label)
+            self.buttons["AC"].set_tooltip_text("All Clear" if self.model.fresh else "Clear")
+            self.buttons["AC"].get_accessible().set_name("All Clear" if self.model.fresh else "Clear")
+            for key, button in self.buttons.items():
+                style = button.get_style_context()
+                if key == OPERATORS.get(self.model.active_operator):
+                    style.add_class("selected")
+                else:
+                    style.remove_class("selected")
+            self.fit_result()
+
+        def press(self, key):
+            self.model.press(self.model.clear_label if key == "AC" else key)
+            self.refresh()
+
+        def on_key(self, _widget, event):
+            modifiers = event.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK)
+            if modifiers:
+                if event.keyval in (Gdk.KEY_c, Gdk.KEY_C):
+                    Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).set_text(self.model.display, -1)
+                    return True
+                return False
+            special = {Gdk.KEY_Return: "=", Gdk.KEY_KP_Enter: "=", Gdk.KEY_Escape: "AC",
+                       Gdk.KEY_BackSpace: "Backspace", Gdk.KEY_KP_Decimal: ".",
+                       Gdk.KEY_KP_Separator: "."}
+            key = special.get(event.keyval)
+            if key is None:
+                char = Gdk.keyval_to_unicode(event.keyval)
+                key = chr(char) if char else ""
+            if key in tuple("0123456789+-*/%=.,") + ("AC", "Backspace"):
+                # Escape limpa tudo, mesmo quando o botão mostra C.
+                self.model.press(key)
+                self.refresh()
+                return True
+            return False
+
+    class CalculatorApp(Gtk.Application):
+        def __init__(self):
+            super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.FLAGS_NONE)
+
+        def do_activate(self):
+            window = self.get_active_window()
+            if window:
+                window.present()
+                return
+            load_css()
+            window = Gtk.ApplicationWindow(application=self)
+            window.set_title("Calculator")
+            window.set_decorated(False)
+            window.set_default_size(WIDTH, HEIGHT)
+            window.add(CalculatorView(window))
+            window.show_all()
+
+    def load_css():
+        provider = Gtk.CssProvider()
+        provider.load_from_data(CSS)
+        Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider,
+                                                Gtk.STYLE_PROVIDER_PRIORITY_USER + 100)
+
+    return Gtk, GLib, CalculatorView, CalculatorApp, load_css
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Calculator")
+    parser.add_argument("--snapshot", metavar="FILE.png")
+    args = parser.parse_args()
+    Gtk, GLib, View, App, load_css = gtk_types()
+    GLib.set_prgname(APP_ID)
+    if args.snapshot:
+        import time
+        if not Gtk.init_check()[0]:
+            parser.exit(1, "Snapshot requires a display.\n")
+        load_css()
+        window = Gtk.OffscreenWindow()
+        window.set_default_size(WIDTH, HEIGHT)
+        view = View(window)
+        for key in "1234.5":
+            view.model.press(key)
+        window.add(view)
+        window.show_all()
+        view.refresh()
+        end = time.monotonic() + 0.5
+        while time.monotonic() < end:
+            while Gtk.events_pending():
+                Gtk.main_iteration_do(False)
+            time.sleep(0.01)
+        pixbuf = window.get_pixbuf()
+        if pixbuf is None:
+            parser.exit(1, "Snapshot could not be rendered.\n")
+        pixbuf.savev(args.snapshot, "png", [], [])
+        window.destroy()
+        return 0
+    return App().run([sys.argv[0]])
+
+
+if __name__ == "__main__":
+    sys.exit(main())

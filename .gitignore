@@ -1,0 +1,62 @@
+__pycache__/
+*.pyc
+BaseConhecimento/.backups/
+BaseConhecimento/MacTahoe/.venv/
+BaseConhecimento/MacTahoe/models/
+waybar/cffi/*.so
+.aider*
+shell/ocioso/hyprmac-ocioso
+shell/ocioso/ext-idle-notify-v1-*
+
+# Vídeos e frames da base (pesados). Versiona-se só o CATÁLOGO (frames-meta.json)
+# e a transcrição; os PNGs são reproduzíveis por ferramentas/curar_frames.py.
+# Os frames crus = 6,8 GB; os curados (frames-ui) = 544 MB em 4K — ainda pesado,
+# então ficam fora do git por padrão. (Para versionar uma versão reduzida, gere
+# os frames a 1920px e remova a linha frames-ui/ abaixo.)
+BaseConhecimento/video/*.mp4
+BaseConhecimento/video/*.webm
+BaseConhecimento/video/*.mkv
+BaseConhecimento/video/frames/
+BaseConhecimento/video/frames2/
+BaseConhecimento/video/frames-ui/
+waybar/vidro.css
+waybar/contrast.css
+waybar/barra-ocultos.css
+.agentes/
+
+# --- Repositório público (GitHub) — 2026-10-11 ---------------------------
+# Fora do git por tamanho ou por serem material da Apple (fontes SF com
+# licença que proíbe redistribuição, capturas, kit de design, HIG). Ficam só
+# no disco local; a história anterior está na tag legado-pre-github.
+BaseConhecimento/referencias/kit/
+BaseConhecimento/referencias/kit-visionos/
+BaseConhecimento/referencias/telas/**
+!BaseConhecimento/referencias/telas/**/
+!BaseConhecimento/referencias/telas/**/*.json
+!BaseConhecimento/referencias/telas/**/*.md
+BaseConhecimento/referencias/desejos/
+BaseConhecimento/referencias/pdfs/
+BaseConhecimento/hig/imagens/
+BaseConhecimento/apple-support-scraped/
+BaseConhecimento/apple-hig-scraped/
+BaseConhecimento/MacTahoe/base.db*
+BaseConhecimento/MacTahoe/comparador/capturas/
+BaseConhecimento/MacTahoe/comparador/resultados/
+BaseConhecimento/comparacao/resultados/**/*.png
+BaseConhecimento/base.db
+BaseConhecimento/base.db-*
+*.onnx
+*.ttf
+*.otf
+IOGraphics/
+validacao/**/*.png
+wallpapers/indigo-referencia.png
+wallpapers/tahoe-*
+hyprmac/
+cursores/
+# saídas soltas de agentes
+/mining_*.json
+/corematerial_mined_output.json
+/quicklook-generators-mining.json
+/results/
+/claude-free.sh

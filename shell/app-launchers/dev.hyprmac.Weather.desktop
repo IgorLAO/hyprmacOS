@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Weather
+Exec=/home/igor/Projects/hyprmac/shell/hyprmac-app dev.hyprmac.Weather
+Icon=/home/igor/Projects/hyprmac/shell/icons/tahoe26/factory/Weather.png
+StartupWMClass=dev.hyprmac.Weather
+Terminal=false
+Categories=Utility;

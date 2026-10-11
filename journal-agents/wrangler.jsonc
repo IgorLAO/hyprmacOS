@@ -1,0 +1,50 @@
+{
+  "name": "journal-mining-agents",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/agent-wrangler.ts",
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "VisualSpecsAgent",
+        "class_name": "VisualSpecsAgent"
+      },
+      {
+        "name": "MenuSpecsAgent",
+        "class_name": "MenuSpecsAgent"
+      },
+      {
+        "name": "KeyboardAgent",
+        "class_name": "KeyboardAgent"
+      },
+      {
+        "name": "AnimationAgent",
+        "class_name": "AnimationAgent"
+      },
+      {
+        "name": "StatesAgent",
+        "class_name": "StatesAgent"
+      },
+      {
+        "name": "LayoutsAgent",
+        "class_name": "LayoutsAgent"
+      },
+      {
+        "name": "AccessibilityAgent",
+        "class_name": "AccessibilityAgent"
+      },
+      {
+        "name": "AppIntentsAgent",
+        "class_name": "AppIntentsAgent"
+      },
+      {
+        "name": "WindowAgent",
+        "class_name": "WindowAgent"
+      }
+    ]
+  },
+
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["VisualSpecsAgent", "MenuSpecsAgent", "KeyboardAgent", "AnimationAgent", "StatesAgent", "LayoutsAgent", "AccessibilityAgent", "AppIntentsAgent", "WindowAgent"] }
+  ]
+}
