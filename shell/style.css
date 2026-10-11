@@ -1695,3 +1695,12 @@ button.wg-done label { font-size: 13px; font-weight: 600; color: #ffffff; }
  * com o mesmo recuo dos banners empilhados; o texto segue o corpo, um pouco mais apagado. */
 .nc .notif.stacked { margin-bottom: 0; }
 .notif .nc-more { font-size: 12px; opacity: 0.62; margin-top: 2px; }
+
+/* histórico: More (…) e copiar por item (Mac User Guide ▸ Clipboard history) */
+.hyprmac button.clip-more { padding: 0 8px; }
+.hyprmac button.clip-more label { font-size: 16px; }
+.hyprmac button.clip-copy { min-width: 26px; min-height: 26px; padding: 0; border-radius: 7px;
+  background: transparent; border: none; box-shadow: none; }
+.hyprmac button.clip-copy:hover { background: rgba(255, 255, 255, 0.12); }
+.hyprmac button.clip-copy label { font-size: 15px; color: rgba(255, 255, 255, 0.55); }
+list.clip-list row:selected button.clip-copy label { color: #ffffff; }

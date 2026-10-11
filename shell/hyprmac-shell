@@ -3940,8 +3940,8 @@ TERMINALS = ("ghostty", "kitty", "konsole", "alacritty", "foot", "wezterm", "xte
 def clip_ago(t):
     m = int((time.time() - t) // 60)
     if m < 1:
-        return "agora"
-    return f"há {m} min" if m < 60 else f"há {m // 60} h"
+        return "Now"
+    return f"{m} min ago" if m < 60 else f"{m // 60} hr ago"   # interface em inglês, como no Mac
 
 
 class ClipboardPanel:
@@ -3977,10 +3977,13 @@ class ClipboardPanel:
         head = Gtk.Box(spacing=8)
         add_class(head, "clip-head")
         head.pack_start(label("Clipboard", "clip-title"), True, True, 0)
+        # Tahoe (Mac User Guide ▸ Clipboard history): "click the More button to the right of
+        # the search field, then choose Clear History"
         self.clear_btn = Gtk.Button()
-        add_class(self.clear_btn, "clip-pill")
-        self.clear_btn.add(label("Clear", xalign=0.5))
-        self.clear_btn.connect("clicked", lambda _b: self._clear())
+        add_class(self.clear_btn, "clip-pill", "clip-more")
+        self.clear_btn.add(label(G("f01d8"), "icon", 0.5))
+        self.clear_btn.set_tooltip_text("More")
+        self.clear_btn.connect("clicked", self._more_menu)
         head.pack_end(self.clear_btn, False, False, 0)
 
         self.search = Gtk.SearchEntry()
@@ -4042,6 +4045,13 @@ class ClipboardPanel:
         self.open = False
         self._grid_on = False
         self.win.hide()
+        LS.set_keyboard_mode(self.win, LS.KeyboardMode.EXCLUSIVE)
+
+    def preview(self, *_):
+        """Testes: mostra o histórico por 2 s sem pegar o teclado."""
+        LS.set_keyboard_mode(self.win, LS.KeyboardMode.NONE)
+        self.show()
+        GLib.timeout_add(2000, lambda: self.hide() and False)
 
     def _backdrop_click(self, _w, ev):
         self.hide()
@@ -4053,6 +4063,14 @@ class ClipboardPanel:
         k = ev.keyval
         if k == Gdk.KEY_Escape:
             self.hide()
+            return True
+        # "select the item and press Command-C": no Linux o copiar dos apps é Ctrl+C
+        # (Super+C fecha a janela no Hyprland); só sem texto selecionado no campo
+        if (k in (Gdk.KEY_c, Gdk.KEY_C) and ev.state & Gdk.ModifierType.CONTROL_MASK
+                and not self.search.get_selection_bounds()):
+            row = self._selected_row()
+            if row is not None:
+                in_thread(self._to_clipboard, row.item)
             return True
         if k in (Gdk.KEY_Down, Gdk.KEY_Up):
             rows = [r for r in self.list.get_children() if self._filter(r)]
@@ -4084,10 +4102,9 @@ class ClipboardPanel:
         has = bool(self.items)
         self.empty.set_visible(not has)
         self.scroll.set_visible(has)
-        self.clear_btn.set_sensitive(has)
         n = len(self.items)
-        self.foot.set_text(f"{n} {'item' if n == 1 else 'itens'}  ·  ↩ cola  ·  esc fecha"
-                           if has else "esc fecha")
+        self.foot.set_text(f"{n} {'item' if n == 1 else 'items'}  ·  ↩ Paste  ·  ⌃C Copy  ·  esc Close"
+                           if has else "esc Close")
         first = self.list.get_row_at_index(0)
         if first:
             self.list.select_row(first)
@@ -4111,8 +4128,8 @@ class ClipboardPanel:
                 cr, pb, a.get_allocated_width(), a.get_allocated_height(), radius=8, cache=cache)
                 if pb else None)
             box.pack_start(thumb, False, False, 0)
-            text = f"Imagem  ·  {item.get('w')}×{item.get('h')}"
-            row.search = "imagem"
+            text = f"Image  ·  {item.get('w')}×{item.get('h')}"
+            row.search = "image imagem"
         else:
             icon = (label(I["folder"], "icon clip-kind", 0.5) if kind == "files"
                     else label("Aa", "clip-kind clip-kind-text", 0.5))
@@ -4132,6 +4149,16 @@ class ClipboardPanel:
         main.set_line_wrap_mode(2)
         main.set_max_width_chars(48)
         box.pack_start(main, True, True, 0)
+        # "Click the copy icon to the right of the item" (copia sem colar)
+        copy = Gtk.Button()
+        add_class(copy, "clip-copy")
+        copy.set_relief(Gtk.ReliefStyle.NONE)
+        copy.set_can_focus(False)
+        copy.set_valign(Gtk.Align.CENTER)
+        copy.add(label(G("f018f"), "icon", 0.5))
+        copy.set_tooltip_text("Copy")
+        copy.connect("clicked", lambda _b, it=item: in_thread(self._to_clipboard, it))
+        box.pack_end(copy, False, False, 0)
         box.pack_end(label(clip_ago(item["t"]), "clip-time", xalign=1.0), False, False, 0)
         row.add(box)
         return row
@@ -4141,10 +4168,14 @@ class ClipboardPanel:
         return not q or q in getattr(row, "search", "")
 
     # ── colar ──
-    def _paste_selected(self):
+    def _selected_row(self):
         row = self.list.get_selected_row()
         if row is None or not self._filter(row):
             row = next((r for r in self.list.get_children() if self._filter(r)), None)
+        return row
+
+    def _paste_selected(self):
+        row = self._selected_row()
         if row is not None:
             self._paste(row.item)
 
@@ -4153,7 +4184,7 @@ class ClipboardPanel:
         in_thread(self._do_paste, item)
 
     @staticmethod
-    def _do_paste(item):
+    def _to_clipboard(item):
         if item.get("kind") == "image":
             with open(item["file"], "rb") as f:
                 subprocess.run(["wl-copy", "--type", "image/png"], stdin=f)
@@ -4161,11 +4192,25 @@ class ClipboardPanel:
             # como no macOS: o histórico cola texto puro
             subprocess.run(["wl-copy", "--type", "text/plain;charset=utf-8"],
                            input=item.get("text", "").encode())
+
+    @staticmethod
+    def _do_paste(item):
+        ClipboardPanel._to_clipboard(item)
         time.sleep(0.2)   # o teclado volta para a janela de antes
         cls = (hypr_json("activewindow") or {}).get("class", "").lower()
         mods = "CTRL SHIFT" if any(t in cls for t in TERMINALS) else "CTRL"
         run("hyprctl dispatch " + GLib.shell_quote(
             f'hl.dsp.send_shortcut({{ mods = "{mods}", key = "v" }})'))
+
+    def _more_menu(self, button):
+        menu = Gtk.Menu()
+        add_class(menu, "xmenu")
+        mi = Gtk.MenuItem(label="Clear History")
+        mi.set_sensitive(bool(self.items))
+        mi.connect("activate", lambda _m: self._clear())
+        menu.append(mi)
+        menu.show_all()
+        menu.popup_at_widget(button, Gdk.Gravity.SOUTH_EAST, Gdk.Gravity.NORTH_EAST, None)
 
     def _clear(self):
         spawn(os.path.join(ROOT, "scripts", "clipboard") + " clear")
@@ -10181,6 +10226,7 @@ def main():
                                         else notifs.panel.refresh()),
         "toggle-media": media.toggle,
         "toggle-clipboard": clip.toggle,
+        "clipboard-preview": clip.preview,
         "spotlight": spot.command,
         "window-menu": wmenu.popup,
         "app-menu": app_menu.popup,

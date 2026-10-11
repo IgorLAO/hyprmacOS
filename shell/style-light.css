@@ -416,3 +416,12 @@ list.spot-list row:selected { background: rgba(0, 0, 0, 0.10); }
 .hyprmac button.spot-calc-copy { background: rgba(0, 0, 0, 0.10); }
 .hyprmac button.spot-calc-copy label { color: rgba(0, 0, 0, 0.70); }
 .cc .ccg-ph { color: rgba(0, 0, 0, 0.40); }
+
+/* histórico: More (…) e copiar por item (Mac User Guide ▸ Clipboard history) */
+.hyprmac button.clip-more { padding: 0 8px; }
+.hyprmac button.clip-more label { font-size: 16px; }
+.hyprmac button.clip-copy { min-width: 26px; min-height: 26px; padding: 0; border-radius: 7px;
+  background: transparent; border: none; box-shadow: none; }
+.hyprmac button.clip-copy:hover { background: rgba(0, 0, 0, 0.12); }
+.hyprmac button.clip-copy label { font-size: 15px; color: rgba(0, 0, 0, 0.55); }
+list.clip-list row:selected button.clip-copy label { color: rgba(0, 0, 0, 0.8); }

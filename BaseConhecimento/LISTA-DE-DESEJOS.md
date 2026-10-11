@@ -174,7 +174,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | SPT-01 | P0 | Pesquisa unificada de aplicativos e arquivos | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-02 | P0 | Quatro modos: Aplicativos, Arquivos, Ações e Área de Transferência | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-03 | P0 | Executar ações sem abrir o aplicativo | A_VERIFICAR | NAO_AVALIADO | — |
-| SPT-04 | P1 | Histórico pesquisável da área de transferência | A_VERIFICAR | NAO_AVALIADO | — |
+| SPT-04 | P1 | Histórico pesquisável da área de transferência | PARCIAL | TESTADO_LOCAL | 2026-10-11: busca, copiar por item, ⌃C e More ▸ Clear History conforme o guia do Tahoe 26 (`tahoe26:validacao:spt04-clipboard`). Diverge: painel próprio em vez de modo dentro do Spotlight; sem pedido Enable inicial |
 | SPT-05 | P1 | Filtros dinâmicos de resultados | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
 | SPT-06 | P1 | Buscar comandos dos menus do aplicativo ativo | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-07 | P1 | Teclas rápidas personalizáveis para ações | A_VERIFICAR | NAO_AVALIADO | — |
