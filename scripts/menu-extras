@@ -1,13 +1,16 @@
 #!/usr/bin/python3
-"""Configuração e diagnóstico pontuais dos extras SNI. Não permanece residente."""
+"""Configuração e diagnóstico pontuais dos extras SNI. Só "start" fica residente, como
+supervisor da Waybar (relança a barra se ela cair)."""
 import argparse
 import fcntl
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'hyprmac/menu-extras.json'
@@ -133,7 +136,25 @@ def start():
     pidfile.write_text(json.dumps({'pid': os.getpid(), 'starttime': starttime}))
     # CLOEXEC closes the lock in Waybar before it can leak to long-lived module children.
     os.set_inheritable(lock, False)
-    os.execv(str(binary), [str(binary)])
+    supervise([str(binary)])
+
+
+def supervise(cmd, run=subprocess.run, sleep=time.sleep, clock=time.monotonic):
+    """Waybar como filho: crash (o mpris do Waybar dá SIGSEGV/SIGABRT quando um player some)
+    relança a barra; encerramento pedido (TERM, INT, KILL, HUP) ou saída 0 termina junto.
+    Mais de 5 crashes em 60 s: desiste, para não ficar em laço."""
+    crashes = []
+    while True:
+        rc = run(cmd).returncode
+        if rc == 0 or -rc in (signal.SIGTERM, signal.SIGINT, signal.SIGKILL, signal.SIGHUP):
+            return rc
+        now = clock()
+        crashes = [t for t in crashes if now - t < 60] + [now]
+        if len(crashes) > 5:
+            print(f'waybar caiu {len(crashes)} vezes em 60 s; desistindo', file=sys.stderr)
+            return rc
+        print(f'waybar terminou ({rc}); relançando', file=sys.stderr)
+        sleep(1)
 
 
 def main():

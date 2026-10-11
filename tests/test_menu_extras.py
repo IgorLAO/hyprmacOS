@@ -49,5 +49,32 @@ class ExtraPreferences(unittest.TestCase):
         self.assertEqual(extras.CONFIG.read_text(), '{"tray": []}')
 
 
+
+class WaybarSupervisor(unittest.TestCase):
+    """A Waybar cai no mpris quando um player some (SIGSEGV/SIGABRT): o start a relança."""
+
+    def run_codes(self, codes):
+        from types import SimpleNamespace
+        seq, slept, clock = list(codes), [], [0.0]
+
+        def run(cmd):
+            clock[0] += 5
+            return SimpleNamespace(returncode=seq.pop(0))
+        rc = extras.supervise(["waybar"], run=run, sleep=slept.append, clock=lambda: clock[0])
+        return rc, len(codes) - len(seq), slept
+
+    def test_crash_is_relaunched_until_requested_stop(self):
+        rc, launches, slept = self.run_codes([-11, -6, -15])
+        self.assertEqual((rc, launches, slept), (-15, 3, [1, 1]))
+
+    def test_clean_exit_or_kill_stops(self):
+        for code in (0, -9, -2, -1):
+            self.assertEqual(self.run_codes([code])[:2], (code, 1))
+
+    def test_crash_loop_gives_up(self):
+        rc, launches, _ = self.run_codes([-11] * 10)
+        self.assertEqual((rc, launches), (-11, 6))
+
+
 if __name__ == '__main__':
     unittest.main()
