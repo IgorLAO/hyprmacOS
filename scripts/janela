@@ -7,6 +7,8 @@
   janela show-all      traz de volta tudo o que estava oculto       (Show All)
   janela next-window   próxima janela do mesmo app                  (⌘`)
   janela prev-window   janela anterior do mesmo app                 (⇧⌘`)
+  janela next-any      próxima janela de qualquer app, nas áreas visíveis   (⌃F4)
+  janela prev-any      janela anterior de qualquer app, nas áreas visíveis  (⌃⇧F4)
   janela show-desktop  afasta as janelas da área atual para mostrar a mesa; de novo,
                        traz de volta                                (canto ativo "Desktop")
 
@@ -43,6 +45,18 @@ def dispatch(lua):
 def move_hidden(addr):
     # follow = false: some da tela sem abrir o scratchpad
     dispatch(f'hl.dsp.window.move({{ workspace = "special:magic", follow = false, window = "address:{addr}" }})')
+
+
+def proxima(janelas, atual, passo):
+    """Janela seguinte (passo 1) ou anterior (-1) em ordem fixa de abertura; sem
+    janela atual na lista, a primeira (ou a última, voltando)."""
+    janelas = sorted(janelas, key=lambda c: c.get("stableId", c["address"]))
+    if not janelas:
+        return None
+    i = next((n for n, c in enumerate(janelas) if atual and c["address"] == atual.get("address")), None)
+    if i is None:
+        return janelas[0 if passo > 0 else -1]
+    return janelas[(i + passo) % len(janelas)]
 
 
 def main():
@@ -83,12 +97,18 @@ def main():
     elif cmd in ("next-window", "prev-window") and cls:
         # ordem fixa (a de abertura): repetir o atalho passa por todas as janelas
         # do app, como o ⌘` do Mac, em vez de alternar só entre as duas últimas
-        mesmas = sorted((c for c in clients() if c.get("class") == cls
-                         and not c["workspace"]["name"].startswith("special")),
-                        key=lambda c: c.get("stableId", c["address"]))
-        if len(mesmas) > 1:
-            i = next((n for n, c in enumerate(mesmas) if c["address"] == win["address"]), 0)
-            alvo = mesmas[(i + (1 if cmd == "next-window" else -1)) % len(mesmas)]
+        mesmas = [c for c in clients() if c.get("class") == cls
+                  and not c["workspace"]["name"].startswith("special")]
+        alvo = proxima(mesmas, win, 1 if cmd == "next-window" else -1)
+        if alvo and len(mesmas) > 1:
+            dispatch(f'hl.dsp.focus({{ window = "address:{alvo["address"]}" }})')
+    elif cmd in ("next-any", "prev-any"):
+        # ⌃F4 / ⌃⇧F4 do Mac (HIG ▸ Keyboards): foco na janela ativa ou na próxima,
+        # de qualquer app, nas áreas visíveis de todos os monitores
+        visiveis = {m["activeWorkspace"]["id"] for m in json.loads(hypr("monitors", "-j") or "[]")}
+        janelas = [c for c in clients() if c["workspace"]["id"] in visiveis and c.get("mapped", True)]
+        alvo = proxima(janelas, win if win.get("address") else None, 1 if cmd == "next-any" else -1)
+        if alvo:
             dispatch(f'hl.dsp.focus({{ window = "address:{alvo["address"]}" }})')
     else:
         print(__doc__, file=sys.stderr)

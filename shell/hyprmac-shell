@@ -8558,6 +8558,8 @@ class Dock:
         self.area.connect("drag-drop", self._document_drop)
         self.area.connect("drag-data-received", self._document_received)
         self.win.add(self.area)
+        self.win.connect("key-press-event", self._key)
+        self.win.connect("focus-out-event", lambda *_: self._end_keyboard())
 
         # faixa de 2 px na borda de baixo: mostra o Dock quando ele se esconde sozinho
         self.trigger = layer_window("hyprmac-dock-trigger", LS.Layer.TOP, monitor,
@@ -9239,6 +9241,61 @@ class Dock:
             j = self._index_at(ev.x, ev.y)
             if j is not None and self.items[j]["kind"] == "app":
                 self._launch(self.items[j])
+        return True
+
+    # ── teclado: ⌃F3 (HIG ▸ Keyboards, "Move focus to the Dock") ──
+    def focus_keyboard(self, arg=""):
+        """O Dock recebe o foco do teclado com o primeiro ícone destacado e o nome
+        visível; ←/→ percorrem os ícones, Return ou Espaço abrem, Esc devolve o foco.
+        "preview [n]": mesmo destaque, n passos à direita, sem pegar o teclado (2 s)."""
+        usable = [i for i, it in enumerate(self.items) if it["kind"] != "sep"]
+        if not usable:
+            return
+        self._kb = True
+        self._reveal()
+        self.hover = usable[0]
+        words = arg.split()
+        if words[:1] == ["preview"]:
+            self._kb_move(int(words[1]) if len(words) > 1 and words[1].isdigit() else 0)
+            GLib.timeout_add(2000, lambda: self._end_keyboard() and False)
+            return
+        self.area.queue_draw()
+        LS.set_keyboard_mode(self.win, LS.KeyboardMode.EXCLUSIVE)
+        self.win.present()
+
+    def _end_keyboard(self):
+        if not getattr(self, "_kb", False):
+            return
+        self._kb = False
+        LS.set_keyboard_mode(self.win, LS.KeyboardMode.NONE)
+        self.hover = None
+        self.area.queue_draw()
+        if self.autohide and not getattr(self, "menu_open", False):
+            self._hide_timer = GLib.timeout_add(450, self._conceal)
+
+    def _kb_move(self, step):
+        usable = [i for i, it in enumerate(self.items) if it["kind"] != "sep"]
+        if not usable:
+            return
+        at = usable.index(self.hover) if self.hover in usable else 0
+        self.hover = usable[min(max(at + step, 0), len(usable) - 1)]
+        self.area.queue_draw()
+
+    def _key(self, _w, ev):
+        if not getattr(self, "_kb", False):
+            return False
+        key = ev.keyval
+        if key in (Gdk.KEY_Left, Gdk.KEY_Right):
+            self._kb_move(-1 if key == Gdk.KEY_Left else 1)
+        elif key in (Gdk.KEY_Home, Gdk.KEY_End):
+            self._kb_move(-len(self.items) if key == Gdk.KEY_Home else len(self.items))
+        elif key in (Gdk.KEY_Return, Gdk.KEY_KP_Enter, Gdk.KEY_space):
+            i = self.hover
+            self._end_keyboard()
+            if i is not None and i < len(self.items):
+                self._activate(self.items[i])
+        elif key == Gdk.KEY_Escape:
+            self._end_keyboard()
         return True
 
     # ── documentos externos sobre aplicativos ──
@@ -10069,6 +10126,7 @@ def main():
         "osd": osd.command,
         "brightness": osd.brightness,
         "dock-autohide": dock.toggle_autohide if dock else (lambda: None),
+        "dock-focus": dock.focus_keyboard if dock else (lambda: None),
         "minimize": dock.minimize if dock else (lambda *_: dispatch(
             'hl.dsp.window.move({ workspace = "special:minimized", follow = false })')),
     })

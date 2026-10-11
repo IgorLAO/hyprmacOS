@@ -479,6 +479,12 @@ hl.bind("SUPER + H",          hl.dsp.exec_cmd(janela .. " hide-app"))      -- Oc
 hl.bind("SUPER + ALT + H",    hl.dsp.exec_cmd(janela .. " hide-others"))   -- Ocultar os outros
 hl.bind("SUPER + grave",        hl.dsp.exec_cmd(janela .. " next-window"))   -- ⌘` próxima janela do app
 hl.bind("SUPER + SHIFT + grave", hl.dsp.exec_cmd(janela .. " prev-window"))  -- ⇧⌘` anterior
+-- Navegação por teclado (HIG ▸ Keyboards): ⌃F4 / ⌃⇧F4 foco na próxima/anterior janela de
+-- qualquer app; ⌃F3 foco no Dock (setas, Return, Esc)
+hl.bind("CTRL + F4",          hl.dsp.exec_cmd(janela .. " next-any"))
+hl.bind("CTRL + SHIFT + F4",  hl.dsp.exec_cmd(janela .. " prev-any"))
+hl.bind("CTRL + F3",          hl.dsp.exec_cmd("gdbus call --session --dest dev.hyprmac.Shell "
+    .. "--object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command dock-focus >/dev/null"))
 hl.bind("SUPER + CTRL + F",   hl.dsp.window.fullscreen({ mode = "fullscreen" }))  -- Tela cheia (⌃⌘F)
 -- Forçar Encerrar: a janela com a lista de apps, como o ⌥⌘Esc do Mac
 hl.bind("SUPER + ALT + Escape", hl.dsp.exec_cmd("gdbus call --session --dest dev.hyprmac.Shell "

@@ -88,9 +88,10 @@ qual evidência Tahoe foi usada, o que foi testado, o que continua diferente e
 qual é o próximo ID da fila**. Revisar a fila somente quando uma evidência nova
 ou um bloqueio concreto mudar o impacto. Não trocar de frente por novidade.
 
-Próxima ação: MIC-08 (interruptores; a transição CSS 150 ms cubic-bezier(0.3, 0.7, 0.3, 1)
-veio da mesma curva inválida), depois MIC-09. MIC-10 avançou em 2026-10-11:
-emerge sem salto e interrompível (`tahoe26:validacao:mic10-emerge-continuo`).
+Próxima ação: MIC-04 ⌃F2 (foco na barra de menus), depois MIC-09. Em 2026-10-11: MIC-10
+emerge sem salto (`tahoe26:validacao:mic10-emerge-continuo`); MIC-08 transição inócua
+removida, puxador do GtkSwitch medido em ~70 ms (`tahoe26:validacao:mic08-switch-gtk`);
+MIC-04 ⌃F3 Dock e ⌃F4 janelas (`tahoe26:validacao:mic04-foco-global`).
 Ciclos de 2026-10-11: MIC-03 BLOQUEADO_REFERENCIA (curva vinha de registro
 `invalid`; sem vídeo Tahoe 26 de popover). MIC-01 BLOQUEADO_REFERENCIA quanto ao
 instante pressionado: as sequências `spotlight-clique-modo-*` e
