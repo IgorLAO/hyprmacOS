@@ -330,18 +330,21 @@ def reduce_motion():
 def emerge(win, base, origin=None):
     """Anima as margens de `win` (anchors em `base`: {Edge: margem}) para que o ponto
     `origin` — (x, y) relativos ao canto superior esquerdo da camada, ou None para o
-    ponteiro — fique fixo enquanto o Hyprland escala a camada de POP_FROM a 100%."""
+    ponteiro — fique fixo enquanto o Hyprland escala a camada de POP_FROM a 100%.
+    Curva e duração são as do popin (macPop, POP_MS em hypr/hyprmac.lua); com outra
+    curva o ponto de origem escorrega. Reabrir no meio recomeça junto com o popin."""
     stop_emerge(win, base)
     if reduce_motion():
+        set_margins(win, base)
         return
     nat = win.get_preferred_size()[1]
     w, h = nat.width, nat.height
     if not w or not h:
+        set_margins(win, base)
         return
     ox, oy = origin if origin else (w / 2, 0)
     ox, oy = min(max(ox, 0), w), min(max(oy, 0), h)
-    t0 = time.monotonic()
-    margins = dict(base)
+    margins = {}
 
     def place(s):
         dx, dy = (1 - s) * (ox - w / 2), (1 - s) * (oy - h / 2)
@@ -355,101 +358,39 @@ def emerge(win, base, origin=None):
             elif edge == E.RIGHT:
                 value = round(m - dx)
             else:
-                continue
-            if margins[edge] != value:
+                value = m
+            if margins.get(edge) != value:
                 LS.set_margin(win, edge, value)
                 margins[edge] = value
 
+    t0 = [None]
+
     def step(_widget, clock):
-        if reduce_motion():
-            place(1.0)
+        now = clock.get_frame_time() / 1e6
+        if t0[0] is None:
+            t0[0] = now
+        t = 1.0 if reduce_motion() else min(1.0, (now - t0[0]) * 1000 / POP_MS)
+        place(POP_FROM + (1 - POP_FROM) * _pop_ease(t))
+        if t >= 1:
             win._emerge = None
             return False
-        elapsed = clock.get_frame_time() / 1e6 - t0  # seconds
-        if elapsed >= 0.150:  # 150ms
-            place(1.0)
-            # Clean up spring state
-            if hasattr(step, 'value'):
-                delattr(step, 'value')
-            if hasattr(step, 'velocity'):
-                delattr(step, 'velocity')
-            win._emerge = None
-            return False
-
-        # Initialize spring state on first frame
-        if not hasattr(step, 'value'):
-            step.value = POP_FROM  # start from POP_FROM (0.9)
-            step.velocity = 0.0
-
-        # Update spring simulation: spring(0.3, 0.7) -> frequency=0.3, damping=0.7
-        step.value, step.velocity = spring_step(
-            step.value, step.velocity, 1.0,  # target is 1.0 (fully visible)
-            elapsed, frequency=0.3, damping=0.7
-        )
-        # Clamp to valid range
-        step.value = max(POP_FROM, min(1.0, step.value))
-
-        place(step.value)
         return True
     place(POP_FROM)
     win._emerge = win.add_tick_callback(step)
 
 
 def stop_emerge(win, base):
-    """Descarta a abertura pendente e restaura a âncora antes da próxima abertura."""
+    """Interrompe a abertura em curso sem salto: as margens ficam onde estão enquanto o
+    Hyprland esmaece a camada (layersOut); a próxima abertura recalcula a partir de `base`."""
     pending = getattr(win, "_emerge", None)
     if pending is not None:
         win.remove_tick_callback(pending)
     win._emerge = None
 
-    # If reduce_motion is enabled, snap immediately to base values
-    if reduce_motion():
-        for edge, margin in base.items():
-            LS.set_margin(win, edge, margin)
-        return
 
-    # Animate dismissal with spring(0.3, 0.7) over 150ms
-    margins = dict(base)
-    t0 = time.monotonic()
-
-    def place(s):
-        for edge, m in base.items():
-            # Interpolate from current position to base position
-            value = round(m + (margins[edge] - m) * s)
-            if margins[edge] != value:
-                LS.set_margin(win, edge, value)
-                margins[edge] = value
-
-    def step(_widget, clock):
-        elapsed = clock.get_frame_time() / 1e6 - t0  # seconds
-        if elapsed >= 0.150:  # 150ms
-            place(0.0)  # fully dismissed
-            # Clean up spring state
-            if hasattr(step, 'value'):
-                delattr(step, 'value')
-            if hasattr(step, 'velocity'):
-                delattr(step, 'velocity')
-            return False
-
-        # Initialize spring state on first frame
-        if not hasattr(step, 'value'):
-            # Start from current position (should be 1.0 - fully visible)
-            step.value = 1.0
-            step.velocity = 0.0
-
-        # Update spring simulation: spring(0.3, 0.7) -> frequency=0.3, damping=0.7
-        # Target is 0.0 (fully dismissed)
-        step.value, step.velocity = spring_step(
-            step.value, step.velocity, 0.0,  # target is 0.0 (fully dismissed)
-            elapsed, frequency=0.3, damping=0.7
-        )
-        # Clamp to valid range
-        step.value = max(0.0, min(1.0, step.value))
-
-        place(1.0 - step.value)  # invert: 1.0 = start, 0.0 = end
-        return True
-
-    win._emerge = win.add_tick_callback(step)
+def set_margins(win, base):
+    for edge, margin in base.items():
+        LS.set_margin(win, edge, margin)
 
 
 # spring_step is imported from glass_motion

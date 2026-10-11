@@ -107,11 +107,10 @@ class GlassTransitionTests(unittest.TestCase):
         self.assertIsInstance(value, float)
         self.assertIsInstance(velocity, float)
 
-    def test_tahoe_reference_parameters(self):
-        """Test that Tahoe reference parameters produce reasonable behavior."""
-        # These are from the comments in glass_motion.py
-        frequency = 0.3   # TAHOE_POPOVER_FREQUENCY
-        damping = 0.7     # TAHOE_POPOVER_DAMPING
+    def test_slow_spring_parameters(self):
+        """Mola lenta e amortecida ainda anda na direção do alvo."""
+        frequency = 0.3
+        damping = 0.7
 
         # Should move toward target
         value, velocity = spring_step(0.0, 0.0, 1.0, 0.016, frequency, damping)
