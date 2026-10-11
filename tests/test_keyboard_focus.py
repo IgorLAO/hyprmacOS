@@ -120,5 +120,88 @@ class DockKeyboard(unittest.TestCase):
         glib.timeout_add.assert_called_once()
 
 
+
+
+class CommandTab(unittest.TestCase):
+    """⌘Tab = Super+Tab: o seletor lembra o modificador e desvia ⌘Q/⌘H pelo submap."""
+
+    def load(self):
+        source = ROOT / "shell" / "hyprmac-shell"
+        tree = ast.parse(source.read_text())
+        cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "AppSwitcher")
+        methods = [n for n in cls.body if isinstance(n, ast.FunctionDef)
+                   and n.name in ("next", "prev", "_step", "close", "_key_release", "_check_alt")]
+        klass = ast.ClassDef(name="AppSwitcher", bases=[], keywords=[], body=methods,
+                             decorator_list=[], type_params=[])
+        self.state = 0
+        keymap = SimpleNamespace(get_modifier_state=lambda: self.state)
+        gdk = SimpleNamespace(KEY_Super_L=1, KEY_Super_R=2, KEY_Alt_L=3, KEY_Alt_R=4, KEY_Meta_L=5,
+                              KEY_Meta_R=6,
+                              ModifierType=SimpleNamespace(SUPER_MASK=64, MOD4_MASK=128, MOD1_MASK=8),
+                              Keymap=SimpleNamespace(get_for_display=lambda d: keymap),
+                              Display=SimpleNamespace(get_default=lambda: None))
+        dispatch = Mock()
+        ns = dict(Gdk=gdk, dispatch=dispatch)
+        exec(compile(ast.fix_missing_locations(ast.Module(body=[klass], type_ignores=[])),
+                     str(source), "exec"), ns)
+        sw = ns["AppSwitcher"].__new__(ns["AppSwitcher"])
+        sw.open, sw.items, sw.win = False, [1, 2, 3], Mock()
+        sw._collect, sw._build, sw._highlight = (lambda: True), Mock(), Mock()
+        sw._show = lambda: setattr(sw, "open", True)
+        sw.activate = Mock(side_effect=sw.close)
+        return sw, dispatch, gdk
+
+    def test_super_tab_enters_and_leaves_switcher_submap(self):
+        sw, dispatch, gdk = self.load()
+        sw.next("super")
+        dispatch.assert_called_with('hl.dsp.submap("switcher")')
+        sw._key_release(None, SimpleNamespace(keyval=gdk.KEY_Alt_L))   # Alt não conta
+        sw.activate.assert_not_called()
+        sw._key_release(None, SimpleNamespace(keyval=gdk.KEY_Super_L))
+        sw.activate.assert_called_once()
+        dispatch.assert_called_with('hl.dsp.submap("reset")')
+
+    def test_alt_tab_keeps_working_without_submap(self):
+        sw, dispatch, gdk = self.load()
+        sw.next()
+        dispatch.assert_not_called()
+        sw._key_release(None, SimpleNamespace(keyval=gdk.KEY_Super_L))
+        sw.activate.assert_not_called()
+        sw._key_release(None, SimpleNamespace(keyval=gdk.KEY_Alt_L))
+        sw.activate.assert_called_once()
+        dispatch.assert_not_called()
+
+    def test_quick_tap_checks_the_right_modifier(self):
+        sw, _dispatch, _gdk = self.load()
+        sw.next("super")
+        self.state = 64                       # Super ainda segurado: continua aberto
+        sw._check_alt()
+        sw.activate.assert_not_called()
+        self.state = 8                        # só Alt: Super foi solto, troca direto
+        sw._check_alt()
+        sw.activate.assert_called_once()
+
+
+
+class MacShortcuts(unittest.TestCase):
+    """HIG ▸ Keyboards com ⌘ = Super: ⇧⌘3/⇧⌘4/⇧⌘5 capturam e ⌘Tab troca de app, sem
+    binds duplicados do hyprland.lua disparando junto."""
+
+    lua = (ROOT / "hypr" / "hyprmac.lua").read_text()
+
+    def test_capture_keys_replace_workspace_moves(self):
+        for key in ("3", "4", "5"):
+            unbind = self.lua.index(f'hl.unbind("SUPER + SHIFT + {key}")')
+            bind = self.lua.index(f'hl.bind("SUPER + SHIFT + {key}"')
+            self.assertLess(unbind, bind)
+        self.assertIn('"SUPER + SHIFT + 3",        hl.dsp.exec_cmd(shot .. " screen")', self.lua)
+        self.assertIn('"SUPER + SHIFT + 4",        hl.dsp.exec_cmd(shot .. " region")', self.lua)
+        self.assertIn('HYPRMAC_SHOT_CLIPBOARD=1 " .. shot .. " region', self.lua)
+
+    def test_command_tab_and_submap(self):
+        self.assertIn('hl.bind("SUPER + Tab"', self.lua)
+        self.assertIn('hl.define_submap("switcher"', self.lua)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6845,16 +6845,22 @@ class AppSwitcher:
         box.show_all()
 
     # ── comandos ──
-    def next(self):
-        self._step(+1)
+    def next(self, held="alt"):
+        self._step(+1, held)
 
-    def prev(self):
-        self._step(-1)
+    def prev(self, held="alt"):
+        self._step(-1, held)
 
-    def _step(self, d):
+    def _step(self, d, held=None):
         if not self.open:
             if not self._collect():
                 return
+            # ⌘Tab = Super+Tab (como o resto do mapeamento ⌘→Super); Alt+Tab continua.
+            # Com Super segurado, o submap "switcher" (hypr/hyprmac.lua) desvia ⌘Q/⌘H do app
+            # em foco para o app selecionado, como no Mac.
+            self._held = "super" if held == "super" else "alt"
+            if self._held == "super":
+                dispatch('hl.dsp.submap("switcher")')
             self.sel = 1 % len(self.items) if d > 0 else len(self.items) - 1
             self._build()
             self._show()
@@ -6941,7 +6947,9 @@ class AppSwitcher:
         if not self.open:
             return False
         state = Gdk.Keymap.get_for_display(Gdk.Display.get_default()).get_modifier_state()
-        if not state & Gdk.ModifierType.MOD1_MASK:
+        mask = (Gdk.ModifierType.SUPER_MASK | Gdk.ModifierType.MOD4_MASK
+                if getattr(self, "_held", "alt") == "super" else Gdk.ModifierType.MOD1_MASK)
+        if not state & mask:
             self.activate()
         return False
 
@@ -6968,6 +6976,9 @@ class AppSwitcher:
     def close(self):
         self.open = False
         self.win.hide()
+        if getattr(self, "_held", "alt") == "super":
+            self._held = "alt"
+            dispatch('hl.dsp.submap("reset")')
 
     def _key_press(self, _w, ev):
         k = ev.keyval
@@ -7014,7 +7025,9 @@ class AppSwitcher:
         add_class(self.cells[self.sel], "hidden")
 
     def _key_release(self, _w, ev):
-        if ev.keyval in (Gdk.KEY_Alt_L, Gdk.KEY_Alt_R, Gdk.KEY_Meta_L, Gdk.KEY_Meta_R):
+        keys = ((Gdk.KEY_Super_L, Gdk.KEY_Super_R) if getattr(self, "_held", "alt") == "super"
+                else (Gdk.KEY_Alt_L, Gdk.KEY_Alt_R, Gdk.KEY_Meta_L, Gdk.KEY_Meta_R))
+        if ev.keyval in keys:
             self.activate()
         return True
 
@@ -10135,6 +10148,8 @@ def main():
         "hot-corners-reload": hot.reload,
         "switcher-next": switcher.next,
         "switcher-prev": switcher.prev,
+        "switcher-quit": switcher._quit_selected,
+        "switcher-hide": switcher._hide_selected,
         "force-quit": force_quit.toggle,
         "toggle-cc": cc.toggle,
         "edit-controls": cc.edit,

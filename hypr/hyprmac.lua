@@ -540,6 +540,16 @@ local shell_cmd = "gdbus call --session --dest dev.hyprmac.Shell --object-path /
                .. "--method dev.hyprmac.Shell.Command "
 hl.bind("ALT + Tab",         hl.dsp.exec_cmd(shell_cmd .. "switcher-next"))
 hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd(shell_cmd .. "switcher-prev"))
+-- ⌘Tab = Super+Tab (HIG ▸ Keyboards). Aberto por Super, o seletor entra no submap
+-- "switcher": ⌘Q/⌘H agem no app selecionado (e não no app em foco), como no Mac.
+hl.bind("SUPER + Tab",         hl.dsp.exec_cmd(shell_cmd .. "'switcher-next super'"))
+hl.bind("SUPER + SHIFT + Tab", hl.dsp.exec_cmd(shell_cmd .. "'switcher-prev super'"))
+hl.define_submap("switcher", function ()
+    hl.bind("SUPER + Tab",         hl.dsp.exec_cmd(shell_cmd .. "'switcher-next super'"))
+    hl.bind("SUPER + SHIFT + Tab", hl.dsp.exec_cmd(shell_cmd .. "'switcher-prev super'"))
+    hl.bind("SUPER + Q",           hl.dsp.exec_cmd(shell_cmd .. "switcher-quit"))
+    hl.bind("SUPER + H",           hl.dsp.exec_cmd(shell_cmd .. "switcher-hide"))
+end)
 
 --------------------------------------------------------------------------
 -- Volume e brilho: como no Tahoe, o controle "se expande" na barra (cápsula
@@ -566,6 +576,16 @@ local shot = hyprmac .. "/scripts/screenshot"
 hl.bind("Print",          hl.dsp.exec_cmd(shot .. " region"))   -- área (⌘⇧4)
 hl.bind("SHIFT + Print",  hl.dsp.exec_cmd(shot .. " screen"))   -- tela inteira (⌘⇧3)
 hl.bind("CTRL + Print",   hl.dsp.exec_cmd(shot .. " window"))   -- janela ativa
+-- Atalhos do Mac (HIG ▸ Keyboards, ⌘ = Super): ⇧⌘3 tela, ⇧⌘4 seleção, com ⌃ só para a
+-- área de transferência. Tiram o "mover janela para a área 3/4/5" do hyprland.lua, que
+-- disparava junto (o Hyprland executa todos os binds da mesma tecla).
+hl.unbind("SUPER + SHIFT + 3")
+hl.unbind("SUPER + SHIFT + 4")
+hl.unbind("SUPER + SHIFT + 5")
+hl.bind("SUPER + SHIFT + 3",        hl.dsp.exec_cmd(shot .. " screen"))
+hl.bind("SUPER + SHIFT + 4",        hl.dsp.exec_cmd(shot .. " region"))
+hl.bind("SUPER + SHIFT + CTRL + 3", hl.dsp.exec_cmd("env HYPRMAC_SHOT_CLIPBOARD=1 " .. shot .. " screen"))
+hl.bind("SUPER + SHIFT + CTRL + 4", hl.dsp.exec_cmd("env HYPRMAC_SHOT_CLIPBOARD=1 " .. shot .. " region"))
 -- Ferramenta de Captura e Gravação (⇧⌘5): barra com captura, gravação e opções
 hl.bind("SUPER + SHIFT + 5", hl.dsp.exec_cmd(hyprmac .. "/scripts/captura"))
 hl.bind("SUPER + Print",     hl.dsp.exec_cmd(hyprmac .. "/scripts/captura"))
