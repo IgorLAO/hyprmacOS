@@ -1076,7 +1076,9 @@ menu.hyprmac-menu separator,
 .cc.editing .tile,
 .cc.editing .circle { opacity: 0.88; }
 .cc .dragging { opacity: 0.35; }
-.cc .dragging.removing { opacity: 0.12; }   /* fora da Central: soltar remove */
+.cc .dragging.removing { opacity: 0.12; }
+.cc .ctl-resize-glyph { color: rgba(255, 255, 255, 0.92); }
+.cc .resizing { opacity: 0.85; }   /* fora da Central: soltar remove */
 .cc .drop-target .tile,
 .cc .drop-target .circle {
   border-color: #0091FF;

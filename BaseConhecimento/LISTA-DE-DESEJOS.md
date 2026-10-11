@@ -204,7 +204,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
 | CCN-01 | P0 | Controles reais de Wi-Fi, Bluetooth, áudio, brilho e foco | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
-| CCN-02 | P1 | Layout personalizável por arrastar e soltar | PARCIAL | TESTADO_LOCAL | 2026-10-11: arrastar reorganiza, arrastar para fora remove, Control-clique muda o tamanho e oferece Add to Menu Bar, como no guia do Tahoe 26 (`tahoe26:validacao:ccn02-edicao`). Pendentes: páginas de controles, arrasto físico |
+| CCN-02 | P1 | Layout personalizável por arrastar e soltar | PARCIAL | TESTADO_LOCAL | 2026-10-11: arrastar reorganiza, arrastar para fora remove, Control-clique muda o tamanho e oferece Add to Menu Bar, como no guia do Tahoe 26 (`tahoe26:validacao:ccn02-edicao`); os outros se realocam durante o arrasto e uma alça estica/encolhe (`tahoe26:validacao:ccn02-realocar-e-alca`). Pendentes: páginas de controles, arrasto físico |
 | CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-11: Add/Remove from Menu Bar no clique direito da galeria (shell/menubar_items.py, tests/test_menubar_items.py); arrastar ausente |
 | CCN-04 | P1 | Subpainéis animados com navegação consistente | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
 | CCN-05 | P1 | Sliders com resposta imediata | PARCIAL | TESTADO_LOCAL | 2026-10-11: volume/microfone/brilho aplicam o valor mais novo durante o arrasto, um processo por vez e em ordem; volume tira o mudo (`tahoe26:validacao:ccn05-sliders`). Pendentes: latência DDC real, vidro do puxador ao arrastar (sem referência) |

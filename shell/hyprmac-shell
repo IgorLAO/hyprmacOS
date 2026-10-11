@@ -2019,6 +2019,14 @@ def draw_sf(cr, name, w, h, rgba):
     k = 1.055
     cx, cy = w / 2, h / 2
     cr.set_source_rgba(*rgba)
+    if name == "resize":
+        # alça de redimensionar (modo de edição): arco grosso seguindo o canto inferior direito
+        cr.set_line_width(3.2)
+        cr.set_line_cap(cairo.LINE_CAP_ROUND)
+        r = min(w, h) - 6
+        cr.arc(w - 3 - r, h - 3 - r, r, 0.12 * math.pi, 0.38 * math.pi)
+        cr.stroke()
+        return
     if name in ("backward.fill", "forward.fill", "play.fill", "pause.fill"):
         # tahoe-dark.jpeg: transporte duplo ≈0,155 da largura do cartão;
         # altura ≈0,09; pausa ≈0,10×0,14. Sem a barra de skip do glifo MDI.
@@ -2378,6 +2386,53 @@ class NowPlaying(Gtk.Box):
 
 CONTROLS_PATH = os.path.expanduser("~/.config/hyprmac/controls.json")
 SPANS = {"small": (1, 1), "medium": (2, 1), "large": (2, 2), "wide": (4, 1)}
+
+
+def cc_pack(sizes, cols=4):
+    """Posições (col, row, w, h) dos controles, na ordem, no primeiro lugar livre."""
+    used, out = set(), []
+    for size in sizes:
+        cw, ch = SPANS[size]
+        row = 0
+        while True:
+            col = next((c for c in range(cols + 1 - cw)
+                        if all((c + dx, row + dy) not in used
+                               for dx in range(cw) for dy in range(ch))), None)
+            if col is not None:
+                break
+            row += 1
+        used |= {(col + dx, row + dy) for dx in range(cw) for dy in range(ch)}
+        out.append((col, row, cw, ch))
+    return out
+
+
+def cc_reorder(order, dragged, cell, sizes):
+    """Arrasto na Central: o controle arrastado toma o lugar (na ordem) de quem ocupa a
+    célula sob o ponteiro e os outros se realocam; célula vazia leva ao fim. A decisão
+    usa a disposição prevista, então o controle sob o ponteiro não fica alternando."""
+    pos = cc_pack([sizes[i] for i in order])
+    cx, cy = cell
+    hit = next((k for k, (c, r, w, h) in enumerate(pos)
+                if c <= cx < c + w and r <= cy < r + h), None)
+    k = order.index(dragged)
+    new = [i for i in order if i != dragged]
+    if hit is None:
+        if cy > max((r + h - 1 for _c, r, _w, h in pos), default=-1) or k == len(order) - 1:
+            new.append(dragged)
+        else:
+            return order                     # buraco no meio: fica como está
+    elif hit == k:
+        return order
+    else:
+        new.insert(hit, dragged)
+    return new
+
+
+def cc_fit_size(sizes, current, span):
+    """Alça de redimensionar: entre os tamanhos que o controle aceita, o mais perto do
+    vão (w, h) puxado; empate fica com o atual."""
+    w, h = span
+    return min(sizes, key=lambda s: (abs(SPANS[s][0] - w) + abs(SPANS[s][1] - h), s != current))
 DEFAULT_CONTROLS = [
     ("wifi", "medium"), ("nowplaying", "large"), ("bluetooth", "small"), ("dnd", "small"),
     ("vpn", "medium"), ("float", "small"), ("fullscreen", "small"), ("display", "wide"),
@@ -2815,16 +2870,8 @@ class ControlCenter:
             self.grid.remove(child)
         used = set()
         self.wrappers = []
-        for idx, (key, size) in enumerate(self.layout):
-            cw, ch = SPANS[size]
-            row = 0
-            while True:
-                col = next((c for c in range(5 - cw)
-                            if all((c + dx, row + dy) not in used
-                                   for dx in range(cw) for dy in range(ch))), None)
-                if col is not None:
-                    break
-                row += 1
+        for idx, ((key, size), (col, row, cw, ch)) in enumerate(
+                zip(self.layout, cc_pack([s for _k, s in self.layout]))):
             used |= {(col + dx, row + dy) for dx in range(cw) for dy in range(ch)}
             wrap = self._wrapper(idx, key, size)
             self.grid.attach(wrap, col, row, cw, ch)
@@ -2884,7 +2931,24 @@ class ControlCenter:
         rm.set_tooltip_text("Remove")
         rm.connect("clicked", lambda _b: self._remove(idx))
         ov.add_overlay(rm)
-        for w in (shield, rm):
+        handles = [shield, rm]
+        if len(sizes) > 1:
+            grip = Gtk.EventBox()           # alça no canto: arrastar estica ou encolhe
+            add_class(grip, "ctl-resize")
+            grip.set_visible_window(False)
+            grip.set_halign(Gtk.Align.END)
+            grip.set_valign(Gtk.Align.END)
+            grip.set_size_request(22, 22)
+            grip.add(SFIcon("resize", 22, 22, "ctl-resize-glyph"))
+            grip.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK
+                            | Gdk.EventMask.POINTER_MOTION_MASK)
+            grip.set_tooltip_text("Drag to resize")
+            grip.connect("button-press-event", self._resize_press, idx)
+            grip.connect("motion-notify-event", self._resize_motion)
+            grip.connect("button-release-event", self._resize_release)
+            ov.add_overlay(grip)
+            handles.append(grip)
+        for w in handles:
             w.show_all()
             w.set_no_show_all(True)
             w.set_visible(self.editing)
@@ -3232,7 +3296,9 @@ class ControlCenter:
             return True
         if ev.button != 1:
             return False
-        self._drag = {"idx": idx, "x": ev.x_root, "y": ev.y_root, "moving": False, "target": None}
+        self._drag = {"idx": idx, "x": ev.x_root, "y": ev.y_root, "moving": False, "target": None,
+                      "order": list(range(len(self.layout))),
+                      "sizes": [s for _k, s in self.layout]}
         return True
 
     def _edit_motion(self, w, ev):
@@ -3247,45 +3313,49 @@ class ControlCenter:
             if point is None:
                 return True
             gx, gy = point  # PyGObject retorna (x, y), sem o gboolean do C.
-            target = None
-            hit = lambda w: (w.get_visible() and w.get_allocation().x <= gx
-                             < w.get_allocation().x + w.get_allocation().width
-                             and w.get_allocation().y <= gy
-                             < w.get_allocation().y + w.get_allocation().height)
-            for i, wrap in enumerate(self.wrappers):
-                if hit(wrap):
-                    target = i
-            # soltar num espaço vazio (fantasma) leva o controle para o fim
-            ghost = None if target is not None else next((g for g in self.ghosts if hit(g)), None)
-            if ghost is not None:
-                target = "end"
             a = self.grid.get_allocation()
-            if not (-CC_BLEED <= gx < a.width + CC_BLEED and -CC_BLEED <= gy < a.height + CC_BLEED):
-                target = "out"                # fora da Central: soltar remove
-            set_class(self.wrappers[d["idx"]], "removing", target == "out")
-            for i, wrap in enumerate(self.wrappers):
-                set_class(wrap, "drop-target", i == target and i != d["idx"])
-            for g in self.ghosts:
-                set_class(g, "drop-target", g is ghost)
-            d["target"] = target
+            out = not (-CC_BLEED <= gx < a.width + CC_BLEED and -CC_BLEED <= gy < a.height + CC_BLEED)
+            set_class(self.wrappers[d["idx"]], "removing", out)   # fora da Central: soltar remove
+            d["target"] = "out" if out else "order"
+            if not out:
+                pitch = C + GAP
+                cell = (min(3, max(0, int(gx // pitch))), max(0, int(gy // pitch)))
+                order = cc_reorder(d["order"], d["idx"], cell, d["sizes"])
+                if order != d["order"]:      # os outros se realocam já durante o arrasto
+                    d["order"] = order
+                    self._apply_preview(order, d["sizes"])
         return True
+
+    def _apply_preview(self, order, sizes):
+        """Reposiciona os controles (e os círculos fantasmas) na ordem prevista, sem
+        reconstruir a grade: o gesto continua com o mesmo widget."""
+        used = set()
+        for i, (col, row, cw, ch) in zip(order, cc_pack([sizes[i] for i in order])):
+            wrap = self.wrappers[i]
+            for prop, value in (("left-attach", col), ("top-attach", row),
+                                ("width", cw), ("height", ch)):
+                self.grid.child_set_property(wrap, prop, value)
+            used |= {(col + dx, row + dy) for dx in range(cw) for dy in range(ch)}
+        rows = max((r for _c, r in used), default=-1) + 2
+        free = [(c, r) for r in range(rows) for c in range(4) if (c, r) not in used]
+        for g, cell in zip(self.ghosts, free + [None] * len(self.ghosts)):
+            if cell is None:
+                g.hide()
+                continue
+            self.grid.child_set_property(g, "left-attach", cell[0])
+            self.grid.child_set_property(g, "top-attach", cell[1])
+            g.set_visible(self.editing)
+        self.grid.queue_resize()
 
     def _edit_release(self, w, ev, idx):
         d, self._drag = self._drag, None
         if not d or ev.button != 1:
             return False
         if d["moving"]:
-            t = d["target"]
-            if t == "out":
+            if d["target"] == "out":
                 self._remove(d["idx"])
-            elif t == "end":
-                layout = list(self.layout)
-                layout.append(layout.pop(d["idx"]))
-                self._change(layout)
-            elif t is not None and t != d["idx"]:
-                layout = list(self.layout)
-                layout.insert(t, layout.pop(d["idx"]))
-                self._change(layout)
+            elif d["order"] != list(range(len(self.layout))):
+                self._change([self.layout[i] for i in d["order"]])
             else:
                 for wrap in self.wrappers + self.ghosts:
                     set_class(wrap, "dragging", False)
@@ -3293,6 +3363,41 @@ class ControlCenter:
                     set_class(wrap, "removing", False)
             return True
         return True     # clique simples não muda nada (o tamanho é pelo Control-clique)
+
+    # ── alça de redimensionar (esticar/encolher, nos tamanhos que o controle aceita) ──
+    def _resize_press(self, w, ev, idx):
+        if ev.button != 1:
+            return False
+        key, size = self.layout[idx]
+        self._sizing = {"idx": idx, "x": ev.x_root, "y": ev.y_root, "size": size,
+                        "sizes": [s for _k, s in self.layout]}
+        add_class(self.wrappers[idx], "resizing")
+        return True
+
+    def _resize_motion(self, w, ev):
+        r = getattr(self, "_sizing", None)
+        if not r:
+            return False
+        pitch = C + GAP
+        key, size = self.layout[r["idx"]]
+        cw, ch = SPANS[size]
+        span = (min(4, max(1, cw + round((ev.x_root - r["x"]) / pitch))),
+                min(2, max(1, ch + round((ev.y_root - r["y"]) / pitch))))
+        new = cc_fit_size(self.catalog[key][1], size, span)
+        if new != r["size"]:                 # estica/encolhe já, e os outros se realocam
+            r["size"] = new
+            r["sizes"][r["idx"]] = new
+            self._apply_preview(list(range(len(self.layout))), r["sizes"])
+        return True
+
+    def _resize_release(self, w, ev):
+        r, self._sizing = getattr(self, "_sizing", None), None
+        if not r:
+            return False
+        set_class(self.wrappers[r["idx"]], "resizing", False)
+        if r["size"] != self.layout[r["idx"]][1]:
+            self._resize(r["idx"], r["size"])
+        return True
 
     CC_SIZE_NAMES = {"small": "Small", "medium": "Medium", "large": "Large", "wide": "Wide"}
 

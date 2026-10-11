@@ -436,3 +436,6 @@ list.clip-list row:selected button.clip-copy label { color: rgba(0, 0, 0, 0.8); 
 .spot-qk-add .spot-qk-label { font-weight: 500; color: rgba(0, 0, 0, 0.50); }
 entry.spot-qk-entry { min-height: 22px; margin-right: 12px; padding: 0 8px; border-radius: 7px;
   font-size: 12px; background: rgba(0, 0, 0, 0.14); border: 1px solid rgba(10, 132, 255, 0.85); box-shadow: none; }
+
+/* alça de redimensionar no modo de edição da Central */
+.cc .ctl-resize-glyph { color: rgba(0, 0, 0, 0.72); }
