@@ -535,7 +535,11 @@ for _, k in ipairs({ "XF86AudioRaiseVolume", "XF86AudioLowerVolume", "XF86AudioM
 local osd_vol = " && " .. shell_cmd .. "'osd volume'"
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+" .. osd_vol), { locked = true, repeating = true })
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" .. osd_vol),      { locked = true, repeating = true })
-hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle" .. osd_vol),     { locked = true })
+hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && " .. shell_cmd .. "'osd volume mute'"), { locked = true })
+-- ⇧ + tecla de volume inverte "Play feedback when volume is changed", como no Mac
+local osd_vol_shift = " && " .. shell_cmd .. "'osd volume shift'"
+hl.bind("SHIFT + XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+" .. osd_vol_shift), { locked = true, repeating = true })
+hl.bind("SHIFT + XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-" .. osd_vol_shift),      { locked = true, repeating = true })
 -- brilho por DDC/CI no próprio shell (monitores externos; não há brightnessctl)
 hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(shell_cmd .. "'brightness up'"),   { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(shell_cmd .. "'brightness down'"), { locked = true, repeating = true })

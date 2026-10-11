@@ -7781,7 +7781,17 @@ class LevelOSD:
                 v = self.cc.brightness if self.cc.brightness is not None else int(self.cc.display.scale.get_value())
             self.present("brightness", v, False)
         else:
-            in_thread(self._read_volume)
+            # Tahoe ▸ Ajustes ▸ Som: "Play feedback when volume is changed" (som a cada
+            # tecla de volume; Shift inverte). A tecla de mudo não toca.
+            feedback = "mute" not in parts and (bool(load_config().get("volume_feedback", True)) != ("shift" in parts))
+            in_thread(self._read_volume, feedback)
+
+    def _feedback(self):
+        now = time.monotonic()
+        if now - getattr(self, "_feedback_at", 0.0) < 0.1:     # tecla repetindo: não empilha
+            return
+        self._feedback_at = now
+        spawn("canberra-gtk-play -i audio-volume-change -d hyprmac-volume")
 
     @staticmethod
     def _sink_name():
@@ -7792,12 +7802,14 @@ class LevelOSD:
         name = m.group(1) if m else "Speakers"
         return re.sub(r"\s*\([^)]*\)\s*$", "", name).strip() or "Speakers"
 
-    def _read_volume(self):
+    def _read_volume(self, feedback=False):
         out = run("wpctl get-volume @DEFAULT_AUDIO_SINK@")
         try:
             v = round(float(out.split()[1]) * 100)
         except (IndexError, ValueError):
             return
+        if feedback and "MUTED" not in out:
+            GLib.idle_add(lambda: self._feedback() or False)
         name = self._sink_name()
         GLib.idle_add(lambda: self.title.set_text(name) or False)
         GLib.idle_add(self.present, "volume", v, "MUTED" in out)
