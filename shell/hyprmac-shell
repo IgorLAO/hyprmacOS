@@ -145,6 +145,12 @@ def open_settings(pane=""):
     spawn(os.path.join(ROOT, "shell", "hyprmac-ajustes") + (f" {pane}" if pane else ""))
 
 
+def spot_shift(width, field_w, over, controls_w, margin=8):
+    """Quanto a cápsula do Spotlight sai do centro para os botões de modo caberem na tela."""
+    overflow = width / 2 + field_w / 2 - over + controls_w + margin - width
+    return max(0, int(round(overflow)))
+
+
 def ui_sound(event_id):
     """Ajustes ▸ Som ▸ "Play user interface sound effects" (Tahoe: "sound effects when you
     perform certain actions, such as dragging an item to the Trash"); sons do tema freedesktop."""
@@ -4384,6 +4390,7 @@ class Spotlight:
         ev.set_valign(Gtk.Align.START)
         ev.set_margin_top(SPOT_TOP)
         ev.connect("button-press-event", lambda *_: True)
+        self._spot_ev, self._spot_shift = ev, 0
         # controles de modo ao lado da cápsula (sobrepostos: não tiram a cápsula do centro)
         self.ctl = SpotControls(self, reduce_motion)
         ov = Gtk.Overlay()
@@ -4562,7 +4569,14 @@ class Spotlight:
         if child is not self.ctl:
             return False
         w = ov.get_allocated_width()
-        rect.x = int(w / 2 + SPOT_W / 2 - self.ctl.OVER)
+        # tela estreita (escala grande): sem caber os 4 botões, o conjunto anda para a
+        # esquerda o mínimo necessário, em vez de cortar o último botão na borda
+        shift = spot_shift(w, SPOT_W, self.ctl.OVER, self.ctl.w)
+        if shift != self._spot_shift:
+            self._spot_shift = shift
+            # fora da alocação em curso: dentro dela a margem nova não gera outro layout
+            GLib.idle_add(lambda s=shift: self._spot_ev.set_margin_end(2 * s) or False)
+        rect.x = int(w / 2 - shift + SPOT_W / 2 - self.ctl.OVER)
         rect.y = int(SPOT_TOP + SPOT_FIELD / 2 - self.ctl.h / 2)
         rect.width, rect.height = self.ctl.w, self.ctl.h
         return True
@@ -4571,7 +4585,7 @@ class Spotlight:
         """Ponteiro na extremidade direita da cápsula (ou sobre os botões já abertos):
         eles brotam. Como no Tahoe, só na ponta — não no campo de texto."""
         a = self.win.get_allocation()
-        x0 = a.width / 2 + SPOT_W / 2
+        x0 = a.width / 2 - getattr(self, "_spot_shift", 0) + SPOT_W / 2
         fim = x0 + (self.ctl.w if self.ctl.t > 0 else 8)
         near = (x0 - SPOT_FIELD <= ev.x <= fim and
                 SPOT_TOP - 6 <= ev.y <= SPOT_TOP + SPOT_FIELD + 6)

@@ -93,5 +93,28 @@ class ModeHover(unittest.TestCase):
         ctl.spot._hover_mode.assert_called_with(None)
 
 
+
+class NarrowScreen(unittest.TestCase):
+    """MIC-13: em tela estreita (escala 2 num monitor 1080p = 960 pt) os 4 botões cabem."""
+
+    def setUp(self):
+        tree = ast.parse((ROOT / "shell" / "hyprmac-shell").read_text())
+        fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "spot_shift")
+        ns = {}
+        exec(compile(ast.Module(body=[fn], type_ignores=[]), "spot_shift", "exec"), ns)
+        self.shift = ns["spot_shift"]
+
+    def test_wide_screen_keeps_capsule_centered(self):
+        self.assertEqual(self.shift(1920, 640, 26, 282), 0)
+        self.assertEqual(self.shift(1440, 640, 26, 282), 0)
+
+    def test_narrow_screen_moves_just_enough(self):
+        for width in (960, 1024, 1100):
+            s = self.shift(width, 640, 26, 282)
+            right = width / 2 - s + 640 / 2 - 26 + 282
+            self.assertLessEqual(right, width - 8 + 0.5)
+            self.assertGreater(s, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

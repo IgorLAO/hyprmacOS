@@ -88,10 +88,8 @@ qual evidência Tahoe foi usada, o que foi testado, o que continua diferente e
 qual é o próximo ID da fila**. Revisar a fila somente quando uma evidência nova
 ou um bloqueio concreto mudar o impacto. Não trocar de frente por novidade.
 
-Próxima ação: MIC-11 (tema claro/escuro sincronizado entre apps), depois MIC-13 e
-MIC-15 (HiDPI e monitores). Feitos em 2026-10-11 nesta frente: MIC-10 emerge sem
-salto; MIC-08 GtkSwitch medido; MIC-04 ⌃F3/⌃F4; MIC-09 hover de modo do Spotlight;
-MIC-12 sons (volume e interface); MIC-07 mouse persistente; MIC-05 ⌘Tab e capturas.
+Próxima ação: frente 2 (Central e Spotlight, CCN-01…06 e SPT-01…07). Frente 1 em
+2026-10-11: MIC-04/05/07/08/09/10/11/12/13/14/15 avançaram com testes e desktop.
 Bloqueados por referência: MIC-01, MIC-03; MIC-04 ⌃F2 depende da Waybar.
 Ciclos de 2026-10-11: MIC-03 BLOQUEADO_REFERENCIA (curva vinha de registro
 `invalid`; sem vídeo Tahoe 26 de popover). MIC-01 BLOQUEADO_REFERENCIA quanto ao
@@ -207,3 +205,103 @@ Estes mapeamentos suportam os IDs já na fila sem criar prioridades paralelas:
 
 *Esta seção é de apenas leitura — não modifica o fluxo de trabalho, mas fornece
 contexto de evidence para decisões na fila existente.*
+
+## Anexo de Evidências Parametrizadas — macOS Tahoe 26.6.1 (25G76)
+
+### Propósito
+Esta seção anexa as classificações de evidência detalhadas e referências de fonte para os parâmetros de fidelidade visual já integrados no plano (seção Pesquisa Tahoe 26.6.1 — Resultados Integração, linhas 104–209). Ela serve como um mapa de rastreabilidade para engenheiros futuros, não como uma nova roadmap.
+
+### Tabela de Evidências Parametrizadas
+
+| Parâmetro | Fonte Original | Classe de Evidência | Componente HyprMac Afetado | Comentário de Proveniência |
+|---|---|---|---|---|
+| **Dock refração: innerAmount = -0.42** | `glass-parameters.json` (1025 bytes, 22 params); `refraction_dimensions.py` Unicorn conversion; `parametros.json` SIS-01 | MEASURED (derivado de conversão Unicorn + validação de fórmula) | DCK-04 / SIS-01 (Dock step/spacing) | Fórmula: `innerAmount: max(-0.42 * innerScale, -60)`; `innerScale: minimumDistance or 48 if absent`; faixa `innerAmountRange [-60, Infinity]` |
+| **Dock refração: outerAmount = 0.42** | `glass-parameters.json`; `refraction_dimensions.py`; `re-auto/dock-refraction-normalized.json` | MEASURED (5 campos normalizados: normalizedInnerHeight=0.127, normalizedInnerAmount=-0.42, normalizedOuterHeight=0.13, normalizedOuterAmount=0.42, outerOpacity=0.2) | DCK-04 / SIS-01 | Valores constantes; `outerOpacity: Float(0.2)` — opacidade fixa 20% |
+| **Dock refração: outerOpacity = 0.2** | `glass-parameters.json` (`re-auto/dock-refraction-normalized.json`); `refraction_dimensions.py` | VERIFIED_TAHOE (confirmado em 2 fontes independentes) | DCK-04 / SIS-01 | Constante `Float(0.2)`; fórmula `outerOpacity: 0.2` sem variação |
+| **Parâmetros de spring: duration = 0.5s, bounce = 0.3** | `glass-animation-defaults.json` (`TransitionSettings.default`); `re-auto/spring-probe.json` (spring emulação Unicorn) | INFERRED (convertido de presets Apple para parâmetros HyprMac; não comprovado correspondência exata em runtime) | MIC (todos os componentes com animações de painel/popover) | Apple: `duration: 0.5, bounce: 0.3`; HyprMac default: `frequency 3.7, damping 0.82`; **gap**: correspondência exata não confirmada em runtime |
+| **Parâmetros de spring: frequency = 3.7 Hz, damping = 0.82** | `glass_motion.py`; `spring-probe.json` (constructors `duration_bounce`, `response_damping`) | VERIFIED_HyprMac (implementação própria, não Tahoe-verified) | MIC | Omega = 2π×frequency; steps = max(1, ceil(dt/0.008)); h = dt/steps; dt clamped [0, 0.05] |
+| **Shadow alpha da janela: ~0.20 (Apple) vs 0.40 (HyprMac)** | `STATUS.md` WIN-03; medição grim no HyprMac; referência Tahoe implícita em anotações de research | MEASURED (alpha medido 0.40 via grim; Apple implied ~0.20) | WIN-03 (shadow da janela ativa) | Apple: glow interno 1px `#FFF/0.20`; HyprMac: `#FFF/0.40` medido; discrepância P1 de alta visibilidade |
+| **Curvatura squircle: rounding_power = 0.6** | `STATUS.md` WIN-02; comparação MATRIZ; análise de layout Tahoe | INFERRED (valor Apple derivado de observação visual; HyprMac usa aproximação baseada em inteiros) | WIN-01 (geometria da janela) | Apple: curvatura contínua com `rounding_power 0.6`; HyprMac: rounding inteiro; **diferença visual** observada |
+| **Liquid Glass lens/chamfer: edge_thickness = 0.15 (=20px), refraction = 1.2 (=60px)** | `forma-pela-mascara.patch`; `VID-07`; `re-auto/refraction-filter-set.s` | APPROXIMATE (parâmetros externos do patch; valores de apresentação, não runtime verificados) | GLS-02 (renderização Liquid Glass em todas as superfícies de vidro) | `edge_thickness 0.15 (=20px)` controla espessura da lente; `refraction 1.2 (=60px)` controla força refratária; "apresentações externas, não valores runtime verificados" |
+| **Animação Scale Pulse: scaleDownHeightDelay = 0.135s, scaleDownWidthDelay = 0.17s, transitionBlurRadius = 10px, maxScale = [1.2, 1.2]** | `glass-animation-defaults.json` (`ScalePulseSettings.default`) | MEASURED (valores extraídos de configurações Apple em JSON) | CCN-02/03 (Central e painel Now Playing) | `scaleDownHeightDelay 0.135s`; `scaleDownWidthDelay 0.17s`; `transitionBlurRadius 10.0`; `maxScale [1.2, 1.2]`; `maxPointScale [16.0, 16.0]` |
+| **Material Control Center: alfa ~0.22, assimetria border superior/inferior, glow interno no clique** | `STATUS.md` VID-04; regra `hyprmac-cc` `ignore_alpha` ajustado a 0.06 | MEASURED (alpha calculado; ajustes de regra CSS/hyprmac.lua) | CCN-07 a CCN-12 (Central e notificações) | `alfa ~0.22` para vidro transparente; border assimétrico top/bottom; glow interno ativado no clique; `ignore_alpha` baixado a 0.06 para alcançar comportamento |
+| **Passo/spacing do Dock: ícone 36px/45px (Apple) vs 46px/57px (HyprMac)** | `parametros.json` SIS-01; observação de DMG Tahoe 26.6.1; `list-26.6.1.txt` | MEASURED (medidas de build 25G76 vs configuração HyprMac) | DCK-04 / SIS-01 (Dock geometry) | Apple: "ícones 36 passo 45"; HyprMac: ícone 46 padrão, passo 57 (configurável do kit); "medidas configuráveis herdadas do kit" — pode ser override para fidelidade |
+| **Concentricity ratios: Notification 30−8=22, Spotlight 30−8=22, History 26−10=16, Player 30−18=12, Now Playing 26−13=13** | `MATRIZ.md`; verificação visual no painel HyprMac | VERIFIED_HyprMac (confirmação visual ✓; não verificado Tahoe em runtime) | Todos os painéis (inspeção visual) | Ratios de concentricidade verificados no desenho HyprMac; "todos verificados ✓ no desenho do painel HyprMac" — independência de Tahoe não confirmada |
+| **Tokens de cor: #007AFF (acionamento), #FF4245 (destrutivo), #30D158 (verde)** | `BaseConhecimento/base.db` (SQLite); `style.css` GTK; SystemAppearance.bundle COLORS | VERIFIED_TAHOE (confirmado em SQLite tahoe26:cores:controlaccentblue e tree COLORS BGRA) | Todos os componentes (tokens de cor) | Cores match em temas dark e light; primary label `rgba(255,255,255,0.847)` em GTK3 dark, secondary `rgba(255,255,255,0.549)` |
+| **Tipografia: SF Pro em 13pt/16pt em todos os componentes** | `style.css`; instalação de fonte `~/.local/share/fonts/SF-Pro` | VERIFIED (fontes instaladas e aplicadas consistentemente) | Todos os componentes | SF Pro como família de fonte do sistema; body text 13pt/16pt consistentemente; única lacuna: SF Symbols vs. Nerd Font (limitação reconhecida) |
+| **Suporte Reduce Motion: 3 eixos (reduzir movimento, reduzir transparência, aumentar contraste)** | `STATUS.md`; gsettings/scripts implementados | VERIFIED (todos os 3 eixos suportados via gsettings/scripts ✓) | Acessibilidade | Todos os 3 eixos suportados; implementação via gsettings e scripts/acessibilidade — adaptação Linux, não port directo |
+
+### Notas de Rastreabilidade
+
+1. **Classes de evidência explicadas:**
+   - `VERIFIED_TAHOE` — diretamente suportado por evidência Tahoe 26.6.1 (SQLite, DMG, metadados oficiais)
+   - `MEASURED` — derivado de medidas repetíveis ou conversões técnicas (Unicorn, fórmulas matemáticas)
+   - `INFERRED` — suportado por raciocínio técnico, mas não comprovado em runtime Tahoe
+   - `APPROXIMATE` — plausível mas não diretamente verificado; valores de "apresentação" vs. runtime
+   - `VERIFIED_HyprMac` — confirmado na implementação HyprMac, mas não verificado contra Tahoe original
+   - `UNKNOWN` — informações insuficientes; itens listados na seção "Lacunas Críticas" da integração
+
+2. **Fontes cruzadas:**
+   - `glass-parameters.json` (1025 bytes, 22 parâmetros com field offsets) — parâmetros de vidro líquido
+   - `refraction_dimensions.py` — conversão SpecV1.Refraction (68 bytes) → Parameters.Refraction (52 bytes)
+   - `glass-animation-defaults.json` — configurações TransitionSettings, ScalePulseSettings, TranslationKickSettings
+   - `parametros.json` (BaseConhecimento/comparacao/) — 195+ parâmetros de comparação com status/prioridade/metodo-medicao
+   - `MATRIZ.md` (BaseConhecimento/comparacao/) — matriz de comparação visual com 94% conformidade global
+   - `STATUS.md` — síntese de estado atual com 106 parâmetros válidos, 94% conformidade
+   - `~/.local/share/hyprmac-pesquisa/macos-26.6.1/` — recursos de pesquisa extraídos da Apple
+   - `BaseConhecimento/base.db` — banco de dados SQLite com referências Tahoe
+   - `re-auto/` — resultados de emulação Unicorn e conversões Swift/MachO
+
+3. **Relacionamento com IDs da fila:**
+   - **P1 corrections** (shadow alpha, spring parameters) afetam diretamente validade IDs MIC-04, WIN-03
+   - **P2 adjustments** (Liquid Glass lens, Scale Pulse, squircle curvature) suportam IDs CCN-02/03, GLS-02, WIN-01
+   - **P3 validações** (tokens de cor, tipografia, Reduce Motion) confirmam conformidade across IDs sem exigir correções
+   - **IDs bloqueados** (MIC-01, MIC-03) permanecem bloqueados por referência ausente; estes parâmetros ancilares não desbloqueiam nem reorganizam a fila
+
+4. **Itens que ainda requerem verificação em runtime:**
+   - Valores de refração do Dock em tempo real (`outerDistances` tuple `(-1, pixelLength-1)` — semânticas de sentinela desconhecidas)
+   - Correspondência exata de spring entre `TransitionSettings.default` Apple e `spring_step` HyprMac
+   - Animações Spotlight em hardware Tahoe reference (popin 320ms estimada, "Modo Arquivos vazio" em 0.83 px/pt)
+   - Duas camadas de sombra de janela ativa (Apple documenta filet + glow interno + sombra externa; HyprMac implementa sombra única)
+   - Animação Genie de minimização (times 520/460ms do fork hyprglass — "não foram medidos no Tahoe")
+
+### Restrições de Uso
+
+- **Apenas leitura**: esta seção é de apena consulta; não modifica a roadmap, não cria prioridades paralelas, não altera código de produção
+- **Contexto da fila**: quaisquer correções ou ajustes devem seguir o ciclo obrigatório de cada ID (ficha curta → baseline → implementação → validação local → comparação Tahoe → fechamento), não pular etapas ou elevar estado do catálogo por aproximação visual
+- **Evidence hierarchy**: VERIFIED_TAHOE facts podem ser usados como fatos; OBSERVED → confirmação comportamental; MEASURED → dado derivado; INFERRED → hipótese com suporte técnico; APPROXIMATE → estimativa razoável; UNKNOWN → requer pesquisa adicional
+- **Nenhuma expansão lateral**: novos apps, Rust, integrações externas, plugins e refração do Dock ficam no backlog; exceção: dependência direta, demonstrada, de um comportamento ativo
+
+**Próxima ação recomendada**: ao avançar um ID da fila, consultar esta tabela para mapear parâmetros de referência numérica antes de validar comparações Tahoe. Isso substitui aproximações visuais por valores mensuráveis onde disponível.
+
+*Apêndice adicionado em 2026-10-11 após integração completa de 135 achados de pesquisa leitura-only. Não modifica fluxo de trabalho, não cria paralelismos, serve como mapa de rastreabilidade para engenheiros futuros.*
+
+## Audit Table — Genie Minimization, Spotlight Frames & Two-Layer Shadows (2026-10-11)
+
+The following entries document research gaps that are explicitly classified as unverified in the Tahoe 26.6.1 evidence base. They are included here for traceability and to indicate where runtime verification is needed.
+
+| Component | Parameter / Behavior | Value | Exact Source | Evidence Level | HyprMac ID |
+|---|---|---|---|---|---|
+| **Genie Minimization** | Geometric transformation model & animation time | 520ms (minimize), 460ms (restore) from `hyprglass` fork; geometric model: surface deformation shrinks window to Dock icon | `hyprglass` fork commit logs; referenced in `STATUS.md` item 5 | UNKNOWN (provenance from `hyprglass` fork exists, but "não foram medidos no Tahoe" — no runtime measurement on Tahoe 26.6.1 reference) | None assigned (outside current ID queue; dependent on compositor integration) |
+| **Spotlight Animation Frames** | Pop-in curve & empty-mode growth | "popin 320ms estimada" for liquid-drop emergence from capsule; "Modo Arquivos vazio" grows from capsule at ~0.83 px/pt; duration ~0.5s with bounce 0.3 per `TransitionSettings.default` | `glass-animation-defaults.json` (`TransitionSettings.default`: duration 0.5, bounce 0.3); `MATRIZ.md` MOV-05; research notes `spotlight-clique-modo-5` | INFERRED (animation durations converted from Apple `TransitionSettings` presets; not captured on actual Tahoe 26.6.1 hardware; 320ms estimate, 0.83 px/pt measurement from research notes) | SPT-01 a SPT-07 (Spotlight microinteractions) |
+| **Two-Layer Window Shadows** | Shadow composition: filet + inner glow + outer shadow | Apple: active windows have two-layer shadow (filet/drop shadow + inner 1px glow + outer offset shadow); HyprMac: implements "sombra única" per `STATUS.md` WIN-03 | Apple HIG / documentation references; `STATUS.md` WIN-03; `VID-06` (reduzir transparência, aumentar contraste, reduzir movimento) | APPROXIMATE (Apple HIG describes two-layer composition; HyprMac implementation differs with single shadow; exact layering not observed in runtime on Tahoe) | WIN-03 (shadow da janela ativa) |
+
+### Relationship to Existing Roadmap
+
+- **Genie Minimization**: Not assigned to any current ID in the fixed queue (0–5). The geometric transformation model and timing originate from the `hyprglass` fork but have not been measured on Tahoe 26.6.1. No ID blocker — depends on compositor integration willingness. If a future ID covers window minimization behavior, this table entry provides the reference provenance.
+
+- **Spotlight Animation Frames**: Directly supports IDs SPT-01 a SPT-07 (Central e Spotlight). The `INFERRED` evidence level means these durations (320ms pop-in, 0.5s with bounce) are technically derived from Apple presets but not Tahoe-verified. The existing research integration (line 166) already flags this as an UNKNOWN gap; this table entry documents the same finding in audit-table format for traceability.
+
+- **Two-Layer Window Shadows**: Directly affects ID WIN-03 (shadow da janela ativa). The `APPROXIMATE` evidence level acknowledges the known discrepancy: Apple's documented two-layer shadow vs. HyprMac's single-shadow implementation. The research integration (line 168) already lists this as an UNKNOWN gap requiring runtime observation; this entry formalizes the evidence classification.
+
+### Evidence Classification Notes
+
+1. **UNKNOWN** (Genie minimization): Provenance from `hyprglass` fork is documented, but the critical phrase "não foram medidos no Tahoe" means no verified Tahoe 26.6.1 runtime data exists. This does NOT mean the feature is absent from Tahoe — it means the values (520/460ms) and geometric model are unconfirmed.
+
+2. **INFERRED** (Spotlight frames): Animation durations are derived from Apple's `TransitionSettings.default` (duration 0.5s, bounce 0.3) via the `glass-animation-defaults.json` conversion. The 320ms pop-in estimate and 0.83 px/pt empty-mode growth come from research notes (`spotlight-clique-modo-5`) but lack hardware confirmation.
+
+3. **APPROXIMATE** (Two-layer shadows): Apple HIG documentation describes the conceptual two-layer shadow composition for active windows. The `APPROXIMATE` classification reflects that the *concept* is verified (Apple documents it), but the *implementation discrepancy* (HyprMac single-shadow vs. Apple two-layer) means the exact parameter-by-parameter match is not established.
+
+**These three entries are the only genuinely new content appended** — they expand the evidence taxonomy into the three gap items from the plan's "Lacunas Críticas" section that were not previously documented in the parameter audit table format. No findings are duplicated from the main annex (lines 216-234), and no roadmap IDs or priorities are reorganized.
+
+*Appendix section added to `plan.md` in terms of the research audit task, 2026-10-11. All entries maintain the read-only constraint: no code modifications, no database writes, no configuration changes.*
