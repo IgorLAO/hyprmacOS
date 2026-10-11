@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="520" height="260" fill="#1f2026"/>
-<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 11.9% (1/113 feitos)</text>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 12.4% (1/113 feitos)</text>
 <g><title>Microinterações — 48%</title>
 <rect x="0.0" y="26.0" width="124.2" height="130.0" fill="#16171c"/>
 <rect x="1.5" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-01: feito</title></rect>
@@ -68,16 +68,16 @@
 <rect x="198.0" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>WIN-11: a fazer</title></rect>
 <text x="127.2" y="155.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Janelas</text>
 </g>
-<g><title>Spotlight — 12%</title>
+<g><title>Spotlight — 17%</title>
 <rect x="234.7" y="26.0" width="110.4" height="117.0" fill="#16171c"/>
 <rect x="236.2" y="27.5" width="35.1" height="27.8" fill="#9bc53d"><title>SPT-04: parcial testado</title></rect>
-<rect x="272.3" y="27.5" width="35.1" height="27.8" fill="#9bc53d"><title>SPT-07: parcial testado</title></rect>
-<rect x="308.5" y="27.5" width="35.1" height="27.8" fill="#d6a531"><title>SPT-05: parcial/relatado</title></rect>
-<rect x="236.2" y="56.2" width="35.1" height="27.8" fill="#d6a531"><title>SPT-12: parcial/relatado</title></rect>
-<rect x="272.3" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-01: a fazer</title></rect>
-<rect x="308.5" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-02: a fazer</title></rect>
-<rect x="236.2" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-03: a fazer</title></rect>
-<rect x="272.3" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-06: a fazer</title></rect>
+<rect x="272.3" y="27.5" width="35.1" height="27.8" fill="#9bc53d"><title>SPT-06: parcial testado</title></rect>
+<rect x="308.5" y="27.5" width="35.1" height="27.8" fill="#9bc53d"><title>SPT-07: parcial testado</title></rect>
+<rect x="236.2" y="56.2" width="35.1" height="27.8" fill="#d6a531"><title>SPT-05: parcial/relatado</title></rect>
+<rect x="272.3" y="56.2" width="35.1" height="27.8" fill="#d6a531"><title>SPT-12: parcial/relatado</title></rect>
+<rect x="308.5" y="56.2" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-01: a fazer</title></rect>
+<rect x="236.2" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-02: a fazer</title></rect>
+<rect x="272.3" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-03: a fazer</title></rect>
 <rect x="308.5" y="85.0" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-08: a fazer</title></rect>
 <rect x="236.2" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-09: a fazer</title></rect>
 <rect x="272.3" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-10: a fazer</title></rect>

@@ -1,5 +1,6 @@
 import os
 import unittest
+import unittest.mock
 import time
 import datetime
 from pathlib import Path
@@ -26,7 +27,11 @@ def get_when_text_func():
 
 class TestWhenText(unittest.TestCase):
     def setUp(self):
-        os.environ["HOME"] = "/nonexistent"
+        # HOME falso só durante cada teste: sem restaurar, os testes seguintes da suíte
+        # passavam a ler ~/.config de /nonexistent
+        home = unittest.mock.patch.dict(os.environ, {"HOME": "/nonexistent"})
+        home.start()
+        self.addCleanup(home.stop)
         self.when_text = get_when_text_func()
         # Fixed now: 2026-10-11 12:00:00 local time (as used in other tests)
         self.fixed_dt = datetime.datetime(2026, 10, 11, 12, 0, 0)

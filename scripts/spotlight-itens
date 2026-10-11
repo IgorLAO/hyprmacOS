@@ -40,7 +40,7 @@ import time
 import xml.etree.ElementTree as ET
 from urllib.parse import quote, unquote, urlparse
 
-H = os.path.expanduser("~/Projects/hyprmac")
+H = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))   # raiz do repositório
 HOME = os.path.expanduser("~")
 STATE_DIR = os.environ.get("HYPRMAC_STATE_DIR") or os.path.join(
     os.environ.get("XDG_STATE_HOME") or os.path.join(HOME, ".local/state"), "hyprmac")
@@ -418,6 +418,10 @@ MENU_NAMES = {"custom/apple": "Apple", "hyprland/window": "App",
 def menu_title(name, conf):
     if name in MENU_NAMES:
         return MENU_NAMES[name]
+    # o mesmo rótulo que a barra mostra ("app-menu.py History '…'"), não o nome do arquivo
+    m = re.search(r"app-menu\.py\s+(\S+)\s", conf.get("exec", ""))
+    if m:
+        return m.group(1)
     fmt = conf.get("format", "")
     if fmt and "{" not in fmt:
         return fmt
@@ -454,13 +458,44 @@ def menu_entries(xml_path):
     return out
 
 
-def menu_actions():
-    """Itens da barra de menus → [{id, label, menu, shortcut, cmd}] e (módulo, id) → cmd."""
+def active_class():
+    """Classe do app à frente, como o shell a publica para a barra (o Spotlight é uma
+    camada: abri-lo não muda a janela ativa)."""
+    path = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "hyprmac-active-class.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f).get("class", "")
+    except (OSError, ValueError, AttributeError):
+        out = subprocess.run(["hyprctl", "activewindow", "-j"], capture_output=True, text=True).stdout
+        try:
+            return json.loads(out or "{}").get("class", "")
+        except ValueError:
+            return ""
+
+
+def menu_visible(conf, classe):
+    """O módulo aparece na barra para este app? (o mesmo regex do app-menu.py)"""
+    m = re.search(r"app-menu\.py\s+\S+\s+'([^']*)'", conf.get("exec", ""))
+    if not m:
+        return True
+    try:
+        return re.search(m.group(1), classe or "") is not None
+    except re.error:
+        return True
+
+
+def menu_actions(classe=None):
+    """Itens da barra de menus do app à frente → [{id, label, menu, shortcut, cmd}] e
+    (módulo, id) → cmd de todos os módulos. Como no Tahoe, o Spotlight busca os menus do
+    app ativo, não os de outros apps (History do navegador só com o navegador à frente)."""
+    classe = active_class() if classe is None else classe
     items, cmds = [], {}
     for name, conf in waybar_config():
         actions = conf.get("menu-actions", {})
         for item_id, cmd in actions.items():
             cmds[(name, item_id)] = cmd
+        if not menu_visible(conf, classe):
+            continue
         title = menu_title(name, conf)
         for item_id, label, shortcut in menu_entries(conf["menu-file"]):
             cmd = actions.get(item_id)
