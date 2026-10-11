@@ -35,7 +35,7 @@ class CCEnglishTests(unittest.TestCase):
     fonte = SHELL
 
     def test_todos_os_textos_de_interface_do_shell(self):
-        pat = re.compile(r'(label\(|label=|title=|set_title\(|set_tooltip_text\(|set_placeholder_text\('
+        pat = re.compile(r'(label\(|label=|title=|set_title\(|set_tooltip_text\(|set_placeholder_text\(|set_badge\('
                          r'|text=|add_button\(|format_secondary_text\(|set_text\(|Gtk\.Label\(|"sub":|subtitle=)'
                          r'\s*f?"([^"]{2,})"')
         # palavras curtas só em minúscula ("Do you…" é inglês); as longas em qualquer caixa
@@ -43,7 +43,7 @@ class CCEnglishTests(unittest.TestCase):
                         r"nada|buscar|limpar|janela|aplicativo|encerrar|conectar|lembrar|editar|controles|"
                         r"nenhum|nenhuma|agora|ajustes|copiar|copia|colar|cola|imagem|itens|calculadora|"
                         r"arquivo|recente|mesa|documentos|opções|capturar|gravar|temporizador|segundos|"
-                        r"mostrar|miniatura|flutuante|tela|inteira|selecionada)\b)")
+                        r"mostrar|miniatura|flutuante|tela|inteira|selecionada|ativado|desativado|mudo|uso)\b)")
         achados = []
         for n, linha in enumerate(self.fonte.split("\n"), 1):
             if linha.strip().startswith("#"):

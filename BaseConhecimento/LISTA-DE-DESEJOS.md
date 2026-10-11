@@ -207,7 +207,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | CCN-02 | P1 | Layout personalizável por arrastar e soltar | A_VERIFICAR | NAO_AVALIADO | — |
 | CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-11: Add/Remove from Menu Bar no clique direito da galeria (shell/menubar_items.py, tests/test_menubar_items.py); arrastar ausente |
 | CCN-04 | P1 | Subpainéis animados com navegação consistente | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
-| CCN-05 | P1 | Sliders com resposta imediata | A_VERIFICAR | NAO_AVALIADO | — |
+| CCN-05 | P1 | Sliders com resposta imediata | PARCIAL | TESTADO_LOCAL | 2026-10-11: volume/microfone/brilho aplicam o valor mais novo durante o arrasto, um processo por vez e em ordem; volume tira o mudo (`tahoe26:validacao:ccn05-sliders`). Pendentes: latência DDC real, vidro do puxador ao arrastar (sem referência) |
 | CCN-06 | P1 | Controles de reprodução multimídia via MPRIS | IMPLEMENTADO | TESTADO_LOCAL | 2026-10-11: Now Playing mostrou mídia do navegador (título, pausa, anterior/próxima) via playerctl (`tahoe26:validacao:ccn06-mpris`). Pendentes: arte e origem quando o player não envia; comparação Tahoe |
 | CCN-07 | P1 | Notificações agrupadas por aplicativo | A_VERIFICAR | NAO_AVALIADO | — |
 | CCN-08 | P1 | Ações diretas nas notificações | A_VERIFICAR | NAO_AVALIADO | — |
