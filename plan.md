@@ -88,7 +88,8 @@ qual evidência Tahoe foi usada, o que foi testado, o que continua diferente e
 qual é o próximo ID da fila**. Revisar a fila somente quando uma evidência nova
 ou um bloqueio concreto mudar o impacto. Não trocar de frente por novidade.
 
-Próxima ação: iniciar MIC-03. MIC-02 deixa a faixa da Waybar livre para a
-troca de painéis; entrega física do clique e comparação Tahoe seguem pendentes.
-MIC-04 segue parcial quanto ao foco global e MIC-01 aguarda confronto do
-instante pressionado.
+Próxima ação: MIC-01 — confrontar o instante pressionado. MIC-03 ficou
+BLOQUEADO_REFERENCIA em 2026-10-11: a única curva citada vinha de um registro
+`invalid` e não há vídeo Tahoe 26 de popover; o catálogo voltou a PARCIAL até
+existir captura equivalente. MIC-02 segue sem entrega física do clique e
+comparação Tahoe; MIC-04 segue parcial quanto ao foco global.
