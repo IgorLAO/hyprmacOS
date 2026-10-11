@@ -2,6 +2,7 @@
 """Visualizador local: ações documentadas no Preview 26.6.1, layout experimental."""
 import math
 import os
+import sys
 import cairo
 from pathlib import Path
 import gi
@@ -11,6 +12,9 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("Poppler", "0.18")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Poppler
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+from app_theme import bind_color_scheme  # noqa: E402
 
 # Medido em BaseConhecimento/referencias/desejos/preview-pdf-escuro-com-central.png:
 # nome 13 bold + "Page N of M" 11 cinza à esquerda; lateral flutuante (margem 8, raio 16)
@@ -171,11 +175,10 @@ class Preview(Gtk.Application):
         provider.load_from_data(CSS)
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider,
                                                  Gtk.STYLE_PROVIDER_PRIORITY_USER)
-        escuro = Gio.Settings.new("org.gnome.desktop.interface").get_string("color-scheme") == "prefer-dark"
         self.window = Gtk.ApplicationWindow(application=self, title="Preview")
         self.window.set_default_size(1000, 740)
-        if not escuro:
-            self.window.get_style_context().add_class("light")    # lateral de vidro claro
+        # .light (lateral de vidro claro) acompanha a troca de aparência com a janela aberta
+        self._theme = bind_color_scheme(self.window)
         self.window.connect("destroy", self.close)
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.window.add(outer)

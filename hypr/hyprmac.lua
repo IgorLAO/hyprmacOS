@@ -599,6 +599,7 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd(hyprmac .. "/scripts/clipboard watch")   -- histórico da área de transferência
     hl.exec_cmd(hyprmac .. "/shell/hyprmac-lock --warm-cache")   -- prepara o fundo da tela de bloqueio
     hl.exec_cmd(hyprmac .. "/scripts/ocioso start")   -- apaga a tela após 10 min sem uso (como o Mac)
+    hl.exec_cmd(hyprmac .. "/scripts/aparencia start") -- aparência Auto: troca após 1 min ocioso
     hl.exec_cmd(hyprmac .. "/shell/hyprmac-overview")             -- Mission Control pronto para abrir rápido
     hl.exec_cmd(hyprmac .. "/scripts/vidro carregar")             -- Liquid Glass (hyprglass); compila na 1ª vez
 end)

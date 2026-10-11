@@ -1929,13 +1929,14 @@ class Settings(Gtk.Window):
     # ── Aparência ──
     def pane_appearance(self):
         dark = is_dark()
-        mode = mock("appearance_mode", "dark" if dark else "light")
+        mode = load_json(SHELL_CONF, {}).get("appearance_mode") or mock("appearance_mode", "dark" if dark else "light")
         f1 = Form()
         choices = Gtk.Box(spacing=10)
         refs = {}
 
         def pick(m):
             set_mock("appearance_mode", m)
+            set_clock_conf("appearance_mode", m)    # scripts/aparencia: o Auto troca sozinho
             for k, c in refs.items():
                 c.set_selected(k == m)
             want = m if m != "auto" else ("dark" if not 7 <= time.localtime().tm_hour < 19 else "light")

@@ -54,5 +54,13 @@ class AppThemeTests(unittest.TestCase):
         self.assertTrue(settings.disconnected)
 
 
+    def test_long_lived_apps_follow_theme(self):
+        """Apps de janela longa usam o vínculo, não uma leitura única do tema."""
+        shell = Path(__file__).resolve().parents[1] / "shell"
+        for app in ("hyprmac-preview", "hyprmac-notas", "hyprmac-diario", "hyprmac-fotos",
+                    "app_factory_window.py"):
+            self.assertIn("bind_color_scheme(", (shell / app).read_text(), app)
+
+
 if __name__ == "__main__":
     unittest.main()

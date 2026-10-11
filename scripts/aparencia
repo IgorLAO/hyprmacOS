@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""hyprmac — aparência "Auto" (Ajustes ▸ Aparência), como no macOS Tahoe 26.
+
+  aparencia start   vigia de inatividade de 60 s (uma instância): ao ficar ocioso, roda "check"
+  aparencia check   no modo Auto, troca claro/escuro conforme a hora, se precisar
+
+Mac User Guide (Tahoe 26): "Auto switches the appearance from light to dark based on the
+Night Shift schedule you set" e "won't switch the appearance until your Mac has been idle
+for at least a minute". Sem agenda de Night Shift real no hyprmac, claro das 7h às 19h.
+O modo fica em ~/.config/hyprmac/config.json ("appearance_mode": auto | light | dark).
+"""
+import json
+import os
+import subprocess
+import sys
+import time
+
+H = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+CONF = os.path.expanduser("~/.config/hyprmac/config.json")
+LIGHT_FROM, DARK_FROM = 7, 19
+WATCHER = "hyprmac-aparencia-ocioso"     # nome próprio: o pkill do scripts/ocioso não o pega
+
+
+def wanted(mode, hour):
+    """Tema que o modo pede agora; None quando não há nada a decidir (Light/Dark fixos
+    são aplicados pelos Ajustes na hora da escolha)."""
+    if mode != "auto":
+        return None
+    return "light" if LIGHT_FROM <= hour < DARK_FROM else "dark"
+
+
+def current():
+    out = subprocess.run(["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+                         capture_output=True, text=True).stdout
+    return "dark" if "dark" in out else "light"
+
+
+def mode():
+    try:
+        with open(CONF) as f:
+            return json.load(f).get("appearance_mode", "dark")
+    except (OSError, ValueError):
+        return "dark"
+
+
+def check():
+    want = wanted(mode(), time.localtime().tm_hour)
+    if want and want != current():
+        subprocess.run([os.path.join(H, "scripts", "theme"), want])
+
+
+def start():
+    link = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), WATCHER)
+    binary = os.path.join(H, "shell", "ocioso", "hyprmac-ocioso")
+    if not os.access(binary, os.X_OK):
+        subprocess.run(["make", "-s", "-C", os.path.dirname(binary)], capture_output=True)
+    if os.path.lexists(link):
+        os.remove(link)
+    os.symlink(binary, link)
+    subprocess.run(["pkill", "-x", WATCHER[:15]], capture_output=True)   # comm tem 15 caracteres
+    os.execv(link, [link, "60", f"{os.path.realpath(__file__)} check"])
+
+
+if __name__ == "__main__":
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "check"
+    if cmd == "start":
+        start()
+    elif cmd == "check":
+        check()
+    else:
+        print(__doc__, file=sys.stderr)
+        sys.exit(2)
