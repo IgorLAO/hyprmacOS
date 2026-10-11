@@ -927,7 +927,7 @@ class ClockSample(Gtk.Button):
             if os.path.exists(path):
                 self.mask = cairo.ImageSurface.create_from_png(path)
             self.set_sensitive(False)
-            self.set_tooltip_text("Fonte do sistema da Apple — não disponível no Linux")
+            self.set_tooltip_text("Apple system font — not available on Linux")
         area = Gtk.DrawingArea()
         area.set_size_request(42, 42)
         area.connect("draw", self._draw)

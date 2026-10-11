@@ -2,9 +2,9 @@
 """hyprmac — barra de Captura de Tela (⇧⌘5 do macOS), sem gravação.
 
 Cápsula de vidro escuro no rodapé da tela, como no Tahoe:
-  ✕ | Tela Inteira · Janela Selecionada · Área Selecionada | Opções ▾ | Capturar
-Opções: Salvar em (Mesa, Documentos, Capturas de Tela, Área de Transferência),
-Temporizador (Nenhum, 5 s, 10 s) e Mostrar Miniatura Flutuante — guardadas em
+  ✕ | Entire Screen · Selected Window · Selected Portion | Options ▾ | Capture
+Options: Save to (Desktop, Documents, Screenshots, Clipboard), Timer (None, 5 s,
+10 s) e Show Floating Thumbnail — guardadas em
 ~/.config/hyprmac/captura.json. Enter captura, Esc fecha. A captura em si é
 feita por scripts/screenshot (screen / pick / region).
 """
@@ -25,9 +25,9 @@ from gi.repository import GtkLayerShell as LS  # noqa: E402
 HERE = os.path.dirname(os.path.realpath(__file__))
 CONF = os.path.expanduser("~/.config/hyprmac/captura.json")
 PIDFILE = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "hyprmac-captura.pid")
-DESTINOS = [("desktop", "Mesa"), ("documents", "Documentos"),
-            ("screenshots", "Capturas de Tela"), ("clipboard", "Área de Transferência")]
-TEMPOS = [(0, "Nenhum"), (5, "5 Segundos"), (10, "10 Segundos")]
+DESTINOS = [("desktop", "Desktop"), ("documents", "Documents"),
+            ("screenshots", "Screenshots"), ("clipboard", "Clipboard")]
+TEMPOS = [(0, "None"), (5, "5 Seconds"), (10, "10 Seconds")]
 
 # Medidas da barra do Tahoe (referencias/desejos/captura-barra-opcoes.png, 2,39 px/pt pelo "O"
 # de "Options", SF 13): barra 577×53, canto 13; ✕ em círculo de 17 com centro a 22 da borda;
@@ -257,16 +257,16 @@ class Barra:
         x.set_valign(Gtk.Align.CENTER)
         x.get_style_context().add_class("x")
         fechar.add(x)
-        fechar.set_tooltip_text("Fechar")
+        fechar.set_tooltip_text("Close")
         fechar.connect("clicked", lambda _b: Gtk.main_quit())
         fechar.set_valign(Gtk.Align.CENTER)
         bar.pack_start(fechar, False, False, 0)
         self.modos = {}
         grupos = (
-            (("screen", "Capturar Tela Inteira"), ("pick", "Capturar Janela Selecionada"),
-             ("region", "Capturar Área Selecionada")),
-            (("rec-screen", "Gravar Tela Inteira"), ("rec-pick", "Gravar Janela Selecionada"),
-             ("rec-region", "Gravar Área Selecionada")),
+            (("screen", "Capture Entire Screen"), ("pick", "Capture Selected Window"),
+             ("region", "Capture Selected Portion")),
+            (("rec-screen", "Record Entire Screen"), ("rec-pick", "Record Selected Window"),
+             ("rec-region", "Record Selected Portion")),
         )
         for gi_, grupo in enumerate(grupos):
             for j, (modo, dica) in enumerate(grupo):
@@ -286,7 +286,7 @@ class Barra:
         # "Opções" + chevron.down do SF (desenhado: o "⌄" da fonte fica caído na linha de base)
         opc = Gtk.Button()
         caixa = Gtk.Box(spacing=6)
-        caixa.pack_start(Gtk.Label(label="Opções"), False, False, 0)
+        caixa.pack_start(Gtk.Label(label="Options"), False, False, 0)
         chev = Gtk.DrawingArea()
         chev.set_size_request(9, 9)
         chev.set_valign(Gtk.Align.CENTER)
@@ -310,7 +310,7 @@ class Barra:
         opc.get_style_context().add_class("texto")
         opc.connect("clicked", self._opcoes)
         bar.pack_start(opc, False, False, 0)
-        self.cap = Gtk.Button(label="Capturar")
+        self.cap = Gtk.Button(label="Capture")
         self.cap.get_style_context().add_class("texto")
         self.cap.get_style_context().add_class("capturar")
         self.cap.connect("clicked", lambda _b: self.capturar())
@@ -332,7 +332,7 @@ class Barra:
         for k, b in self.modos.items():
             ctx = b.get_style_context()
             (ctx.add_class if k == m else ctx.remove_class)("selected")
-        self.cap.set_label("Gravar" if m.startswith("rec-") else "Capturar")
+        self.cap.set_label("Record" if m.startswith("rec-") else "Capture")
 
     def _opcoes(self, botao):
         m = Gtk.Menu()
@@ -348,18 +348,18 @@ class Barra:
             it = Gtk.MenuItem(label=("✓ " if marcado else "    ") + t)
             it.connect("activate", lambda _i: (acao(), salvar(self.o)))
             m.append(it)
-        cab("Salvar em")
+        cab("Save to")
         for k, nome in DESTINOS:
             opc(nome, self.o["destino"] == k, lambda k=k: self.o.update(destino=k))
         m.append(Gtk.SeparatorMenuItem())
-        cab("Temporizador")
+        cab("Timer")
         for s, nome in TEMPOS:
             opc(nome, self.o["tempo"] == s, lambda s=s: self.o.update(tempo=s))
         m.append(Gtk.SeparatorMenuItem())
-        cab("Opções")
-        opc("Mostrar Miniatura Flutuante", self.o["miniatura"],
+        cab("Options")
+        opc("Show Floating Thumbnail", self.o["miniatura"],
             lambda: self.o.update(miniatura=not self.o["miniatura"]))
-        opc("Gravar Microfone", self.o.get("microfone", False),
+        opc("Record Microphone", self.o.get("microfone", False),
             lambda: self.o.update(microfone=not self.o.get("microfone", False)))
         m.show_all()
         m.popup_at_widget(botao, Gdk.Gravity.NORTH_WEST, Gdk.Gravity.SOUTH_WEST, None)

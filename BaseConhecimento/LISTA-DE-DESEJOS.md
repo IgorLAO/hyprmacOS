@@ -208,7 +208,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-11: Add/Remove from Menu Bar no clique direito da galeria (shell/menubar_items.py, tests/test_menubar_items.py); arrastar ausente |
 | CCN-04 | P1 | Subpainéis animados com navegação consistente | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
 | CCN-05 | P1 | Sliders com resposta imediata | A_VERIFICAR | NAO_AVALIADO | — |
-| CCN-06 | P1 | Controles de reprodução multimídia via MPRIS | A_VERIFICAR | NAO_AVALIADO | — |
+| CCN-06 | P1 | Controles de reprodução multimídia via MPRIS | IMPLEMENTADO | TESTADO_LOCAL | 2026-10-11: Now Playing mostrou mídia do navegador (título, pausa, anterior/próxima) via playerctl (`tahoe26:validacao:ccn06-mpris`). Pendentes: arte e origem quando o player não envia; comparação Tahoe |
 | CCN-07 | P1 | Notificações agrupadas por aplicativo | A_VERIFICAR | NAO_AVALIADO | — |
 | CCN-08 | P1 | Ações diretas nas notificações | A_VERIFICAR | NAO_AVALIADO | — |
 | CCN-09 | P1 | Pré-visualização e expansão de notificações | A_VERIFICAR | NAO_AVALIADO | — |

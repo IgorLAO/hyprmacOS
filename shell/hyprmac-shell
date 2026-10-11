@@ -862,7 +862,7 @@ class WeatherWidget(Gtk.Box):
             i = start + k
             if i >= len(hourly["time"]):
                 break
-            h.set_text("Agora" if k == 0 else f"{int(hourly['time'][i][11:13])}h")
+            h.set_text("Now" if k == 0 else f"{int(hourly['time'][i][11:13])}h")
             ic.set_markup(weather_icon(hourly["weather_code"][i], hourly["is_day"][i]))
             t.set_text(f"{round(hourly['temperature_2m'][i])}°")
         return False
@@ -2502,7 +2502,7 @@ class ControlCenter:
             "terminal":   (Toggle(I["console"], "Terminal", lambda: self._launch(CFG["terminal"])), (S, M)),
             "files":      (Toggle(I["folder"], "Finder", lambda: self._launch(CFG["file_manager"])), (S, M)),
             "screenshot": (Toggle(I["shot"], "Screenshot", lambda: self._launch(CFG["screenshot"])), (S, M)),
-            "settings":   (Toggle(I["cog"], "Ajustes", lambda: self._launch(CFG["settings"])), (S, M)),
+            "settings":   (Toggle(I["cog"], "Settings", lambda: self._launch(CFG["settings"])), (S, M)),
         }
         self.names = {"nowplaying": "Now Playing", "display": "Display", "sound": "Sound",
                       "mic": "Microphone"}
@@ -2536,7 +2536,7 @@ class ControlCenter:
         self._build_gallery_shell()
 
         # "Editar Controles" (no modo de edição some: o Done fica na galeria)
-        self.edit_lbl = label("Editar Controles", xalign=0.5)
+        self.edit_lbl = label("Edit Controls", xalign=0.5)
         self.edit_btn = edit = Gtk.Button()
         add_class(edit, "edit-pill")
         edit.add(self.edit_lbl)
@@ -3300,7 +3300,7 @@ class ControlCenter:
     def _apply_fast(self, net, wifi_on, bt, mic, vol, vpn=None, dark=None):
         self.vpn = vpn
         if vpn is None:
-            self.vpn_tile.set(on=False, subtitle="Nenhuma")
+            self.vpn_tile.set(on=False, subtitle="Not Connected")
         elif not getattr(self, "_vpn_busy", False):
             name, active = vpn
             self.vpn_tile.set(on=active, subtitle=f"{name} · Conectada" if active else name)
@@ -4415,7 +4415,7 @@ class Spotlight:
         ccopy.add(label(G("f018f"), "icon", 0.5))          # documentos (copiar)
         ccopy.set_valign(Gtk.Align.CENTER)
         ccopy.set_can_focus(False)
-        ccopy.set_tooltip_text("Copiar")
+        ccopy.set_tooltip_text("Copy")
         ccopy.connect("clicked", lambda _b: self.calc_item and self._run(self.calc_item))
         cbox.pack_end(ccopy, False, False, 0)
         self.calc_card.add(cbox)
@@ -4704,7 +4704,7 @@ class Spotlight:
         cog = Gio.ThemedIcon.new("preferences-system")
         for key, title, _glyph, words in panes:
             self.settings.append({
-                "kind": "setting", "name": title, "gicon": cog, "sub": "Ajustes do Sistema",
+                "kind": "setting", "name": title, "gicon": cog, "sub": "System Settings",
                 "extra": words, "id": "ajustes:" + key,
                 "cmd": os.path.join(ROOT, "shell", "hyprmac-ajustes") + " " + key})
         for info in Gio.AppInfo.get_all():
@@ -4826,7 +4826,7 @@ class Spotlight:
         if mode == "all" and q:
             v = spot_calc(self.entry.get_text())
             if v is not None:
-                out.append((1000, {"kind": "calc", "name": v, "sub": "Calculadora  ·  ↩ copia",
+                out.append((1000, {"kind": "calc", "name": v, "sub": "Calculator  ·  ↩ Copy",
                                    "id": "calc"}))
         sc = self.scope
         file_query, file_kinds = spot_file_query(self.entry.get_text())
@@ -5135,7 +5135,7 @@ class Spotlight:
             self.gbox.pack_start(grid, False, False, 0)
             first = False
         if not self.cells:
-            self.gbox.pack_start(label("Nenhum arquivo recente", "spot-foot"), False, False, 0)
+            self.gbox.pack_start(label("No Recent Files", "spot-foot"), False, False, 0)
         self.gbox.show_all()
         self.gscroll.get_vadjustment().set_value(0)
 
@@ -5232,7 +5232,7 @@ class Spotlight:
             self.gbox.pack_start(grid, False, False, 0)
             first = False
         if not self.cells:
-            self.gbox.pack_start(label("Nenhum app", "spot-foot"), False, False, 0)
+            self.gbox.pack_start(label("No Apps", "spot-foot"), False, False, 0)
         self.gbox.show_all()
         self.gscroll.get_vadjustment().set_value(0)
 
@@ -5881,7 +5881,7 @@ def notif_side(when, draw_thumb=None):
 
 
 class Banner(Gtk.Revealer):
-    """Um banner no estilo macOS: ícone do app, título, "agora", texto e ações."""
+    """Um banner no estilo macOS: ícone do app, título, "now", texto e ações."""
 
     def __init__(self, center, nid, app_icon, image, summary, body, actions, timeout):
         super().__init__(transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN,
@@ -5910,7 +5910,7 @@ class Banner(Gtk.Revealer):
         self.title = label("", "title")
         self.title.set_ellipsize(3)
         self.title.set_hexpand(True)
-        self.when = label("agora", "time", xalign=1.0)
+        self.when = label("now", "time", xalign=1.0)
         texts.pack_start(self.title, False, False, 0)
         self.body = label("", "body")
         self.body.set_line_wrap(True)
@@ -6021,8 +6021,7 @@ class Banner(Gtk.Revealer):
         return False
 
     def refresh_time(self):
-        mins = int((time.time() - self.created) // 60)
-        self.when.set_text("agora" if mins < 1 else f"há {mins} min")
+        self.when.set_text(when_text(self.created))   # o mesmo "now"/"2m ago" da Central
 
     # ── mouse ──
     def _enter(self, _w, ev):
@@ -6748,7 +6747,7 @@ class NMSecretAgent:
 
     def _get(self, inv, conn, path, setting, hints, flags):
         c = conn.get("connection", {})
-        uuid, cid = c.get("uuid", ""), c.get("id", "conexão")
+        uuid, cid = c.get("uuid", ""), c.get("id", "connection")
         keys = self._agent_keys(conn, setting)
         for h in hints:                           # o plugin pode pedir chaves extras
             if h in SECRET_LABELS and h not in keys:
@@ -6761,7 +6760,7 @@ class NMSecretAgent:
             return
         if not flags & ALLOW_INTERACTION:
             inv.return_dbus_error("org.freedesktop.NetworkManager.SecretAgent.NoSecrets",
-                                  "Senha não encontrada no chaveiro")
+                                  "Password not found in Keychain")
             return
         GLib.idle_add(self._ask, inv, path, setting, uuid, cid, keys, found)
 

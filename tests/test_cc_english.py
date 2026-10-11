@@ -32,18 +32,36 @@ class CCEnglishTests(unittest.TestCase):
         self.assertIn("No notifications available", textos)
         self.assertEqual(self.portugues(textos), [])
 
+    fonte = SHELL
+
     def test_todos_os_textos_de_interface_do_shell(self):
         pat = re.compile(r'(label\(|label=|title=|set_title\(|set_tooltip_text\(|set_placeholder_text\('
-                         r'|text=|add_button\(|format_secondary_text\(|set_text\(|Gtk\.Label\()\s*f?"([^"]{2,})"')
+                         r'|text=|add_button\(|format_secondary_text\(|set_text\(|Gtk\.Label\(|"sub":|subtitle=)'
+                         r'\s*f?"([^"]{2,})"')
         # palavras curtas só em minúscula ("Do you…" é inglês); as longas em qualquer caixa
         pt = re.compile(r"[áàâãçéêíóôõú]|\b(de|do|da|para|com)\b|(?i:\b(senha|abrir|fechar|salvar|cancelar|"
-                        r"nada|buscar|limpar|janela|aplicativo|encerrar|conectar|lembrar)\b)")
+                        r"nada|buscar|limpar|janela|aplicativo|encerrar|conectar|lembrar|editar|controles|"
+                        r"nenhum|nenhuma|agora|ajustes|copiar|copia|colar|cola|imagem|itens|calculadora|"
+                        r"arquivo|recente|mesa|documentos|opções|capturar|gravar|temporizador|segundos|"
+                        r"mostrar|miniatura|flutuante|tela|inteira|selecionada)\b)")
         achados = []
-        for n, linha in enumerate(SHELL.split("\n"), 1):
+        for n, linha in enumerate(self.fonte.split("\n"), 1):
             if linha.strip().startswith("#"):
                 continue
             achados += [f"{n}: {m.group(2)}" for m in pat.finditer(linha) if pt.search(m.group(2))]
         self.assertEqual(achados, [])
+
+
+class CapturaEnglishTests(CCEnglishTests):
+    """A barra do ⇧⌘5 (scripts/captura) segue os textos do Screenshot do Tahoe."""
+    fonte = (Path(__file__).resolve().parents[1] / "scripts" / "captura").read_text(encoding="utf-8")
+
+    test_titulos_de_toggle_e_slider = test_nomes_de_apps = test_central_de_notificacoes = None
+
+    def test_textos_do_tahoe(self):
+        for texto in ("Capture Entire Screen", "Capture Selected Portion", "Options", "Save to",
+                      "Show Floating Thumbnail", "Capture"):
+            self.assertIn(f'"{texto}"', self.fonte)
 
 
 if __name__ == "__main__":
