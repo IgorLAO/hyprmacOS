@@ -88,8 +88,11 @@ qual evidência Tahoe foi usada, o que foi testado, o que continua diferente e
 qual é o próximo ID da fila**. Revisar a fila somente quando uma evidência nova
 ou um bloqueio concreto mudar o impacto. Não trocar de frente por novidade.
 
-Próxima ação: MIC-01 — confrontar o instante pressionado. MIC-03 ficou
-BLOQUEADO_REFERENCIA em 2026-10-11: a única curva citada vinha de um registro
-`invalid` e não há vídeo Tahoe 26 de popover; o catálogo voltou a PARCIAL até
-existir captura equivalente. MIC-02 segue sem entrega física do clique e
-comparação Tahoe; MIC-04 segue parcial quanto ao foco global.
+Próxima ação: MIC-10 (transições interrompíveis), depois MIC-08 e MIC-09.
+Ciclos de 2026-10-11: MIC-03 BLOQUEADO_REFERENCIA (curva vinha de registro
+`invalid`; sem vídeo Tahoe 26 de popover). MIC-01 BLOQUEADO_REFERENCIA quanto ao
+instante pressionado: as sequências `spotlight-clique-modo-*` e
+`spotlight-controles-*` mostram hover e transição de modo, não o quadro do
+clique. MIC-14 avançou: Spotlight e Mídia respeitam Reduce Motion
+(`tahoe26:validacao:mic14-reduce-motion-shell`). MIC-02 segue sem entrega
+física do clique; MIC-04 segue parcial quanto ao foco global.

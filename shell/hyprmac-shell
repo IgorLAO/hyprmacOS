@@ -3653,6 +3653,14 @@ class MediaPanel:
         self.layout = MEDIA_LAYOUTS[(i + 1) % len(MEDIA_LAYOUTS)]
         self._save_layout()
         start, end = self.rects, self._layout_rects(self.layout)
+        if reduce_motion():
+            if self._anim:
+                self.fixed.remove_tick_callback(self._anim)
+                self._anim = None
+            self.rects = end
+            self._apply_rects(end)
+            self.cover.queue_draw()
+            return True
         t0 = time.monotonic()
 
         def frame(*_):
@@ -4488,6 +4496,11 @@ class Spotlight:
         mais larga e um pouco mais baixa e volta ao tamanho, devagar e sem quicar."""
         if getattr(self, "_stretch_tick", None):
             self.panel.remove_tick_callback(self._stretch_tick)
+            self._stretch_tick = None
+        if reduce_motion():                          # sem elasticidade (WWDC25 219)
+            self.panel.set_size_request(SPOT_W + 2 * 48, -1)
+            self.field.set_size_request(-1, SPOT_FIELD)
+            return
         t0 = [None]
 
         def frame(_w, clock):
@@ -4986,8 +4999,13 @@ class Spotlight:
         if getattr(self, "_grow_tick", None):
             self.gscroll.remove_tick_callback(self._grow_tick)
         full = SPOT_PANEL_H - SPOT_FIELD - 1
-        t0 = [None]
         self.gbox.set_opacity(0)
+        if reduce_motion():                          # sem crescer; o conteúdo só esmaece
+            self._grow_tick = None
+            self.gscroll.set_size_request(-1, full)
+            self._fade_grid()
+            return
+        t0 = [None]
         self.gscroll.set_size_request(-1, 1)
 
         def frame(_w, clock):

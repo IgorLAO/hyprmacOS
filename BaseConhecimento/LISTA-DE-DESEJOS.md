@@ -247,7 +247,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | MIC-11 | P1 | Temas claro/escuro sincronizados entre aplicativos | PARCIAL | TESTADO_LOCAL | `shell/app_theme.py` liga Notes, Journal e Photos a GSettings durante a janela; teste com sinal simulado. Sem troca real no desktop nem validação Tahoe de todos os apps. |
 | MIC-12 | P2 | Sons de sistema e feedback de operações | A_VERIFICAR | NAO_AVALIADO | — |
 | MIC-13 | P0 | Layout correto em monitores HiDPI | A_VERIFICAR | NAO_AVALIADO | — |
-| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py; tremida do bloqueio sem evidência |
+| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | E6 — Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py. 2026-10-11: entrada esticada e grade do Spotlight e troca de layout da Mídia passaram a respeitar Reduce Motion (critério WWDC25 219: sem propriedades elásticas); tests/test_reduce_motion_shell.py + medição no desktop (`tahoe26:validacao:mic14-reduce-motion-shell`). Pendentes: tremida do bloqueio sem evidência; comparação com Tahoe em Reduce Motion |
 | MIC-15 | P1 | Consistência ao conectar e desconectar monitores | A_VERIFICAR | NAO_AVALIADO | — |
 
 ## INT — Integrações avançadas — expansão posterior
