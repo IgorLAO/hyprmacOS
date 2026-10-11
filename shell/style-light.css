@@ -145,7 +145,7 @@ menu.hyprmac-menu menuitem:disabled,
   box-shadow: none;
   font-size: 0;
   color: transparent;
-  transition: background-color 150ms cubic-bezier(0.3, 0.7, 0.3, 1), box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
+  transition: background-color 70ms ease-out;   /* acompanha o puxador do GtkSwitch (~70 ms medidos) */
 }
 .xmenu switch:checked { background: #0088FF; }
 .xmenu switch:disabled { opacity: 0.45; }
@@ -157,8 +157,6 @@ menu.hyprmac-menu menuitem:disabled,
   border-radius: 999px;
   background: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.30);
-  transition: margin-left 150ms cubic-bezier(0.3, 0.7, 0.3, 1),
-              box-shadow 150ms cubic-bezier(0.3, 0.7, 0.3, 1);
 }
 .xmenu .xm-slider-icon { color: rgba(0, 0, 0, 0.55); }
 .xmenu scale trough { background: rgba(0, 0, 0, 0.12); }
