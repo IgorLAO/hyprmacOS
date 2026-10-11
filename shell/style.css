@@ -70,7 +70,7 @@ window.hyprmac {
 /* Foco GTK visível só na navegação por teclado; sem mudar a geometria. */
 .hyprmac button:focus {
   outline: 2px solid @shell_focus;
-  outline-offset: -2px;
+  outline-offset: -3px;
   -gtk-outline-radius: 8px;
 }
 .cc button.circle:focus, .cc button.edit-pill:focus {
