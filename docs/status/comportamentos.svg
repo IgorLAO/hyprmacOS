@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="520" height="260" fill="#1f2026"/>
-<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 13.7% (2/113 feitos)</text>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 14.2% (2/113 feitos)</text>
 <g><title>Microinterações — 48%</title>
 <rect x="0.0" y="26.0" width="124.2" height="130.0" fill="#16171c"/>
 <rect x="1.5" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-01: feito</title></rect>
@@ -84,14 +84,14 @@
 <rect x="308.5" y="113.8" width="35.1" height="27.8" fill="#7b7d86"><title>SPT-11: a fazer</title></rect>
 <text x="237.7" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Spotlight</text>
 </g>
-<g><title>Central — 21%</title>
+<g><title>Central — 25%</title>
 <rect x="234.7" y="143.0" width="110.4" height="117.0" fill="#16171c"/>
 <rect x="236.2" y="144.5" width="35.1" height="27.8" fill="#3fb44b"><title>CCN-06: feito</title></rect>
-<rect x="272.3" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-03: parcial testado</title></rect>
-<rect x="308.5" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-05: parcial testado</title></rect>
-<rect x="236.2" y="173.2" width="35.1" height="27.8" fill="#d6a531"><title>CCN-01: parcial/relatado</title></rect>
-<rect x="272.3" y="173.2" width="35.1" height="27.8" fill="#d6a531"><title>CCN-04: parcial/relatado</title></rect>
-<rect x="308.5" y="173.2" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-02: a fazer</title></rect>
+<rect x="272.3" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-02: parcial testado</title></rect>
+<rect x="308.5" y="144.5" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-03: parcial testado</title></rect>
+<rect x="236.2" y="173.2" width="35.1" height="27.8" fill="#9bc53d"><title>CCN-05: parcial testado</title></rect>
+<rect x="272.3" y="173.2" width="35.1" height="27.8" fill="#d6a531"><title>CCN-01: parcial/relatado</title></rect>
+<rect x="308.5" y="173.2" width="35.1" height="27.8" fill="#d6a531"><title>CCN-04: parcial/relatado</title></rect>
 <rect x="236.2" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-07: a fazer</title></rect>
 <rect x="272.3" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-08: a fazer</title></rect>
 <rect x="308.5" y="202.0" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-09: a fazer</title></rect>

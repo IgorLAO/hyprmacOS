@@ -2849,8 +2849,10 @@ class ControlCenter:
         shield.connect("button-press-event", self._edit_press, idx)
         shield.connect("motion-notify-event", self._edit_motion)
         shield.connect("button-release-event", self._edit_release, idx)
+        # Tahoe (Mac User Guide ▸ Use Control Center): arrastar move, arrastar para fora
+        # remove, Control-clique escolhe outro tamanho
         if len(sizes) > 1:
-            shield.set_tooltip_text("Click to change size · drag to move")
+            shield.set_tooltip_text("Drag to move · Control-click to change size")
         else:
             shield.set_tooltip_text("Drag to move")
         ov.add_overlay(shield)
@@ -2859,7 +2861,7 @@ class ControlCenter:
         rm.add(label("−", xalign=0.5))
         rm.set_halign(Gtk.Align.START)
         rm.set_valign(Gtk.Align.START)
-        rm.set_tooltip_text("Remover")
+        rm.set_tooltip_text("Remove")
         rm.connect("clicked", lambda _b: self._remove(idx))
         ov.add_overlay(rm)
         for w in (shield, rm):
@@ -3204,6 +3206,10 @@ class ControlCenter:
         self._change(list(DEFAULT_CONTROLS))
 
     def _edit_press(self, w, ev, idx):
+        control = bool(ev.state & Gdk.ModifierType.CONTROL_MASK)
+        if ev.button == 3 or (ev.button == 1 and control):
+            self._edit_menu(idx, ev)
+            return True
         if ev.button != 1:
             return False
         self._drag = {"idx": idx, "x": ev.x_root, "y": ev.y_root, "moving": False, "target": None}
@@ -3233,6 +3239,10 @@ class ControlCenter:
             ghost = None if target is not None else next((g for g in self.ghosts if hit(g)), None)
             if ghost is not None:
                 target = "end"
+            a = self.grid.get_allocation()
+            if not (-CC_BLEED <= gx < a.width + CC_BLEED and -CC_BLEED <= gy < a.height + CC_BLEED):
+                target = "out"                # fora da Central: soltar remove
+            set_class(self.wrappers[d["idx"]], "removing", target == "out")
             for i, wrap in enumerate(self.wrappers):
                 set_class(wrap, "drop-target", i == target and i != d["idx"])
             for g in self.ghosts:
@@ -3246,7 +3256,9 @@ class ControlCenter:
             return False
         if d["moving"]:
             t = d["target"]
-            if t == "end":
+            if t == "out":
+                self._remove(d["idx"])
+            elif t == "end":
                 layout = list(self.layout)
                 layout.append(layout.pop(d["idx"]))
                 self._change(layout)
@@ -3258,15 +3270,42 @@ class ControlCenter:
                 for wrap in self.wrappers + self.ghosts:
                     set_class(wrap, "dragging", False)
                     set_class(wrap, "drop-target", False)
+                    set_class(wrap, "removing", False)
             return True
-        # clique simples: próximo tamanho
+        return True     # clique simples não muda nada (o tamanho é pelo Control-clique)
+
+    CC_SIZE_NAMES = {"small": "Small", "medium": "Medium", "large": "Large", "wide": "Wide"}
+
+    def _edit_menu(self, idx, event):
+        """Control-clique num controle em edição: "choose a different size" e, quando o
+        controle tem item na barra, Add/Remove from Menu Bar."""
         key, size = self.layout[idx]
         sizes = self.catalog[key][1]
-        if len(sizes) > 1:
-            layout = list(self.layout)
-            layout[idx] = (key, sizes[(sizes.index(size) + 1) % len(sizes)])
-            self._change(layout)
-        return True
+        menu = Gtk.Menu()
+        for s in sizes if len(sizes) > 1 else ():
+            item = Gtk.CheckMenuItem(label=self.CC_SIZE_NAMES.get(s, s.title()))
+            item.set_draw_as_radio(True)
+            item.set_active(s == size)
+            item.connect("activate", lambda _i, s=s: s != size and self._resize(idx, s))
+            menu.append(item)
+        bar_key = menubar_items.CC_TO_BAR.get(key)
+        if bar_key:
+            if menu.get_children():
+                menu.append(Gtk.SeparatorMenuItem())
+            shown = bar_key not in menubar_items.hidden()
+            item = Gtk.MenuItem(label="Remove from Menu Bar" if shown else "Add to Menu Bar")
+            item.connect("activate", lambda _i: menubar_items.set_shown(bar_key, not shown))
+            menu.append(item)
+        if not menu.get_children():
+            return
+        menu.show_all()
+        menu.attach_to_widget(self.win, None)
+        menu.popup_at_pointer(event)
+
+    def _resize(self, idx, size):
+        layout = list(self.layout)
+        layout[idx] = (layout[idx][0], size)
+        self._change(layout)
 
     # ── estado ──
     def _tick(self):
