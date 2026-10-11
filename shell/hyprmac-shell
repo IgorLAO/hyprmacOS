@@ -4485,10 +4485,13 @@ class Spotlight:
         pick = next((w[1:] for w in text.split() if w.startswith("%")), None)   # "%folders"
         tab = "+tab" in text.split()           # testes: tab no 1º resultado (pasta)
         up = "+up" in text.split()             # testes: ↑ com o campo vazio (histórico)
+        hover = next((w[7:] for w in text.split() if w.startswith("+hover=")), None)  # "+hover=files"
         text = " ".join(w for w in text.split()
-                        if w not in ("+ctl", "+tab", "+up") and not w.startswith("%"))
+                        if w not in ("+ctl", "+tab", "+up") and not w.startswith(("%", "+hover=")))
         if ctl:
             GLib.timeout_add(250, lambda: self.ctl.show_controls(True) and False)
+        if hover in self.ctl.MODES:             # testes: ponteiro sobre um botão de modo
+            GLib.timeout_add(700, lambda: self.ctl._set_hover(self.ctl.MODES.index(hover)) and False)
         mode = "all"
         if text.split()[:1] and text.split()[0].startswith("@"):     # "@files texto"
             mode, text = self._norm(text.split()[0][1:]), " ".join(text.split()[1:])
@@ -4516,6 +4519,20 @@ class Spotlight:
         self._stretch_in()
         self.win.show()
         GLib.timeout_add(int(secs * 1000), lambda: self.hide() and False)
+
+    def _hover_mode(self, mode):
+        """Ponteiro sobre um botão de modo: o campo vazio antecipa o nome e o atalho dele
+        ("Actions ⌘3", referencias/telas/spotlight-controles-2…6) sem trocar de modo;
+        ao sair, volta ao modo atual."""
+        if self.scope or self.entry.get_text():
+            return
+        shown = mode or self.mode
+        self.entry.set_placeholder_text(SPOT_MODES.get(shown, SPOT_MODES["all"]))
+        num = {"apps": "1", "files": "2", "actions": "3", "clipboard": "4"}.get(mode) if mode else \
+            {"apps": "1", "files": "2", "actions": "3"}.get(self.mode)
+        self.key_num.set_text(num or "")
+        self.keys.set_visible(bool(num))
+        self._update_hint()
 
     def _set_mode(self, mode):
         self.mode = mode

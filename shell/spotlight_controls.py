@@ -128,6 +128,9 @@ class SpotControls(Gtk.DrawingArea):
         if i != self.hover:
             self.hover = i
             self.queue_draw()
+            hover_mode = getattr(self.spot, "_hover_mode", None)
+            if hover_mode:
+                hover_mode(self.MODES[i] if 0 <= i < len(self.MODES) else None)
 
     def _motion(self, _w, ev):
         self._set_hover(self._hit(ev.x, ev.y))

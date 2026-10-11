@@ -36,7 +36,7 @@ def spot_app_category(cats):
 
 
 SPOT_MODES = {"all": "Spotlight Search", "apps": "Applications", "files": "Files",
-              "actions": "Actions"}
+              "actions": "Actions", "clipboard": "Clipboard"}
 # como no Spotlight, à mesma relevância apps e Ajustes vêm antes de ações, e ações
 # antes de arquivos (um arquivo só passa na frente se o nome casar bem melhor)
 SPOT_WEIGHT = {"calc": 30, "app": 12, "setting": 10, "action": 6, "file": -18}

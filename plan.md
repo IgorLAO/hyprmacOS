@@ -88,7 +88,9 @@ qual evidência Tahoe foi usada, o que foi testado, o que continua diferente e
 qual é o próximo ID da fila**. Revisar a fila somente quando uma evidência nova
 ou um bloqueio concreto mudar o impacto. Não trocar de frente por novidade.
 
-Próxima ação: MIC-04 ⌃F2 (foco na barra de menus), depois MIC-09. Em 2026-10-11: MIC-10
+Próxima ação: MIC-09 tooltips dos botões só com ícone; MIC-04 ⌃F2 depende de
+navegação por teclado na Waybar (limitação). MIC-09 hover de modo do Spotlight comparado
+com spotlight-controles-2…6 (`tahoe26:validacao:mic09-spotlight-hover-modo`). Em 2026-10-11: MIC-10
 emerge sem salto (`tahoe26:validacao:mic10-emerge-continuo`); MIC-08 transição inócua
 removida, puxador do GtkSwitch medido em ~70 ms (`tahoe26:validacao:mic08-switch-gtk`);
 MIC-04 ⌃F3 Dock e ⌃F4 janelas (`tahoe26:validacao:mic04-foco-global`).

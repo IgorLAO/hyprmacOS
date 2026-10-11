@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="520" height="260" fill="#1f2026"/>
-<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 8.6% (1/113 feitos)</text>
-<g><title>Microinterações — 30%</title>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 8.8% (1/113 feitos)</text>
+<g><title>Microinterações — 32%</title>
 <rect x="0.0" y="26.0" width="124.2" height="130.0" fill="#16171c"/>
 <rect x="1.5" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-01: feito</title></rect>
 <rect x="32.1" y="27.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-02: parcial testado</title></rect>
 <rect x="62.6" y="27.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-03: parcial testado</title></rect>
 <rect x="93.2" y="27.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-08: parcial testado</title></rect>
-<rect x="1.5" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-10: parcial testado</title></rect>
-<rect x="32.1" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-11: parcial testado</title></rect>
-<rect x="62.6" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-14: parcial testado</title></rect>
-<rect x="93.2" y="59.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-04: parcial/relatado</title></rect>
-<rect x="1.5" y="91.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-09: parcial/relatado</title></rect>
+<rect x="1.5" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-09: parcial testado</title></rect>
+<rect x="32.1" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-10: parcial testado</title></rect>
+<rect x="62.6" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-11: parcial testado</title></rect>
+<rect x="93.2" y="59.5" width="29.6" height="31.0" fill="#9bc53d"><title>MIC-14: parcial testado</title></rect>
+<rect x="1.5" y="91.5" width="29.6" height="31.0" fill="#d6a531"><title>MIC-04: parcial/relatado</title></rect>
 <rect x="32.1" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-05: a fazer</title></rect>
 <rect x="62.6" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-06: a fazer</title></rect>
 <rect x="93.2" y="91.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-07: a fazer</title></rect>
