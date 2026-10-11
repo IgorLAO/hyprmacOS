@@ -177,7 +177,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | SPT-04 | P1 | Histórico pesquisável da área de transferência | PARCIAL | TESTADO_LOCAL | 2026-10-11: busca, copiar por item, ⌃C e More ▸ Clear History conforme o guia do Tahoe 26 (`tahoe26:validacao:spt04-clipboard`). Diverge: painel próprio em vez de modo dentro do Spotlight; sem pedido Enable inicial |
 | SPT-05 | P1 | Filtros dinâmicos de resultados | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
 | SPT-06 | P1 | Buscar comandos dos menus do aplicativo ativo | A_VERIFICAR | NAO_AVALIADO | — |
-| SPT-07 | P1 | Teclas rápidas personalizáveis para ações | A_VERIFICAR | NAO_AVALIADO | — |
+| SPT-07 | P1 | Teclas rápidas personalizáveis para ações | PARCIAL | TESTADO_LOCAL | 2026-10-11: "Add quick keys"/edição no modo Ações, sugestão automática após a primeira execução, teclas fixas como sugestões (`tahoe26:validacao:spt07-quick-keys`). Pendente: argumento após a tecla ("ft Ashley") |
 | SPT-08 | P1 | Ranking por histórico e relevância | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-09 | P1 | Pré-visualizar arquivos e resultados | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-10 | P1 | Cálculos e conversões | A_VERIFICAR | NAO_AVALIADO | — |

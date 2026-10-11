@@ -55,6 +55,7 @@ from dock_drop import supports_documents as dock_supports_documents, open_docume
 from hypr_events import EventBus
 import menubar_items
 from spotlight_controls import SPOT_FIELD, SpotControls, draw_appstore_a
+import spotlight_quickkeys as quickkeys
 from cocoa_entry import CocoaEntryKeys, is_modified_arrow
 from spotlight_search import SPOT_APP_CATS, SPOT_MODES, SPOT_WEIGHT, spot_app_category, spot_calc, spot_filter_command, spot_fold, spot_score
 
@@ -143,6 +144,9 @@ def run(cmd, timeout=3):
 def open_settings(pane=""):
     """Ajustes do Sistema do hyprmac (shell/hyprmac-ajustes) direto num painel."""
     spawn(os.path.join(ROOT, "shell", "hyprmac-ajustes") + (f" {pane}" if pane else ""))
+
+
+MAX_QK_CHARS = 6
 
 
 def spot_shift(width, field_w, over, controls_w, margin=8):
@@ -4683,6 +4687,8 @@ class Spotlight:
             self.actions = self.mod.action_items() if self.mod else []
         except Exception:
             self.actions = []
+        self._qk = quickkeys.load()
+        self._qk_keys = quickkeys.effective(self.actions, self._qk)
         self.hist = {m: set(self.mod.history_ids(m)) if self.mod else set()
                      for m in ("apps", "files", "actions")}
         in_thread(self._load_files)
@@ -4776,12 +4782,13 @@ class Spotlight:
         return pb
 
     def _action_entry(self, a):
-        if a.get("key"):
-            sub = f"Ação  ·  tecla rápida {a['key']}"
-        else:
+        key = getattr(self, "_qk_keys", {}).get(a["id"], a.get("key") or "")
+        if a.get("menu"):
             sub = f"{a['menu']} ▸ menu" + (f"  ·  {a['shortcut']}" if a.get("shortcut") else "")
+        else:
+            sub = "Action"
         return {"kind": "action", "name": a["label"], "sub": sub, "id": a["id"],
-                "extra": a.get("key", ""), "key": a.get("key"), "raw": a,
+                "extra": key, "key": key, "raw": a,
                 "icons": a.get("icons") or self.mod.MENU_ICONS.get(a.get("menu"), [])}
 
     # ── busca ──
@@ -5344,6 +5351,8 @@ class Spotlight:
             texts.pack_start(sub, False, False, 0)
             row.sub_label = sub
         box.pack_start(texts, True, True, 0)
+        if it["kind"] == "action" and (it.get("key") or self.mode == "actions"):
+            box.pack_end(self._quick_key_widget(it), False, False, 0)
         if it["kind"] == "app" or (it["kind"] == "file" and it.get("is_dir")):
             # Tahoe: "Search ai app  tab" à direita do resultado selecionado
             tab = Gtk.Box(spacing=6)
@@ -5360,6 +5369,52 @@ class Spotlight:
             row.tab_hint = tab
         row.add(box)
         return row
+
+    # ── quick keys (Mac User Guide ▸ Take actions and shortcuts in Spotlight) ──
+    def _quick_key_widget(self, it):
+        """Tecla da ação à direita; no modo Ações, sem tecla, "Add quick keys". Clicar
+        abre o campo no lugar: Return grava, Esc ou sair do campo cancela."""
+        stack = Gtk.Stack()
+        stack.set_valign(Gtk.Align.CENTER)
+        button = Gtk.Button()
+        add_class(button, "spot-qk", "spot-qk-add" if not it.get("key") else "spot-qk-key")
+        button.set_relief(Gtk.ReliefStyle.NONE)
+        button.set_can_focus(False)
+        button.add(label(it.get("key") or "Add quick keys", "spot-qk-label", 0.5))
+        entry = Gtk.Entry()
+        add_class(entry, "spot-qk-entry")
+        entry.set_width_chars(MAX_QK_CHARS)
+        entry.set_max_length(quickkeys.MAX_LEN)
+        stack.add_named(button, "show")
+        stack.add_named(entry, "edit")
+
+        def edit(_b):
+            entry.set_text(it.get("key") or "")
+            stack.set_visible_child_name("edit")
+            entry.grab_focus()
+            self._qk_editing = (entry, stack, it)
+
+        def done(save):
+            if getattr(self, "_qk_editing", None) is None or self._qk_editing[0] is not entry:
+                return
+            self._qk_editing = None
+            if save:
+                self._qk_save(quickkeys.assign(self._qk, it["id"], entry.get_text(), self._qk_keys))
+                self._search()
+            else:
+                stack.set_visible_child_name("show")
+            self.entry.grab_focus_without_selecting()
+        button.connect("clicked", edit)
+        entry.connect("activate", lambda _e: done(True))
+        entry.connect("focus-out-event", lambda *_: done(False) or False)
+        entry._qk_cancel = lambda: done(False)
+        stack.show_all()
+        return stack
+
+    def _qk_save(self, overrides):
+        self._qk = overrides
+        self._qk_keys = quickkeys.effective(self.actions or [], overrides)
+        in_thread(quickkeys.save, dict(overrides))
 
     def _tab_hints(self):
         sel = self.list.get_selected_row()
@@ -5435,6 +5490,12 @@ class Spotlight:
     # ── teclado ──
     def _on_key(self, _w, ev):
         if is_modified_arrow(ev):
+            return False
+        editing = getattr(self, "_qk_editing", None)
+        if editing:                          # campo de quick key: as teclas são dele
+            if ev.keyval == Gdk.KEY_Escape:
+                editing[0]._qk_cancel()
+                return True
             return False
         k, st = ev.keyval, ev.state
         ctrl = bool(st & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SUPER_MASK |
@@ -5657,6 +5718,10 @@ class Spotlight:
         elif kind == "action":
             spawn(it["raw"]["cmd"])
             mod and in_thread(mod.record, "actions", it["id"], it["name"])
+            # "Suggested quick keys are automatically assigned after running an action once"
+            new = quickkeys.after_run(self._qk, it["raw"], self._qk_keys)
+            if new is not self._qk:
+                self._qk_save(new)
         elif kind == "file":
             path = it["path"]
             if reveal:
