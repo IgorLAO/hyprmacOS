@@ -181,6 +181,26 @@ def open_settings(pane=""):
 MAX_QK_CHARS = 6
 
 
+# Ações que recebem texto e rodam sem abrir o app (Tahoe: "Take actions … in Spotlight",
+# quick keys como "AR" para adicionar lembrete). "arg" nomeia o executor em run_arg_action.
+SPOT_ARG_ACTIONS = [
+    {"id": "q:ar", "key": "ar", "label": "Add Reminder", "arg": "reminder",
+     "icons": ["dev.hyprmac.Reminders", "task-due", "appointment-new"]},
+]
+
+
+def run_arg_action(kind, text):
+    """Executa a ação com o texto, sem abrir o app, e confirma numa notificação."""
+    text = (text or "").strip()
+    if not text:
+        return
+    if kind == "reminder":
+        from app_factory_reminders import ReminderStore
+        if ReminderStore().add(text):
+            spawn("notify-send -a Reminders -i dev.hyprmac.Reminders 'Reminder Added' "
+                  + GLib.shell_quote(text))
+
+
 def spot_shift(width, field_w, over, controls_w, margin=8):
     """Quanto a cápsula do Spotlight sai do centro para os botões de modo caberem na tela."""
     overflow = width / 2 + field_w / 2 - over + controls_w + margin - width
@@ -4763,6 +4783,8 @@ class Spotlight:
             self.actions = self.mod.action_items() if self.mod else []
         except Exception:
             self.actions = []
+        self.actions = self.actions + [a for a in SPOT_ARG_ACTIONS
+                                       if a["id"] not in {x["id"] for x in self.actions}]
         self._qk = quickkeys.load()
         self._qk_keys = quickkeys.effective(self.actions, self._qk)
         self.hist = {m: set(self.mod.history_ids(m)) if self.mod else set()
@@ -4857,6 +4879,19 @@ class Spotlight:
             self._pb[key] = pb
         return pb
 
+    def _arg_action(self, text):
+        """"<quick key> <texto>" de uma ação que recebe texto → resultado pronto para rodar."""
+        words = text.strip().split(None, 1)
+        if len(words) != 2:
+            return None
+        for raw in self.actions or []:
+            if raw.get("arg") and self._qk_keys.get(raw["id"]) == spot_fold(words[0]):
+                entry = self._action_entry(raw)
+                entry.update(name=f"{raw['label']} “{words[1]}”", argtext=words[1],
+                             id=f"{raw['id']}:{words[1]}")
+                return entry
+        return None
+
     def _action_entry(self, a):
         key = getattr(self, "_qk_keys", {}).get(a["id"], a.get("key") or "")
         if a.get("menu"):
@@ -4933,6 +4968,9 @@ class Spotlight:
                 s = spot_score(q, a["name"], a["extra"]) if q or sc else 0
                 if s:
                     out.append((s + SPOT_WEIGHT["setting"], a))
+        arg_hit = self._arg_action(self.entry.get_text()) if mode in ("all", "actions") and not sc else None
+        if arg_hit:                          # "ar buy milk": a ação com o texto, em primeiro
+            out.append((2000, arg_hit))
         if mode in ("all", "actions") and (q or sc or mode == "actions"):
             for raw in self.actions:
                 a = self._action_entry(raw)
@@ -5770,7 +5808,19 @@ class Spotlight:
                 self.entry.grab_focus_without_selecting()
             return
         mod = self.mod
+        if kind == "action" and it["raw"].get("arg") and not it.get("argtext"):
+            # Tahoe: digitar a quick key "prompt you to enter" o texto no próprio campo
+            self.entry.set_text((it.get("key") or it["name"]) + " ")
+            self.entry.set_position(-1)
+            return
         self._remember_query()
+        if kind == "action" and it["raw"].get("arg"):
+            self.hide()
+            in_thread(run_arg_action, it["raw"]["arg"], it["argtext"])
+            new = quickkeys.after_run(self._qk, it["raw"], self._qk_keys)
+            if new is not self._qk:
+                self._qk_save(new)
+            return
         if kind == "action" and it["raw"].get("confirm") and self.pending is not it:
             self.pending = it        # como o alerta do Mac: Enter de novo confirma
             row = self.list.get_selected_row()

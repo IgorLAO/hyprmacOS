@@ -173,11 +173,11 @@ Dock; não certificar um simples fade/scale como equivalente.
 |---|---|---|---|---|---|
 | SPT-01 | P0 | Pesquisa unificada de aplicativos e arquivos | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-02 | P0 | Quatro modos: Aplicativos, Arquivos, Ações e Área de Transferência | A_VERIFICAR | NAO_AVALIADO | — |
-| SPT-03 | P0 | Executar ações sem abrir o aplicativo | A_VERIFICAR | NAO_AVALIADO | — |
+| SPT-03 | P0 | Executar ações sem abrir o aplicativo | PARCIAL | TESTADO_LOCAL | 2026-10-11: "ar <texto>" adiciona lembrete sem abrir o app, com a quick key pedindo o texto no campo como no guia do Tahoe 26 (`tahoe26:validacao:spt03-acao-com-texto`); ações de menu e do sistema já rodavam direto. Pendentes: nota, mensagem, timer com texto |
 | SPT-04 | P1 | Histórico pesquisável da área de transferência | PARCIAL | TESTADO_LOCAL | 2026-10-11: busca, copiar por item, ⌃C e More ▸ Clear History conforme o guia do Tahoe 26 (`tahoe26:validacao:spt04-clipboard`). Diverge: painel próprio em vez de modo dentro do Spotlight; sem pedido Enable inicial |
 | SPT-05 | P1 | Filtros dinâmicos de resultados | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
 | SPT-06 | P1 | Buscar comandos dos menus do aplicativo ativo | PARCIAL | TESTADO_LOCAL | 2026-10-11: só os menus do app à frente (mesmo filtro da barra) e com os nomes da barra (`tahoe26:validacao:spt06-menus-app-ativo`). Pendentes: menu com o nome do app; menus nativos de apps sem mapeamento |
-| SPT-07 | P1 | Teclas rápidas personalizáveis para ações | PARCIAL | TESTADO_LOCAL | 2026-10-11: "Add quick keys"/edição no modo Ações, sugestão automática após a primeira execução, teclas fixas como sugestões (`tahoe26:validacao:spt07-quick-keys`). Pendente: argumento após a tecla ("ft Ashley") |
+| SPT-07 | P1 | Teclas rápidas personalizáveis para ações | PARCIAL | TESTADO_LOCAL | 2026-10-11: "Add quick keys"/edição no modo Ações, sugestão automática após a primeira execução, teclas fixas como sugestões (`tahoe26:validacao:spt07-quick-keys`); argumento após a tecla nas ações com texto (SPT-03) |
 | SPT-08 | P1 | Ranking por histórico e relevância | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-09 | P1 | Pré-visualizar arquivos e resultados | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-10 | P1 | Cálculos e conversões | A_VERIFICAR | NAO_AVALIADO | — |
