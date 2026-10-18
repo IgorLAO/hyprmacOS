@@ -44,6 +44,24 @@ link() {
 }
 
 step "Links de configuração"
+step "Comandos da Waybar em Rust"
+cargo build --release --locked --manifest-path "$H/core/waybar-status/Cargo.toml"
+link "$H/core/waybar-status/target/release/hyprmac-waybar" "$HOME/.local/bin/hyprmac-waybar" local/bin/hyprmac-waybar
+step "Aparência automática em Rust"
+cargo build --release --locked --manifest-path "$H/core/appearance/Cargo.toml"
+link "$H/core/appearance/target/release/hyprmac-aparencia" "$HOME/.local/bin/hyprmac-aparencia" local/bin/hyprmac-aparencia
+step "Ações de janela em Rust"
+cargo build --release --locked --manifest-path "$H/core/window-actions/Cargo.toml"
+link "$H/core/window-actions/target/release/hyprmac-janela" "$HOME/.local/bin/hyprmac-janela" local/bin/hyprmac-janela
+step "Histórico da área de transferência em Rust"
+cargo build --release --locked --manifest-path "$H/core/clipboard/Cargo.toml"
+link "$H/core/clipboard/target/release/hyprmac-clipboard" "$HOME/.local/bin/hyprmac-clipboard" local/bin/hyprmac-clipboard
+step "Acessibilidade em Rust"
+cargo build --release --locked --manifest-path "$H/core/accessibility/Cargo.toml"
+link "$H/core/accessibility/target/release/hyprmac-acessibilidade" "$HOME/.local/bin/hyprmac-acessibilidade" local/bin/hyprmac-acessibilidade
+step "Cor de destaque em Rust"
+cargo build --release --locked --manifest-path "$H/core/accent/Cargo.toml"
+link "$H/core/accent/target/release/hyprmac-accent" "$HOME/.local/bin/hyprmac-accent" local/bin/hyprmac-accent
 link "$H/waybar"             "$C/waybar"             waybar
 # itens ocultos da barra (Ajustes ▸ Menu Bar): gerado em tempo de execução; o @import precisa dele
 [ -e "$H/waybar/barra-ocultos.css" ] || : > "$H/waybar/barra-ocultos.css"

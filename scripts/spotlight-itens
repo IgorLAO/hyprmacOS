@@ -418,8 +418,8 @@ MENU_NAMES = {"custom/apple": "Apple", "hyprland/window": "App",
 def menu_title(name, conf):
     if name in MENU_NAMES:
         return MENU_NAMES[name]
-    # o mesmo rótulo que a barra mostra ("app-menu.py History '…'"), não o nome do arquivo
-    m = re.search(r"app-menu\.py\s+(\S+)\s", conf.get("exec", ""))
+    # O mesmo rótulo que a barra mostra, não o nome do arquivo.
+    m = re.search(r"hyprmac-waybar\s+app-menu\s+(\S+)\s", conf.get("exec", ""))
     if m:
         return m.group(1)
     fmt = conf.get("format", "")
@@ -474,8 +474,8 @@ def active_class():
 
 
 def menu_visible(conf, classe):
-    """O módulo aparece na barra para este app? (o mesmo regex do app-menu.py)"""
-    m = re.search(r"app-menu\.py\s+\S+\s+'([^']*)'", conf.get("exec", ""))
+    """O módulo aparece na barra para este app? (o mesmo regex do comando Rust)"""
+    m = re.search(r"hyprmac-waybar\s+app-menu\s+\S+\s+'([^']*)'", conf.get("exec", ""))
     if not m:
         return True
     try:

@@ -1864,7 +1864,7 @@ class Settings(Gtk.Window):
         f.add_row(row("Time zone", value=d.get("Timezone", "—")))
         f2 = Form()
         f2.add_row(row("24-hour time", trailing=switch(mock("clock_24h", True), lambda v: (
-            set_mock("clock_24h", v), spawn("pkill -USR1 -f waybar/scripts/[c]lock.py")))))
+            set_mock("clock_24h", v), spawn("pkill -USR1 -f '[h]yprmac-waybar clock'")))))
         return [f.outer, f2.outer]
 
     def sub_language(self):
@@ -1912,10 +1912,10 @@ class Settings(Gtk.Window):
             " && hyprctl reload >/dev/null"))))
         vis.add_row(row("Reduce transparency", trailing=switch(
             a.get("reduce_transparency"), lambda v: spawn(
-                f"{ROOT}/scripts/acessibilidade transparency {'on' if v else 'off'}"))))
+                f"{os.path.expanduser('~')}/.local/bin/hyprmac-acessibilidade transparency {'on' if v else 'off'}"))))
         vis.add_row(row("Increase contrast", trailing=switch(
             a.get("increase_contrast"), lambda v: spawn(
-                f"{ROOT}/scripts/acessibilidade contrast {'on' if v else 'off'}"))))
+                f"{os.path.expanduser('~')}/.local/bin/hyprmac-acessibilidade contrast {'on' if v else 'off'}"))))
         size = float(run("gsettings get org.gnome.desktop.interface text-scaling-factor") or 1)
         vis.add_row(row("Text size", trailing=slider(size * 100, lambda v: spawn(
             f"gsettings set org.gnome.desktop.interface text-scaling-factor {v / 100:.2f}"),
@@ -1936,7 +1936,7 @@ class Settings(Gtk.Window):
 
         def pick(m):
             set_mock("appearance_mode", m)
-            set_clock_conf("appearance_mode", m)    # scripts/aparencia: o Auto troca sozinho
+            set_clock_conf("appearance_mode", m)    # hyprmac-aparencia: o Auto troca sozinho
             for k, c in refs.items():
                 c.set_selected(k == m)
             want = m if m != "auto" else ("dark" if not 7 <= time.localtime().tm_hour < 19 else "light")
@@ -2002,7 +2002,7 @@ class Settings(Gtk.Window):
         def set_accent(name):
             set_mock("accent_multicolor", name == "multicolor")
             real = "blue" if name == "multicolor" else name
-            spawn(f"{ROOT}/scripts/accent {'graphite' if real == 'slate' else real}")
+            spawn(f"{os.path.expanduser('~')}/.local/bin/hyprmac-accent {'graphite' if real == 'slate' else real}")
             escolha[0] = name
             acc_cap.set_text(nome(name))
             for k, b in dot_refs.items():
@@ -2853,7 +2853,7 @@ class Settings(Gtk.Window):
         def set_pref(key, value):
             prefs[key] = value
             save_json(path, prefs)
-            spawn("pkill -USR1 -f waybar/scripts/[c]lock.py")
+            spawn("pkill -USR1 -f '[h]yprmac-waybar clock'")
 
         veil = Gtk.EventBox()
         add_class(veil, "sheet-veil")

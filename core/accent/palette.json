@@ -1,0 +1,10 @@
+[
+  {"name":"blue","dark":"#007AFF","light":"#007AFF"},
+  {"name":"purple","dark":"#A550A7","light":"#953D96"},
+  {"name":"pink","dark":"#F74F9E","light":"#F74F9E"},
+  {"name":"red","dark":"#FF5257","light":"#E0383E"},
+  {"name":"orange","dark":"#F7821B","light":"#F7821B"},
+  {"name":"yellow","dark":"#FFC600","light":"#FFC726"},
+  {"name":"green","dark":"#62BA46","light":"#62BA46"},
+  {"name":"graphite","dark":"#8C8C8C","light":"#989898"}
+]

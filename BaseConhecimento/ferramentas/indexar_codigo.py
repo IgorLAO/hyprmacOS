@@ -19,9 +19,10 @@ MD = BASE / "INDICE-CODIGO-AGENTES.md"
 EXTENSIONS = {
     ".py": "python", ".lua": "lua", ".css": "css", ".sh": "bash",
     ".json": "json", ".jsonc": "jsonc", ".js": "javascript", ".md": "markdown",
+    ".rs": "rust",
 }
-SKIP_PARTS = {".git", ".obsidian", "__pycache__", ".venv", ".backups", "models", "base.db", "backup", "video", "images"}
-ROOTS = {"shell", "hypr", "waybar", "scripts", "gtk", "kde", "kitty", "ghostty", "wofi", "cursores", "tests"}
+SKIP_PARTS = {".git", ".obsidian", "__pycache__", ".venv", ".backups", "models", "base.db", "backup", "video", "images", "target"}
+ROOTS = {"shell", "hypr", "waybar", "scripts", "gtk", "kde", "kitty", "ghostty", "wofi", "cursores", "tests", "core"}
 
 
 def digest(path: Path) -> str:
@@ -56,6 +57,7 @@ def symbols(text: str, language: str) -> list[str]:
         "lua": r"^\s*(?:local\s+)?function\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)",
         "bash": r"^\s*(?:function\s+)?([A-Za-z_]\w*)\s*\(\)\s*\{?",
         "css": r"^\s*([^/@][^{]{1,100})\s*\{",
+        "rust": r"^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:fn|struct|enum|trait)\s+([A-Za-z_]\w*)",
     }
     pat = patterns.get(language)
     if not pat:
@@ -79,6 +81,7 @@ def imports(text: str, language: str) -> list[str]:
         "lua": r"require\s*[\(\"]([^\)\"]+)",
         "javascript": r"(?:from|require\s*\()\s*[\"']([^\"']+)",
         "css": r"@import\s+[\"']([^\"']+)",
+        "rust": r"^\s*use\s+([^;]+);",
     }
     pat = patterns.get(language)
     if not pat:

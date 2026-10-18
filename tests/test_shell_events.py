@@ -1,11 +1,9 @@
 """Regressões do assinante único do Hyprland e dos menus dinâmicos da barra."""
 
-import importlib.util
 import json
 import os
 from pathlib import Path
 from queue import Queue
-import re
 import socket
 import subprocess
 import sys
@@ -18,10 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "shell"))
 from hypr_events import EventBus  # noqa: E402
 
-spec = importlib.util.spec_from_file_location(
-    "app_menu", ROOT / "waybar/scripts/app-menu.py")
-app_menu = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(app_menu)
+MENU_BINARY = ROOT / "core/waybar-status/target/release/hyprmac-waybar"
 
 
 class EventBusTests(unittest.TestCase):
@@ -63,20 +58,22 @@ class MenuTests(unittest.TestCase):
             path = Path(temp) / "hyprmac-active-class.json"
             for cls, expected in (("Code", "Selection"), ("firefox", ""), ("", "")):
                 path.write_text(json.dumps({"pid": os.getpid(), "class": cls}))
-                with mock.patch.object(subprocess, "run") as run:
-                    result = app_menu.active_class()
-                run.assert_not_called()
-                self.assertEqual(expected, "Selection" if re.search("^Code$", result) else "")
+                out = subprocess.check_output([MENU_BINARY, "app-menu", "Selection", "^Code$"],
+                                              env={**os.environ, "XDG_RUNTIME_DIR": temp})
+                self.assertEqual(expected, json.loads(out)["text"])
 
     def test_stale_snapshot_falls_back_to_hyprctl(self):
         with tempfile.TemporaryDirectory() as temp, mock.patch.dict(
                 os.environ, {"XDG_RUNTIME_DIR": temp}):
             path = Path(temp) / "hyprmac-active-class.json"
             path.write_text(json.dumps({"pid": 99999999, "class": "stale"}))
-            with mock.patch.object(subprocess, "run", return_value=mock.Mock(
-                    stdout='{"class":"org.gnome.Nautilus"}')) as run:
-                self.assertEqual(app_menu.active_class(), "org.gnome.Nautilus")
-            run.assert_called_once()
+            mock_hyprctl = Path(temp) / "hyprctl"
+            mock_hyprctl.write_text('#!/bin/sh\necho \'{"class":"org.gnome.Nautilus"}\'\n')
+            mock_hyprctl.chmod(0o755)
+            out = subprocess.check_output([MENU_BINARY, "app-menu", "Go", "^org\\.gnome\\.Nautilus$"],
+                                          env={**os.environ, "XDG_RUNTIME_DIR": temp,
+                                               "PATH": f"{temp}:{os.environ['PATH']}"})
+            self.assertEqual("Go", json.loads(out)["text"])
 
 
 if __name__ == "__main__":

@@ -3087,7 +3087,7 @@ def clip_ago(t):
 
 
 class ClipboardPanel:
-    """Histórico da área de transferência (o que o scripts/clipboard guarda).
+    """Histórico da área de transferência (o que o hyprmac-clipboard guarda).
     Abre como o scratchpad: no centro, na frente de tudo, com a tela esmaecida
     atrás. Digitar filtra, ↑↓ escolhem, Enter/clique colam, Esc ou clique fora fecham."""
 
@@ -5623,7 +5623,7 @@ class ShellMenu:
 
 APPS = None     # AppIndex compartilhado (nomes/ícones dos .desktop), criado em main()
 A11Y_PATH = os.path.expanduser("~/.config/hyprmac/acessibilidade.json")
-A11Y = {"reduce_transparency": False, "increase_contrast": False}   # scripts/acessibilidade
+A11Y = {"reduce_transparency": False, "increase_contrast": False}   # hyprmac-acessibilidade
 
 # Ajustes ▸ Aparência ▸ Estilo de ícones e widgets: default · dark · clear · tinted
 APPEARANCE_PATH = os.path.expanduser("~/.config/hyprmac/aparencia.json")
@@ -5670,7 +5670,7 @@ def set_icon_style(style):
 
 
 def accent_rgb():
-    """Cor de destaque atual (gerada por scripts/accent em gtk/accent3.css)."""
+    """Cor de destaque atual (gerada por hyprmac-accent em gtk/accent3.css)."""
     try:
         with open(os.path.join(ROOT, "gtk", "accent3.css")) as f:
             m = re.search(r"@define-color mac_accent\s+#([0-9A-Fa-f]{6})", f.read())
@@ -5739,7 +5739,7 @@ def display_name(cls):
 
 class AppMenu(ShellMenu):
     """Menu do app (nome em negrito na barra) com o nome real: "About Brave",
-    "Hide Brave", "Quit Brave". As ações usam scripts/janela (⌘H/⌥⌘H/⌘Q)."""
+    "Hide Brave", "Quit Brave". As ações usam hyprmac-janela (⌘H/⌥⌘H/⌘Q)."""
 
     def _build(self):
         m = self._new_menu()
@@ -5747,8 +5747,8 @@ class AppMenu(ShellMenu):
         cls = win.get("class") or win.get("initialClass") or ""
         has = bool(cls) and cls != "hyprmac-shell"
         name = display_name(cls) if has else "App"
-        janela = os.path.join(ROOT, "scripts", "janela")
-        about = os.path.join(ROOT, "waybar", "scripts", "app-about.sh")
+        janela = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-janela")
+        about = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-waybar") + " app-about"
         self._item(m, f"About {name}", lambda: spawn(about), sensitive=has)
         self._sep(m)
         # ⌘, do Mac = Ctrl+vírgula nos apps do Linux que têm Preferências
@@ -6308,7 +6308,7 @@ def main():
     update_app_menus(hypr_json("activewindow").get("class", ""))
     hypr_events(app_menu_focus_event)
 
-    # Acessibilidade: Reduzir Transparência / Aumentar Contraste (scripts/acessibilidade)
+    # Acessibilidade: Reduzir Transparência / Aumentar Contraste (hyprmac-acessibilidade)
     a11y_css = {"reduce_transparency": Gtk.CssProvider(), "increase_contrast": Gtk.CssProvider()}
     a11y_css["reduce_transparency"].load_from_path(os.path.join(HERE, "a11y-transparencia.css"))
     a11y_css["increase_contrast"].load_from_path(os.path.join(HERE, "a11y-contraste.css"))
@@ -6418,7 +6418,7 @@ def main():
     hot = HotCorners(all_mons, {
         "mission-control": lambda: spawn(f"{ROOT}/shell/hyprmac-overview toggle"),
         "app-windows": lambda: spawn(f"{ROOT}/shell/hyprmac-overview app"),
-        "desktop": lambda: spawn(f"{ROOT}/scripts/janela show-desktop"),
+        "desktop": lambda: spawn(os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-janela") + " show-desktop"),
         "notification-center": notifs.panel.toggle,
         "apps": lambda: spot.command("apps"),            # o modo Apps do Spotlight (⌘1)
         "display-sleep": lambda: dispatch('hl.dsp.dpms({ action = "off" })'),

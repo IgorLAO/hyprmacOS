@@ -13,6 +13,12 @@ e arquivos de configuração, não por um único aplicativo.
 | Views do shell | `shell/desktop_surface.py`, `shell/dock_widget.py`, `shell/session_overlays.py`, `shell/spotlight_view.py` | Papel de parede, widgets e ícones da mesa; desenho, gestos e menus do Dock; alternador de apps e Force Quit; view do Spotlight. Recebem serviços do processo principal por fábrica, sem conexão ou processo adicional. |
 | Janelas auxiliares | `shell/hyprmac-ajustes`, `shell/hyprmac-overview`, `shell/hyprmac-lock` | Ajustes (GTK3), Mission Control (GTK3/LayerShell) e bloqueio (GTK4/PAM/ext-session-lock-v1). |
 | Barra | `waybar/config.jsonc`, `waybar/style.css`, `waybar/scripts/` | Menus globais, extras e estado do aplicativo em foco. |
+| Comandos da barra | `core/waybar-status/` | Binário Rust para menus condicionais, relógio, fonte de entrada, quatro indicadores e ação About; instalado em `~/.local/bin/hyprmac-waybar`. |
+| Aparência automática | `core/appearance/` | Binário Rust decide o tema em modo Auto após 60 s de inatividade, usando o vigia C existente. |
+| Ações de janela | `core/window-actions/` | Binário Rust executa Hide, Quit, Show Desktop e ciclo de foco por snapshots do Hyprland. |
+| Clipboard | `core/clipboard/` | Binário Rust vigia, guarda e limpa o histórico usado pelo painel GTK do shell. |
+| Acessibilidade | `core/accessibility/` | Binário Rust persiste as opções de transparência e contraste e gera o CSS compartilhado. |
+| Cor de destaque | `core/accent/` | Binário Rust gera CSS de destaque a partir da paleta Tahoe compartilhada em JSON. |
 | Integração | `scripts/`, `gtk/`, `kde/`, `ghostty/`, `wofi/` | Tema, captura, ações de janela, vidro, acessibilidade e integração com apps. |
 | Vidro | `scripts/vidro`, `shell/vidro.py`, plugin externo `hyprglass` | Instala/carrega a versão compatível do plugin e aplica presets às superfícies permitidas. |
 | Instalação | `install.sh` | Cria links/configurações e backups de arquivos do usuário. Exige a localização `~/Projects/hyprmac`. |
@@ -41,7 +47,7 @@ layers no upstream, mas não o comando legado que declarava peças de janelas;
 veja `STATUS.md`.
 O shell publica a classe em foco em `hyprmac-active-class.json` no diretório de
 runtime e sinaliza a Waybar com `SIGRTMIN+11` somente quando ela muda. Os 13
-módulos de menu executam `app-menu.py` uma vez por sinal; sem o shell, o script
+módulos de menu executam `hyprmac-waybar app-menu` uma vez por sinal; sem o shell, o comando
 consulta a janela ativa diretamente. Não há um daemon adicional para os menus.
 
 O Dock recebe snapshots pelo shell e resolve aplicativos pelo `AppIndex` existente.

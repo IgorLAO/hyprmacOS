@@ -1,4 +1,4 @@
-"""Tests for waybar/scripts/clock.py subprocess behavior.
+"""Tests for the Rust Waybar clock subprocess behavior.
 
 Roda o script com HOME temporário, verifica primeira linha JSON e
 releitura via SIGUSR1.
@@ -9,13 +9,12 @@ import re
 import select
 import signal
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[1] / "waybar" / "scripts" / "clock.py"
+SCRIPT_PATH = Path(__file__).resolve().parents[1] / "core/waybar-status/target/release/hyprmac-waybar"
 
 
 def _read_line(proc, timeout=2.0):
@@ -42,7 +41,7 @@ class TestClockScript(unittest.TestCase):
             env["HOME"] = tmp_home
 
             proc = subprocess.Popen(
-                [sys.executable, "-u", str(SCRIPT_PATH)],
+                [str(SCRIPT_PATH), "clock"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 env=env,
