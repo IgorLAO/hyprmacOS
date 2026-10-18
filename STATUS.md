@@ -1,15 +1,30 @@
 # Estado atual do HyprMac
 
+## Papel de parede automático — 2026-10-18
+
+- Implementação SIS-08: o shell segue `org.gnome.desktop.background` por padrão,
+  como Ajustes ▸ Wallpaper. Ao escolher uma foto em Ajustes, a origem `gnome` é
+  gravada em `config.json` e o shell recarrega a imagem. Mudanças externas das
+  chaves GNOME e da origem em `config.json` também atualizam as layers da mesa
+  e o contraste da barra sem reiniciar o shell. Uma imagem explícita em
+  `config.json` continua disponível; a foto local existente é o fallback.
+- Validação SIS-08: troca em tempo real entre imagens brancas e pretas mudou
+  `waybar/contrast.css` de 4556 para 0 bytes, tanto via GNOME quanto por troca
+  do caminho em `config.json`; origem e wallpaper anteriores restaurados. A
+  troca via `set_wallpaper()` de Ajustes gravou `"wallpaper": "gnome"` preservando
+  os outros campos. O asset Tahoe padrão ainda não está neste checkout.
+
 ## Controle de gravação na Central — 2026-10-18
 
 - Implementação CCN-01: `Screen Recording` entrou na categoria `Screenshot`,
   na galeria de edição e no layout padrão da Central. O controle usa
   `scripts/gravacao screen`: inicia a gravação, e durante a captura passa a
-  `Stop Recording`. O aviso ⏹ da barra continua automático e separado da lista
-  de controles configuráveis da barra.
+  `Stop Recording`. O aviso da barra continua automático e separado da lista
+  de controles configuráveis da barra. Seu SVG agora reproduz o anel claro com
+  quadrado arredondado da captura enviada pelo usuário (10.22.16).
 - Validação CCN-01: shell recompilado e Central recarregada no desktop;
   21 testes dirigidos da Central passaram. Uma gravação real gerou MP4, exibiu
-  ⏹ na barra e o removeu após a parada. Captura local da Central em
+  o aviso na barra e o removeu após a parada. Captura local da Central em
   `BaseConhecimento/referencias/validacao/central-gravacao-2026-10-18.png`.
   O clique físico no novo botão ainda precisa de conferência manual.
 
@@ -18,8 +33,9 @@
 - Implementação CCN-03: o `+` aparece na barra durante Edit Controls e abre uma
   página de 620×600 na galeria da Central, com cartões de controles nativos
   configuráveis. Gravação e compartilhamento de tela ficaram fora da lista:
-  são avisos automáticos. O primeiro mostra ⏹ com parada por clique enquanto
-  `wf-recorder` grava; o segundo usa o módulo `privacy/screenshare` da Waybar.
+  são avisos automáticos. O primeiro mostra um anel com quadrado enquanto
+  `wf-recorder` grava e para ao clicar; o segundo usa o módulo
+  `privacy/screenshare` da Waybar.
   Fones e Sleep Focus começam fora da barra e têm indicadores próprios quando
   adicionados e ativos; apps externos permanecem no tray SNI já existente.
   Os botões Add/Remove reutilizam `menubar_items.py`.

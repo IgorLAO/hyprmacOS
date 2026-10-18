@@ -1369,7 +1369,7 @@ class ControlCenter:
         self.sound.set_available(False)
         # só aparece com um microfone disponível (ver _read_fast)
         self.mic = SliderTile("Microphone", I["mic_lo"], I["mic"], self._set_mic)
-        self.recording_tile = Toggle("⏺", "Start Recording", self._record_click)
+        self.recording_tile = Toggle("●", "Start Recording", self._record_click)
         self.dark.set(icon=G("f1395"))   # círculo meio cheio (Modo Escuro do macOS)
         S, M, L, WIDE = "small", "medium", "large", "wide"
         self.catalog = {
@@ -2346,7 +2346,7 @@ class ControlCenter:
             recording = True
         except (OSError, ValueError):
             recording = False
-        self.recording_tile.set(on=recording, icon="⏹" if recording else "⏺",
+        self.recording_tile.set(on=recording, icon="■" if recording else "●",
                                 title="Stop Recording" if recording else "Start Recording",
                                 subtitle="Recording" if recording else "Screen Recording")
         in_thread(self._read_fast)
