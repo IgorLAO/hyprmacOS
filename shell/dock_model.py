@@ -60,3 +60,30 @@ def reorder_pinned(items, pinned, source, target):
     pinned.insert(destination, pin)
     items.insert(target, items.pop(source))
     return True
+
+
+def pin_slot(items, pinned, x, origin_x, icon):
+    """Return the insertion position in the fixed section for a Dock x coordinate."""
+    slot = 0
+    for item in items:
+        if item.get("pin") not in pinned:
+            break
+        if x < origin_x + item["x"] + icon / 2:
+            break
+        slot += 1
+    return max(1 if pinned and pinned[0] == "hyprmac:finder" else 0, slot)
+
+
+def insert_pin(pinned, pin, slot):
+    """Add or move an app without duplicates; Finder stays at the first slot."""
+    if not pin or pin == "hyprmac:finder":
+        return False
+    before = list(pinned)
+    old = pinned.index(pin) if pin in pinned else None
+    if old is not None:
+        pinned.pop(old)
+        if old < slot:
+            slot -= 1
+    floor = 1 if pinned and pinned[0] == "hyprmac:finder" else 0
+    pinned.insert(max(floor, min(slot, len(pinned))), pin)
+    return pinned != before

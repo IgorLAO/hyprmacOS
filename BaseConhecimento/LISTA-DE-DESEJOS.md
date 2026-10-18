@@ -111,7 +111,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | DCK-04 | P0 | Vidro translúcido com geometria e máscaras corretas da base | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
 | DCK-05 | P0 | Indicadores discretos dos aplicativos abertos | A_VERIFICAR | NAO_AVALIADO | — |
 | DCK-06 | P1 | Quique ao iniciar aplicativos | A_VERIFICAR | NAO_AVALIADO | — |
-| DCK-07 | P1 | Arrastar aplicativos para adicionar, reordenar e remover fixação | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
+| DCK-07 | P1 | Arrastar aplicativos para adicionar, reordenar e remover fixação | PARCIAL | TESTADO_LOCAL | E1; 2026-10-18: Spotlight Apps e `.desktop` da mesa para Dock, posição e persistência testadas; gesto físico e fidelidade Tahoe pendentes |
 | DCK-08 | P1 | Arrastar arquivos sobre aplicativos para abri-los | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
 | DCK-09 | P1 | Stacks de pastas/Downloads em leque, grade ou lista | A_VERIFICAR | NAO_AVALIADO | — |
 | DCK-10 | P1 | Menu contextual com opções específicas do aplicativo | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
@@ -146,7 +146,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | GLS-05 | P0 | Contraste adaptado ao conteúdo de fundo | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-06 | P1 | Transições suaves entre estados e materiais | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-07 | P1 | Sombras e profundidade coerentes | A_VERIFICAR | NAO_AVALIADO | — |
-| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | A_VERIFICAR | NAO_AVALIADO | — |
+| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | PARCIAL | NAO_AVALIADO | 2026-10-18: fundos dos menus GTK3/4, shell e Waybar ajustados para alfa 0,94 conforme referência enviada; captura com menu aberto e comparação Tahoe pendentes |
 | GLS-09 | P1 | Comportamento consistente em temas claro e escuro | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-10 | P1 | Estados hover, pressed, focus e disabled | A_VERIFICAR | NAO_AVALIADO | — |
 
@@ -203,9 +203,9 @@ Dock; não certificar um simples fade/scale como equivalente.
 
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
-| CCN-01 | P0 | Controles reais de Wi-Fi, Bluetooth, áudio, brilho e foco | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
+| CCN-01 | P0 | Controles reais de Wi-Fi, Bluetooth, áudio, brilho e foco | RELATADO_PARCIAL | TESTADO_LOCAL | E1; 2026-10-18: controle Start/Stop Recording incluído na Central e na categoria Screenshot; gravação real e aviso automático da barra exercitados. Clique físico no novo controle ainda pendente. |
 | CCN-02 | P1 | Layout personalizável por arrastar e soltar | PARCIAL | TESTADO_LOCAL | 2026-10-11: arrastar reorganiza, arrastar para fora remove, Control-clique muda o tamanho e oferece Add to Menu Bar, como no guia do Tahoe 26 (`tahoe26:validacao:ccn02-edicao`); os outros se realocam durante o arrasto e uma alça estica/encolhe (`tahoe26:validacao:ccn02-realocar-e-alca`). Pendentes: páginas de controles, arrasto físico |
-| CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-11: Add/Remove from Menu Bar no clique direito da galeria (shell/menubar_items.py, tests/test_menubar_items.py); arrastar ausente |
+| CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-18: `+` durante edição abre bandeja grande de cartões nativos com Add/Remove (shell/hyprmac-shell, shell/menubar_items.py); gravação e compartilhamento são avisos automáticos fora da bandeja. Teste local da galeria e de gravação real; arrastar cartões à barra ausente, compartilhamento não exercitado. |
 | CCN-04 | P1 | Subpainéis animados com navegação consistente | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
 | CCN-05 | P1 | Sliders com resposta imediata | PARCIAL | TESTADO_LOCAL | 2026-10-11: volume/microfone/brilho aplicam o valor mais novo durante o arrasto, um processo por vez e em ordem; volume tira o mudo (`tahoe26:validacao:ccn05-sliders`). Pendentes: latência DDC real, vidro do puxador ao arrastar (sem referência) |
 | CCN-06 | P1 | Controles de reprodução multimídia via MPRIS | IMPLEMENTADO | TESTADO_LOCAL | 2026-10-11: Now Playing mostrou mídia do navegador (título, pausa, anterior/próxima) via playerctl (`tahoe26:validacao:ccn06-mpris`). Pendentes: arte e origem quando o player não envia; comparação Tahoe |

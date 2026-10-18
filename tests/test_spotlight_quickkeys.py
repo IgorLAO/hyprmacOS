@@ -56,7 +56,7 @@ class QuickKeys(unittest.TestCase):
         self.assertEqual(qk.load("/nonexistent/qk.json"), {})
 
     def test_spotlight_uses_them(self):
-        shell = (ROOT / "shell" / "hyprmac-shell").read_text()
+        shell = (ROOT / "shell" / "spotlight_view.py").read_text()
         self.assertIn('"Add quick keys"', shell)
         self.assertIn("quickkeys.after_run(", shell)
         self.assertNotIn("tecla rápida", shell)            # interface em inglês

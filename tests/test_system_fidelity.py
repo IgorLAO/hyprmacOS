@@ -117,8 +117,9 @@ class ControlCenterWifiTests(unittest.TestCase):
 
 
 def spotlight_methods():
-    tree = ast.parse(SHELL.read_text())
-    spotlight = next(node for node in tree.body
+    view = SHELL.parent / "spotlight_view.py"
+    tree = ast.parse(view.read_text())
+    spotlight = next(node for node in ast.walk(tree)
                      if isinstance(node, ast.ClassDef) and node.name == "Spotlight")
     names = {"_activate", "_filter_of", "_pick_filter", "_search"}
     methods = [node for node in spotlight.body if isinstance(node, ast.FunctionDef)

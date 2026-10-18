@@ -10,6 +10,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Shell | `shell/hyprmac-shell`, `shell/style.css` | Dock, Central de Controle, Spotlight, notificações, widgets, menus e alternador de apps (Python/GTK3/LayerShell). |
 | Módulos do shell | `shell/hypr_events.py`, `shell/app_index.py`, `shell/spotlight_search.py`, `shell/spotlight_controls.py`, `shell/cocoa_entry.py` | Uma conexão de eventos Hyprland; índice de apps compartilhado; busca/cálculo do Spotlight sem GTK; desenho e animação dos controles em GTK3; edição de texto compartilhada entre as buscas do Spotlight, Central, Clipboard e Ajustes. |
 | Núcleo do Dock | `shell/dock_model.py`, `shell/dock_geometry.py`, `shell/dock_motion.py`, `shell/dock_drop.py` | Conteúdo/eventos, geometria, movimento e validação/abertura de documentos via AppInfo; sem GTK ou processos próprios. |
+| Views do shell | `shell/desktop_surface.py`, `shell/dock_widget.py`, `shell/session_overlays.py`, `shell/spotlight_view.py` | Papel de parede, widgets e ícones da mesa; desenho, gestos e menus do Dock; alternador de apps e Force Quit; view do Spotlight. Recebem serviços do processo principal por fábrica, sem conexão ou processo adicional. |
 | Janelas auxiliares | `shell/hyprmac-ajustes`, `shell/hyprmac-overview`, `shell/hyprmac-lock` | Ajustes (GTK3), Mission Control (GTK3/LayerShell) e bloqueio (GTK4/PAM/ext-session-lock-v1). |
 | Barra | `waybar/config.jsonc`, `waybar/style.css`, `waybar/scripts/` | Menus globais, extras e estado do aplicativo em foco. |
 | Integração | `scripts/`, `gtk/`, `kde/`, `ghostty/`, `wofi/` | Tema, captura, ações de janela, vidro, acessibilidade e integração com apps. |
@@ -44,14 +45,25 @@ módulos de menu executam `app-menu.py` uma vez por sinal; sem o shell, o script
 consulta a janela ativa diretamente. Não há um daemon adicional para os menus.
 
 O Dock recebe snapshots pelo shell e resolve aplicativos pelo `AppIndex` existente.
+`hyprmac-shell` cria a classe GTK em `dock_widget.create_dock_class` depois de
+inicializar os serviços compartilhados. A fábrica vincula callbacks explícitos
+para eventos, menus, aparência e compositor; a view não abre outro socket.
+`session_overlays.create_session_overlays` usa o mesmo padrão para o alternador
+de apps e Force Quit. `desktop_surface.create_desktop_classes` vincula os
+serviços compartilhados às views de papel de parede, widgets e ícones da mesa.
+`spotlight_view.create_spotlight_class` usa a busca de `spotlight_search.py` e
+os controles de `spotlight_controls.py` no mesmo processo.
 `dock_model` compõe as seções sem consultar o compositor; `dock_geometry` resolve
 layout e alvos de clique; `dock_motion` recebe tempo e o integrador `spring_step`
 compartilhado. A classe GTK coordena esses módulos e mantém desenho/material,
 miniaturas, menus, persistência e timers. Magnificação e drag usam as mesmas
 constantes visuais anteriores; o primeiro frame após repouso continua com passo zero.
-O widget é destino GTK de `text/uri-list`, sem drag source adicional. O drop fixa
-o AppInfo de destino antes de receber dados e sempre finaliza com `delete=False`;
-o helper entrega documentos ao launcher sem shell nem operações de cópia/movimento.
+O widget é destino GTK de `text/uri-list`. Spotlight Apps e lançadores `.desktop`
+da mesa são origens de arraste; arquivos `.desktop` externos também podem ser
+soltos na seção fixa do Dock. O drop fixa o AppInfo de destino antes de receber
+dados e sempre finaliza com `delete=False`; o helper entrega documentos ao
+launcher sem shell nem operações de cópia/movimento. `dock_model` calcula a
+posição de inserção e impede duplicatas dos apps fixados.
 Ctrl+clique e remoção de fixação por arraste usam o gesto de ponteiro existente.
 
 O Wi-Fi usa o mesmo `WifiMenu` no subpainel da Central e no extra da barra.

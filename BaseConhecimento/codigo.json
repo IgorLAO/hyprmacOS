@@ -276,7 +276,7 @@
         "theme",
         "window"
       ],
-      "sha256": "787ae3191baa2d4c90cf840741113dcca6a1add2cd5af30f42aa61e14cfadc16"
+      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
     },
     {
       "path": "gtk/palette3-light.css",
@@ -292,7 +292,7 @@
         "theme",
         "window"
       ],
-      "sha256": "e1d0af21c1c1c67343b9e83f8a411d4eab3e08b83631c879146eec890aa73a33"
+      "sha256": "82661f999824474462f21d5463a3b457d03eaae0ae2f1f7290a73c651da2b56e"
     },
     {
       "path": "gtk/palette3.css",
@@ -308,7 +308,7 @@
         "theme",
         "window"
       ],
-      "sha256": "787ae3191baa2d4c90cf840741113dcca6a1add2cd5af30f42aa61e14cfadc16"
+      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
     },
     {
       "path": "gtk/palette4-dark.css",
@@ -326,7 +326,7 @@
         "theme",
         "window"
       ],
-      "sha256": "b8158d06a4829636f240ca34dfa0549974ede8430ccb03cad2125a0638e6cc06"
+      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
     },
     {
       "path": "gtk/palette4-light.css",
@@ -344,7 +344,7 @@
         "theme",
         "window"
       ],
-      "sha256": "6390c054d3c21bfcf54bc5cfe95397f13436db036a57ff60ee3eed281cf6de0e"
+      "sha256": "88ae8505debdb5adba63509f5388ce3809b9fa34e2041b2777a08d5f82423f9d"
     },
     {
       "path": "gtk/palette4.css",
@@ -362,7 +362,7 @@
         "theme",
         "window"
       ],
-      "sha256": "b8158d06a4829636f240ca34dfa0549974ede8430ccb03cad2125a0638e6cc06"
+      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
     },
     {
       "path": "hypr/hyprmac.lua",
@@ -1196,12 +1196,104 @@
       "sha256": "de16539f66868eda714ab3eafc36a54bf2ad3884826983e2b1cb3333e8672ed4"
     },
     {
+      "path": "shell/desktop_surface.py",
+      "language": "python",
+      "bytes": 61911,
+      "lines": 1275,
+      "summary": "\"\"\"Wallpaper, desktop widgets and desktop icons in the shared shell process.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "create_desktop_classes",
+        "Wallpaper",
+        "__init__",
+        "_gnome_source",
+        "_xml_first_file",
+        "reload",
+        "_bar_contrast",
+        "_load",
+        "_draw",
+        "weather_icon",
+        "fetch_json",
+        "locate",
+        "WeatherWidget",
+        "refresh",
+        "_fetch",
+        "_apply",
+        "ShortcutsWidget",
+        "PhotoWidget",
+        "_candidates",
+        "next_photo",
+        "ClockWidget",
+        "_escuro",
+        "MonthWidget",
+        "BatteryWidget",
+        "_destroy",
+        "_refresh",
+        "read",
+        "call",
+        "_received",
+        "DesktopWidgets",
+        "set_style",
+        "_save",
+        "_build",
+        "free",
+        "_wrap",
+        "_drop_widget",
+        "add",
+        "remove",
+        "resize",
+        "_desk_click",
+        "item",
+        "edit",
+        "done",
+        "_event",
+        "_update_dim",
+        "_set_opacity",
+        "step",
+        "DesktopIcons",
+        "_items",
+        "_cell",
+        "_deselect",
+        "_select",
+        "_open",
+        "_click",
+        "WidgetGallery",
+        "show"
+      ],
+      "imports": [
+        "json",
+        "math",
+        "os",
+        "random",
+        "subprocess",
+        "sys",
+        "threading",
+        "time",
+        "urllib.parse",
+        "urllib.request",
+        "cairo",
+        "gi",
+        "gi.repository",
+        "xml.etree.ElementTree",
+        "hashlib",
+        "calendar"
+      ],
+      "tags": [
+        "shell",
+        "lock",
+        "menu",
+        "theme",
+        "window"
+      ],
+      "sha256": "4e38bd80cc035f9e85734712175d3a1f23452cb0dbe4bffa0d3bced3dbfed63e"
+    },
+    {
       "path": "shell/dock_drop.py",
       "language": "python",
-      "bytes": 1891,
-      "lines": 47,
-      "summary": "\"\"\"Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.\"\"\" def supports_documents(info):",
+      "bytes": 2524,
+      "lines": 64,
+      "summary": "\"\"\"Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.\"\"\" def desktop_file_from_uris(uris, new_file):",
       "symbols": [
+        "desktop_file_from_uris",
         "supports_documents",
         "open_documents"
       ],
@@ -1214,7 +1306,7 @@
         "shell",
         "dock"
       ],
-      "sha256": "217379dee06f809e558fa08bc86ab5377bd5937e597e78ec87b3dd09194b24f3"
+      "sha256": "b56d692dbe54ecd693e259ac36cd99a99ee2067dbf5accfb620627c952d5994b"
     },
     {
       "path": "shell/dock_geometry.py",
@@ -1240,14 +1332,16 @@
     {
       "path": "shell/dock_model.py",
       "language": "python",
-      "bytes": 2915,
-      "lines": 62,
+      "bytes": 3814,
+      "lines": 89,
       "summary": "\"\"\"Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.\"\"\" REFRESH_EVENTS = frozenset((",
       "symbols": [
         "needs_refresh",
         "build_items",
         "reorder_pinned",
-        "movable"
+        "movable",
+        "pin_slot",
+        "insert_pin"
       ],
       "imports": [],
       "tags": [
@@ -1255,7 +1349,7 @@
         "dock",
         "window"
       ],
-      "sha256": "a6086d310dce44632b42c4b2bc53fcdfe1007e4c13df9ba17b8b61d63ce72468"
+      "sha256": "188a44fed3ccf8e5d13a787c6772f0e3b8b9b5fb9161f0cf93927bb3cd2f3a52"
     },
     {
       "path": "shell/dock_motion.py",
@@ -1281,6 +1375,124 @@
         "lock"
       ],
       "sha256": "1aa9c6ebed79e7f1e209027cb35bded02420c7997874d8c818c591c7b57f8a23"
+    },
+    {
+      "path": "shell/dock_widget.py",
+      "language": "python",
+      "bytes": 66456,
+      "lines": 1326,
+      "summary": "\"\"\"GTK view for the Dock. The shell supplies its shared UI and compositor services.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "desktop_id",
+        "info_for_command",
+        "app_info",
+        "create_dock_class",
+        "Dock",
+        "__init__",
+        "_load",
+        "_save",
+        "_key_of_class",
+        "_pixbuf",
+        "_capture_thumb",
+        "work",
+        "done",
+        "refresh",
+        "_layout",
+        "_update_input_region",
+        "_schedule_refresh",
+        "_event",
+        "_minimize_request",
+        "_trash_full",
+        "_poll_trash",
+        "_retheme",
+        "_dock_rect",
+        "_stop_motion_frames",
+        "_queue_motion_frame",
+        "_draw",
+        "_draw_minimized",
+        "_draw_icon",
+        "_draw_badge",
+        "_draw_download_glyph",
+        "_label_style",
+        "_draw_label",
+        "_index_at",
+        "_motion",
+        "_leave",
+        "_press",
+        "_removable",
+        "_outside_for_removal",
+        "_drag_motion",
+        "_track_drag_position",
+        "_release",
+        "focus_keyboard",
+        "_end_keyboard",
+        "_kb_move",
+        "_key",
+        "_document_app_at",
+        "_document_drag_motion",
+        "_document_drag_leave",
+        "_document_drop",
+        "_document_received",
+        "_launch",
+        "_activate",
+        "_focus_window",
+        "_dock_layer",
+        "_genie_rect",
+        "_genie",
+        "minimize",
+        "_restore_minimized",
+        "_show_all_windows",
+        "_toggle_pin",
+        "_hide_app",
+        "_quit_app",
+        "_menu",
+        "item",
+        "closed",
+        "_toggle_magnification",
+        "_set_minimize_effect",
+        "_save_shell_conf",
+        "_desktop_file",
+        "_login_path",
+        "_is_login_item",
+        "_toggle_login_item",
+        "_show_in_finder",
+        "toggle_autohide",
+        "_apply_autohide",
+        "_cancel_hide",
+        "_reveal",
+        "_conceal",
+        "_set_offset",
+        "_slide_to",
+        "step"
+      ],
+      "imports": [
+        "json",
+        "math",
+        "os",
+        "shutil",
+        "subprocess",
+        "time",
+        "cairo",
+        "gi",
+        "gi.repository",
+        "dock_geometry",
+        "dock_model",
+        "dock_motion",
+        "dock_drop",
+        "glass_motion"
+      ],
+      "tags": [
+        "shell",
+        "dock",
+        "spotlight",
+        "notification",
+        "lock",
+        "menu",
+        "glass",
+        "theme",
+        "window"
+      ],
+      "sha256": "eae669a6d5637eb98b90b4c28183944c22621c5a53c5f0db864d35d081eede24"
     },
     {
       "path": "shell/glass_motion.py",
@@ -1772,15 +1984,23 @@
     {
       "path": "shell/hyprmac-shell",
       "language": "python",
-      "bytes": 425302,
-      "lines": 9823,
+      "bytes": 266430,
+      "lines": 6278,
       "summary": "\"\"\"hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell).",
       "symbols": [
         "load_config",
         "G",
         "spawn",
+        "volume_argv",
+        "LatestCommand",
+        "__init__",
+        "set",
+        "_next",
         "run",
         "open_settings",
+        "run_arg_action",
+        "spot_shift",
+        "ui_sound",
         "in_thread",
         "rounded_rect",
         "paint_cover",
@@ -1800,68 +2020,14 @@
         "place",
         "step",
         "stop_emerge",
-        "spring_step",
+        "set_margins",
         "pointer_origin",
         "register_panel",
         "close_other_panels",
         "gdk_monitors",
         "bar_text_mode",
         "set_bar_text",
-        "Wallpaper",
-        "__init__",
-        "_gnome_source",
-        "_xml_first_file",
-        "reload",
-        "_bar_contrast",
-        "_load",
-        "_draw",
         "is_dark",
-        "weather_icon",
-        "fetch_json",
-        "locate",
-        "WeatherWidget",
-        "refresh",
-        "_fetch",
-        "_apply",
-        "ShortcutsWidget",
-        "PhotoWidget",
-        "_candidates",
-        "next_photo",
-        "ClockWidget",
-        "_escuro",
-        "MonthWidget",
-        "BatteryWidget",
-        "_destroy",
-        "_refresh",
-        "read",
-        "call",
-        "_received",
-        "DesktopWidgets",
-        "set_style",
-        "_save",
-        "_build",
-        "free",
-        "_wrap",
-        "_drop_widget",
-        "add",
-        "remove",
-        "resize",
-        "_desk_click",
-        "item",
-        "edit",
-        "done",
-        "_event",
-        "_update_dim",
-        "_set_opacity",
-        "DesktopIcons",
-        "_items",
-        "_cell",
-        "_deselect",
-        "_select",
-        "_open",
-        "_click",
-        "WidgetGallery",
-        "show",
         "GlassButton",
         "_reset_press",
         "_press_state",
@@ -1881,23 +2047,70 @@
         "draw_sf",
         "SFIcon",
         "set_name_",
+        "_draw",
         "SliderTile",
         "set_badge",
         "set_available",
         "set_value",
         "NowPlaying",
+        "refresh",
+        "_fetch",
+        "_apply",
         "_set_art",
         "_load_art",
         "_art_loaded",
         "_transition_art",
         "_draw_art",
         "paint",
+        "cc_pack",
+        "cc_reorder",
+        "cc_fit_size",
         "Toggle",
         "widget",
-        "set",
-        "_sync"
+        "_sync",
+        "Single",
+        "ControlCenter",
+        "toggle",
+        "edit",
+        "show",
+        "hide",
+        "_place",
+        "_notify_bar",
+        "_on_key",
+        "preview",
+        "done",
+        "open_detail",
+        "_show_detail",
+        "close_detail",
+        "_prune_details",
+        "_launch",
+        "_load_layout",
+        "_save_layout",
+        "_build_grid",
+        "_wrapper",
+        "_build_gallery_shell",
+        "_preview",
+        "_build_gallery",
+        "_gallery_bar_menu",
+        "_pick_category",
+        "_drop_control",
+        "_filter_gallery",
+        "_gallery_add",
+        "_place_gallery",
+        "_clip_to",
+        "_animate_height",
+        "_set_editing",
+        "_sync_mic",
+        "_change",
+        "_remove",
+        "_add",
+        "_reset_layout",
+        "_edit_press",
+        "_edit_motion",
+        "_apply_preview"
       ],
       "imports": [
+        "datetime",
         "json",
         "accent_palette",
         "math",
@@ -1917,17 +2130,22 @@
         "gi.repository",
         "app_index",
         "dock_geometry",
+        "glass_motion",
         "dock_model",
         "dock_motion",
+        "dock_widget",
+        "session_overlays",
+        "desktop_surface",
+        "spotlight_view",
         "dock_drop",
         "hypr_events",
+        "menubar_items",
         "spotlight_controls",
+        "spotlight_quickkeys",
         "cocoa_entry",
         "spotlight_search",
-        "xml.etree.ElementTree",
-        "hashlib",
-        "calendar",
-        "importlib.machinery"
+        "app_factory_reminders",
+        "calendar"
       ],
       "tags": [
         "shell",
@@ -1944,7 +2162,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "c09db9fb1d2a030441cc4c6034957e5ffd0d89cc8c66948f89b42830210930b1"
+      "sha256": "b11256bf93ebaf47774d41500a585b72d6ab439794fbacd81c5dc44faa977510"
     },
     {
       "path": "shell/lock.css",
@@ -1981,6 +2199,52 @@
         "window"
       ],
       "sha256": "bfe7b2bab8e6782a01f709149a41ccce8814442d9b22becb0353cd9653dc5377"
+    },
+    {
+      "path": "shell/session_overlays.py",
+      "language": "python",
+      "bytes": 15361,
+      "lines": 346,
+      "summary": "\"\"\"Force Quit and app switcher overlays for the shell session.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "create_session_overlays",
+        "ForceQuit",
+        "__init__",
+        "toggle",
+        "_apps",
+        "_build",
+        "_confirm",
+        "AppSwitcher",
+        "next",
+        "prev",
+        "_step",
+        "_collect",
+        "_draw_icon",
+        "_highlight",
+        "_hover",
+        "_pick",
+        "_show",
+        "_check_alt",
+        "activate",
+        "close",
+        "_key_press",
+        "_quit_selected",
+        "_hide_selected",
+        "_key_release"
+      ],
+      "imports": [
+        "os",
+        "signal",
+        "gi",
+        "gi.repository",
+        "app_index"
+      ],
+      "tags": [
+        "shell",
+        "dock",
+        "window"
+      ],
+      "sha256": "88b3950c9dddf909868ceba7c5deb7ad3a6724b3c0b2160d88678cfce6aa5021"
     },
     {
       "path": "shell/spotlight_controls.py",
@@ -2048,10 +2312,113 @@
       "sha256": "2c212712261a5a19773f560c7cca62a539545fdf49f4a178f2101d075c0a2b1e"
     },
     {
+      "path": "shell/spotlight_view.py",
+      "language": "python",
+      "bytes": 78564,
+      "lines": 1566,
+      "summary": "\"\"\"Spotlight GTK view and transitions, using the shared search/control modules.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "create_spotlight_class",
+        "_spot_items_module",
+        "Spotlight",
+        "__init__",
+        "_draw_a",
+        "command",
+        "_norm",
+        "show",
+        "_stretch_in",
+        "frame",
+        "hide",
+        "preview",
+        "escolhe",
+        "_hover_mode",
+        "_set_mode",
+        "_place_ctl",
+        "_win_motion",
+        "_pointer_near",
+        "recolhe",
+        "_pick_mode",
+        "_load",
+        "_load_apps",
+        "_load_files",
+        "_file_entry",
+        "_files_ready",
+        "batch",
+        "_file_pb",
+        "_arg_action",
+        "_action_entry",
+        "_search_soon",
+        "_search_now",
+        "_search",
+        "_filter_of",
+        "_folder_items",
+        "_set_scope",
+        "_pick_filter",
+        "_files_view",
+        "_fill",
+        "_grow_grid",
+        "_fade_grid",
+        "_file_app",
+        "_build_grid",
+        "_cell",
+        "_build_apps_grid",
+        "_cats_scroll",
+        "_app_cell",
+        "_toggle_app_filter",
+        "_toggle_filter",
+        "_move_cell",
+        "_icon",
+        "_row",
+        "_quick_key_widget",
+        "edit",
+        "done",
+        "_qk_save",
+        "_tab_hints",
+        "_selected",
+        "_set_calc_sel",
+        "_update_hint",
+        "_on_key",
+        "_activate",
+        "_enter_app_scope",
+        "_queries",
+        "_remember_query",
+        "_history_step",
+        "_run"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "re",
+        "subprocess",
+        "sys",
+        "time",
+        "urllib.parse",
+        "cairo",
+        "gi",
+        "gi.repository",
+        "cocoa_entry",
+        "spotlight_controls",
+        "spotlight_quickkeys",
+        "spotlight_search",
+        "importlib.machinery"
+      ],
+      "tags": [
+        "shell",
+        "dock",
+        "spotlight",
+        "lock",
+        "menu",
+        "glass",
+        "theme",
+        "window"
+      ],
+      "sha256": "43ea3eb71053d9559a9d71f25308d8a4e68fbb38f97a7850826e16fb691a3f6c"
+    },
+    {
       "path": "shell/style-light.css",
       "language": "css",
-      "bytes": 16829,
-      "lines": 384,
+      "bytes": 19273,
+      "lines": 441,
       "summary": "keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */ @define-color shell_focus #3b99fc;",
       "symbols": [
         ".weather",
@@ -2087,6 +2454,8 @@
         ".xmenu button.xm-item:hover .xm-dot.on",
         ".xmenu switch",
         ".xmenu switch:checked",
+        ".xmenu switch:disabled",
+        ".xmenu switch slider",
         ".xmenu .xm-slider-icon",
         ".xmenu scale trough",
         ".xmenu scale highlight",
@@ -2114,8 +2483,10 @@
         ".hyprmac label.cal-today",
         ".cc .edit-pill",
         ".cc .edit-pill:hover",
+        ".cc .edit-pill:active",
         ".cc label",
         ".cc .circle.on:hover",
+        ".cc .circle.on:active",
         ".cc .dot",
         ".cc .dot.soft",
         ".cc .slider-icon",
@@ -2169,11 +2540,7 @@
         ".clip-foot",
         ".clip-empty",
         ".ccg-main .ccg-empty",
-        ".hyprmac-forcequit .fq-frame",
-        ".hyprmac-forcequit .fq-hint",
-        ".spot-panel",
-        ".hyprmac .spot-glass",
-        ".hyprmac .spot-mode"
+        ".hyprmac-forcequit .fq-frame"
       ],
       "imports": [],
       "tags": [
@@ -2185,13 +2552,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "84e3792696ef278e7de1c8b395f3b1355c1080aa0d42b1c7bfd3161eaf3c3a6d"
+      "sha256": "e37a5972ec6d04e976c51a4332e4cafeed4cc1e1a5e62d5b592c4a0a2de5e3aa"
     },
     {
       "path": "shell/style.css",
       "language": "css",
-      "bytes": 55937,
-      "lines": 1680,
+      "bytes": 58695,
+      "lines": 1720,
       "summary": "hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe). O desfoque de fundo vem do Hyprland (layer rules \"hyprmac-widgets\" e \"hyprmac-cc\");",
       "symbols": [
         "window.hyprmac",
@@ -2329,7 +2696,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "34b51e45c87548556c787bf3a7b5441b320301b9ebd34bbddf582bfe0588bd19"
+      "sha256": "3538c9b6addae685a8499c07c75ebd938b5b0bd477247cb4865b92ef4186fcb5"
     },
     {
       "path": "shell/vidro-camadas-claro.css",
@@ -2488,8 +2855,8 @@
     {
       "path": "tests/test_cocoa_entry.py",
       "language": "python",
-      "bytes": 8659,
-      "lines": 169,
+      "bytes": 10129,
+      "lines": 192,
       "summary": "\"\"\"Edição no Gtk.Entry real; não altera atalhos de aplicações externas.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell'))",
       "symbols": [
         "CocoaEntryTests",
@@ -2501,6 +2868,7 @@
         "test_word_selection_reverses_without_losing_anchor",
         "test_line_document_and_paragraph_selection",
         "test_read_only_and_mixed_modifiers_do_not_edit",
+        "test_option_paragraph_and_option_control_word_navigation",
         "ResultNavigationTests",
         "setUpClass",
         "test_modified_arrows_reach_entry_plain_arrows_still_navigate"
@@ -2518,25 +2886,33 @@
         "spotlight",
         "window"
       ],
-      "sha256": "db216a73312161149685a218ee4e24fd410a6abdb8fbde87106f053c3045582b"
+      "sha256": "4d0ac413f4cfad0b4d0f7457ed18a9da310e8c190a29a8d751459d27f98d43d5"
     },
     {
       "path": "tests/test_dock.py",
       "language": "python",
-      "bytes": 25858,
-      "lines": 503,
+      "bytes": 34534,
+      "lines": 655,
       "summary": "\"\"\"Regressão do núcleo do Dock e dos contratos entre núcleo, GTK e eventos.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
       "symbols": [
         "client",
         "pinned",
         "DockModelTests",
+        "test_external_pin_uses_fixed_section_and_does_not_duplicate",
+        "test_launcher_drop_requires_one_existing_local_desktop_file",
         "test_sections_focus_order_and_minimized_keep_running_indicator",
         "test_empty_snapshot_has_one_separator_and_tail",
         "test_reorder_preserves_finder_and_moves_existing_objects_both_ways",
         "DockGeometryTests",
+        "test_magnified_layout_preserves_gaps_and_center_with_separators",
+        "test_running_dot_remains_discreet_at_all_icon_sizes",
         "test_metrics_and_layout_at_supported_icon_sizes",
         "test_hit_testing_uses_visible_geometry_after_magnification",
         "DockMotionTests",
+        "test_pointer_sweep_is_continuous_across_slots_and_separator",
+        "test_hold_preserves_curve_anchor_and_envelope_stays_bounded",
+        "test_reorder_rebases_growth_shift_without_center_jump",
+        "test_shifted_neighbors_keep_spacing_while_springing_into_vacancy",
         "test_magnification_curve_hold_reduced_motion_and_clock_reset",
         "test_magnification_shape_tracks_pointer_and_envelope_springs",
         "test_reordering_spring_drag_and_reduced_motion",
@@ -2549,9 +2925,11 @@
         "DockIntegrationTests",
         "setUp",
         "gesture_dock",
+        "test_release_between_draws_starts_return_at_actual_pointer",
         "drop_area",
         "test_document_destination_filters_special_icons_and_internal_drag",
         "test_document_drop_binds_app_and_receiver_reports_result_never_delete",
+        "test_desktop_launcher_drop_pins_before_recent_items_and_persists",
         "test_drop_receiver_invalid_selection_and_failure_reject",
         "test_document_motion_advertises_copy_only_over_supported_app",
         "test_control_click_opens_menu_and_release_never_activates",
@@ -2578,16 +2956,18 @@
         "dock_geometry",
         "dock_model",
         "dock_motion",
-        "dock_drop"
+        "dock_drop",
+        "glass_motion"
       ],
       "tags": [
         "tests",
         "dock",
         "lock",
         "menu",
+        "glass",
         "window"
       ],
-      "sha256": "72d05b123701a41c0b6effea4d47970ac5dec56e8960df9386674eac7e129061"
+      "sha256": "34b35c8dd36aefd7c96ee8c299c6d279f7d22a45ed24209180ef57b807a89ddd"
     },
     {
       "path": "tests/test_dock_recipe.py",
@@ -2691,6 +3071,51 @@
       "sha256": "c1f4994ab71b44b129a415b92d8618bd477476d98f5df3eb1399fbc19aa5fe97"
     },
     {
+      "path": "tests/test_keyboard_focus.py",
+      "language": "python",
+      "bytes": 9183,
+      "lines": 207,
+      "summary": "\"\"\"MIC-04: foco global pelo teclado (HIG ▸ Keyboards). ⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (scripts/janela next-any/prev-any);",
+      "symbols": [
+        "load_janela",
+        "load_dock",
+        "press",
+        "WindowCycle",
+        "setUp",
+        "test_next_and_previous_follow_opening_order_and_wrap",
+        "test_without_active_window_focuses_first_or_last",
+        "DockKeyboard",
+        "test_control_f3_highlights_first_icon_and_takes_keyboard",
+        "test_arrows_skip_separator_and_stop_at_ends",
+        "test_return_opens_item_and_releases_keyboard",
+        "test_escape_releases_without_opening",
+        "test_preview_highlights_without_keyboard",
+        "CommandTab",
+        "load",
+        "test_super_tab_enters_and_leaves_switcher_submap",
+        "test_alt_tab_keeps_working_without_submap",
+        "test_quick_tap_checks_the_right_modifier",
+        "MacShortcuts",
+        "test_capture_keys_replace_workspace_moves",
+        "test_command_tab_and_submap"
+      ],
+      "imports": [
+        "ast",
+        "importlib.machinery",
+        "importlib.util",
+        "pathlib",
+        "types",
+        "unittest.mock",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "dock",
+        "window"
+      ],
+      "sha256": "15a69718c4f16b3641324ed136b746f8fd675c46daed883bd385382c990fdca1"
+    },
+    {
       "path": "tests/test_menu_extras.py",
       "language": "python",
       "bytes": 2214,
@@ -2717,6 +3142,35 @@
         "menu"
       ],
       "sha256": "e8308d6d81fdebdc3f7c4f1ea76f49bf9d4918bb825108e41a92653962f28f83"
+    },
+    {
+      "path": "tests/test_reduce_motion_shell.py",
+      "language": "python",
+      "bytes": 3690,
+      "lines": 89,
+      "summary": "\"\"\"MIC-14: com Reduce Motion, o shell não agenda animações elásticas nem de deslocamento. Evidência Apple (WWDC25 219, Meet Liquid Glass): \"Reduced Motion decreases the",
+      "symbols": [
+        "load",
+        "spotlight",
+        "media",
+        "ReducedMotionShell",
+        "test_spotlight_entrance_has_no_stretch",
+        "test_spotlight_grid_does_not_grow_but_still_fades",
+        "test_media_layout_jumps_to_final_rects",
+        "test_normal_motion_still_animates"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "unittest.mock",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "glass"
+      ],
+      "sha256": "ff1575d5a7c483eb5e34559043df7c5bb0d60edb7e472195c7dab88073e1f358"
     },
     {
       "path": "tests/test_shell_events.py",
@@ -2786,6 +3240,38 @@
       "sha256": "5da2e2688002aa5219ec18b6c26c5fbd55ac0d0ce0c3bb6bc008843d435896b2"
     },
     {
+      "path": "tests/test_spotlight_arg_actions.py",
+      "language": "python",
+      "bytes": 3217,
+      "lines": 75,
+      "summary": "\"\"\"SPT-03: ações que rodam pelo Spotlight sem abrir o app (\"ar buy milk\" → lembrete). Mac User Guide (Tahoe 26) ▸ Take actions and shortcuts in Spotlight: digitar a quick key",
+      "symbols": [
+        "load",
+        "ArgActions",
+        "spotlight",
+        "test_quick_key_with_text_becomes_ready_result",
+        "test_custom_quick_key_is_used",
+        "test_reminder_is_saved_without_opening_the_app"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "types",
+        "unittest.mock",
+        "unittest",
+        "spotlight_search",
+        "app_factory_reminders"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "menu"
+      ],
+      "sha256": "f757918f3c43153b9325ab0dc84732be834e9dd69b6b68311295e88e7878eb11"
+    },
+    {
       "path": "tests/test_spotlight_launcher.py",
       "language": "python",
       "bytes": 2454,
@@ -2812,6 +3298,76 @@
       "sha256": "a9d99b17f7de4c95ea5aafbff443a1bc30c6051c0f3d59b2bf530e0f4876167e"
     },
     {
+      "path": "tests/test_spotlight_mode_hover.py",
+      "language": "python",
+      "bytes": 4623,
+      "lines": 120,
+      "summary": "\"\"\"MIC-09: o hover nos botões de modo do Spotlight antecipa o nome e o atalho no campo. Referência Tahoe 26: referencias/telas/spotlight-controles-2…6 — ponteiro sobre",
+      "symbols": [
+        "method",
+        "FakeEntry",
+        "__init__",
+        "get_text",
+        "set_placeholder_text",
+        "FakeLabel",
+        "set_text",
+        "spotlight",
+        "ModeHover",
+        "test_hover_shows_mode_name_and_shortcut",
+        "test_leaving_restores_current_mode",
+        "test_typed_text_or_filter_is_left_alone",
+        "test_controls_report_hover_changes",
+        "NarrowScreen",
+        "setUp",
+        "test_wide_screen_keeps_capsule_centered",
+        "test_narrow_screen_moves_just_enough"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "sys",
+        "unittest.mock",
+        "unittest",
+        "spotlight_search"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "glass"
+      ],
+      "sha256": "6e0fe57554116e0369931ce7028e3ae4ec530ff666f8bae108e3d36ed2c1149e"
+    },
+    {
+      "path": "tests/test_spotlight_quickkeys.py",
+      "language": "python",
+      "bytes": 3020,
+      "lines": 66,
+      "summary": "\"\"\"SPT-07: quick keys do Spotlight (Mac User Guide ▸ Take actions and shortcuts in Spotlight). \"Click 'Add quick keys' next to an action, then enter the keyboard shortcut\";",
+      "symbols": [
+        "QuickKeys",
+        "test_defaults_are_suggestions_and_overrides_win",
+        "test_assign_normalizes_and_moves_taken_key",
+        "test_suggestion_after_first_run_only",
+        "test_suggestion_avoids_taken_keys",
+        "test_save_and_load_roundtrip",
+        "test_spotlight_uses_them"
+      ],
+      "imports": [
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "spotlight_quickkeys"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "lock",
+        "window"
+      ],
+      "sha256": "9930b5dd91225a7621f3c9ef69ff5c9bb703ab85c42932effc703e965cbec503"
+    },
+    {
       "path": "tests/test_spotlight_search.py",
       "language": "python",
       "bytes": 1181,
@@ -2835,10 +3391,53 @@
       "sha256": "ff364ebd64ea30be4693d69717eba12d1351f6f2d7b89a7e92fa4c278049a3bd"
     },
     {
+      "path": "tests/test_spotlight_selector.py",
+      "language": "python",
+      "bytes": 9455,
+      "lines": 188,
+      "summary": "\"\"\"Seletor e busca em app, sem GTK nem display.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "methods",
+        "SelectorTests",
+        "test_only_supported_filters_in_stable_order",
+        "test_prefix_and_aliases",
+        "test_normal_queries_paths_and_calculations_are_not_selectors",
+        "test_result_becomes_supported_token",
+        "test_real_search_renders_selector_without_other_sources",
+        "test_return_uses_selected_filter_or_current_prefix",
+        "test_click_applies_token_without_launching_or_hiding",
+        "AppScopeTests",
+        "app",
+        "test_special_apps_and_icon_identity",
+        "test_files_and_settings_do_not_mix_sources",
+        "test_windows_use_exact_identity_and_ignore_hidden_or_unmapped",
+        "test_tab_enters_first_app_and_empty_backspace_removes_scope",
+        "test_real_app_search_uses_clients_only_for_window_target",
+        "test_enter_scope_loads_only_selected_desktop_actions",
+        "test_run_window_focuses_address_and_app_action_uses_gio"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "sys",
+        "types",
+        "unittest",
+        "unittest.mock",
+        "spotlight_search"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "theme",
+        "window"
+      ],
+      "sha256": "d00d5fd7bef1e384240a11fb2548cb831781ab39e5e47b305c857bce73ed83d5"
+    },
+    {
       "path": "tests/test_system_fidelity.py",
       "language": "python",
-      "bytes": 10835,
-      "lines": 222,
+      "bytes": 10885,
+      "lines": 223,
       "summary": "\"\"\"Regressões funcionais dos subpainéis da Central, sem iniciar GTK.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
       "symbols": [
         "wifi_methods",
@@ -2881,7 +3480,41 @@
         "menu",
         "theme"
       ],
-      "sha256": "f44f3b0d4e4bd8db80745d712bba6329f9cd1aea01efbf189b4b7be93e1eceb2"
+      "sha256": "ca0acfb90afa878d90617feb0ff04176b9b9693f4eefff877d3b04375aa94fe6"
+    },
+    {
+      "path": "tests/test_volume_feedback.py",
+      "language": "python",
+      "bytes": 4186,
+      "lines": 103,
+      "summary": "\"\"\"MIC-12: \"Play feedback when volume is changed\" (Ajustes ▸ Som do macOS Tahoe 26). support.apple.com/guide/mac-help/mchlp2207/26: \"when you press one of the volume",
+      "symbols": [
+        "load",
+        "VolumeFeedback",
+        "test_volume_key_plays_feedback_by_default",
+        "test_shift_inverts_the_setting",
+        "test_mute_key_and_muted_output_stay_silent",
+        "test_key_repeat_does_not_stack_sounds",
+        "InterfaceSounds",
+        "ui_sound",
+        "test_plays_theme_sound_when_enabled",
+        "test_silent_when_disabled",
+        "test_empty_trash_and_screenshot_use_it"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "types",
+        "unittest.mock",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "dock",
+        "lock",
+        "theme"
+      ],
+      "sha256": "dc1e696baa31cb8bdf081ddc4846bc8b3d9b944dc9f6b0a88b472a85065afe6a"
     },
     {
       "path": "waybar/a11y.css",
@@ -3152,8 +3785,8 @@
     {
       "path": "waybar/style.css",
       "language": "css",
-      "bytes": 14368,
-      "lines": 490,
+      "bytes": 14443,
+      "lines": 493,
       "summary": "hyprmac — barra de menus inspirada no macOS Tahoe ",
       "symbols": [
         "*",
@@ -3229,7 +3862,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "283dc9ae70a2afd500dc5f42d24d68205a0360dd54eb48fc6a4ddef4da5cdd7c"
+      "sha256": "c104ce735664706c7648725b32a0d011e930597f043dbf27a74ec0b573591f53"
     },
     {
       "path": "waybar/theme.css",
@@ -3248,7 +3881,7 @@
     {
       "path": "waybar/themes/light.css",
       "language": "css",
-      "bytes": 1178,
+      "bytes": 1135,
       "lines": 44,
       "summary": "hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x)",
       "symbols": [
@@ -3267,7 +3900,7 @@
         "menu",
         "theme"
       ],
-      "sha256": "520e5f1fa59934d603bac6a909489c571c9ab363b9e5dcea45cbdc930106e21b"
+      "sha256": "de29c5fb9f67c2311ad36db9e95d75c877ef5a9e9bdcbc08a9a93bfce9d1008d"
     },
     {
       "path": "waybar/vidro.css",

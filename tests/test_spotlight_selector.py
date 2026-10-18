@@ -13,8 +13,8 @@ from spotlight_search import (spot_app_results, spot_app_scope, spot_filter_comm
 
 
 def methods(*names):
-    tree = ast.parse((ROOT / "shell/hyprmac-shell").read_text())
-    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Spotlight")
+    tree = ast.parse((ROOT / "shell/spotlight_view.py").read_text())
+    cls = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == "Spotlight")
     nodes = [n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name in names]
     gdk = SimpleNamespace(**{name: name for name in (
         "KEY_Escape", "KEY_BackSpace", "KEY_Tab", "KEY_Down", "KEY_Up", "KEY_Left",

@@ -34,7 +34,7 @@ class MenuBarItemsTests(unittest.TestCase):
         self.assertNotIn("#custom-vpn", self.css())
 
     def test_config_ausente_ou_corrompida(self):
-        self.assertEqual(mb.hidden(self.conf), set())
+        self.assertEqual(mb.hidden(self.conf), {"headphones", "sleep"})
         with open(os.path.join(self.conf, "barra.json"), "w") as fh:
             fh.write("{quebrado")
         self.assertEqual(mb.hidden(self.conf), set())

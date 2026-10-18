@@ -12,19 +12,21 @@ from unittest.mock import Mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell"))
 from dock_geometry import DockMetrics
-from dock_model import build_items, needs_refresh, reorder_pinned
+from dock_model import build_items, needs_refresh, reorder_pinned, pin_slot, insert_pin
 from dock_motion import DockMotion
-from dock_drop import open_documents, supports_documents
+from dock_drop import open_documents, supports_documents, desktop_file_from_uris
 from glass_motion import spring_step
 
 
 # Carrega os métodos reais sem inicializar GTK, D-Bus ou um segundo shell.
-source = Path(os.environ.get("HYPRMAC_DOCK_SOURCE", Path(__file__).resolve().parents[1] / "shell" / "hyprmac-shell"))
+source = Path(os.environ.get("HYPRMAC_DOCK_SOURCE", Path(__file__).resolve().parents[1] / "shell" / "dock_widget.py"))
 tree = ast.parse(source.read_text())
-nodes = [node for node in tree.body
-         if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name in ("Dock",)]
-namespace = dict(math=math, spring_step=spring_step, dock_items=build_items, dock_needs_refresh=needs_refresh,
-                 reorder_pinned=reorder_pinned, DOCK_SIDE=120,
+nodes = [node for node in ast.walk(tree)
+         if isinstance(node, ast.ClassDef) and node.name == "Dock"]
+namespace = dict(math=math, os=os, spring_step=spring_step, dock_items=build_items, dock_needs_refresh=needs_refresh,
+                 reorder_pinned=reorder_pinned, pin_slot=pin_slot, insert_pin=insert_pin, DOCK_SIDE=120,
+                 desktop_file_from_uris=desktop_file_from_uris,
+                 desktop_id=lambda info: (info.get_id() or "").removesuffix(".desktop"),
                  dock_supports_documents=supports_documents, dock_open_documents=open_documents)
 exec(compile(ast.Module(body=nodes, type_ignores=[]), str(source), "exec"), namespace)
 Dock = namespace["Dock"]
@@ -41,6 +43,32 @@ def pinned(*names):
 
 
 class DockModelTests(unittest.TestCase):
+    def test_external_pin_uses_fixed_section_and_does_not_duplicate(self):
+        items = pinned("hyprmac:finder", "one", "two")
+        DockMetrics.from_icon().layout(items)
+        pins = [item["pin"] for item in items]
+        self.assertEqual(pin_slot(items, pins, 120, 120, 36), 1)
+        self.assertEqual(pin_slot(items, pins, 10000, 120, 36), 3)
+        self.assertTrue(insert_pin(pins, "new", 1))
+        self.assertEqual(pins, ["hyprmac:finder", "new", "one", "two"])
+        self.assertTrue(insert_pin(pins, "two", 1))
+        self.assertEqual(pins, ["hyprmac:finder", "two", "new", "one"])
+        self.assertFalse(insert_pin(pins, "two", 1))
+        self.assertFalse(insert_pin(pins, "hyprmac:finder", 4))
+
+    def test_launcher_drop_requires_one_existing_local_desktop_file(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "app com espaço.desktop"
+            path.write_text("[Desktop Entry]\nType=Application\nName=App\nExec=true\n")
+            uri = path.as_uri()
+            new_file = lambda _value: SimpleNamespace(get_path=lambda: str(path))
+            self.assertEqual(desktop_file_from_uris([uri], new_file), str(path))
+            for values in ([], [uri, uri], ["https://example.org/app.desktop"],
+                           [uri + "?download=1"], ["file:///tmp/missing.desktop"]):
+                converter = new_file if values != ["file:///tmp/missing.desktop"] else \
+                    lambda _value: SimpleNamespace(get_path=lambda: "/tmp/missing.desktop")
+                self.assertIsNone(desktop_file_from_uris(values, converter))
+
     def test_sections_focus_order_and_minimized_keep_running_indicator(self):
         clients = [client("other", "a", 4), client("fixed", "b", 2),
                    client("recent", "c", 1, "special:minimized"),
@@ -384,6 +412,31 @@ class DockIntegrationTests(unittest.TestCase):
         dock._document_received(dock.area, context, x, 60, data, 0, 120)
         finish.assert_called_once_with(context, False, False, 120)
 
+    def test_desktop_launcher_drop_pins_before_recent_items_and_persists(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "new.desktop"
+            path.write_text("[Desktop Entry]\nType=Application\nName=New\nExec=true\n")
+            dock = self.gesture_dock()
+            dock.area = self.drop_area()
+            context = SimpleNamespace(get_actions=lambda: 2)
+            namespace["Gdk"].DragAction = type("DragAction", (int,), {"COPY": 2})
+            finish = Mock()
+            namespace["Gtk"] = SimpleNamespace(drag_finish=finish)
+            info = SimpleNamespace(get_id=lambda: "new.desktop")
+            namespace["Gio"] = SimpleNamespace(
+                File=SimpleNamespace(new_for_uri=lambda _uri: SimpleNamespace(get_path=lambda: str(path))),
+                DesktopAppInfo=SimpleNamespace(new_from_filename=lambda _path: info,
+                                               new=lambda _id: info))
+            x = 120 + dock.items[1]["x"] + 5
+            self.assertTrue(dock._document_drop(dock.area, context, x, 60, 100))
+            data = SimpleNamespace(get_target=lambda: SimpleNamespace(name=lambda: "text/uri-list"),
+                                   get_length=lambda: 30, get_uris=lambda: [path.as_uri()])
+            dock._document_received(dock.area, context, x, 60, data, 0, 110)
+            self.assertEqual(dock.pinned, ["hyprmac:finder", "new", "one", "two"])
+            dock._save.assert_called_once()
+            dock.refresh.assert_called_once()
+            finish.assert_called_once_with(context, True, False, 110)
+
     def test_drop_receiver_invalid_selection_and_failure_reject(self):
         dock = self.gesture_dock()
         dock.area = self.drop_area()
@@ -396,7 +449,7 @@ class DockIntegrationTests(unittest.TestCase):
         for target, length, uris in (("text/plain", 30, ["https://example.org/doc.pdf"]),
                                      ("text/uri-list", -1, None),
                                      ("text/uri-list", 30, ["https://example.org/doc.pdf"])):
-            dock._document_pending = (context, "one", info)
+            dock._document_pending = (context, "one", info, 1)
             data = SimpleNamespace(get_target=lambda: SimpleNamespace(name=lambda: target),
                                    get_length=lambda: length, get_uris=lambda: uris)
             dock._document_received(dock.area, context, 0, 0, data, 0, 100)

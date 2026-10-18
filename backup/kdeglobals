@@ -1,0 +1,12 @@
+[General]
+AccentColor=0,122,255
+font=SF Pro,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+menuFont=SF Pro,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+smallestReadableFont=SF Pro,8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+toolBarFont=SF Pro,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+
+[Icons]
+Theme=WhiteSur-dark
+
+[WM]
+activeFont=SF Pro,10,-1,5,700,0,0,0,0,0,0,0,0,0,0,1

@@ -29,10 +29,10 @@ KEYS = SimpleNamespace(KEY_Left=1, KEY_Right=2, KEY_Home=3, KEY_End=4, KEY_Retur
 
 
 def load_dock():
-    source = ROOT / "shell" / "hyprmac-shell"
+    source = ROOT / "shell" / "dock_widget.py"
     tree = ast.parse(source.read_text())
     wanted = {"focus_keyboard", "_end_keyboard", "_kb_move", "_key"}
-    dock = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Dock")
+    dock = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == "Dock")
     methods = [n for n in dock.body if isinstance(n, ast.FunctionDef) and n.name in wanted]
     klass = ast.ClassDef(name="Dock", bases=[], keywords=[], body=methods,
                          decorator_list=[], type_params=[])
@@ -126,9 +126,9 @@ class CommandTab(unittest.TestCase):
     """⌘Tab = Super+Tab: o seletor lembra o modificador e desvia ⌘Q/⌘H pelo submap."""
 
     def load(self):
-        source = ROOT / "shell" / "hyprmac-shell"
+        source = ROOT / "shell" / "session_overlays.py"
         tree = ast.parse(source.read_text())
-        cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "AppSwitcher")
+        cls = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == "AppSwitcher")
         methods = [n for n in cls.body if isinstance(n, ast.FunctionDef)
                    and n.name in ("next", "prev", "_step", "close", "_key_release", "_check_alt")]
         klass = ast.ClassDef(name="AppSwitcher", bases=[], keywords=[], body=methods,

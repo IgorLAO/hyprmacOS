@@ -29,7 +29,7 @@
 @define-color mac_tooltip     rgba(44, 44, 47, 0.97);
 /* menus: vidro "Menus" do kit (#5A5A5A/0.50 luminosity) — sem blend modes no
  * GTK3, fica um cinza-escuro translúcido; o Hyprland desfoca o popup por trás */
-@define-color mac_menu        rgba(40, 40, 44, 0.74);
+@define-color mac_menu        rgba(40, 40, 44, 0.94);
 @define-color mac_menu_rim    rgba(102, 102, 102, 0.40);   /* aro interno #666/0.40 */
 @define-color mac_menu_edge   rgba(0, 0, 0, 0.80);         /* filete externo #000/0.80 */
 @define-color mac_scroll      rgba(255, 255, 255, 0.55);   /* barra de rolagem do kit */

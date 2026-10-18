@@ -72,7 +72,7 @@
 @define-color mac_tooltip  rgba(250, 250, 252, 0.98);
 @define-color mac_sidebar  #f0f0f2;
 /* menus: vidro "Menus" do kit (#E6E6E6/0.55 luminosity) aproximado; o Hyprland desfoca o popup */
-@define-color mac_menu      rgba(236, 236, 238, 0.78);
+@define-color mac_menu      rgba(246, 246, 248, 0.94);
 @define-color mac_menu_rim  rgba(102, 102, 102, 0.15);
 @define-color mac_menu_edge rgba(0, 0, 0, 0.20);
 @define-color mac_scroll    rgba(0, 0, 0, 0.50);         /* barra de rolagem do kit */

@@ -1,0 +1,29 @@
+*{
+    width: 20px;
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-weight: 800;
+}
+
+window {
+    font-size: 15px;
+    background-color: black;
+    color: #fff;
+    width: 20px;
+}
+
+#entry{
+    padding-left: 10px;
+}
+
+#entry:selected{
+    background-color: white;
+}
+
+#text:selected{
+    color: black;
+}
+
+#input{
+    background-color: black;
+    color:#fff;
+}

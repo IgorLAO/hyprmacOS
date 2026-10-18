@@ -41,14 +41,18 @@
   // na Central de Controle). "hyprland/workspaces", "bluetooth" e "pulseaudio"
   // continuam configurados abaixo para quem quiser recolocar.
   "modules-right": [
+    "custom/add-controls",
     "custom/camera",
     "privacy",
     "tray",
+    "custom/recording",
     "mpris",
     "battery",
+    "custom/headphones",
     "custom/vpn",
     "custom/input",
     "custom/focus",
+    "custom/sleep",
     "network",
     "custom/spotlight",
     "custom/controlcenter",
@@ -477,6 +481,37 @@
     "smooth-scrolling-threshold": 1
   },
 
+  "custom/add-controls": {
+    "exec": "~/.config/waybar/scripts/add-controls.py",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 12,
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command bar-controls"
+  },
+
+  "custom/recording": {
+    "exec": "~/.config/waybar/scripts/recording.py",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 13,
+    "on-click": "~/Projects/hyprmac/scripts/gravacao stop"
+  },
+
+  "custom/headphones": {
+    "exec": "~/.config/waybar/scripts/headphones.py",
+    "return-type": "json",
+    "interval": 8,
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-sound"
+  },
+
+  "custom/sleep": {
+    "exec": "~/.config/waybar/scripts/sleep-focus.py",
+    "return-type": "json",
+    "interval": "once",
+    "signal": 14,
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-sleep"
+  },
+
   "battery": {
     "states": { "warning": 20, "critical": 10 },
     "format": "{capacity}%  {icon}",
@@ -541,7 +576,7 @@
   // Foco (lua): aparece só com Não Perturbe ligado; o hyprmac-shell cria o
   // arquivo e manda o sinal. Clique abre a Central de Controle.
   "custom/focus": {
-    "exec": "[ -e \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-dnd\" ] && echo '{\"text\":\"󰽥\",\"class\":\"on\",\"tooltip\":\"Do Not Disturb\"}' || echo '{\"text\":\"\",\"class\":\"off\"}'",
+    "exec": "[ -e \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-dnd\" ] && [ \"$(cat \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-dnd\")\" != sleep ] && echo '{\"text\":\"󰽥\",\"class\":\"on\",\"tooltip\":\"Do Not Disturb\"}' || echo '{\"text\":\"\",\"class\":\"off\"}'",
     "return-type": "json",
     "interval": "once",
     "signal": 10,
@@ -560,7 +595,7 @@
     "interval": "once",
     "signal": 8,
     "tooltip": false,
-    "on-click": "~/Projects/hyprmac/shell/hyprmac-shell toggle-cc",
+    "on-click": "~/.config/waybar/scripts/cc-click.sh",
     // botão direito: menu do hyprmac-shell com rótulos de estado ("Turn Wi‑Fi Off"…)
     "on-click-right": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command cc-menu"
   },

@@ -16,18 +16,20 @@ WANTED = {"Spotlight": {"_stretch_in", "_grow_grid", "_fade_grid"},
 
 
 def load(reduced):
-    tree = ast.parse(SOURCE.read_text())
     namespace = dict(reduce_motion=lambda: reduced, SPOT_W=640, SPOT_FIELD=52,
                      SPOT_PANEL_H=520, POP_MS=320, MEDIA_LAYOUTS=["compact", "wide"],
                      MEDIA_ANIM_MS=300, ease_in_out=lambda t: t,
                      time=__import__("time"))
     classes = {}
-    for node in tree.body:
-        if isinstance(node, ast.ClassDef) and node.name in WANTED:
+    for source in (SOURCE, SOURCE.parent / "spotlight_view.py"):
+        tree = ast.parse(source.read_text())
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef) or node.name not in WANTED:
+                continue
             methods = [n for n in node.body if isinstance(n, ast.FunctionDef) and n.name in WANTED[node.name]]
             klass = ast.ClassDef(name=node.name, bases=[], keywords=[], body=methods, decorator_list=[], type_params=[])
             module = ast.fix_missing_locations(ast.Module(body=[klass], type_ignores=[]))
-            exec(compile(module, str(SOURCE), "exec"), namespace)
+            exec(compile(module, str(source), "exec"), namespace)
             classes[node.name] = namespace[node.name]
     return classes
 

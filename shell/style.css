@@ -438,7 +438,7 @@ window.popup decoration {
 menu.hyprmac-menu,
 .hyprmac-menu menu {
   font-family: "SF Pro", "SF Pro Text", "SF Pro Display", "Inter Variable", "Inter", sans-serif;
-  background: rgba(30, 30, 34, 0.74);
+  background: rgba(30, 30, 34, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
   padding: 6px 5px 5px 5px;
@@ -561,7 +561,7 @@ menu.hyprmac-menu separator,
  * linhas de dispositivo com círculo de 26 (azul #0091FF = em uso), itens 24
  * com destaque #0069F9 raio 8, separador de 11. */
 .xmenu {
-  background-color: rgba(30, 30, 34, 0.74);
+  background-color: rgba(30, 30, 34, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 12px;
   padding: 6px 5px 5px 5px;
@@ -1179,6 +1179,35 @@ menu.hyprmac-menu separator,
   font-weight: 600;
   color: rgba(255, 255, 255, 0.45);
 }
+
+/* Galeria de controles configuráveis da barra: mesma bandeja e cartões clicáveis.
+ * Gravação e compartilhamento são avisos automáticos, não aparecem aqui. */
+.ccg-bar-heading { padding: 18px 18px 10px 18px; }
+.ccg-bar-heading-title { font-size: 19px; font-weight: 700; color: #ffffff; }
+.ccg-bar-heading-sub { font-size: 12px; color: rgba(255, 255, 255, 0.62); }
+.ccg-bar-section { padding-top: 12px; }
+.ccg-bar-card {
+  min-height: 142px;
+  padding: 12px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.ccg-bar-icon { font-size: 22px; color: #ffffff; }
+.ccg-bar-title { font-size: 13px; font-weight: 600; color: #ffffff; }
+.ccg-bar-detail { font-size: 11px; color: rgba(255, 255, 255, 0.68); }
+.cc button.ccg-bar-action {
+  min-height: 23px;
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: rgba(0, 145, 255, 0.23);
+  border: 1px solid rgba(0, 145, 255, 0.34);
+  color: #9ad8ff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.cc button.ccg-bar-action:hover { background: rgba(0, 145, 255, 0.36); }
+.cc button.ccg-bar-action:disabled { color: rgba(255, 255, 255, 0.5); }
 
 .ccg-foot {
   padding: 10px 14px 12px 18px;

@@ -38,7 +38,7 @@
 /* item aberto: na referência a cápsula clareia o fundo em ~+87 (plus-lighter
  * ~34%); sem blend modes no GTK3, branco a 34% chega perto */
 @define-color glass-press  rgba(255, 255, 255, 0.34);
-@define-color menu-bg      rgba(30, 30, 34, 0.74);
+@define-color menu-bg      rgba(30, 30, 34, 0.94);
 @define-color menu-border  rgba(255, 255, 255, 0.16);
 /* paleta do macOS 27 (Tahoe), variante escura */
 @define-color orange       #FF9230;
@@ -117,6 +117,9 @@ window#waybar {
 #tray,
 #battery,
 #bluetooth,
+#custom-recording,
+#custom-headphones,
+#custom-sleep,
 #custom-vpn,
 #network,
 #pulseaudio,
@@ -259,6 +262,9 @@ window#waybar {
   background-position: center;
   background-repeat: no-repeat;
   padding: 0 10px;
+  /* GTK3 interpola background-image entre os dois SVGs: o glifo da Central
+   * dissolve no alto-falante durante a formação da cápsula. */
+  transition: background-color 180ms ease-out, background-image 180ms ease-in-out;
 }
 #custom-controlcenter:hover {
   background-color: @glass-hover;
@@ -267,6 +273,47 @@ window#waybar {
 #custom-controlcenter.active {
   background-color: @glass-press;
 }
+#custom-controlcenter.volume,
+#custom-controlcenter.brightness {
+  background-color: @glass-press;
+  border-radius: 999px;
+}
+#custom-controlcenter.volume { background-image: url("icons/volume.svg"); }
+#custom-controlcenter.brightness { background-image: url("icons/brightness.svg"); }
+
+/* Durante Edit Controls o + da barra abre os controles próprios do shell. */
+#custom-add-controls {
+  border: 1px solid alpha(@label, 0.70);
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 500;
+  min-width: 20px;
+  min-height: 18px;
+  padding: 0;
+  margin: 7px 8px;
+}
+#custom-add-controls:hover { background: @glass-hover; }
+#custom-add-controls.off,
+#custom-recording.off,
+#custom-headphones.off,
+#custom-sleep.off {
+  font-size: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  border: none;
+  background: none;
+}
+#custom-recording.on {
+  background-image: url("icons/record-stop.svg");
+  background-size: 19px 19px;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0 8px;
+  margin: 4px 1px;
+}
+#custom-recording.on:hover { background-color: @glass-hover; }
 
 /* sem VPN o módulo fica vazio: sem espaço nem realce */
 #custom-vpn.off,

@@ -6,8 +6,8 @@
   gravacao pick     grava a janela escolhida com um clique
   gravacao stop      para a gravação em andamento
 
-Como no Mac, enquanto grava fica um controle ⏹ na barra de menus (aqui: uma
-cápsula de vidro no alto, à direita); clicar nela — ou ⇧⌘5 de novo, ou este
+Enquanto grava, o aviso ⏹ aparece automaticamente na barra de menus; sem a
+Waybar, aparece uma cápsula de vidro no alto. Clicar nele — ou ⇧⌘5 de novo, ou este
 mesmo comando com `stop` — encerra e finaliza o arquivo. Ao terminar, a captura
 aparece como miniatura flutuante no canto (clique = abrir, arrastar = soltar).
 
@@ -134,9 +134,22 @@ class Controle:
             f.write(str(os.getpid()))
         with open(FILEMARK, "w") as f:
             f.write(arquivo)
-        self._janela()
+        # Com a Waybar, o controle de parada mora na barra; sem ela, usa a
+        # cápsula própria para que a gravação nunca fique sem botão de parada.
+        if subprocess.run(["pgrep", "-x", "waybar"], capture_output=True).returncode == 0:
+            self._signal_bar()
+        else:
+            self._janela()
         for s in (signal.SIGINT, signal.SIGTERM):
             GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, s, self.parar)
+        GLib.timeout_add_seconds(1, self._watch_recorder)
+
+    def _watch_recorder(self):
+        """Retira o aviso se o gravador encerrar por erro ou por outra ação."""
+        if self.proc.poll() is None:
+            return True
+        self.parar()
+        return False
 
     @staticmethod
     def _sem_ferramenta(nome):
@@ -205,11 +218,17 @@ class Controle:
                 os.remove(p)
             except OSError:
                 pass
+        self._signal_bar()
         # miniatura flutuante com o primeiro quadro, como no Mac
         if self.arquivo and os.path.exists(self.arquivo) and os.environ.get("HYPRMAC_SHOT_THUMB") != "0":
             self._miniatura()
         Gtk.main_quit()
         return False
+
+    @staticmethod
+    def _signal_bar():
+        subprocess.run(["pkill", "-RTMIN+13", "-x", "waybar"],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def _miniatura(self):
         poster = self.arquivo + ".png"

@@ -127,11 +127,14 @@ class ResultNavigationTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        path = Path(__file__).resolve().parents[1] / 'shell/hyprmac-shell'
-        tree = ast.parse(path.read_text())
+        shell_dir = Path(__file__).resolve().parents[1] / 'shell'
         cls.handlers = {}
-        for node in tree.body:
-            if isinstance(node, ast.ClassDef) and node.name in ('Spotlight', 'ClipboardPanel'):
+        for name, path in (('Spotlight', shell_dir / 'spotlight_view.py'),
+                           ('ClipboardPanel', shell_dir / 'hyprmac-shell')):
+            tree = ast.parse(path.read_text())
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.ClassDef) or node.name != name:
+                    continue
                 method = next(n for n in node.body if isinstance(n, ast.FunctionDef)
                               and n.name == '_on_key')
                 namespace = {'Gdk': Gdk, 'is_modified_arrow': is_modified_arrow}

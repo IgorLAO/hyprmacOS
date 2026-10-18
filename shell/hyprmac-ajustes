@@ -2163,12 +2163,14 @@ class Settings(Gtk.Window):
         ("battery", "Battery", ("f0079", "#34C759"), "#battery", "battery"),
         ("vpn", "VPN", ("f0582", "#0A84FF"), "#custom-vpn", None),
         ("focus", "Focus", ("f0594", "#5E5CE6"), "#custom-focus", "active"),
+        ("sleep", "Sleep Focus", ("f0f65", "#5E5CE6"), "#custom-sleep", "active"),
+        ("headphones", "Headphones", ("f0259", "#0A84FF"), "#custom-headphones", "active"),
         ("nowplaying", "Now Playing", ("f075a", "#FF2D55"), "#mpris", "active"),
         ("spotlight", "Spotlight", ("f0349", "#8E8E93"), "#custom-spotlight", None),
     ]
 
     def _menubar_controls(self):
-        hidden = set(load_json(os.path.join(CONF_DIR, "barra.json"), {}).get("hidden", []))
+        hidden = menubar_items.hidden(CONF_DIR)
 
         def set_shown(key, on):
             menubar_items.set_shown(key, on, CONF_DIR, ROOT)    # mesmo código da galeria da Central
@@ -3407,9 +3409,15 @@ def draw_picture(cr, w, h, path, cache, radius):
 
 
 def set_wallpaper(path):
-    uri = "file://" + path
-    spawn(f"gsettings set org.gnome.desktop.background picture-uri {GLib.shell_quote(uri)}; "
-          f"gsettings set org.gnome.desktop.background picture-uri-dark {GLib.shell_quote(uri)}")
+    uri = Gio.File.new_for_path(path).get_uri()
+    background = Gio.Settings.new("org.gnome.desktop.background")
+    background.set_string("picture-uri", uri)
+    background.set_string("picture-uri-dark", uri)
+    conf = load_json(SHELL_CONF, {})
+    if conf.get("wallpaper") != "gnome":
+        conf["wallpaper"] = "gnome"
+        save_json(SHELL_CONF, conf)
+    shell_cmd("wallpaper-reload")
 
 
 def account_name():

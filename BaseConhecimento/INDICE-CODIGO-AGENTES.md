@@ -43,39 +43,50 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/ajustes.css` | css | 454 | shell, lock, menu, glass, window | hyprmac — Ajustes do Sistema (System Settings do Tahoe). Kit macOS 27: janela #1E1E1E (escuro) / #FFFFFF (claro), raio 26; barra lateral |
 | `shell/app_index.py` | python | 69 | shell, dock, spotlight, theme, window | """Índice compartilhado de aplicativos instalados para os componentes do shell.""" gi.require_version("Gtk", "3.0") |
 | `shell/cocoa_entry.py` | python | 102 | shell | """Edição compartilhada dos campos GTK3 próprios do HyprMac. Mapeamentos: AppKit StandardKeyBinding.dict, Tahoe 26.6.1 (25G76). |
-| `shell/dock_drop.py` | python | 47 | shell, dock | """Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.""" def supports_documents(info): |
+| `shell/desktop_surface.py` | python | 1275 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
+| `shell/dock_drop.py` | python | 64 | shell, dock | """Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.""" def desktop_file_from_uris(uris, new_file): |
 | `shell/dock_geometry.py` | python | 50 | shell, dock | """Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.""" @dataclass(frozen=True) |
-| `shell/dock_model.py` | python | 62 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
+| `shell/dock_model.py` | python | 89 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
 | `shell/dock_motion.py` | python | 91 | shell, dock, lock | """Estado das molas, magnificação e quique do Dock; sem relógios ou timers próprios.""" class DockMotion: |
+| `shell/dock_widget.py` | python | 1326 | shell, dock, spotlight, notification, lock, menu | """GTK view for the Dock. The shell supplies its shared UI and compositor services.""" gi.require_version("Gtk", "3.0") |
 | `shell/glass_motion.py` | python | 27 | shell, glass | """Mola de transição baseada no GlassContainer do Tahoe 26.6.1 (25G76). TransitionSettings.default: duration=.5, bounce=.3 (SwiftUICore), recuperados |
 | `shell/hypr_events.py` | python | 49 | shell | """Uma conexão com o socket de eventos do Hyprland para todo o shell GTK.""" class EventBus: |
 | `shell/hyprmac-ajustes` | python | 3425 | shell, dock, spotlight, notification, lock, menu | """hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth, |
 | `shell/hyprmac-lock` | python | 1409 | shell, lock, glass, window | """hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock). Uso: |
 | `shell/hyprmac-overview` | python | 1502 | shell, menu, theme, window | """hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell). Como a Apple fez (macOS Tahoe/27, ⌃↑): |
 | `shell/hyprmac-preview` | python | 269 | shell, window | """Visualizador local: ações documentadas no Preview 26.6.1, layout experimental.""" gi.require_version("Gtk", "3.0") |
-| `shell/hyprmac-shell` | python | 9823 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
+| `shell/hyprmac-shell` | python | 6278 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
 | `shell/lock.css` | css | 130 | shell, lock, window | hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14" = 1512×982 pt, 1,744 px/pt |
+| `shell/session_overlays.py` | python | 346 | shell, dock, window | """Force Quit and app switcher overlays for the shell session.""" gi.require_version("Gtk", "3.0") |
 | `shell/spotlight_controls.py` | python | 228 | shell, spotlight, lock, glass | """Controles de modo do Spotlight: desenho e animação GTK3. O painel permanece no processo do shell. Este módulo apenas desenha os |
 | `shell/spotlight_search.py` | python | 134 | shell, spotlight | """Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26. |
-| `shell/style-light.css` | css | 384 | shell, spotlight, menu, glass, control, center | keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */ @define-color shell_focus #3b99fc; |
-| `shell/style.css` | css | 1680 | shell, dock, spotlight, notification, lock, menu | hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe). O desfoque de fundo vem do Hyprland (layer rules "hyprmac-widgets" e "hyprmac-cc"); |
+| `shell/spotlight_view.py` | python | 1566 | shell, dock, spotlight, lock, menu, glass | """Spotlight GTK view and transitions, using the shared search/control modules.""" gi.require_version("Gtk", "3.0") |
+| `shell/style-light.css` | css | 441 | shell, spotlight, menu, glass, control, center | keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */ @define-color shell_focus #3b99fc; |
+| `shell/style.css` | css | 1720 | shell, dock, spotlight, notification, lock, menu | hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe). O desfoque de fundo vem do Hyprland (layer rules "hyprmac-widgets" e "hyprmac-cc"); |
 | `shell/vidro-camadas-claro.css` | css | 25 | shell, spotlight, menu, glass, control, center | hyprmac — vidro real no tema CLARO: os painéis com texto (menus, notificações, Spotlight, Alt+Tab, histórico) levam mais branco por cima e texto escuro, como o menu "Folder color" e |
 | `shell/vidro-camadas.css` | css | 89 | shell, spotlight, menu, glass, control, center | hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas — o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto) |
 | `shell/vidro.py` | python | 75 | shell, glass, theme, window | """Liquid Glass do hyprmac (plugin hyprglass) para janelas GTK. O vidro é desenhado pelo compositor; a janela GTK só precisa ser transparente onde o |
 | `tests/fixtures/status_notifier.py` | python | 120 | tests, menu | """SNI de teste: ícones ARGB, atenção/overlay, estado, eventos e menu D-Bus. Uso: status_notifier.py /tmp/events.jsonl |
 | `tests/test_accent_palette.py` | python | 58 | tests, theme | """Integração do destaque entre gerador, Ajustes e Mission Control.""" ROOT = Path(__file__).resolve().parents[1] |
-| `tests/test_cocoa_entry.py` | python | 169 | tests, spotlight, window | """Edição no Gtk.Entry real; não altera atalhos de aplicações externas.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell')) |
-| `tests/test_dock.py` | python | 503 | tests, dock, lock, menu, window | """Regressão do núcleo do Dock e dos contratos entre núcleo, GTK e eventos.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell")) |
+| `tests/test_cocoa_entry.py` | python | 192 | tests, spotlight, window | """Edição no Gtk.Entry real; não altera atalhos de aplicações externas.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell')) |
+| `tests/test_dock.py` | python | 655 | tests, dock, lock, menu, glass, window | """Regressão do núcleo do Dock e dos contratos entre núcleo, GTK e eventos.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell")) |
 | `tests/test_dock_recipe.py` | python | 58 | tests, dock | """Casos dimensionais conferidos com emulação ARM64 independente (25G76).""" PATH = Path(__file__).resolve().parents[1] / 'BaseConhecimento/ferramentas/receita_dock.py' |
 | `tests/test_fidelity_qa.py` | python | 71 | tests, dock, window | """QA independente de gestos e atualização, executando métodos reais do Dock.""" class DockGestureLifecycleQA(unittest.TestCase): |
 | `tests/test_glass_motion.py` | python | 41 | tests, glass | sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell')) class GlassTransitionTests(unittest.TestCase): |
 | `tests/test_install_preflight.py` | python | 59 | tests, lock | """O instalador não substitui configurações por fontes ausentes.""" INSTALL = (Path(__file__).resolve().parents[1] / "install.sh").read_text() |
+| `tests/test_keyboard_focus.py` | python | 207 | tests, dock, window | """MIC-04: foco global pelo teclado (HIG ▸ Keyboards). ⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (scripts/janela next-any/prev-any); |
 | `tests/test_menu_extras.py` | python | 53 | tests, menu | """Preferências dos extras: isolamento, persistência e identidades SNI.""" ROOT = Path(__file__).resolve().parents[1] |
+| `tests/test_reduce_motion_shell.py` | python | 89 | tests, spotlight, glass | """MIC-14: com Reduce Motion, o shell não agenda animações elásticas nem de deslocamento. Evidência Apple (WWDC25 219, Meet Liquid Glass): "Reduced Motion decreases the |
 | `tests/test_shell_events.py` | python | 83 | tests, dock, menu, window | """Regressões do assinante único do Hyprland e dos menus dinâmicos da barra.""" ROOT = Path(__file__).resolve().parents[1] |
 | `tests/test_sni_watcher.py` | python | 143 | tests, window | """Teste opt-in da build real: execute dentro de dbus-run-session. HYPRMAC_TEST_SNI_WATCHER=1 dbus-run-session -- python -m unittest discover -s tests -p test_sni_watcher.py |
+| `tests/test_spotlight_arg_actions.py` | python | 75 | tests, spotlight, menu | """SPT-03: ações que rodam pelo Spotlight sem abrir o app ("ar buy milk" → lembrete). Mac User Guide (Tahoe 26) ▸ Take actions and shortcuts in Spotlight: digitar a quick key |
 | `tests/test_spotlight_launcher.py` | python | 60 | tests, spotlight | """O atalho não troca para o Wofi quando o shell está iniciando.""" SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/spotlight' |
+| `tests/test_spotlight_mode_hover.py` | python | 120 | tests, spotlight, glass | """MIC-09: o hover nos botões de modo do Spotlight antecipa o nome e o atalho no campo. Referência Tahoe 26: referencias/telas/spotlight-controles-2…6 — ponteiro sobre |
+| `tests/test_spotlight_quickkeys.py` | python | 66 | tests, spotlight, lock, window | """SPT-07: quick keys do Spotlight (Mac User Guide ▸ Take actions and shortcuts in Spotlight). "Click 'Add quick keys' next to an action, then enter the keyboard shortcut"; |
 | `tests/test_spotlight_search.py` | python | 30 | tests, spotlight | """Comportamentos de busca preservados após extrair a lógica do Spotlight.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell")) |
-| `tests/test_system_fidelity.py` | python | 222 | tests, spotlight, lock, menu, theme | """Regressões funcionais dos subpainéis da Central, sem iniciar GTK.""" ROOT = Path(__file__).resolve().parents[1] |
+| `tests/test_spotlight_selector.py` | python | 188 | tests, spotlight, theme, window | """Seletor e busca em app, sem GTK nem display.""" ROOT = Path(__file__).resolve().parents[1] |
+| `tests/test_system_fidelity.py` | python | 223 | tests, spotlight, lock, menu, theme | """Regressões funcionais dos subpainéis da Central, sem iniciar GTK.""" ROOT = Path(__file__).resolve().parents[1] |
+| `tests/test_volume_feedback.py` | python | 103 | tests, dock, lock, theme | """MIC-12: "Play feedback when volume is changed" (Ajustes ▸ Som do macOS Tahoe 26). support.apple.com/guide/mac-help/mchlp2207/26: "when you press one of the volume |
 | `waybar/a11y.css` | css | 1 | waybar | gerado por scripts/acessibilidade */ |
 | `waybar/accent.css` | css | 3 | waybar, menu | gerado por scripts/accent — cor de destaque: blue (escuro) */ @define-color accent         #007AFF; |
 | `waybar/barra-ocultos.css` | css | 0 | waybar | barra-ocultos.css |
@@ -90,7 +101,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `waybar/scripts/cc-state.sh` | bash | 7 | waybar, scripts, control, center, control_center | Estado do ícone da Central de Controle: "active" enquanto o painel está aberto. if [ -e "${XDG_RUNTIME_DIR:-/tmp}/hyprmac-cc-open" ]; then |
 | `waybar/scripts/clock.sh` | bash | 15 | waybar, scripts, lock, menu | Relógio da barra de menus como na referência do Tahoe ("Sun 12:07"): dia da semana abreviado + hora, sem data; a data completa fica na dica. Em inglês, como os menus, |
 | `waybar/scripts/input-source.sh` | bash | 36 | waybar, scripts | """Fonte de entrada na barra ("BR", como no Tahoe): sigla do layout ativo do teclado principal, em maiúsculas. Reescreve a cada troca de layout (evento activelayout do |
-| `waybar/style.css` | css | 490 | waybar, spotlight, lock, menu, glass, theme | hyprmac — barra de menus inspirada no macOS Tahoe  |
+| `waybar/style.css` | css | 493 | waybar, spotlight, lock, menu, glass, theme | hyprmac — barra de menus inspirada no macOS Tahoe  |
 | `waybar/theme.css` | css | 0 | waybar, theme | theme.css |
 | `waybar/themes/light.css` | css | 44 | waybar, menu, theme | hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x) |
 | `waybar/vidro.css` | css | 7 | waybar, menu, glass | gerado por scripts/vidro: menus com Liquid Glass do hyprglass */ menu:not(.x), |

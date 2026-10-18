@@ -15,6 +15,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "shell" / "hyprmac-shell"
+VIEW = ROOT / "shell" / "spotlight_view.py"
 sys.path.insert(0, str(ROOT / "shell"))
 from spotlight_search import spot_fold  # noqa: E402
 
@@ -24,7 +25,8 @@ def load():
     nodes = [n for n in tree.body if (isinstance(n, ast.Assign) and any(
         getattr(t, "id", "") == "SPOT_ARG_ACTIONS" for t in n.targets))
         or (isinstance(n, ast.FunctionDef) and n.name == "run_arg_action")]
-    spot = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "Spotlight")
+    spot = next(n for n in ast.walk(ast.parse(VIEW.read_text()))
+                if isinstance(n, ast.ClassDef) and n.name == "Spotlight")
     methods = [n for n in spot.body if isinstance(n, ast.FunctionDef) and n.name in ("_arg_action", "_action_entry")]
     klass = ast.ClassDef(name="Spotlight", bases=[], keywords=[], body=methods, decorator_list=[], type_params=[])
     spawn = Mock()

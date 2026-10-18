@@ -92,7 +92,8 @@ class InterfaceSounds(unittest.TestCase):
         spawn.assert_not_called()
 
     def test_empty_trash_and_screenshot_use_it(self):
-        self.assertIn('ui_sound("trash-empty")', SOURCE.read_text())
+        dock_view = (SOURCE.parent / "dock_widget.py").read_text()
+        self.assertIn('ui_sound("trash-empty")', dock_view)
         script = (SOURCE.parents[1] / "scripts" / "screenshot").read_text()
         self.assertIn("ui_sound_effects", script)
         self.assertIn("-i screen-capture", script)

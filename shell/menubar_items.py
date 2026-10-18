@@ -14,6 +14,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 # chave → seletor do módulo na Waybar (só o que a barra do hyprmac tem)
 SELECTORS = {
+    "headphones": "#custom-headphones",
+    "sleep": "#custom-sleep",
     "wifi": "#network",
     "battery": "#battery",
     "vpn": "#custom-vpn",
@@ -21,6 +23,7 @@ SELECTORS = {
     "nowplaying": "#mpris",
     "spotlight": "#custom-spotlight",
 }
+DEFAULT_HIDDEN = {"headphones", "sleep"}
 # controle da Central → item da barra correspondente
 CC_TO_BAR = {"wifi": "wifi", "vpn": "vpn", "dnd": "focus", "nowplaying": "nowplaying"}
 
@@ -33,6 +36,8 @@ def hidden(conf_dir=None):
     try:
         with open(_conf_path(conf_dir)) as fh:
             return set(json.load(fh).get("hidden", []))
+    except FileNotFoundError:
+        return set(DEFAULT_HIDDEN)
     except (OSError, ValueError, AttributeError):
         return set()
 

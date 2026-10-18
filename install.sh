@@ -47,6 +47,10 @@ step "Links de configuração"
 link "$H/waybar"             "$C/waybar"             waybar
 # itens ocultos da barra (Ajustes ▸ Menu Bar): gerado em tempo de execução; o @import precisa dele
 [ -e "$H/waybar/barra-ocultos.css" ] || : > "$H/waybar/barra-ocultos.css"
+# Imports gerados pelo shell/plugin precisam existir também no primeiro boot.
+for generated_css in contrast.css vidro.css; do
+  [ -e "$H/waybar/$generated_css" ] || : > "$H/waybar/$generated_css"
+done
 link "$H/wofi"               "$C/wofi"               wofi
 link "$H/ghostty/config"     "$C/ghostty/config"     ghostty/config
 link "$H/kitty/kitty.conf"   "$C/kitty/kitty.conf"   kitty/kitty.conf

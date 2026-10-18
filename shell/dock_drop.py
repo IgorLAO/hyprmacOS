@@ -5,6 +5,23 @@ import re
 from urllib.parse import unquote, urlsplit
 
 
+def desktop_file_from_uris(uris, new_file):
+    """Accept one local launcher file; documents keep their existing drop path."""
+    if not uris or len(uris) != 1:
+        return None
+    uri = uris[0]
+    if not isinstance(uri, str) or re.search(r"%(?![0-9a-fA-F]{2})", uri):
+        return None
+    parsed = urlsplit(uri)
+    if parsed.scheme != "file" or parsed.netloc not in ("", "localhost") or parsed.query or parsed.fragment:
+        return None
+    try:
+        path = new_file(uri).get_path()
+    except Exception:
+        return None
+    return path if path and path.endswith(".desktop") and os.path.isfile(path) else None
+
+
 def supports_documents(info):
     return bool(info and (info.supports_files() or info.supports_uris()))
 

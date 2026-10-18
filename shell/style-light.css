@@ -35,7 +35,7 @@
 /* Menu "Janela" em vidro claro */
 menu.hyprmac-menu,
 .hyprmac-menu menu {
-  background: rgba(246, 246, 248, 0.80);
+  background: rgba(246, 246, 248, 0.94);
   border: 1px solid rgba(0, 0, 0, 0.10);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
 }
@@ -111,7 +111,7 @@ menu.hyprmac-menu menuitem:disabled,
 
 /* Menus dos extras (Wi‑Fi, Bluetooth, Som) em vidro claro */
 .xmenu {
-  background-color: rgba(246, 246, 248, 0.80);
+  background-color: rgba(246, 246, 248, 0.94);
   border: 1px solid rgba(0, 0, 0, 0.10);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.70);
 }
@@ -335,6 +335,11 @@ menu.hyprmac-menu menuitem:disabled,
 .ccg-caption { color: rgba(0, 0, 0, 0.60); }
 .ccg-empty, .ccg-hint { color: rgba(60, 60, 67, 0.60); }
 .ccg-foot { border-top-color: rgba(0, 0, 0, 0.08); }
+.ccg-bar-heading-title, .ccg-bar-title, .ccg-bar-icon { color: rgba(0, 0, 0, 0.88); }
+.ccg-bar-heading-sub, .ccg-bar-detail { color: rgba(60, 60, 67, 0.67); }
+.ccg-bar-card { background: rgba(255, 255, 255, 0.34); border-color: rgba(0, 0, 0, 0.10); }
+.cc button.ccg-bar-action { color: #006eb8; }
+.cc button.ccg-bar-action:disabled { color: rgba(60, 60, 67, 0.54); }
 .cc button.ccg-done { background: #0088FF; }
 .cc button.ccg-done:hover { background: #1A94FF; }
 

@@ -1,9 +1,105 @@
 # Estado atual do HyprMac
 
+## Controle de gravação na Central — 2026-10-18
+
+- Implementação CCN-01: `Screen Recording` entrou na categoria `Screenshot`,
+  na galeria de edição e no layout padrão da Central. O controle usa
+  `scripts/gravacao screen`: inicia a gravação, e durante a captura passa a
+  `Stop Recording`. O aviso ⏹ da barra continua automático e separado da lista
+  de controles configuráveis da barra.
+- Validação CCN-01: shell recompilado e Central recarregada no desktop;
+  21 testes dirigidos da Central passaram. Uma gravação real gerou MP4, exibiu
+  ⏹ na barra e o removeu após a parada. Captura local da Central em
+  `BaseConhecimento/referencias/validacao/central-gravacao-2026-10-18.png`.
+  O clique físico no novo botão ainda precisa de conferência manual.
+
+## Barra, avisos de captura e OSD de volume — 2026-10-18
+
+- Implementação CCN-03: o `+` aparece na barra durante Edit Controls e abre uma
+  página de 620×600 na galeria da Central, com cartões de controles nativos
+  configuráveis. Gravação e compartilhamento de tela ficaram fora da lista:
+  são avisos automáticos. O primeiro mostra ⏹ com parada por clique enquanto
+  `wf-recorder` grava; o segundo usa o módulo `privacy/screenshare` da Waybar.
+  Fones e Sleep Focus começam fora da barra e têm indicadores próprios quando
+  adicionados e ativos; apps externos permanecem no tray SNI já existente.
+  Os botões Add/Remove reutilizam `menubar_items.py`.
+- Validação CCN-03: galeria e `+` abertos no desktop e capturados em
+  `BaseConhecimento/referencias/validacao/barra-galeria-2026-10-18.png`.
+  Gravação real de 3 s gerou MP4; o aviso mudou de `on` para `off` após parar.
+  O backend de compartilhamento não foi exercitado com uma sessão real;
+  arrastar cartões para a barra ainda não está implementado.
+- Implementação OSD: o controle de volume abre 20 px abaixo da barra; o glifo
+  da Central passa ao de alto-falante por transição GTK3 de `background-image`
+  em 180 ms, junto à aparição do painel. O tempo foi estimado dos quadros
+  enviados pelo usuário, sem timestamps do vídeo.
+- Validação OSD: Waybar e shell recarregados; sequência local de 60 fps mostrou
+  glifo intermediário, cápsula e aparecimento gradual do painel. Captura em
+  `BaseConhecimento/referencias/validacao/volume-osd-20px-2026-10-18.png`.
+  A trajetória ainda precisa de comparação quadro a quadro com Tahoe 26.
+
+## Arraste de apps e legibilidade dos menus — 2026-10-18
+
+- Implementação DCK-07: tiles de Apps do Spotlight e lançadores `.desktop` da
+  mesa fornecem `text/uri-list`; a Dock aceita um launcher local, insere na
+  posição do drop, reordena se já fixado e persiste `dock.json`. Arquivos comuns
+  continuam sendo entregues ao app de destino. Finder permanece na primeira vaga.
+- Validação DCK-07: 36 testes direcionados do Dock e 499 testes totais passaram
+  (4 pulados); compilação Python passou. Gesto real entre Spotlight e Dock ainda
+  precisa ser conferido manualmente no desktop e comparado com Tahoe 26.
+- Implementação visual GLS-08: menus GTK3/GTK4, menus da Waybar e menus do shell
+  receberam fundo mais legível (alfa 0,94 em claro e escuro), com a captura
+  fornecida pelo usuário como referência de legibilidade. A janela do popup
+  continua transparente para manter cantos arredondados.
+- Validação visual GLS-08: shell e Waybar recarregados no desktop; captura
+  `BaseConhecimento/referencias/validacao/dock-arraste-menus-2026-10-18.png`
+  confirma o Dock visível, mas não mostra um menu aberto. A comparação do
+  material de menu com Tahoe 26 permanece pendente. O valor é um ajuste local
+  de CSS, sem certificação Apple.
+
+## Componentização do shell — 2026-10-18
+
+- Removido o desenho temporário da borda vermelha do Dock e retirada a opção
+  `dock_debug_bounds` da configuração local. O shell foi recarregado e a layer
+  `hyprmac-dock` está mapeada no desktop.
+- A view GTK do Dock foi movida para `shell/dock_widget.py`; Force Quit e o
+  alternador de apps foram movidos para `shell/session_overlays.py`; papel de
+  parede, widgets e ícones da mesa foram movidos para `shell/desktop_surface.py`.
+  A view do Spotlight foi movida para `shell/spotlight_view.py`. As quatro
+  fábricas recebem os serviços compartilhados do processo principal. O arquivo
+  de entrada caiu de 10.587 para 6.278 linhas; Central, notificações e
+  outros painéis ainda precisam de extração própria.
+- Validação de implementação: compilação dos cinco arquivos Python e suíte
+  de 496 testes passou (4 pulados); uma instância do shell após recarga, com layers do papel de
+  parede nos dois monitores e a layer do Dock. Spotlight aberto e fechado pelo
+  comando D-Bus, com layer mapeada. Validação visual: Dock
+  mapeado e sem borda vermelha na captura local
+  `BaseConhecimento/referencias/validacao/dock-sem-borda-2026-10-18.png`;
+  a borda foi removida pelo código
+  e pela configuração. Comparação
+  visual com Tahoe 26 e exercício manual dos gestos permanecem pendentes.
+
 Última revisão desta síntese: 2026-10-11. Objetivo: reprodução visual e
 comportamental do **macOS Tahoe 26**. Barra e Spotlight foram abertos no desktop
 após as mudanças; os demais estados refletem código, matriz e registros locais,
 não uma certificação visual Tahoe 26.
+
+## Instalação local — 2026-10-18
+
+- `install.sh dark` executado; Waybar extras e vigia de inatividade compilados.
+  Configuração anterior preservada em `backup/installation-20261018-092312/`.
+- Criado `~/.config/hypr/hyprland.lua` a partir do exemplo distribuído pelo
+  Hyprland 0.56.2, com teclado ABNT2, os dois monitores detectados e inclusão
+  de `hypr/hyprmac.lua`. `Hyprland --verify-config` retornou `config ok`.
+  A sessão existente usa o gerenciador hyprlang: sair/entrar ainda é necessário
+  para ativar Lua, regras, atalhos e autostart completos.
+- Corrigidos imports CSS ausentes no primeiro boot da barra; o shell agora
+  tolera a ausência também do wallpaper padrão, usando fundo sólido.
+  Barra e Dock mapeados no desktop. Isso não valida fidelidade Tahoe.
+- Assets locais incompletos: wallpaper Tahoe ausente, instalador não encontrou
+  fontes no kit e Nautilus não está instalado. O banco geral estava ausente;
+  índice reconstruído das fontes presentes, sem recuperar registros curados
+  históricos. Auditoria: integridade SQLite ok, sem hashes divergentes,
+  com referências operacionais/visuais ausentes a recuperar.
 
 ## App Factory — expansão inicial
 

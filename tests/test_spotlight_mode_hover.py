@@ -18,7 +18,7 @@ from spotlight_search import SPOT_MODES  # noqa: E402
 
 def method(path, cls_name, name, ns):
     tree = ast.parse(path.read_text())
-    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == cls_name)
+    cls = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == cls_name)
     fn = next(n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == name)
     klass = ast.ClassDef(name=cls_name, bases=[], keywords=[], body=[fn], decorator_list=[], type_params=[])
     exec(compile(ast.fix_missing_locations(ast.Module(body=[klass], type_ignores=[])), str(path), "exec"), ns)
@@ -50,7 +50,7 @@ def spotlight(mode="all", text="", scope=None):
     return spot
 
 
-HOVER = method(ROOT / "shell" / "hyprmac-shell", "Spotlight", "_hover_mode", {"SPOT_MODES": SPOT_MODES})
+HOVER = method(ROOT / "shell" / "spotlight_view.py", "Spotlight", "_hover_mode", {"SPOT_MODES": SPOT_MODES})
 
 
 class ModeHover(unittest.TestCase):
