@@ -2,6 +2,8 @@
 
 ## Migração Python → Rust — 2026-10-18
 
+- Implementação da auditoria: `BaseConhecimento/ferramentas/auditar_base.py` agora chama `core/audit/` em Rust. Foram transferidas as checagens SQLite, classificações da base Tahoe local, hashes SHA-256 e links Markdown; o invólucro tornou o caminho executável diretamente.
+- Validação da auditoria: JSON de saída e código de erro coincidiram com a versão Python no estado atual, inclusive os 236 links de imagens ausentes já conhecidos, zero hashes divergentes e SQLite íntegro.
 - Implementação da comparação: `BaseConhecimento/ferramentas/comparar.py` passou a ser um invólucro Bash para `core/comparison/` em Rust. Medição por regex, cálculo de notas, modos `--resumo`/`--pendentes`, matriz Markdown e tabela SQLite foram transferidos; o caminho operacional existente foi preservado.
 - Validação da comparação: as saídas dos dois modos, `MATRIZ.md` e as 106 linhas da tabela `parametros` coincidiram byte a byte com o gerador Python anterior no estado atual. Padrões novos de regex exigirão nova conferência.
 - Implementação do mapa de status: `scripts/status-map` agora chama `core/status-map/` em Rust; o hook de commit e o workflow usam o mesmo comando. O parser da lista de comportamentos, matriz e inventário de apps, o layout dos treemaps e a escrita idempotente foram transferidos.

@@ -25,6 +25,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Instalação | `install.sh` | Cria links/configurações e backups de arquivos do usuário. Exige a localização `~/Projects/hyprmac`. |
 | Mapa de status | `core/status-map/`, `scripts/status-map` | Gerador Rust dos SVGs e do bloco do README, chamado pelo hook e pelo workflow. |
 | Matriz de comparação | `core/comparison/`, `BaseConhecimento/ferramentas/comparar.py` | Binário Rust mede parâmetros no código, gera `MATRIZ.md` e atualiza a tabela SQLite. O caminho `.py` é um invólucro Bash para compatibilidade com comandos existentes. |
+| Auditoria da base | `core/audit/`, `BaseConhecimento/ferramentas/auditar_base.py` | Binário Rust confere SQLite, hashes de fontes e links operacionais; o caminho `.py` é um invólucro Bash. |
 
 ## App Factory (expansão dos apps)
 

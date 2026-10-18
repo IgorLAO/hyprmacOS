@@ -9,6 +9,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/accessibility/src/main.rs` | rust | 162 | menu, window | use serde_json::{json, Value}; use std::env; |
 | `core/activity-probe/src/main.rs` | rust | 212 | lock | ! Read-only Linux process snapshot prototype for a future Activity Monitor. use std::env; |
 | `core/appearance/src/main.rs` | rust | 155 | theme | use chrono::{Local, Timelike}; use serde_json::Value; |
+| `core/audit/src/main.rs` | rust | 242 |  | ! Auditoria da base curada, fontes locais e links operacionais. use percent_encoding::percent_decode_str; |
 | `core/capture-thumbnail/src/main.rs` | rust | 241 | window | ! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26. |
 | `core/clipboard/src/main.rs` | rust | 302 |  | use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value}; |
 | `core/comparison/src/main.rs` | rust | 364 |  | ! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex; |

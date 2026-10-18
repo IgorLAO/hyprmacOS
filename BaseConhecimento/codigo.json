@@ -149,6 +149,34 @@
       "sha256": "6364569062b6552dea626ed174ff16dc0655cba1d54ed2bc2dfd55abba49dbff"
     },
     {
+      "path": "core/audit/src/main.rs",
+      "language": "rust",
+      "bytes": 9165,
+      "lines": 242,
+      "summary": "! Auditoria da base curada, fontes locais e links operacionais. use percent_encoding::percent_decode_str;",
+      "symbols": [
+        "Document",
+        "database",
+        "count",
+        "check_db",
+        "documents",
+        "links",
+        "audit",
+        "main"
+      ],
+      "imports": [
+        "percent_encoding::percent_decode_str",
+        "regex::Regex",
+        "rusqlite::{params, Connection, OpenFlags}",
+        "serde_json::{json, Map, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [],
+      "sha256": "836c0d3ac80e65485ca17bedf388cb427564ab90e319ec54eed28b1a793f36d5"
+    },
+    {
       "path": "core/capture-thumbnail/src/main.rs",
       "language": "rust",
       "bytes": 7878,

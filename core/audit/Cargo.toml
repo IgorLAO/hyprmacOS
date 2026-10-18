@@ -1,0 +1,12 @@
+[package]
+name = "hyprmac-auditar-base"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hex = "0.4"
+percent-encoding = "2"
+regex = "1"
+rusqlite = "0.40.2"
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
