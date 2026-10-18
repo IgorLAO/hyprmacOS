@@ -11,6 +11,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/appearance/src/main.rs` | rust | 155 | theme | use chrono::{Local, Timelike}; use serde_json::Value; |
 | `core/capture-thumbnail/src/main.rs` | rust | 241 | window | ! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26. |
 | `core/clipboard/src/main.rs` | rust | 302 |  | use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value}; |
+| `core/status-map/src/main.rs` | rust | 422 | dock, spotlight, lock | ! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex; |
 | `core/waybar-status/src/main.rs` | rust | 450 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |
 | `core/window-actions/src/main.rs` | rust | 263 | window | use serde_json::Value; use std::env; |
 | `ghostty/macos.css` | css | 78 | ghostty, menu, window | hyprmac — barra de título do Ghostty como a do Terminal no Mac: kit "Windows/Dark/Default + Title": barra de 33, padding 9, semáforo em |
@@ -43,7 +44,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `scripts/screenshot` | bash | 95 | scripts, window | hyprmac — capturas de tela no estilo macOS (grim + slurp)  |
 | `scripts/spotlight` | bash | 106 | scripts, spotlight, menu | hyprmac — Spotlight do shell GTK. Chamar de novo fecha. spotlight [apps/files/actions/clipboard] |
 | `scripts/spotlight-itens` | python | 707 | scripts, control center, spotlight, notification, lock, menu | """hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o "Restart…/Shut Down…/Log Out…" |
-| `scripts/status-map` | python | 292 | scripts, dock, spotlight | """Gera o mapa de status do HyprMac (treemaps SVG + bloco do README). Fontes (nenhuma é editada aqui): |
+| `scripts/status-map` | bash | 5 | scripts, lock | Gera os mapas e o bloco de status com o executável Rust. set -euo pipefail |
 | `scripts/theme` | bash | 70 | scripts, spotlight, menu, glass, theme | hyprmac — alterna o tema do sistema entre claro e escuro theme [toggle/light/dark] |
 | `scripts/vidro` | bash | 145 | scripts, menu, glass | hyprmac — Liquid Glass via plugin hyprglass (refração, realce especular, chanfro) vidro instalar     compila o hyprglass na tag certa para o Hyprland em uso |
 | `scripts/vpn` | bash | 46 | scripts | hyprmac — VPN do NetworkManager vpn status        JSON contínuo para a Waybar (atualiza a cada mudança de rede) |

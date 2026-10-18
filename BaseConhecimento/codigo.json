@@ -231,6 +231,46 @@
       "sha256": "9318675b684b3347a4f843c7ad26d6192e7097829c88ddf5fe1045c852f95923"
     },
     {
+      "path": "core/status-map/src/main.rs",
+      "language": "rust",
+      "bytes": 15457,
+      "lines": 422,
+      "summary": "! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex;",
+      "symbols": [
+        "color",
+        "label",
+        "weight",
+        "xml",
+        "add",
+        "behaviors",
+        "parameters",
+        "apps",
+        "worst",
+        "squarify",
+        "grid",
+        "score",
+        "svg_map",
+        "legend",
+        "badge",
+        "read",
+        "write_if_changed",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::Value",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [
+        "dock",
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "8dbd98318531affeca5df03ef6927f90261123962df43301065cf9ab24d58924"
+    },
+    {
       "path": "core/waybar-status/src/main.rs",
       "language": "rust",
       "bytes": 14791,
@@ -1143,39 +1183,17 @@
     },
     {
       "path": "scripts/status-map",
-      "language": "python",
-      "bytes": 11391,
-      "lines": 292,
-      "summary": "\"\"\"Gera o mapa de status do HyprMac (treemaps SVG + bloco do README). Fontes (nenhuma é editada aqui):",
-      "symbols": [
-        "comportamentos",
-        "parametros",
-        "apps",
-        "squarify",
-        "pior",
-        "grade",
-        "nota",
-        "svg_mapa",
-        "svg_legenda",
-        "selo",
-        "escrever",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "json",
-        "re",
-        "sys",
-        "html",
-        "pathlib",
-        "math"
-      ],
+      "language": "bash",
+      "bytes": 248,
+      "lines": 5,
+      "summary": "Gera os mapas e o bloco de status com o executável Rust. set -euo pipefail",
+      "symbols": [],
+      "imports": [],
       "tags": [
         "scripts",
-        "dock",
-        "spotlight"
+        "lock"
       ],
-      "sha256": "47d40f1d91350e5ac65d66a93edfec12a988eb5919272218f98d39db398b4061"
+      "sha256": "e1a2725fef221c5779edee8a3dec263a06c277dd148e989d772ad4ebf3ea45cb"
     },
     {
       "path": "scripts/theme",

@@ -9,6 +9,7 @@ on:
       - BaseConhecimento/comparacao/MATRIZ.md
       - BaseConhecimento/referencias/hyprmac-apps-progress.json
       - scripts/status-map
+      - core/status-map/**
 permissions:
   contents: write
 jobs:
@@ -16,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/status-map
+      - uses: dtolnay/rust-toolchain@stable
+      - run: scripts/status-map
       - run: |
           git diff --quiet -- docs/status README.md && exit 0
           git config user.name "github-actions[bot]"

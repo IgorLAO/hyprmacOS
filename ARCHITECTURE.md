@@ -23,6 +23,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Integração | `scripts/`, `gtk/`, `kde/`, `ghostty/`, `wofi/` | Tema, captura, ações de janela, vidro, acessibilidade e integração com apps. |
 | Vidro | `scripts/vidro`, `shell/vidro.py`, plugin externo `hyprglass` | Instala/carrega a versão compatível do plugin e aplica presets às superfícies permitidas. |
 | Instalação | `install.sh` | Cria links/configurações e backups de arquivos do usuário. Exige a localização `~/Projects/hyprmac`. |
+| Mapa de status | `core/status-map/`, `scripts/status-map` | Gerador Rust dos SVGs e do bloco do README, chamado pelo hook e pelo workflow. |
 
 ## App Factory (expansão dos apps)
 
