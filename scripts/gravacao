@@ -238,7 +238,7 @@ class Controle:
         except (FileNotFoundError, subprocess.TimeoutExpired):
             poster = None
         if poster and os.path.exists(poster):
-            subprocess.Popen([os.path.join(HERE, "captura-miniatura"), poster, "--abrir", self.arquivo],
+            subprocess.Popen([os.path.expanduser("~/.local/bin/hyprmac-captura-miniatura"), poster, "--abrir", self.arquivo],
                              start_new_session=True)
         else:
             subprocess.Popen(["notify-send", "-a", "Gravação de Tela", "Gravação de Tela",

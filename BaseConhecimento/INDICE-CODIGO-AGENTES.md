@@ -9,6 +9,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/accessibility/src/main.rs` | rust | 162 | menu, window | use serde_json::{json, Value}; use std::env; |
 | `core/activity-probe/src/main.rs` | rust | 212 | lock | ! Read-only Linux process snapshot prototype for a future Activity Monitor. use std::env; |
 | `core/appearance/src/main.rs` | rust | 155 | theme | use chrono::{Local, Timelike}; use serde_json::Value; |
+| `core/capture-thumbnail/src/main.rs` | rust | 241 | window | ! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26. |
 | `core/clipboard/src/main.rs` | rust | 302 |  | use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value}; |
 | `core/waybar-status/src/main.rs` | rust | 450 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |
 | `core/window-actions/src/main.rs` | rust | 263 | window | use serde_json::Value; use std::env; |
@@ -32,7 +33,6 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `scripts/bar-style` | bash | 15 | scripts, menu | hyprmac — alterna a barra de menus entre transparente e clara fosca bar-style [toggle/light/transparent] |
 | `scripts/build-waybar-extras` | bash | 57 | scripts, lock, menu | Build isolada do tray nativo 0.15.0; nunca instala sobre /usr/bin/waybar. set -euo pipefail |
 | `scripts/captura` | python | 422 | scripts, dock, menu, glass, window | """hyprmac — barra de Captura de Tela (⇧⌘5 do macOS), sem gravação. Cápsula de vidro escuro no rodapé da tela, como no Tahoe: |
-| `scripts/captura-miniatura` | python | 172 | scripts, window | """hyprmac — miniatura flutuante depois de uma captura de tela (como no macOS). captura-miniatura <imagem.png> [--abrir <arquivo>] |
 | `scripts/extract-notes-specs.js` | javascript | 325 | scripts, lock, menu, window | const fs = require('fs'); const path = require('path'); |
 | `scripts/generate-app-factory` | python | 193 | scripts, lock, menu, window | """Generate missing HyprMac app entries from the curated Tahoe package inventory. Only writes its own generated files. Existing, differing files are reported and |
 | `scripts/gravacao` | python | 280 | scripts, menu, window | """hyprmac — gravação de tela da ferramenta ⇧⌘5 (como no macOS). gravacao screen   grava o monitor em foco |
@@ -40,7 +40,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `scripts/mineração-agents.sh` | bash | 44 | scripts, menu, glass | Sistema de múltiplos agentes para minerar o DMG macOS 26.6.1 Cada agente trabalha em um componente específico |
 | `scripts/ocioso` | bash | 65 | scripts, lock | hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só |
 | `scripts/scratchpad` | bash | 14 | scripts, window | hyprmac — mostra/esconde o scratchpad (área especial "magic"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que |
-| `scripts/screenshot` | bash | 96 | scripts, window | hyprmac — capturas de tela no estilo macOS (grim + slurp)  |
+| `scripts/screenshot` | bash | 95 | scripts, window | hyprmac — capturas de tela no estilo macOS (grim + slurp)  |
 | `scripts/spotlight` | bash | 106 | scripts, spotlight, menu | hyprmac — Spotlight do shell GTK. Chamar de novo fecha. spotlight [apps/files/actions/clipboard] |
 | `scripts/spotlight-itens` | python | 707 | scripts, control center, spotlight, notification, lock, menu | """hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o "Restart…/Shut Down…/Log Out…" |
 | `scripts/status-map` | python | 292 | scripts, dock, spotlight | """Gera o mapa de status do HyprMac (treemaps SVG + bloco do README). Fontes (nenhuma é editada aqui): |

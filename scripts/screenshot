@@ -90,7 +90,6 @@ fi
 
 # Miniatura flutuante no canto, como no macOS (clique = editar, arrastar = soltar
 # o arquivo em outro app). Sem ela (GTK ausente), cai no aviso antigo.
-H="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-setsid -f "$H/scripts/captura-miniatura" "$file" >/dev/null 2>&1 \
+setsid -f "$HOME/.local/bin/hyprmac-captura-miniatura" "$file" >/dev/null 2>&1 \
   || notify-send -a "Captura de Tela" -i "$file" -t 3000 \
        "Captura de Tela" "Salva em ${dir/#$HOME/\~}" 2>/dev/null &

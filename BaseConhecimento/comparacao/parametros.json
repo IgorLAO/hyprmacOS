@@ -1424,7 +1424,7 @@
    "apple": "barra de captura + gravação + miniatura no canto → editor",
    "fonte": "componentes/sistema-e-recursos.md",
    "hyprmac": "barra ⇧⌘5 (Super+Shift+5) em cápsula de vidro no rodapé: captura de tela inteira / janela / área + GRAVAÇÃO de tela inteira / área (scripts/gravacao via wf-recorder, com controle ⏹ e cronômetro na barra de menus); Opções com destino, temporizador, Mostrar Miniatura Flutuante e Gravar Microfone; captura para arquivo + área de transferência; miniatura flutuante no canto (clique = editar no Spectacle / abrir o vídeo, arrastar = soltar o arquivo); ⌃ só para a área de transferência. Sem 'mostrar cliques do mouse'; gravação exige o wf-recorder instalado · 2026-10-04 (referencias/desejos/captura-barra-opcoes, 2,39 px/pt): barra refeita nas medidas do Tahoe — 53 de altura, canto 13, ✕ em círculo de 17, 3 capturas (passo 50,6, seleção em quadrado 46×37 canto 6) e 3 gravações (tela, janela — nova, gravacao pick —, área) com ícones em contorno e o ponto de gravação no canto, filetes, \"Opções\" com chevron.down desenhado, \"Capturar\" azul 82×38 canto 9; vidro do compositor (camada hyprmac-captura-barra, preset hyprmac-texto) e tema claro/escuro",
-   "onde": "scripts/captura · scripts/gravacao · scripts/screenshot · scripts/captura-miniatura · hypr/hyprmac.lua",
+   "onde": "scripts/captura · scripts/gravacao · scripts/screenshot · core/capture-thumbnail · hypr/hyprmac.lua",
    "medir": "—",
    "status": "conforme",
    "prioridade": "P3",

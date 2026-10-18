@@ -19,6 +19,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Clipboard | `core/clipboard/` | Binário Rust vigia, guarda e limpa o histórico usado pelo painel GTK do shell. |
 | Acessibilidade | `core/accessibility/` | Binário Rust persiste as opções de transparência e contraste e gera o CSS compartilhado. |
 | Cor de destaque | `core/accent/` | Binário Rust gera CSS de destaque a partir da paleta Tahoe compartilhada em JSON. |
+| Miniatura de captura | `core/capture-thumbnail/` | Binário Rust GTK3/LayerShell desenha a prévia flutuante, aceita clique e arraste de arquivo e fecha após cinco segundos sem interação. |
 | Integração | `scripts/`, `gtk/`, `kde/`, `ghostty/`, `wofi/` | Tema, captura, ações de janela, vidro, acessibilidade e integração com apps. |
 | Vidro | `scripts/vidro`, `shell/vidro.py`, plugin externo `hyprglass` | Instala/carrega a versão compatível do plugin e aplica presets às superfícies permitidas. |
 | Instalação | `install.sh` | Cria links/configurações e backups de arquivos do usuário. Exige a localização `~/Projects/hyprmac`. |

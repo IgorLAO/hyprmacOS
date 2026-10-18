@@ -149,6 +149,42 @@
       "sha256": "6364569062b6552dea626ed174ff16dc0655cba1d54ed2bc2dfd55abba49dbff"
     },
     {
+      "path": "core/capture-thumbnail/src/main.rs",
+      "language": "rust",
+      "bytes": 7878,
+      "lines": 241,
+      "summary": "! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26.",
+      "symbols": [
+        "State",
+        "thumbnail_size",
+        "rounded",
+        "open_target",
+        "arm",
+        "run",
+        "main",
+        "thumbnail_fits_both_axes_and_preserves_portrait"
+      ],
+      "imports": [
+        "gdk_pixbuf::{InterpType, Pixbuf}",
+        "gtk::gdk::{self, prelude::GdkContextExt}",
+        "gtk::glib::{self, ControlFlow, Propagation, SourceId}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, Layer, LayerShell}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::f64::consts::PI",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::rc::Rc",
+        "std::time::Duration",
+        "super::thumbnail_size"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "5bb5ae7bccead0415dd8dd715d236baf722a536ef85264ffe30931ed24cef934"
+    },
+    {
       "path": "core/clipboard/src/main.rs",
       "language": "rust",
       "bytes": 9277,
@@ -818,35 +854,6 @@
       "sha256": "0846026daa6c539bc6494bcf53fb50f2de3ff9390259b738f01c7a160a0e741d"
     },
     {
-      "path": "scripts/captura-miniatura",
-      "language": "python",
-      "bytes": 6346,
-      "lines": 172,
-      "summary": "\"\"\"hyprmac — miniatura flutuante depois de uma captura de tela (como no macOS). captura-miniatura <imagem.png> [--abrir <arquivo>]",
-      "symbols": [
-        "editor",
-        "rounded",
-        "main",
-        "draw",
-        "sair",
-        "armar",
-        "soltou"
-      ],
-      "imports": [
-        "os",
-        "subprocess",
-        "sys",
-        "gi",
-        "gi.repository",
-        "math"
-      ],
-      "tags": [
-        "scripts",
-        "window"
-      ],
-      "sha256": "4b66008c31be0d2694ffd1a45be099db38d86a0af570b3a92ea0c40812b15894"
-    },
-    {
       "path": "scripts/extract-notes-specs.js",
       "language": "javascript",
       "bytes": 9814,
@@ -900,7 +907,7 @@
     {
       "path": "scripts/gravacao",
       "language": "python",
-      "bytes": 10667,
+      "bytes": 10688,
       "lines": 280,
       "summary": "\"\"\"hyprmac — gravação de tela da ferramenta ⇧⌘5 (como no macOS). gravacao screen   grava o monitor em foco",
       "symbols": [
@@ -935,7 +942,7 @@
         "menu",
         "window"
       ],
-      "sha256": "423282c3d8214583658e6d5b19819ba53bcb215cf858e7934eb7688fae5dfad9"
+      "sha256": "b9012648211398ffaf315dc9d63038f10268caf711624004b970e425cbca1cd4"
     },
     {
       "path": "scripts/menu-extras",
@@ -1021,8 +1028,8 @@
     {
       "path": "scripts/screenshot",
       "language": "bash",
-      "bytes": 3861,
-      "lines": 96,
+      "bytes": 3822,
+      "lines": 95,
       "summary": "hyprmac — capturas de tela no estilo macOS (grim + slurp) ",
       "symbols": [
         "json_field",
@@ -1033,7 +1040,7 @@
         "scripts",
         "window"
       ],
-      "sha256": "3345c9d28bb10977f1c3bed4a25202608ab5a97baf762fd2e216c2f2b868d703"
+      "sha256": "041831d3004156ea831108e2a56d59fbea54f8719e6ef73f2cfb40cf1b937ee0"
     },
     {
       "path": "scripts/spotlight",

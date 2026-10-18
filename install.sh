@@ -62,6 +62,9 @@ link "$H/core/accessibility/target/release/hyprmac-acessibilidade" "$HOME/.local
 step "Cor de destaque em Rust"
 cargo build --release --locked --manifest-path "$H/core/accent/Cargo.toml"
 link "$H/core/accent/target/release/hyprmac-accent" "$HOME/.local/bin/hyprmac-accent" local/bin/hyprmac-accent
+step "Miniatura flutuante em Rust"
+cargo build --release --locked --manifest-path "$H/core/capture-thumbnail/Cargo.toml"
+link "$H/core/capture-thumbnail/target/release/hyprmac-captura-miniatura" "$HOME/.local/bin/hyprmac-captura-miniatura" local/bin/hyprmac-captura-miniatura
 link "$H/waybar"             "$C/waybar"             waybar
 # itens ocultos da barra (Ajustes ▸ Menu Bar): gerado em tempo de execução; o @import precisa dele
 [ -e "$H/waybar/barra-ocultos.css" ] || : > "$H/waybar/barra-ocultos.css"
