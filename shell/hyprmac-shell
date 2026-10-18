@@ -6378,6 +6378,7 @@ def main():
         return False
 
     # Mudanças externas em config.json também trocam a origem em tempo real.
+    os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
     conf_mon = Gio.File.new_for_path(os.path.dirname(CONFIG_PATH)).monitor_directory(
         Gio.FileMonitorFlags.NONE, None)
     conf_mon.connect("changed", lambda _m, file, *_:
