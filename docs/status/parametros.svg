@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="520" height="260" fill="#1f2026"/>
-<text x="4" y="17" font-size="13" fill="#e6e6ea">Parâmetros medidos: 94.7% (93/106 feitos)</text>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Parâmetros medidos: 94.2% (92/106 feitos)</text>
 <g><title>Barra de menus — 97%</title>
 <rect x="0.0" y="26.0" width="147.2" height="132.6" fill="#16171c"/>
 <rect x="1.5" y="27.5" width="28.0" height="31.6" fill="#3fb44b"><title>BAR-01: feito</title></rect>
@@ -69,17 +69,17 @@
 <rect x="175.2" y="224.7" width="25.5" height="33.8" fill="#9bc53d"><title>CC-06: parcial testado</title></rect>
 <text x="150.2" y="165.6" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Central de Contr</text>
 </g>
-<g><title>Recursos do sistema — 80%</title>
+<g><title>Recursos do sistema — 75%</title>
 <rect x="255.1" y="26.0" width="93.2" height="123.2" fill="#16171c"/>
 <rect x="256.6" y="27.5" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-02: feito</title></rect>
 <rect x="287.0" y="27.5" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-04: feito</title></rect>
 <rect x="317.4" y="27.5" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-05: feito</title></rect>
 <rect x="256.6" y="57.8" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-06: feito</title></rect>
-<rect x="287.0" y="57.8" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-08: feito</title></rect>
-<rect x="317.4" y="57.8" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-10: feito</title></rect>
-<rect x="256.6" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-01: parcial testado</title></rect>
-<rect x="287.0" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-03: parcial testado</title></rect>
-<rect x="317.4" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-07: parcial testado</title></rect>
+<rect x="287.0" y="57.8" width="29.4" height="29.3" fill="#3fb44b"><title>SIS-10: feito</title></rect>
+<rect x="317.4" y="57.8" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-01: parcial testado</title></rect>
+<rect x="256.6" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-03: parcial testado</title></rect>
+<rect x="287.0" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-07: parcial testado</title></rect>
+<rect x="317.4" y="88.1" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-08: parcial testado</title></rect>
 <rect x="256.6" y="118.4" width="29.4" height="29.3" fill="#9bc53d"><title>SIS-11: parcial testado</title></rect>
 <text x="258.1" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Recursos do si</text>
 </g>
