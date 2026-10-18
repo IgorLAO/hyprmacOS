@@ -24,6 +24,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Vidro | `scripts/vidro`, `shell/vidro.py`, plugin externo `hyprglass` | Instala/carrega a versão compatível do plugin e aplica presets às superfícies permitidas. |
 | Instalação | `install.sh` | Cria links/configurações e backups de arquivos do usuário. Exige a localização `~/Projects/hyprmac`. |
 | Mapa de status | `core/status-map/`, `scripts/status-map` | Gerador Rust dos SVGs e do bloco do README, chamado pelo hook e pelo workflow. |
+| Matriz de comparação | `core/comparison/`, `BaseConhecimento/ferramentas/comparar.py` | Binário Rust mede parâmetros no código, gera `MATRIZ.md` e atualiza a tabela SQLite. O caminho `.py` é um invólucro Bash para compatibilidade com comandos existentes. |
 
 ## App Factory (expansão dos apps)
 

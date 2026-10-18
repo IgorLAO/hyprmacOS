@@ -231,6 +231,38 @@
       "sha256": "9318675b684b3347a4f843c7ad26d6192e7097829c88ddf5fe1045c852f95923"
     },
     {
+      "path": "core/comparison/src/main.rs",
+      "language": "rust",
+      "bytes": 12950,
+      "lines": 364,
+      "summary": "! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex;",
+      "symbols": [
+        "Area",
+        "string",
+        "icon",
+        "points",
+        "read_value",
+        "evaluate",
+        "areas_for",
+        "percent",
+        "optional",
+        "write_db",
+        "report",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, Connection}",
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [],
+      "sha256": "f5a9728cc3137da0ee56e2ed9afac3e65e045d9bcec34dcd2921caadf73e28a2"
+    },
+    {
       "path": "core/status-map/src/main.rs",
       "language": "rust",
       "bytes": 15457,

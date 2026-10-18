@@ -2,6 +2,8 @@
 
 ## Migração Python → Rust — 2026-10-18
 
+- Implementação da comparação: `BaseConhecimento/ferramentas/comparar.py` passou a ser um invólucro Bash para `core/comparison/` em Rust. Medição por regex, cálculo de notas, modos `--resumo`/`--pendentes`, matriz Markdown e tabela SQLite foram transferidos; o caminho operacional existente foi preservado.
+- Validação da comparação: as saídas dos dois modos, `MATRIZ.md` e as 106 linhas da tabela `parametros` coincidiram byte a byte com o gerador Python anterior no estado atual. Padrões novos de regex exigirão nova conferência.
 - Implementação do mapa de status: `scripts/status-map` agora chama `core/status-map/` em Rust; o hook de commit e o workflow usam o mesmo comando. O parser da lista de comportamentos, matriz e inventário de apps, o layout dos treemaps e a escrita idempotente foram transferidos.
 - Validação do mapa de status: os sete SVGs gerados e o bloco do README coincidiram byte a byte com a saída Python anterior para o estado atual do repositório. O workflow remoto ainda não foi executado nesta branch.
 - Implementação da miniatura: `scripts/captura-miniatura` foi substituído por `core/capture-thumbnail/` (`hyprmac-captura-miniatura`). `scripts/screenshot` e `scripts/gravacao` chamam o executável instalado em `~/.local/bin`; o instalador o compila e cria o link com backup idempotente. O desenho, clique para abrir, URI de arraste, pausa ao passar o ponteiro e descarte por botão direito seguem o contrato do script anterior. As medidas continuam uma extrapolação do kit macOS 27, sem evidência visual Tahoe 26.
