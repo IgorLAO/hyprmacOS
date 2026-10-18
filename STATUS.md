@@ -2,6 +2,8 @@
 
 ## Migração Python → Rust — 2026-10-18
 
+- Implementação do índice de código: `BaseConhecimento/ferramentas/indexar_codigo.py` agora chama `core/code-index/` em Rust. Extensões, símbolos, imports, resumos, tags e hashes SHA-256 foram transferidos; o caminho `.py` continua operacional como invólucro Bash.
+- Validação do índice: os 235 registros já presentes mantiveram todos os campos idênticos na comparação com o índice Python anterior. O novo registro é o próprio módulo Rust; a consulta SQLite será reindexada a seguir.
 - Implementação da auditoria: `BaseConhecimento/ferramentas/auditar_base.py` agora chama `core/audit/` em Rust. Foram transferidas as checagens SQLite, classificações da base Tahoe local, hashes SHA-256 e links Markdown; o invólucro tornou o caminho executável diretamente.
 - Validação da auditoria: JSON de saída e código de erro coincidiram com a versão Python no estado atual, inclusive os 236 links de imagens ausentes já conhecidos, zero hashes divergentes e SQLite íntegro.
 - Implementação da comparação: `BaseConhecimento/ferramentas/comparar.py` passou a ser um invólucro Bash para `core/comparison/` em Rust. Medição por regex, cálculo de notas, modos `--resumo`/`--pendentes`, matriz Markdown e tabela SQLite foram transferidos; o caminho operacional existente foi preservado.

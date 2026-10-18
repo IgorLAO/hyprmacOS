@@ -259,6 +259,48 @@
       "sha256": "9318675b684b3347a4f843c7ad26d6192e7097829c88ddf5fe1045c852f95923"
     },
     {
+      "path": "core/code-index/src/main.rs",
+      "language": "rust",
+      "bytes": 9824,
+      "lines": 312,
+      "summary": "! Índice leve de código para busca progressiva dos componentes. use regex::Regex;",
+      "symbols": [
+        "language",
+        "symbol_pattern",
+        "import_pattern",
+        "unique_values",
+        "summary",
+        "tags",
+        "collect",
+        "markdown",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::{json, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "walkdir::WalkDir"
+      ],
+      "tags": [
+        "dock",
+        "control center",
+        "spotlight",
+        "notification",
+        "lock",
+        "menu",
+        "glass",
+        "theme",
+        "window",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "35d8198e60d7a00f6b47b2141e0dc48d1a2b1ca05d018acb847d73e99deaa38e"
+    },
+    {
       "path": "core/comparison/src/main.rs",
       "language": "rust",
       "bytes": 12950,

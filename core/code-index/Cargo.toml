@@ -1,0 +1,11 @@
+[package]
+name = "hyprmac-indexar-codigo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hex = "0.4"
+regex = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
+walkdir = "2"

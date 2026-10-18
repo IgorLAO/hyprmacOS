@@ -12,6 +12,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/audit/src/main.rs` | rust | 242 |  | ! Auditoria da base curada, fontes locais e links operacionais. use percent_encoding::percent_decode_str; |
 | `core/capture-thumbnail/src/main.rs` | rust | 241 | window | ! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26. |
 | `core/clipboard/src/main.rs` | rust | 302 |  | use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value}; |
+| `core/code-index/src/main.rs` | rust | 312 | dock, control center, spotlight, notification, lock, menu | ! Índice leve de código para busca progressiva dos componentes. use regex::Regex; |
 | `core/comparison/src/main.rs` | rust | 364 |  | ! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex; |
 | `core/status-map/src/main.rs` | rust | 422 | dock, spotlight, lock | ! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex; |
 | `core/waybar-status/src/main.rs` | rust | 450 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |

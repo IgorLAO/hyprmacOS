@@ -2,7 +2,7 @@
 
 ## Migração integral Python → Rust — solicitação de 2026-10-18
 
-A branch `migration/python-to-rust` iniciou a substituição do Python por Rust por contrato executável. A Waybar e a ação About usam `core/waybar-status/`; aparência, janelas, clipboard, acessibilidade, destaque, miniatura de captura, mapa de status, comparação e auditoria usam `core/appearance/`, `core/window-actions/`, `core/clipboard/`, `core/accessibility/`, `core/accent/`, `core/capture-thumbnail/`, `core/status-map/`, `core/comparison/` e `core/audit/`. Restam o shell GTK e suas views, os apps, outros scripts de integração, as ferramentas de conhecimento e os testes. Preservar funcionamento e validação por componente durante a troca; a solicitação atual do usuário substitui a recomendação histórica de Rust optativo abaixo.
+A branch `migration/python-to-rust` iniciou a substituição do Python por Rust por contrato executável. A Waybar e a ação About usam `core/waybar-status/`; aparência, janelas, clipboard, acessibilidade, destaque, miniatura de captura, mapa de status, comparação, auditoria e índice de código usam `core/appearance/`, `core/window-actions/`, `core/clipboard/`, `core/accessibility/`, `core/accent/`, `core/capture-thumbnail/`, `core/status-map/`, `core/comparison/`, `core/audit/` e `core/code-index/`. Restam o shell GTK e suas views, os apps, outros scripts de integração, as ferramentas de conhecimento e os testes. Preservar funcionamento e validação por componente durante a troca; a solicitação atual do usuário substitui a recomendação histórica de Rust optativo abaixo.
 
 ## Expansão de aplicativos — direção do usuário em 2026-10-11
 
