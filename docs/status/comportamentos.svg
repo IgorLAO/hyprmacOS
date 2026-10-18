@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="520" height="260" viewBox="0 0 520 260" font-family="Inter,Segoe UI,Helvetica,Arial,sans-serif">
 <rect width="520" height="260" fill="#1f2026"/>
-<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 14.6% (2/113 feitos)</text>
+<text x="4" y="17" font-size="13" fill="#e6e6ea">Comportamentos Tahoe 26: 15.0% (2/113 feitos)</text>
 <g><title>Microinterações — 48%</title>
 <rect x="0.0" y="26.0" width="124.2" height="130.0" fill="#16171c"/>
 <rect x="1.5" y="27.5" width="29.6" height="31.0" fill="#3fb44b"><title>MIC-01: feito</title></rect>
@@ -20,13 +20,13 @@
 <rect x="62.6" y="123.5" width="29.6" height="31.0" fill="#7b7d86"><title>MIC-06: a fazer</title></rect>
 <text x="3.0" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Microinterações</text>
 </g>
-<g><title>Dock — 15%</title>
+<g><title>Dock — 17%</title>
 <rect x="0.0" y="156.0" width="124.2" height="104.0" fill="#16171c"/>
-<rect x="1.5" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-01: parcial/relatado</title></rect>
-<rect x="32.1" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-02: parcial/relatado</title></rect>
-<rect x="62.6" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-03: parcial/relatado</title></rect>
-<rect x="93.2" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-04: parcial/relatado</title></rect>
-<rect x="1.5" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-07: parcial/relatado</title></rect>
+<rect x="1.5" y="157.5" width="29.6" height="33.0" fill="#9bc53d"><title>DCK-07: parcial testado</title></rect>
+<rect x="32.1" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-01: parcial/relatado</title></rect>
+<rect x="62.6" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-02: parcial/relatado</title></rect>
+<rect x="93.2" y="157.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-03: parcial/relatado</title></rect>
+<rect x="1.5" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-04: parcial/relatado</title></rect>
 <rect x="32.1" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-08: parcial/relatado</title></rect>
 <rect x="62.6" y="191.5" width="29.6" height="33.0" fill="#d6a531"><title>DCK-10: parcial/relatado</title></rect>
 <rect x="93.2" y="191.5" width="29.6" height="33.0" fill="#7b7d86"><title>DCK-05: a fazer</title></rect>
@@ -100,16 +100,16 @@
 <rect x="308.5" y="230.8" width="35.1" height="27.8" fill="#7b7d86"><title>CCN-12: a fazer</title></rect>
 <text x="237.7" y="155.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Central</text>
 </g>
-<g><title>Vidro — 0%</title>
+<g><title>Vidro — 2%</title>
 <rect x="345.1" y="26.0" width="87.4" height="123.2" fill="#16171c"/>
-<rect x="346.6" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-01: a fazer</title></rect>
-<rect x="375.1" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-02: a fazer</title></rect>
-<rect x="403.6" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-03: a fazer</title></rect>
-<rect x="346.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-04: a fazer</title></rect>
-<rect x="375.1" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-05: a fazer</title></rect>
-<rect x="403.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-06: a fazer</title></rect>
-<rect x="346.6" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-07: a fazer</title></rect>
-<rect x="375.1" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-08: a fazer</title></rect>
+<rect x="346.6" y="27.5" width="27.5" height="29.3" fill="#d6a531"><title>GLS-08: parcial/relatado</title></rect>
+<rect x="375.1" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-01: a fazer</title></rect>
+<rect x="403.6" y="27.5" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-02: a fazer</title></rect>
+<rect x="346.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-03: a fazer</title></rect>
+<rect x="375.1" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-04: a fazer</title></rect>
+<rect x="403.6" y="57.8" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-05: a fazer</title></rect>
+<rect x="346.6" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-06: a fazer</title></rect>
+<rect x="375.1" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-07: a fazer</title></rect>
 <rect x="403.6" y="88.1" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-09: a fazer</title></rect>
 <rect x="346.6" y="118.4" width="27.5" height="29.3" fill="#7b7d86"><title>GLS-10: a fazer</title></rect>
 <text x="348.1" y="38.0" font-size="10.5" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.4" paint-order="stroke">Vidro</text>
