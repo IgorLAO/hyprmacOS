@@ -108,6 +108,12 @@ class NarrowScreen(unittest.TestCase):
         self.assertEqual(self.shift(1920, 640, 26, 282), 0)
         self.assertEqual(self.shift(1440, 640, 26, 282), 0)
 
+    def test_empty_spotlight_centers_the_field_and_mode_buttons_together(self):
+        shift = self.shift(1920, 500, 36, 372, center_group=True)
+        left = 1920 / 2 - shift - 500 / 2
+        right = 1920 / 2 - shift + 500 / 2 - 36 + 372
+        self.assertLessEqual(abs((left + right) / 2 - 1920 / 2), 1)
+
     def test_narrow_screen_moves_just_enough(self):
         for width in (960, 1024, 1100):
             s = self.shift(width, 640, 26, 282)

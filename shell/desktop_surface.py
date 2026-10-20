@@ -1249,8 +1249,27 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
 
         def _customize_menu(self, path):
             menu = Gtk.Menu()
+            add_class(menu, "hyprmac-menu")
             for name in ("blue", "purple", "pink", "red", "orange", "yellow", "green", "graphite"):
-                item = Gtk.MenuItem(label=name.capitalize())
+                color = accent_hex("slate" if name == "graphite" else name, False)
+                item = Gtk.MenuItem()
+                row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+                swatch = Gtk.DrawingArea()
+                swatch.set_size_request(15, 15)
+                rgba = Gdk.RGBA()
+                rgba.parse(color)
+                def draw_swatch(_area, cr, fill=rgba):
+                    cr.arc(7.5, 7.5, 6, 0, math.tau)
+                    cr.set_source_rgba(fill.red, fill.green, fill.blue, 1)
+                    cr.fill_preserve()
+                    cr.set_source_rgba(1, 1, 1, 0.42)
+                    cr.set_line_width(1)
+                    cr.stroke()
+                    return False
+                swatch.connect("draw", draw_swatch)
+                row.pack_start(swatch, False, False, 0)
+                row.pack_start(Gtk.Label(label=name.capitalize(), xalign=0), True, True, 0)
+                item.add(row)
                 item.connect("activate", lambda _item, value=name:
                              self._set_customization(path, color=accent_hex(
                                  "slate" if value == "graphite" else value, False)))
@@ -1291,17 +1310,30 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
                     if texto is None:
                         m.append(Gtk.SeparatorMenuItem())
                         continue
-                    it = Gtk.MenuItem(label=texto)
+                    it = self._context_item(texto, "document-open-symbolic" if texto == "Open"
+                                            else "user-trash-symbolic")
                     it.connect("activate", lambda _i, a=acao: a())
                     m.append(it)
                 if os.path.isdir(path):
-                    custom = Gtk.MenuItem(label="Customize Folder")
+                    custom = self._context_item("Customize Folder", "folder-symbolic")
                     custom.set_submenu(self._customize_menu(path))
                     m.insert(custom, 1)
                 m.show_all()
                 m.popup_at_pointer(ev)
                 self._menu = m
             return True
+
+        @staticmethod
+        def _context_item(title, icon_name):
+            item = Gtk.MenuItem()
+            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+            icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.MENU)
+            icon.set_pixel_size(14)
+            icon.set_size_request(16, 16)
+            row.pack_start(icon, False, False, 0)
+            row.pack_start(Gtk.Label(label=title, xalign=0), True, True, 0)
+            item.add(row)
+            return item
 
 
     class WidgetGallery:

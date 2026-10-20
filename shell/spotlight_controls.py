@@ -15,7 +15,7 @@ gi.require_version("Gdk", "3.0")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Gdk, Gtk, Pango, PangoCairo
 
-SPOT_FIELD = 52
+SPOT_FIELD = 72
 
 def draw_appstore_a(cr, cx, cy, s_, lw):
     """O "A" da App Store em três traços (perna direita longa, esquerda curta, travessa)."""
@@ -34,10 +34,8 @@ class SpotControls(Gtk.DrawingArea):
     """Os 4 botões de modo do Spotlight do Tahoe (Apps, Arquivos, Ações, Área de
     Transferência) — referencias/telas/spotlight-controles-1…6.png. Saem da ponta direita
     da cápsula como uma gota de vidro: incha a ponta, estica, solta-se e divide-se em 4
-    círculos ligados por "pescoços" que afinam até romper. O desenho é uma união suave
-    (metaball, smooth-min de SDFs) calculada por pixel; o vidro (lente, aro) vem do
-    hyprglass, que faz de cada mancha de alfa da camada uma peça própria — a fusão com a
-    cápsula e a separação saem líquidas sozinhas."""
+    círculos ligados por "pescoços" que afinam até romper. O Cairo desenha as
+    formas animadas, e o hyprglass aplica lente e aro à máscara alfa da camada."""
 
     R = SPOT_FIELD / 2            # círculos do mesmo diâmetro da cápsula (medido: ≈ altura)
     GAP = 10                      # vão entre a cápsula e os círculos e entre eles
@@ -153,30 +151,6 @@ class SpotControls(Gtk.DrawingArea):
         # saída com mola: passa um pouco do alvo e volta (como os painéis do Tahoe)
         return 1 - (1 - u) ** 3 + (0.05 * math.sin(math.pi * (u - 0.6) / 0.4) if u > 0.6 else 0)
 
-    def _field(self):
-        import numpy as np
-        R, t, h, w = self.R, self.t, self.h, self.w
-        ys, xs = np.mgrid[0:h, 0:w].astype(np.float32) + 0.5
-        cy = h / 2
-        x0 = self.OVER
-        # cápsula: a ponta é um arco de raio R centrado em (x0 - R, cy); à esquerda, faixa
-        dx = np.maximum(xs - (x0 - R), 0)
-        cap = np.sqrt(dx * dx + (ys - cy) ** 2) - R
-        # pescoços: k grande no começo (tudo uma gota), pequeno no fim (gotas soltas)
-        k = 4 + 30 * (1 - t) ** 1.3
-        d = cap.copy()
-        start = x0 - R * 0.55
-        r = R * (0.5 + 0.5 * min(1.0, t * 1.6))
-        for i, (fx, fy) in enumerate(self.centers()):
-            e = self._ease((t - i * 0.07) / 0.79)
-            cx = start + (fx - start) * e
-            ci = np.sqrt((xs - cx) ** 2 + (ys - fy) ** 2) - r
-            hh = np.clip(0.5 + 0.5 * (ci - d) / k, 0, 1)            # smooth-min polinomial
-            d = ci * (1 - hh) + d * hh - k * hh * (1 - hh)
-        cov = np.clip(0.5 - d, 0, 1)
-        cov_cap = np.clip(0.5 - cap, 0, 1)
-        return np.clip(cov - cov_cap, 0, 1)        # a cápsula já é desenhada pelo painel
-
     def _fill(self):
         ctx = self.spot.panel.get_style_context()
         c = ctx.get_property("background-color", Gtk.StateFlags.NORMAL)
@@ -187,25 +161,33 @@ class SpotControls(Gtk.DrawingArea):
     def _draw(self, _w, cr):
         if self.t <= 0.001:
             return False
-        import numpy as np
-        a = self._field()
         r, g, b, alpha = self._fill()
-        # tema pela cor do texto do campo (o véu branco do vidro não diz se é claro/escuro)
-        tc = self.spot.entry.get_style_context().get_color(Gtk.StateFlags.NORMAL)
-        dark = (tc.red + tc.green + tc.blue) / 3 > 0.5
-        A = a * alpha
-        img = np.zeros((self.h, self.w, 4), dtype=np.uint8)          # ARGB32 premultiplicado
-        img[..., 0] = (b * A * 255).astype(np.uint8)
-        img[..., 1] = (g * A * 255).astype(np.uint8)
-        img[..., 2] = (r * A * 255).astype(np.uint8)
-        img[..., 3] = (A * 255).astype(np.uint8)
-        stride = cairo.ImageSurface.format_stride_for_width(cairo.FORMAT_ARGB32, self.w)
-        if stride != self.w * 4:
-            return False
-        surf = cairo.ImageSurface.create_for_data(memoryview(img).cast("B"), cairo.FORMAT_ARGB32,
-                                                  self.w, self.h, stride)
-        cr.set_source_surface(surf, 0, 0)
-        cr.paint()
+        # A cor do Entry pode ficar defasada após a troca de tema; a cápsula e os
+        # círculos compartilham o mesmo material, cuja luminância já está atualizada.
+        dark = (r + g + b) / 3 < 0.5
+        positions = []
+        start = self.OVER - self.R * 0.55
+        radius = self.R * (0.5 + 0.5 * min(1.0, self.t * 1.6))
+        for i, (final_x, cy) in enumerate(self.centers()):
+            progress = self._ease((self.t - i * 0.07) / 0.79)
+            positions.append((start + (final_x - start) * progress, cy))
+        cr.save()
+        cr.rectangle(self.OVER, 0, self.w - self.OVER, self.h)
+        cr.clip()
+        cr.set_source_rgba(r, g, b, alpha)
+        # Pontes arredondadas afinam durante a separação; Cairo dispensa NumPy no runtime.
+        neck = max(0.0, (1.0 - self.t) ** 1.7) * radius * 1.45
+        if neck > 0.5:
+            cr.set_line_cap(cairo.LINE_CAP_ROUND)
+            cr.set_line_width(neck)
+            cr.move_to(self.OVER - self.R * 0.3, self.h / 2)
+            for cx, cy in positions:
+                cr.line_to(cx, cy)
+            cr.stroke()
+        for cx, cy in positions:
+            cr.arc(cx, cy, radius, 0, math.tau)
+            cr.fill()
+        cr.restore()
 
         # ícones: aparecem no fim, quando as gotas já são círculos
         ia = max(0.0, min(1.0, (self.t - 0.72) / 0.28))
@@ -220,10 +202,10 @@ class SpotControls(Gtk.DrawingArea):
                 cr.fill()
             cr.set_source_rgba(*fg, 0.92 * ia)
             if mode == "apps":                     # o "A" da App Store, em três traços
-                draw_appstore_a(cr, cx, cy, 9, 2.2)
+                draw_appstore_a(cr, cx, cy, 13, 3)
                 continue
             lay = PangoCairo.create_layout(cr)
-            lay.set_font_description(Pango.FontDescription("Symbols Nerd Font 15"))
+            lay.set_font_description(Pango.FontDescription("Symbols Nerd Font 22"))
             lay.set_text(chr(int(self.GLYPHS[mode], 16)), -1)
             _ink, log = lay.get_pixel_extents()
             cr.move_to(cx - log.width / 2, cy - log.height / 2)

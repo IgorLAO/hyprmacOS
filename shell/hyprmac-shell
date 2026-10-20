@@ -208,10 +208,11 @@ def run_arg_action(kind, text):
                   + GLib.shell_quote(text))
 
 
-def spot_shift(width, field_w, over, controls_w, margin=8):
-    """Quanto a cápsula do Spotlight sai do centro para os botões de modo caberem na tela."""
+def spot_shift(width, field_w, over, controls_w, margin=8, center_group=False):
+    """Centraliza o conjunto vazio ou desloca apenas o necessário para evitar recorte."""
     overflow = width / 2 + field_w / 2 - over + controls_w + margin - width
-    return max(0, int(round(overflow)))
+    group = (controls_w - over) / 2 if center_group else 0
+    return max(0, int(round(overflow)), int(round(group)))
 
 
 def ui_sound(event_id):
@@ -1018,11 +1019,14 @@ class NowPlaying(Gtk.Box):
             lb.set_max_width_chars(9)
         ctr = Gtk.Box(spacing=0, homogeneous=True)
         self.play = None
+        self.play_button = None
         self.transport = []
         for icon, cmd in (("backward.fill", "previous"), ("play.fill", "play-pause"),
                           ("forward.fill", "next")):
             b = Gtk.Button()
             add_class(b, "media")
+            b.set_tooltip_text({"previous": "Previous Track", "play-pause": "Play",
+                                "next": "Next Track"}[cmd])
             lb = SFIcon(icon, 24, 24, "media-glyph")
             b.add(lb)
             b.connect("clicked", lambda _b, c=cmd: (spawn(f"playerctl {c}"),
@@ -1031,6 +1035,7 @@ class NowPlaying(Gtk.Box):
             self.transport.append(b)
             if cmd == "play-pause":
                 self.play = lb
+                self.play_button = b
                 add_class(b, "play")
         self.pack_start(self.art, False, False, 0)
         self.pack_end(ctr, False, False, 0)
@@ -1059,12 +1064,14 @@ class NowPlaying(Gtk.Box):
             self.title.set_text("Not Playing")
             self.artist.set_text("")
             self.play.set_name_("play.fill")
+            self.play_button.set_tooltip_text("Play")
             self._set_art(None)
             return False
         status, title, artist, art = parts[:4]
         self.title.set_text(title or "Sem título")
         self.artist.set_text(artist)
         self.play.set_name_("pause.fill" if status == "Playing" else "play.fill")
+        self.play_button.set_tooltip_text("Pause" if status == "Playing" else "Play")
         self._set_art(art)
         return False
 
@@ -1212,8 +1219,8 @@ def cc_fit_size(sizes, current, span):
     w, h = span
     return min(sizes, key=lambda s: (abs(SPANS[s][0] - w) + abs(SPANS[s][1] - h), s != current))
 DEFAULT_CONTROLS = [
-    ("wifi", "medium"), ("nowplaying", "large"), ("bluetooth", "small"), ("dnd", "small"),
-    ("vpn", "medium"), ("float", "small"), ("fullscreen", "small"), ("display", "wide"),
+    ("wifi", "medium"), ("nowplaying", "large"), ("bluetooth", "small"), ("vpn", "small"),
+    ("dnd", "medium"), ("float", "small"), ("fullscreen", "small"), ("display", "wide"),
     ("sound", "wide"), ("mic", "wide"), ("terminal", "small"), ("files", "small"),
     ("screenshot", "small"), ("recording", "small"), ("settings", "small"),
 ]
@@ -1347,7 +1354,8 @@ class ControlCenter:
         hypr = lambda lua: spawn("hyprctl dispatch " + GLib.shell_quote(lua))
         # vistas detalhadas (os mesmos menus da barra, dentro da Central)
         self.details = {"wifi": WifiMenu(hosted=True), "bluetooth": BluetoothMenu(hosted=True),
-                        "sound": SoundMenu(hosted=True)}
+                        "sound": SoundMenu(hosted=True),
+                        "focus": FocusMenu(self._focus_mode, self._set_focus_mode, hosted=True)}
         for d in self.details.values():
             d.on_close = self.hide
             d.on_back = self.close_detail
@@ -1357,7 +1365,8 @@ class ControlCenter:
                           on_detail=lambda: self.open_detail("wifi"))
         self.bt = Toggle(I["bt"], "Bluetooth", self._bt_click,
                          on_detail=lambda: self.open_detail("bluetooth"))
-        self.dnd = Toggle(I["moon"], "Do Not Disturb", self._dnd_click)
+        self.dnd = Toggle(I["moon"], "Focus", self._dnd_click,
+                          on_detail=lambda: self.open_detail("focus"))
         self.dnd.tint_on = True
         self.vpn_tile = Toggle(I["vpn"], "VPN", self._vpn_click)
         self.dark = Toggle(I["moon"], "Dark Mode", self._dark_click)
@@ -2433,7 +2442,7 @@ class ControlCenter:
             else:
                 self.mic.set_badge("Muted" if muted else "", muted=True)
         dnd = bool(self.notifs and self.notifs.dnd)
-        self.dnd.set(on=dnd, subtitle="On" if dnd else "Off")
+        self.dnd.set(on=dnd, title="Focus", subtitle=self._focus_label())
         if dark is not None:
             self.dark.set(on=dark, subtitle="On" if dark else "Off")
         try:
@@ -2481,22 +2490,28 @@ class ControlCenter:
         GLib.timeout_add(800, lambda: self._tick() and False)
 
     def _dnd_click(self):
-        if self.notifs:
-            self.notifs.dnd = not self.notifs.dnd
-            self.dnd.set(on=self.notifs.dnd, title="Do Not Disturb",
-                         subtitle="On" if self.notifs.dnd else "Off")
+        self._set_focus_mode("" if self._focus_mode() else "dnd")
 
-    def _sleep_click(self):
-        """Sleep Focus local: silencia banners e usa um indicador distinto."""
-        if not self.notifs:
-            return
+    def _focus_mode(self):
+        if not self.notifs or not self.notifs.dnd:
+            return ""
         try:
             with open(DND_STATE) as marker:
-                sleep_on = self.notifs.dnd and marker.read().strip() == "sleep"
+                return "sleep" if marker.read().strip() == "sleep" else "dnd"
         except OSError:
-            sleep_on = False
-        self.notifs.dnd = not sleep_on
-        if not sleep_on:
+            return "dnd"
+
+    def _focus_label(self):
+        return {"dnd": "Do Not Disturb", "sleep": "Sleep"}.get(self._focus_mode(), "")
+
+    def _set_focus_mode(self, mode):
+        if not self.notifs:
+            return
+        if mode not in ("", "dnd", "sleep"):
+            return
+        mode = "" if mode and self._focus_mode() == mode else mode
+        self.notifs.dnd = bool(mode)
+        if mode == "sleep":
             try:
                 with open(DND_STATE, "w") as marker:
                     marker.write("sleep")
@@ -2504,9 +2519,14 @@ class ControlCenter:
                 pass
             spawn("pkill -RTMIN+10 -x waybar")
             spawn("pkill -RTMIN+14 -x waybar")
-        self.dnd.set(on=self.notifs.dnd,
-                     title="Sleep" if not sleep_on else "Do Not Disturb",
-                     subtitle="On" if self.notifs.dnd else "Off")
+        self.dnd.set(on=bool(mode), title="Focus", subtitle=self._focus_label())
+        detail = self.details.get("focus")
+        if detail and detail.open:
+            detail.refresh_soon(0)
+
+    def _sleep_click(self):
+        """Sleep Focus local: silencia banners e usa um indicador distinto."""
+        self._set_focus_mode("sleep")
 
     def _dark_click(self):
         self.dark.set(on=not self.dark.on)
@@ -2664,15 +2684,19 @@ class MediaPanel:
         inner.set_halign(Gtk.Align.CENTER)
         inner.set_hexpand(True)
         self.play_lbl = None
+        self.play_button = None
         for icon, cmd in ((I["prev"], "previous"), (I["play"], "play-pause"), (I["next"], "next")):
             b = Gtk.Button()
             add_class(b, "np-ctrl", "np-" + cmd)
+            b.set_tooltip_text({"previous": "Previous Track", "play-pause": "Play",
+                                "next": "Next Track"}[cmd])
             lb = label(icon, "icon", 0.5)
             b.add(lb)
             b.connect("clicked", lambda _b, c=cmd: self._command(c))
             inner.pack_start(b, False, False, 0)
             if cmd == "play-pause":
                 self.play_lbl = lb
+                self.play_button = b
         self.ctrl.pack_start(inner, True, True, 0)
 
         # volume
@@ -2877,6 +2901,7 @@ class MediaPanel:
             self.title.set_text("Not Playing")
             self.artist.set_text("")
             self.play_lbl.set_text(I["play"])
+            self.play_button.set_tooltip_text("Play")
             self._set_art(None)
             self._show_progress()
             return False
@@ -2887,6 +2912,7 @@ class MediaPanel:
         self.title.set_text(title or "Sem título")
         self.artist.set_text(" — ".join(p for p in (artist, album) if p))
         self.play_lbl.set_text(I["pause"] if status == "Playing" else I["play"])
+        self.play_button.set_tooltip_text("Pause" if status == "Playing" else "Play")
         try:
             self.length = int(length) / 1e6
         except ValueError:
@@ -2942,6 +2968,7 @@ class MediaPanel:
             self.position, self.pos_at = self._current_pos(), time.monotonic()
             self.status = "Playing" if playing else "Paused"
             self.play_lbl.set_text(I["pause"] if playing else I["play"])
+            self.play_button.set_tooltip_text("Pause" if playing else "Play")
         GLib.timeout_add(350, lambda: self.refresh() and False)
 
     def _on_seek(self, _scale, _scroll, value):
@@ -5105,6 +5132,25 @@ class SoundMenu(BarPanel):
     def _set_output(self, name):
         spawn(f"pactl set-default-sink {GLib.shell_quote(name)}")
         self.refresh_soon(350)
+
+
+class FocusMenu(BarPanel):
+    """Modos de foco já disponíveis no shell, dentro da Central de Controle."""
+
+    def __init__(self, read_mode, set_mode, hosted=False):
+        self.read_mode = read_mode
+        self.set_mode = set_mode
+        super().__init__(hosted=hosted)
+
+    def fetch(self):
+        return self.read_mode()
+
+    def build(self, mode):
+        self.title_row("Focus")
+        self.device(I["moon"], "Do Not Disturb", mode == "dnd",
+                    action=lambda: self.set_mode("dnd"), close=False)
+        self.device(I["moon"], "Sleep", mode == "sleep",
+                    action=lambda: self.set_mode("sleep"), close=False)
 
 
 # ───────────────────────────── OSD de volume/brilho (BAR-11) ─────────────────────────────
