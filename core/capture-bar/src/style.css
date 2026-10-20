@@ -1,0 +1,49 @@
+window.captura { background: transparent; }
+.cap-bar {
+  min-height: 49px;
+  border-radius: 13px;
+  padding: 0 6px 0 13px;
+  border: 1px solid @cap_rim;
+  background-color: @cap_bg;
+  box-shadow: none;
+}
+.cap-bar button {
+  min-height: 37px;
+  min-width: 46px;
+  padding: 0;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+.cap-bar button.rec            { min-width: 48px; }
+.cap-bar button.modo           { margin: 0 1px; }
+.cap-bar button.modo.primeiro  { margin-left: 12px; }
+.cap-bar button:hover          { background: @cap_hover; }
+.cap-bar button.selected       { background: @cap_sel; }
+.cap-bar button.texto          { padding: 0 8px; min-width: 0; margin: 0 6px 0 4px; }
+.cap-bar button.texto label    { font-family: "SF Pro"; font-size: 13px; font-weight: 400; color: @cap_dim; }
+.cap-bar .chev                 { color: @cap_dim; }
+.cap-bar button.capturar {
+  min-width: 52px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 13px;
+  border-radius: 9px;
+  background: @cap_accent;
+}
+.cap-bar button.capturar label { font-weight: 600; color: #ffffff; }
+.cap-bar button.capturar:hover { background: shade(@cap_accent, 1.08); }
+.cap-bar button.fechar {
+  min-width: 17px;
+  min-height: 17px;
+  margin: 0;
+  border-radius: 999px;
+  background: @cap_x;
+}
+.cap-bar button.fechar:hover   { background: shade(@cap_x, 1.15); }
+.cap-bar .x { font-size: 9px; font-weight: 800; color: @cap_xfg; }
+.cap-sep { background: @cap_sep; min-width: 1px; min-height: 25px; margin: 0 5px; }
+/* dica ("Capture Entire Screen" da referência): cápsula de canto 6 acima da barra */
+tooltip { background: @cap_tip; border: 1px solid @cap_rim; border-radius: 6px; }
+tooltip label { font-family: "SF Pro"; font-size: 12px; color: @cap_dim; padding: 1px 3px; }

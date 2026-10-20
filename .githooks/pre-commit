@@ -2,5 +2,5 @@
 # Atualiza o mapa de status (docs/status/*.svg) em todo commit.
 # Ativado por: git config core.hooksPath .githooks
 raiz=$(git rev-parse --show-toplevel)
-python3 "$raiz/scripts/status-map" || exit 0   # nunca bloqueia o commit
+"$raiz/scripts/status-map" || exit 0   # nunca bloqueia o commit
 git add "$raiz/docs/status"

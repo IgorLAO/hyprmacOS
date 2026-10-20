@@ -123,11 +123,11 @@ Dock; não certificar um simples fade/scale como equivalente.
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
 | BAR-01 | P0 | Barra transparente conforme o estado e a referência Tahoe | A_VERIFICAR | NAO_AVALIADO | — |
-| BAR-02 | P0 | Menu do aplicativo ativo acompanhando as mudanças de foco | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
+| BAR-02 | P0 | Menu do aplicativo ativo acompanhando as mudanças de foco | PARCIAL | TESTADO_LOCAL | E1; 2026-10-20: `AppMenu` aberto com rótulo Firefox e seis ações com ícones semânticos no tema escuro (`/tmp/hyprmac-app-menu-icons-20261020.png`). Mudança de foco, clique físico e outros apps ainda sem rodada equivalente. |
 | BAR-03 | P0 | Ícones de status dos aplicativos via D-Bus/SNI | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-04 | P0 | Menus suspensos com geometria e materiais Tahoe | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-05 | P1 | Trocar imediatamente entre menus abertos ao mover o ponteiro, sem novo clique | A_VERIFICAR | NAO_AVALIADO | — |
-| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-11: About This Mac → Ajustes ▸ About, Force Quit → janela do shell; sem Recent Items (submenu derruba a Waybar) |
+| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-20: menu no shell com Recent Items (apps/documentos/servidores do histórico GTK), App Store e ações anteriores; dez comandos principais com ícones semânticos em coluna, seguindo orientação WWDC25 310. Nome e ID `.desktop` dos apps são relacionados; limites de 5/10/15 por seção passaram em ensaio isolado. Captura local `/tmp/hyprmac-apple-menu-icons-20261020.png`; submenu e ações ainda sem teste físico, glifos/medidas sem confronto Apple Tahoe 26 equivalente. |
 | BAR-07 | P1 | Indicadores de Wi-Fi, bateria, áudio e Bluetooth | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-08 | P1 | Personalizar e reorganizar controles | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-09 | P1 | Estados visuais ativo e pressionado dos itens | A_VERIFICAR | NAO_AVALIADO | — |
@@ -139,14 +139,14 @@ Dock; não certificar um simples fade/scale como equivalente.
 
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
-| GLS-01 | P0 | Transparência com blur contextual | A_VERIFICAR | NAO_AVALIADO | — |
+| GLS-01 | P0 | Transparência com blur contextual | PARCIAL | TESTADO_LOCAL | 2026-10-19: preset dos módulos da Central ajustado de 0,5 para 2,0 no hyprglass; o fundo azul permaneceu visível e as rochas dentro dos sliders perderam nitidez em captura da mesma cena. Referência visual: anúncio oficial Tahoe 26 da Central. Valor e comportamento em outros fundos/estados ainda não comparados em ambiente equivalente (`tahoe26:validacao:gls01-cc-blur-20261019`). |
 | GLS-02 | P0 | Refração do conteúdo atrás do componente | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-03 | P0 | Máscaras alfa corretas, inclusive nos cantos arredondados | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-04 | P0 | Contornos luminosos sutis | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-05 | P0 | Contraste adaptado ao conteúdo de fundo | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-06 | P1 | Transições suaves entre estados e materiais | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-07 | P1 | Sombras e profundidade coerentes | A_VERIFICAR | NAO_AVALIADO | — |
-| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | PARCIAL | NAO_AVALIADO | 2026-10-18: fundos dos menus GTK3/4, shell e Waybar ajustados para alfa 0,94 conforme referência enviada; captura com menu aberto e comparação Tahoe pendentes |
+| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | PARCIAL | TESTADO_LOCAL | 2026-10-19: menus escuros GTK3/4, shell e Waybar ajustados para preto translúcido alfa 0,90; Janela, File da Waybar, Options da barra Rust e menu GTK4 do Nautilus abertos no desktop. O popup Options recebeu desfoque do compositor e deixou de mostrar texto de vídeo ao fundo. GTK3 externo e tema claro não inspecionados; original Tahoe 26 ausente, alfa experimental e comparação visual pendente |
 | GLS-09 | P1 | Comportamento consistente em temas claro e escuro | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-10 | P1 | Estados hover, pressed, focus e disabled | A_VERIFICAR | NAO_AVALIADO | — |
 
@@ -171,7 +171,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
-| SPT-01 | P0 | Pesquisa unificada de aplicativos e arquivos | A_VERIFICAR | NAO_AVALIADO | — |
+| SPT-01 | P0 | Pesquisa unificada de aplicativos e arquivos | PARCIAL | COMPARADO_PARCIAL | 2026-10-20: estado vazio agora mostra “Spotlight Search” no campo; captura local `/tmp/hyprmac-spotlight-other.png` confrontada com pôster oficial Apple Tahoe 26. A pesquisa e os resultados completos não foram certificados. |
 | SPT-02 | P0 | Quatro modos: Aplicativos, Arquivos, Ações e Área de Transferência | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-03 | P0 | Executar ações sem abrir o aplicativo | PARCIAL | TESTADO_LOCAL | 2026-10-11: "ar <texto>" adiciona lembrete sem abrir o app, com a quick key pedindo o texto no campo como no guia do Tahoe 26 (`tahoe26:validacao:spt03-acao-com-texto`); ações de menu e do sistema já rodavam direto. Pendentes: nota, mensagem, timer com texto |
 | SPT-04 | P1 | Histórico pesquisável da área de transferência | PARCIAL | TESTADO_LOCAL | 2026-10-11: busca, copiar por item, ⌃C e More ▸ Clear History conforme o guia do Tahoe 26 (`tahoe26:validacao:spt04-clipboard`). Diverge: painel próprio em vez de modo dentro do Spotlight; sem pedido Enable inicial |
@@ -182,7 +182,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | SPT-09 | P1 | Pré-visualizar arquivos e resultados | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-10 | P1 | Cálculos e conversões | A_VERIFICAR | NAO_AVALIADO | — |
 | SPT-11 | P0 | Navegação completa por teclado | A_VERIFICAR | NAO_AVALIADO | — |
-| SPT-12 | P0 | Transições e posicionamento fiéis | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
+| SPT-12 | P0 | Transições e posicionamento fiéis | PARCIAL | COMPARADO_PARCIAL | E2; 2026-10-20: campo/círculos de 72 px, topo y128 e conjunto centralizado no estado vazio conforme pôster oficial Apple 1920×1080; captura local `/tmp/hyprmac-spotlight-other.png`. Movimento, material e outros estados sem equivalência comprovada. |
 
 ## MSC — Mission Control, Spaces e gestos
 
@@ -203,10 +203,10 @@ Dock; não certificar um simples fade/scale como equivalente.
 
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
-| CCN-01 | P0 | Controles reais de Wi-Fi, Bluetooth, áudio, brilho e foco | RELATADO_PARCIAL | TESTADO_LOCAL | E1; 2026-10-18: controle Start/Stop Recording incluído na Central e na categoria Screenshot; gravação real e aviso automático da barra exercitados. Clique físico no novo controle ainda pendente. |
+| CCN-01 | P0 | Controles reais de Wi-Fi, Bluetooth, áudio, brilho e foco | RELATADO_PARCIAL | TESTADO_LOCAL | E1; 2026-10-18: controle Start/Stop Recording incluído na Central e na categoria Screenshot; gravação real e aviso automático da barra exercitados. Clique físico no novo controle ainda pendente. 2026-10-20: Focus médio e título estável no layout inicial, conferidos em captura local contra a composição oficial Apple (`tahoe26:validacao:ccn01-focus-rotulo-20261020`); modos ligados sem referência visual equivalente. |
 | CCN-02 | P1 | Layout personalizável por arrastar e soltar | PARCIAL | TESTADO_LOCAL | 2026-10-11: arrastar reorganiza, arrastar para fora remove, Control-clique muda o tamanho e oferece Add to Menu Bar, como no guia do Tahoe 26 (`tahoe26:validacao:ccn02-edicao`); os outros se realocam durante o arrasto e uma alça estica/encolhe (`tahoe26:validacao:ccn02-realocar-e-alca`). Pendentes: páginas de controles, arrasto físico |
 | CCN-03 | P1 | Arrastar/adicionar controles à barra de menus | PARCIAL | TESTADO_LOCAL | E2; 2026-10-18: `+` durante edição abre bandeja grande de cartões nativos com Add/Remove (shell/hyprmac-shell, shell/menubar_items.py); gravação e compartilhamento são avisos automáticos fora da bandeja. Teste local da galeria e de gravação real; arrastar cartões à barra ausente, compartilhamento não exercitado. |
-| CCN-04 | P1 | Subpainéis animados com navegação consistente | RELATADO_PARCIAL | NAO_AVALIADO | E2 |
+| CCN-04 | P1 | Subpainéis animados com navegação consistente | PARCIAL | TESTADO_LOCAL | E2; 2026-10-20: Focus abre detalhe com Do Not Disturb e Sleep no material compartilhado; marcador de estado testado via D-Bus e painel renderizado (`tahoe26:validacao:ccn04-focus-detail-20261020`). Clique físico e movimento frente a vídeo Tahoe 26 pendentes. |
 | CCN-05 | P1 | Sliders com resposta imediata | PARCIAL | TESTADO_LOCAL | 2026-10-11: volume/microfone/brilho aplicam o valor mais novo durante o arrasto, um processo por vez e em ordem; volume tira o mudo (`tahoe26:validacao:ccn05-sliders`). Pendentes: latência DDC real, vidro do puxador ao arrastar (sem referência) |
 | CCN-06 | P1 | Controles de reprodução multimídia via MPRIS | IMPLEMENTADO | TESTADO_LOCAL | 2026-10-11: Now Playing mostrou mídia do navegador (título, pausa, anterior/próxima) via playerctl (`tahoe26:validacao:ccn06-mpris`). Pendentes: arte e origem quando o player não envia; comparação Tahoe |
 | CCN-07 | P1 | Notificações agrupadas por aplicativo | A_VERIFICAR | NAO_AVALIADO | — |
@@ -228,7 +228,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | FIL-06 | P2 | Barra lateral Tahoe com Liquid Glass | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-07 | P1 | Drag-and-drop consistente com Dock e aplicativos | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-08 | P2 | Informações do arquivo e ações rápidas | A_VERIFICAR | NAO_AVALIADO | — |
-| FIL-09 | P2 | Cores, símbolos e emojis para pastas | A_VERIFICAR | NAO_AVALIADO | — |
+| FIL-09 | P2 | Cores, símbolos e emojis para pastas | PARCIAL | TESTADO_LOCAL | 2026-10-20: cor de pastas na Mesa e Downloads do Dock por `core/folder-color/`; pastas da Mesa agora aceitam cor e símbolo/emoji individuais em xattrs, com renderização GTK e menu testados por sinais; emoji depende de fonte instalada e gerenciadores externos ainda não leem a personalização. Ícone vermelho e símbolo renderizados localmente; sem comparação equivalente Tahoe 26. |
 
 ## MIC — Microinterações e consistência
 
@@ -242,12 +242,12 @@ Dock; não certificar um simples fade/scale como equivalente.
 | MIC-06 | P1 | Ponteiros contextuais adequados, preservando a preferência vigente por cursores Linux | A_VERIFICAR | NAO_AVALIADO | — |
 | MIC-07 | P1 | Rolagem suave e comportamento natural do touchpad | PARCIAL | TESTADO_LOCAL | 2026-10-11: Natural scrolling e Tracking speed dos Ajustes passam a persistir após hyprctl reload (`tahoe26:validacao:mic07-mouse-persistente`). Pendentes: touchpad (sem hardware local), inércia/suavidade da rolagem por toolkit |
 | MIC-08 | P1 | Feedback visual na alternância de interruptores | PARCIAL | TESTADO_LOCAL | 2026-10-11: o puxador é animado pelo próprio GtkSwitch (~70 ms, só em toggle do usuário); a transição CSS margin-left anterior era inócua e foi removida; trilho troca de cor em 70 ms (`tahoe26:validacao:mic08-switch-gtk`). BLOQUEADO_REFERENCIA: sem vídeo Tahoe 26 de NSSwitch para duração, curva e estado pressionado |
-| MIC-09 | P1 | Tooltips com delay e posicionamento coerentes | PARCIAL | COMPARADO_PARCIAL | 2026-10-11: hover nos botões de modo do Spotlight mostra "Files ⌘2"/"Actions ⌘3"/"Clipboard ⌘4" no campo, como em `spotlight-controles-2…6`, sem trocar de modo (`tahoe26:validacao:mic09-spotlight-hover-modo`). Dock mostra o nome no hover. Pendentes: atraso exato (HIG só diz "for a moment"; GTK usa o seu), tooltips dos botões só com ícone nos painéis |
+| MIC-09 | P1 | Tooltips com delay e posicionamento coerentes | PARCIAL | COMPARADO_PARCIAL | 2026-10-11: hover nos botões de modo do Spotlight mostra "Files ⌘2"/"Actions ⌘3"/"Clipboard ⌘4" no campo, como em `spotlight-controles-2…6`, sem trocar de modo (`tahoe26:validacao:mic09-spotlight-hover-modo`). Dock mostra o nome no hover. 2026-10-20: reprodução da Central e do painel de mídia ganhou dicas de ação, com Play/Pause dinâmico (`tahoe26:validacao:mic09-media-tooltips-20261020`). Pendentes: hover real dos novos botões, atraso exato e demais botões só com ícone nos painéis |
 | MIC-10 | P0 | Transições interrompíveis sem saltos abruptos | PARCIAL | TESTADO_LOCAL | 2026-10-11: emerge dos painéis voltou à curva macPop/320 ms do popin (antes saltava 84% do trajeto num quadro, por usar a curva do registro invalid); fechar no meio congela as margens, reabrir recomeça; altura da Central e layout da Mídia partem do valor atual. tests/test_panel_emerge.py + 14 quadros no desktop (`tahoe26:validacao:mic10-emerge-continuo`). Critério: HIG Motion "Let people cancel motion". Pendentes: vídeo Tahoe de popover; troca de capa e Wi-Fi Other não auditados quanto a reversão |
 | MIC-11 | P1 | Temas claro/escuro sincronizados entre aplicativos | PARCIAL | TESTADO_LOCAL | `shell/app_theme.py` liga Notes, Journal, Photos, App Factory e (2026-10-11) Preview à troca de tema com a janela aberta; aparência Auto troca sozinha após 1 min ocioso, como no Tahoe (`tahoe26:validacao:mic11-aparencia-auto`). Pendentes: agenda real de Night Shift (hoje 7h–19h), apps de terceiros fora de GTK/Qt |
 | MIC-12 | P2 | Sons de sistema e feedback de operações | PARCIAL | TESTADO_LOCAL | 2026-10-11: "Play feedback when volume is changed" (som a cada tecla, ⇧ inverte, opção em Ajustes ▸ Som) conforme o guia do Mac para Tahoe 26 (`tahoe26:validacao:mic12-volume-feedback`). "Play user interface sound effects" real: esvaziar o Lixo e captura de tela tocam sons (`tahoe26:validacao:mic12-ui-sound-effects`). Pendentes: soltar no Lixo do Dock, sons de alerta; sons são do tema freedesktop, não os da Apple |
 | MIC-13 | P0 | Layout correto em monitores HiDPI | PARCIAL | TESTADO_LOCAL | 2026-10-11: monitor secundário em escala 2 — barra e apps nítidos; Spotlight deixou de cortar o 4º botão em telas estreitas (`tahoe26:validacao:mic13-hidpi`). Pendentes: Dock/Central em HiDPI, escala fracionária |
-| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | E6 — Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py. 2026-10-11: entrada esticada e grade do Spotlight e troca de layout da Mídia passaram a respeitar Reduce Motion (critério WWDC25 219: sem propriedades elásticas); tests/test_reduce_motion_shell.py + medição no desktop (`tahoe26:validacao:mic14-reduce-motion-shell`). Pendentes: tremida do bloqueio sem evidência; comparação com Tahoe em Reduce Motion |
+| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | E6 — Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py. 2026-10-11: entrada esticada e grade do Spotlight e troca de layout da Mídia passaram a respeitar Reduce Motion (critério WWDC25 219: sem propriedades elásticas); tests/test_reduce_motion_shell.py + medição no desktop (`tahoe26:validacao:mic14-reduce-motion-shell`). 2026-10-20: bloqueio troca a tremida por erro textual, testado em GTK isolado (`tahoe26:validacao:mic14-lock-reduced-motion`). Pendente: comparação visual e de movimento com Tahoe 26. |
 | MIC-15 | P1 | Consistência ao conectar e desconectar monitores | PARCIAL | TESTADO_LOCAL | 2026-10-11: desligar/religar o monitor secundário preserva barra, janelas e camadas; o shell se recompõe após monitoradded (`tahoe26:validacao:mic15-monitores`). Pendentes: monitor principal com o Dock, hotplug físico |
 
 ## INT — Integrações avançadas — expansão posterior
@@ -346,6 +346,9 @@ Updated: 2026-10-06.
 - [ ] **Notes App** (`notes-app-claro-tela.png`, `notes-app-escuro.png`): Three-pane layout (Folders, Notes List, Editor), yellow text cursor, circular checklist toggles.
   - Parcial 2026-10-11 (`shell/hyprmac-notas`): lista + editor, cursor amarelo, círculos de checklist clicáveis, menu Format na barra; sem painel de pastas (`tahoe26:aplicacao:notes-app`).
 - [x] **Screen Capture Bar Options** (`captura-barra-opcoes.png` — Completed 2026-10-04: ⇧⌘5 toolbar with capture modes, timer, and recording options).
+  - Comparação visual parcial de 2026-10-19 (SIS-06): a barra Rust clara, no modo Record Entire Screen, mediu 549×51 px diante de imagem Apple Tahoe 26 de 1096×102 px, presumida em escala 2×. Tema escuro ganhou material preto translúcido de alfa 0,76 e foi inspecionado sobre vídeo. A referência antiga `captura-barra-opcoes.png` continua ausente; material, ícones e estados interativos ainda não têm confronto equivalente.
+  - Implementação posterior SIS-06: opções separadas por modo; captura oferece `Show Mouse Pointer` persistente e passa `-c` ao `grim` Rust; gravação mantém `Record Microphone`. Menus inspecionados no desktop e argumentos do backend testados localmente. Permanecem ausentes `Show Mouse Clicks`, seleção de microfone e HDR/SDR nos ambientes compatíveis; fidelidade Tahoe ainda parcial.
+  - Implementação posterior SIS-06: opções novas e captura direta agora começam com `Desktop` como destino, de acordo com o padrão documentado pela Apple para capturas e gravações. Configurações antigas preservam seu destino; teste Rust, Clippy, formatação e builds release passaram. Um `grim` substituto confirmou o caminho direto em `~/Desktop`; gravação real não foi inspecionada após esse ajuste.
 - [ ] **Image Viewer / Markup** (`preview-imagem-janela.png`): Header with file name and dropdown; bottom annotation bar (crop, shapes, text, signature).
 - [ ] **Photos Library** (`fotos-biblioteca.png`): Sidebar collections, pinned items, video duration overlays, and selection outlines.
   - Parcial 2026-10-11 (`shell/hyprmac-fotos`): Library/Pinned/Albums, grade quadrada, contorno de seleção; duração de vídeo ainda 0:00 (`tahoe26:aplicacao:photos-app`).

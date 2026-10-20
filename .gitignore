@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
+**/target/
 BaseConhecimento/.backups/
 BaseConhecimento/MacTahoe/.venv/
 BaseConhecimento/MacTahoe/models/

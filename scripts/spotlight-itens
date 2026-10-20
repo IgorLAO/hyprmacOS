@@ -418,8 +418,8 @@ MENU_NAMES = {"custom/apple": "Apple", "hyprland/window": "App",
 def menu_title(name, conf):
     if name in MENU_NAMES:
         return MENU_NAMES[name]
-    # o mesmo rótulo que a barra mostra ("app-menu.py History '…'"), não o nome do arquivo
-    m = re.search(r"app-menu\.py\s+(\S+)\s", conf.get("exec", ""))
+    # O mesmo rótulo que a barra mostra, não o nome do arquivo.
+    m = re.search(r"hyprmac-waybar\s+app-menu\s+(\S+)\s", conf.get("exec", ""))
     if m:
         return m.group(1)
     fmt = conf.get("format", "")
@@ -474,8 +474,8 @@ def active_class():
 
 
 def menu_visible(conf, classe):
-    """O módulo aparece na barra para este app? (o mesmo regex do app-menu.py)"""
-    m = re.search(r"app-menu\.py\s+\S+\s+'([^']*)'", conf.get("exec", ""))
+    """O módulo aparece na barra para este app? (o mesmo regex do comando Rust)"""
+    m = re.search(r"hyprmac-waybar\s+app-menu\s+\S+\s+'([^']*)'", conf.get("exec", ""))
     if not m:
         return True
     try:
@@ -701,6 +701,72 @@ def main(argv):
         print(__doc__)
         return 2
     return 0
+
+
+# A view importa este arquivo como módulo; conservar a API enquanto o histórico
+# é mantido pelo núcleo Rust. O código Python acima serve checkouts sem build.
+import ctypes
+
+_HISTORY_LIB = os.path.join(H, "core/spotlight-history/target/release",
+                            "libhyprmac_spotlight_history.so")
+try:
+    _history_rust = ctypes.CDLL(_HISTORY_LIB)
+    _history_rust.hyprmac_spotlight_history.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _history_rust.hyprmac_spotlight_history.restype = ctypes.c_size_t
+except OSError:
+    _history_rust = None
+
+_python_load_history = load_history
+_python_record = record
+_python_history_ids = history_ids
+_python_read_drun_cache = read_drun_cache
+_python_write_drun_cache = write_drun_cache
+
+
+def _history_call(request):
+    raw = json.dumps(request, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    buffer = ctypes.create_string_buffer(len(raw) * 4 + 64)
+    needed = _history_rust.hyprmac_spotlight_history(raw, buffer, len(buffer))
+    if needed >= len(buffer):
+        buffer = ctypes.create_string_buffer(needed + 1)
+        _history_rust.hyprmac_spotlight_history(raw, buffer, len(buffer))
+    return json.loads(buffer.value)
+
+
+def load_history():
+    if _history_rust is None:
+        return _python_load_history()
+    return _history_call({"op": "load", "path": HISTORY})
+
+
+def history_ids(mode):
+    if _history_rust is None:
+        return _python_history_ids(mode)
+    return _history_call({"op": "ids", "path": HISTORY, "mode": mode})
+
+
+def record(mode, item_id, label=""):
+    if _history_rust is None:
+        return _python_record(mode, item_id, label)
+    result = _history_call({"op": "record", "path": HISTORY, "mode": mode,
+                            "id": item_id, "label": label, "timestamp": int(time.time())})
+    if isinstance(result, dict) and "error" in result:
+        raise OSError(result["error"])
+
+
+def read_drun_cache(path):
+    if _history_rust is None:
+        return _python_read_drun_cache(path)
+    return _history_call({"op": "read_drun_cache", "path": os.fspath(path)})
+
+
+def write_drun_cache(path, counts):
+    if _history_rust is None:
+        return _python_write_drun_cache(path, counts)
+    result = _history_call({"op": "write_drun_cache", "path": os.fspath(path),
+                            "counts": counts})
+    if isinstance(result, dict) and "error" in result:
+        raise OSError(result["error"])
 
 
 if __name__ == "__main__":

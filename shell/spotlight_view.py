@@ -30,7 +30,7 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
                            label, layer_window, reduce_motion, register_panel,
                            run_arg_action, set_class, spawn, spot_shift):
     """Bind the shell's panel, compositor and action services once."""
-    SPOT_W, SPOT_TOP, SPOT_ROW, SPOT_VISIBLE = 500, 97, 53, 8
+    SPOT_W, SPOT_TOP, SPOT_ROW, SPOT_VISIBLE = 500, 128, 53, 8
     # Modo Arquivos vazio (referencias/telas/spotlight-clique-modo-5, 0,83 px/pt): painel de ≈ 500,
     # filtros em cápsulas de 22, seções "Suggestions"/"Recents" em grade de 5 colunas de 112 com
     # miniatura de 65 e nome em 2 linhas, passo vertical de 121
@@ -119,10 +119,12 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             self._cocoa_keys = CocoaEntryKeys(self.entry)
             self.entry.set_has_frame(False)
             self.entry.set_width_chars(1)        # a largura segue o texto (_update_hint)
-            self.entry.set_max_width_chars(1)
             self.entry.connect("changed", lambda _e: self._search_soon())
             self.entry.connect("activate", lambda _e: self._activate())
             field.pack_start(self.entry, False, False, 0)
+            self.placeholder = label(SPOT_MODES["all"], "spot-placeholder")
+            self.placeholder.set_valign(Gtk.Align.CENTER)
+            field.pack_start(self.placeholder, False, False, 0)
             self.hint = label("", "spot-hint", markup=True)
             self.hint.set_no_show_all(True)
             self.hint.set_valign(Gtk.Align.CENTER)
@@ -281,6 +283,7 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             self._set_mode(mode)
             self._stretch_in()
             self.win.show()
+            self.ctl.show_controls(True)
             self.entry.grab_focus()
             dispatch('hl.dsp.submap("spotlight")')     # Super+1…4 trocam o modo
 
@@ -380,6 +383,7 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
                 return
             shown = mode or self.mode
             self.entry.set_placeholder_text(SPOT_MODES.get(shown, SPOT_MODES["all"]))
+            self.placeholder.set_text(SPOT_MODES.get(shown, SPOT_MODES["all"]))
             num = {"apps": "1", "files": "2", "actions": "3", "clipboard": "4"}.get(mode) if mode else \
                 {"apps": "1", "files": "2", "actions": "3"}.get(self.mode)
             self.key_num.set_text(num or "")
@@ -390,6 +394,7 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             self.mode = mode
             # Tahoe: o placeholder vira o nome do modo ("Files") e o atalho fica à direita
             self.entry.set_placeholder_text(SPOT_MODES.get(mode, SPOT_MODES["all"]))
+            self.placeholder.set_text(SPOT_MODES.get(mode, SPOT_MODES["all"]))
             self.mode_pill.set_visible(False)
             num = {"apps": "1", "files": "2", "actions": "3"}.get(mode)
             self.key_num.set_text(num or "")
@@ -409,7 +414,8 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             w = ov.get_allocated_width()
             # tela estreita (escala grande): sem caber os 4 botões, o conjunto anda para a
             # esquerda o mínimo necessário, em vez de cortar o último botão na borda
-            shift = spot_shift(w, SPOT_W, self.ctl.OVER, self.ctl.w)
+            shift = spot_shift(w, SPOT_W, self.ctl.OVER, self.ctl.w,
+                               center_group=self.open and not self.sep.get_visible())
             if shift != self._spot_shift:
                 self._spot_shift = shift
                 # fora da alocação em curso: dentro dela a margem nova não gera outro layout
@@ -755,6 +761,7 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             self.token.set_visible(bool(scope))
             # com o token o campo não mostra placeholder (spotlight-busca-filtro-folders)
             self.entry.set_placeholder_text("" if scope else SPOT_MODES.get(self.mode, SPOT_MODES["all"]))
+            self.placeholder.set_text("" if scope else SPOT_MODES.get(self.mode, SPOT_MODES["all"]))
             if search:
                 self._search()
 
@@ -1257,13 +1264,14 @@ def create_spotlight_class(*, CACHE, G, MAX_QK_CHARS, POP_MS, ROOT,
             """Conclusão em linha: o resto do nome do melhor resultado + o que o Enter faz."""
             text = self.entry.get_text()
             it = self._selected()
-            layout = self.entry.create_pango_layout(text or self.entry.get_placeholder_text() or "")
+            layout = self.entry.create_pango_layout(text)
             # mede no tamanho do CSS (25): antes de a janela abrir o estilo ainda não chegou
             fd = self.entry.get_style_context().get_property("font", Gtk.StateFlags.NORMAL).copy()
-            fd.set_absolute_size(25 * Pango.SCALE)
+            fd.set_absolute_size(30 * Pango.SCALE)
             layout.set_font_description(fd)
             text_w = layout.get_pixel_size()[0] + 6
             self.entry.set_size_request(text_w, -1)
+            self.placeholder.set_visible(not text and not self.scope)
             if not it or not text.strip():
                 self.hint.hide()
                 self.top_icon.clear()

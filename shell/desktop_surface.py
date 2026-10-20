@@ -19,6 +19,8 @@ gi.require_version("GtkLayerShell", "0.1")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango, PangoCairo
 from gi.repository import GtkLayerShell as LS
+from accent_palette import accent_hex
+from folder_appearance import folder_customization, folder_pixbuf, set_folder_customization
 
 E = LS.Edge
 
@@ -1072,8 +1074,14 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
             itens = []
             for n in nomes:
                 path = os.path.join(self.dir, n)
-                nome, pb = n, None
+                nome, pb, emoji = n, None, None
                 size = self.ICON * max(1, self.win.get_scale_factor())
+                if os.path.isdir(path):
+                    try:
+                        color, emoji = folder_customization(path)
+                        pb = folder_pixbuf(size, color)
+                    except GLib.Error:
+                        pb = None
                 if n.endswith(".desktop"):
                     try:
                         info = Gio.DesktopAppInfo.new_from_filename(path)
@@ -1102,7 +1110,7 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
                             pb = look.load_icon() if look else None
                     except GLib.Error:
                         pb = None
-                itens.append((path, nome, pb))
+                itens.append((path, nome, pb, emoji))
             return itens
 
         def refresh(self):
@@ -1112,13 +1120,13 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
             rows = max(1, ((geo.height if geo else 1080) - 34 - 12 - 110) // self.CELL_H)
             itens = self._items()
             cols = (len(itens) + rows - 1) // rows
-            for k, (path, nome, pb) in enumerate(itens):
+            for k, (path, nome, pb, emoji) in enumerate(itens):
                 col, row = cols - 1 - k // rows, k % rows      # de cima para baixo, da direita
-                self.grid.attach(self._cell(path, nome, pb), col, row, 1, 1)
+                self.grid.attach(self._cell(path, nome, pb, emoji), col, row, 1, 1)
             self.grid.show_all()
             return False
 
-        def _cell(self, path, nome, pb):
+        def _cell(self, path, nome, pb, emoji=None):
             ev = Gtk.EventBox()
             ev.set_size_request(self.CELL_W, self.CELL_H)
             box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=3)
@@ -1129,8 +1137,7 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
             area = Gtk.DrawingArea()
             area.set_size_request(self.ICON, self.ICON)
             cache = {}
-            area.connect("draw", lambda a, cr: pb and paint_cover(
-                cr, pb, a.get_allocated_width(), a.get_allocated_height(), radius=0, cache=cache))
+            area.connect("draw", lambda a, cr: self._draw_folder_icon(a, cr, pb, emoji, cache))
             frame.add(area)
             lb = label(nome, "di-label", 0.5)
             lb.set_justify(Gtk.Justification.CENTER)
@@ -1152,6 +1159,27 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
             ev.connect("button-press-event", lambda _w, e, p=path, c=(frame, lb): self._click(e, p, c))
             return ev
 
+        def _draw_folder_icon(self, area, cr, pb, emoji, cache):
+            if pb:
+                paint_cover(cr, pb, area.get_allocated_width(), area.get_allocated_height(),
+                            radius=0, cache=cache)
+            if emoji:
+                layout = PangoCairo.create_layout(cr)
+                layout.set_font_description(Pango.FontDescription("Sans 27"))
+                layout.set_text(emoji, -1)
+                if layout.get_unknown_glyphs_count():
+                    layout.set_text("★", -1)
+                width, height = layout.get_pixel_size()
+                x = (area.get_allocated_width() - width) / 2
+                y = (area.get_allocated_height() - height) / 2 + 6
+                cr.set_source_rgba(0, 0, 0, 0.28)
+                cr.move_to(x, y + 1)
+                PangoCairo.show_layout(cr, layout)
+                cr.set_source_rgba(1, 1, 1, 1)
+                cr.move_to(x, y)
+                PangoCairo.show_layout(cr, layout)
+            return False
+
         def _deselect(self):
             if self.sel:
                 for w in self.sel[1]:
@@ -1172,6 +1200,103 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
             else:
                 spawn("xdg-open " + GLib.shell_quote(path))
 
+        def _set_customization(self, path, **changes):
+            try:
+                set_folder_customization(path, **changes)
+            except (OSError, ValueError) as error:
+                dialog = Gtk.MessageDialog(transient_for=None, modal=True,
+                                           message_type=Gtk.MessageType.ERROR,
+                                           buttons=Gtk.ButtonsType.CLOSE,
+                                           text="Could not customize folder")
+                dialog.format_secondary_text(str(error))
+                dialog.run()
+                dialog.destroy()
+                return
+            self.refresh()
+
+        def _choose_folder_color(self, path):
+            chooser = Gtk.ColorChooserDialog(title="Choose Folder Color")
+            if chooser.run() == Gtk.ResponseType.OK:
+                rgba = chooser.get_rgba()
+                color = "#{:02X}{:02X}{:02X}".format(
+                    round(rgba.red * 255), round(rgba.green * 255), round(rgba.blue * 255))
+                self._set_customization(path, color=color)
+            chooser.destroy()
+
+        def _choose_folder_emoji(self, path):
+            dialog = Gtk.Dialog(title="Add Emoji", flags=Gtk.DialogFlags.MODAL)
+            dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
+            dialog.add_button("Done", Gtk.ResponseType.OK)
+            entry = Gtk.Entry()
+            entry.set_max_length(8)
+            entry.set_placeholder_text("Emoji")
+            entry.set_text(folder_customization(path)[1] or "")
+            dialog.get_content_area().pack_start(entry, True, True, 12)
+            dialog.show_all()
+            if dialog.run() == Gtk.ResponseType.OK:
+                value = entry.get_text()
+                if value and entry.create_pango_layout(value).get_unknown_glyphs_count():
+                    warning = Gtk.MessageDialog(transient_for=dialog, modal=True,
+                                                message_type=Gtk.MessageType.INFO,
+                                                buttons=Gtk.ButtonsType.CLOSE,
+                                                text="Emoji font unavailable")
+                    warning.format_secondary_text("Choose a symbol, or install an emoji font.")
+                    warning.run()
+                    warning.destroy()
+                else:
+                    self._set_customization(path, emoji=value)
+            dialog.destroy()
+
+        def _customize_menu(self, path):
+            menu = Gtk.Menu()
+            add_class(menu, "hyprmac-menu")
+            for name in ("blue", "purple", "pink", "red", "orange", "yellow", "green", "graphite"):
+                color = accent_hex("slate" if name == "graphite" else name, False)
+                item = Gtk.MenuItem()
+                row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+                swatch = Gtk.DrawingArea()
+                swatch.set_size_request(15, 15)
+                rgba = Gdk.RGBA()
+                rgba.parse(color)
+                def draw_swatch(_area, cr, fill=rgba):
+                    cr.arc(7.5, 7.5, 6, 0, math.tau)
+                    cr.set_source_rgba(fill.red, fill.green, fill.blue, 1)
+                    cr.fill_preserve()
+                    cr.set_source_rgba(1, 1, 1, 0.42)
+                    cr.set_line_width(1)
+                    cr.stroke()
+                    return False
+                swatch.connect("draw", draw_swatch)
+                row.pack_start(swatch, False, False, 0)
+                row.pack_start(Gtk.Label(label=name.capitalize(), xalign=0), True, True, 0)
+                item.add(row)
+                item.connect("activate", lambda _item, value=name:
+                             self._set_customization(path, color=accent_hex(
+                                 "slate" if value == "graphite" else value, False)))
+                menu.append(item)
+            menu.append(Gtk.SeparatorMenuItem())
+            choose = Gtk.MenuItem(label="Choose Color…")
+            choose.connect("activate", lambda *_: self._choose_folder_color(path))
+            menu.append(choose)
+            emoji = Gtk.MenuItem(label="Add Emoji…")
+            emoji.connect("activate", lambda *_: self._choose_folder_emoji(path))
+            menu.append(emoji)
+            symbols = Gtk.Menu()
+            for mark, title in (("★", "Star"), ("♥", "Heart"), ("●", "Circle"),
+                                ("◆", "Diamond"), ("♪", "Music")):
+                item = Gtk.MenuItem(label=f"{mark}  {title}")
+                item.connect("activate", lambda _item, value=mark:
+                             self._set_customization(path, emoji=value))
+                symbols.append(item)
+            symbol_item = Gtk.MenuItem(label="Add Symbol")
+            symbol_item.set_submenu(symbols)
+            menu.append(symbol_item)
+            clear = Gtk.MenuItem(label="Use Default Appearance")
+            clear.connect("activate", lambda *_: self._set_customization(path, color="", emoji=""))
+            menu.append(clear)
+            menu.show_all()
+            return menu
+
         def _click(self, ev, path, cell):
             self._select(path, cell)
             if ev.button == 1 and ev.type == Gdk.EventType._2BUTTON_PRESS:
@@ -1185,13 +1310,30 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
                     if texto is None:
                         m.append(Gtk.SeparatorMenuItem())
                         continue
-                    it = Gtk.MenuItem(label=texto)
+                    it = self._context_item(texto, "document-open-symbolic" if texto == "Open"
+                                            else "user-trash-symbolic")
                     it.connect("activate", lambda _i, a=acao: a())
                     m.append(it)
+                if os.path.isdir(path):
+                    custom = self._context_item("Customize Folder", "folder-symbolic")
+                    custom.set_submenu(self._customize_menu(path))
+                    m.insert(custom, 1)
                 m.show_all()
                 m.popup_at_pointer(ev)
                 self._menu = m
             return True
+
+        @staticmethod
+        def _context_item(title, icon_name):
+            item = Gtk.MenuItem()
+            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+            icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.MENU)
+            icon.set_pixel_size(14)
+            icon.set_size_request(16, 16)
+            row.pack_start(icon, False, False, 0)
+            row.pack_start(Gtk.Label(label=title, xalign=0), True, True, 0)
+            item.add(row)
+            return item
 
 
     class WidgetGallery:

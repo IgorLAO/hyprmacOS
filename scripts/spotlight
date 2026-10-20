@@ -75,7 +75,7 @@ pick() {  # pick <files|actions> <prompt>
 while :; do
   case "$mode" in
     clipboard)
-      "$H/scripts/clipboard" pick    # painel do hyprmac-shell, fora do wofi
+      "$HOME/.local/bin/hyprmac-clipboard" pick    # painel do hyprmac-shell, fora do wofi
       break
       ;;
     files)   pick files "Arquivos" ;;

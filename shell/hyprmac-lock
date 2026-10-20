@@ -262,6 +262,14 @@ def load_config():
 
 
 CFG = load_config()
+_motion_settings = Gio.Settings.new("org.gnome.desktop.interface")
+
+
+def reduce_motion():
+    """Mesma preferência usada pelo shell: config local ou animações GNOME desligadas."""
+    return bool(CFG.get("reduce_motion")) or not _motion_settings.get_boolean("enable-animations")
+
+
 LANG = (os.environ.get("LC_MESSAGES") or os.environ.get("LANG") or "en").lower()
 PT = LANG.startswith("pt")
 T = {
@@ -893,6 +901,8 @@ class AuthPanel(Gtk.Box):
         self.entry.set_halign(Gtk.Align.CENTER)
         self.field = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.field.add_css_class("lock-field")
+        if reduce_motion():
+            self.field.add_css_class("reduce-motion")
         self.field.set_halign(Gtk.Align.CENTER)
         self.field.set_valign(Gtk.Align.CENTER)
         self.field.set_opacity(0)
@@ -976,18 +986,29 @@ class AuthPanel(Gtk.Box):
         self.text.set_text("")
         # PAM costuma explicar o motivo (ex.: faillock: "conta bloqueada por 10 min")
         info = [m for m in msgs if m and "password" not in m.lower()[:9]]
+        if reduce_motion() and not info:
+            info = [T["wrong"]]
         self.msg.set_text("\n".join(info))
         self.msg.set_visible(bool(info))
-        self.shake()
+        if not reduce_motion():
+            self.shake()
         self.focus()
         return False
 
     def shake(self):
         """Errou: o campo treme (≈ 0,45 s, amplitude que decai) e limpa."""
+        if reduce_motion():
+            self.entry.set_margin_start(0)
+            self.entry.set_margin_end(0)
+            return
         t0 = GLib.get_monotonic_time()
         dur, amp = 450_000, 12
 
         def step():
+            if reduce_motion():
+                self.entry.set_margin_start(0)
+                self.entry.set_margin_end(0)
+                return False
             t = (GLib.get_monotonic_time() - t0) / dur
             if t >= 1:
                 self.entry.set_margin_start(0)

@@ -1,0 +1,10 @@
+[package]
+name = "hyprmac-dock-model"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }

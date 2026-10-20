@@ -208,10 +208,11 @@ def run_arg_action(kind, text):
                   + GLib.shell_quote(text))
 
 
-def spot_shift(width, field_w, over, controls_w, margin=8):
-    """Quanto a cápsula do Spotlight sai do centro para os botões de modo caberem na tela."""
+def spot_shift(width, field_w, over, controls_w, margin=8, center_group=False):
+    """Centraliza o conjunto vazio ou desloca apenas o necessário para evitar recorte."""
     overflow = width / 2 + field_w / 2 - over + controls_w + margin - width
-    return max(0, int(round(overflow)))
+    group = (controls_w - over) / 2 if center_group else 0
+    return max(0, int(round(overflow)), int(round(group)))
 
 
 def ui_sound(event_id):
@@ -285,7 +286,7 @@ def set_class(widget, cls, on):
 
 
 MENU_CHECK = "\U00100185"      # 􀆅 do SF Pro, o mesmo símbolo do kit (Menus/Checkmark/On)
-MENU_CHEVRON = "\U0010018A"    # 􀆊 do SF Pro (kit Menus/Items - Submenu)
+MENU_CHEVRON = "›"    # glifo Unicode disponível quando SF Symbols não está instalado
 
 
 def menu_check(item, on):
@@ -1018,11 +1019,14 @@ class NowPlaying(Gtk.Box):
             lb.set_max_width_chars(9)
         ctr = Gtk.Box(spacing=0, homogeneous=True)
         self.play = None
+        self.play_button = None
         self.transport = []
         for icon, cmd in (("backward.fill", "previous"), ("play.fill", "play-pause"),
                           ("forward.fill", "next")):
             b = Gtk.Button()
             add_class(b, "media")
+            b.set_tooltip_text({"previous": "Previous Track", "play-pause": "Play",
+                                "next": "Next Track"}[cmd])
             lb = SFIcon(icon, 24, 24, "media-glyph")
             b.add(lb)
             b.connect("clicked", lambda _b, c=cmd: (spawn(f"playerctl {c}"),
@@ -1031,6 +1035,7 @@ class NowPlaying(Gtk.Box):
             self.transport.append(b)
             if cmd == "play-pause":
                 self.play = lb
+                self.play_button = b
                 add_class(b, "play")
         self.pack_start(self.art, False, False, 0)
         self.pack_end(ctr, False, False, 0)
@@ -1059,12 +1064,14 @@ class NowPlaying(Gtk.Box):
             self.title.set_text("Not Playing")
             self.artist.set_text("")
             self.play.set_name_("play.fill")
+            self.play_button.set_tooltip_text("Play")
             self._set_art(None)
             return False
         status, title, artist, art = parts[:4]
         self.title.set_text(title or "Sem título")
         self.artist.set_text(artist)
         self.play.set_name_("pause.fill" if status == "Playing" else "play.fill")
+        self.play_button.set_tooltip_text("Pause" if status == "Playing" else "Play")
         self._set_art(art)
         return False
 
@@ -1212,8 +1219,8 @@ def cc_fit_size(sizes, current, span):
     w, h = span
     return min(sizes, key=lambda s: (abs(SPANS[s][0] - w) + abs(SPANS[s][1] - h), s != current))
 DEFAULT_CONTROLS = [
-    ("wifi", "medium"), ("nowplaying", "large"), ("bluetooth", "small"), ("dnd", "small"),
-    ("vpn", "medium"), ("float", "small"), ("fullscreen", "small"), ("display", "wide"),
+    ("wifi", "medium"), ("nowplaying", "large"), ("bluetooth", "small"), ("vpn", "small"),
+    ("dnd", "medium"), ("float", "small"), ("fullscreen", "small"), ("display", "wide"),
     ("sound", "wide"), ("mic", "wide"), ("terminal", "small"), ("files", "small"),
     ("screenshot", "small"), ("recording", "small"), ("settings", "small"),
 ]
@@ -1347,7 +1354,8 @@ class ControlCenter:
         hypr = lambda lua: spawn("hyprctl dispatch " + GLib.shell_quote(lua))
         # vistas detalhadas (os mesmos menus da barra, dentro da Central)
         self.details = {"wifi": WifiMenu(hosted=True), "bluetooth": BluetoothMenu(hosted=True),
-                        "sound": SoundMenu(hosted=True)}
+                        "sound": SoundMenu(hosted=True),
+                        "focus": FocusMenu(self._focus_mode, self._set_focus_mode, hosted=True)}
         for d in self.details.values():
             d.on_close = self.hide
             d.on_back = self.close_detail
@@ -1357,7 +1365,8 @@ class ControlCenter:
                           on_detail=lambda: self.open_detail("wifi"))
         self.bt = Toggle(I["bt"], "Bluetooth", self._bt_click,
                          on_detail=lambda: self.open_detail("bluetooth"))
-        self.dnd = Toggle(I["moon"], "Do Not Disturb", self._dnd_click)
+        self.dnd = Toggle(I["moon"], "Focus", self._dnd_click,
+                          on_detail=lambda: self.open_detail("focus"))
         self.dnd.tint_on = True
         self.vpn_tile = Toggle(I["vpn"], "VPN", self._vpn_click)
         self.dark = Toggle(I["moon"], "Dark Mode", self._dark_click)
@@ -2433,7 +2442,7 @@ class ControlCenter:
             else:
                 self.mic.set_badge("Muted" if muted else "", muted=True)
         dnd = bool(self.notifs and self.notifs.dnd)
-        self.dnd.set(on=dnd, subtitle="On" if dnd else "Off")
+        self.dnd.set(on=dnd, title="Focus", subtitle=self._focus_label())
         if dark is not None:
             self.dark.set(on=dark, subtitle="On" if dark else "Off")
         try:
@@ -2481,22 +2490,28 @@ class ControlCenter:
         GLib.timeout_add(800, lambda: self._tick() and False)
 
     def _dnd_click(self):
-        if self.notifs:
-            self.notifs.dnd = not self.notifs.dnd
-            self.dnd.set(on=self.notifs.dnd, title="Do Not Disturb",
-                         subtitle="On" if self.notifs.dnd else "Off")
+        self._set_focus_mode("" if self._focus_mode() else "dnd")
 
-    def _sleep_click(self):
-        """Sleep Focus local: silencia banners e usa um indicador distinto."""
-        if not self.notifs:
-            return
+    def _focus_mode(self):
+        if not self.notifs or not self.notifs.dnd:
+            return ""
         try:
             with open(DND_STATE) as marker:
-                sleep_on = self.notifs.dnd and marker.read().strip() == "sleep"
+                return "sleep" if marker.read().strip() == "sleep" else "dnd"
         except OSError:
-            sleep_on = False
-        self.notifs.dnd = not sleep_on
-        if not sleep_on:
+            return "dnd"
+
+    def _focus_label(self):
+        return {"dnd": "Do Not Disturb", "sleep": "Sleep"}.get(self._focus_mode(), "")
+
+    def _set_focus_mode(self, mode):
+        if not self.notifs:
+            return
+        if mode not in ("", "dnd", "sleep"):
+            return
+        mode = "" if mode and self._focus_mode() == mode else mode
+        self.notifs.dnd = bool(mode)
+        if mode == "sleep":
             try:
                 with open(DND_STATE, "w") as marker:
                     marker.write("sleep")
@@ -2504,9 +2519,14 @@ class ControlCenter:
                 pass
             spawn("pkill -RTMIN+10 -x waybar")
             spawn("pkill -RTMIN+14 -x waybar")
-        self.dnd.set(on=self.notifs.dnd,
-                     title="Sleep" if not sleep_on else "Do Not Disturb",
-                     subtitle="On" if self.notifs.dnd else "Off")
+        self.dnd.set(on=bool(mode), title="Focus", subtitle=self._focus_label())
+        detail = self.details.get("focus")
+        if detail and detail.open:
+            detail.refresh_soon(0)
+
+    def _sleep_click(self):
+        """Sleep Focus local: silencia banners e usa um indicador distinto."""
+        self._set_focus_mode("sleep")
 
     def _dark_click(self):
         self.dark.set(on=not self.dark.on)
@@ -2664,15 +2684,19 @@ class MediaPanel:
         inner.set_halign(Gtk.Align.CENTER)
         inner.set_hexpand(True)
         self.play_lbl = None
+        self.play_button = None
         for icon, cmd in ((I["prev"], "previous"), (I["play"], "play-pause"), (I["next"], "next")):
             b = Gtk.Button()
             add_class(b, "np-ctrl", "np-" + cmd)
+            b.set_tooltip_text({"previous": "Previous Track", "play-pause": "Play",
+                                "next": "Next Track"}[cmd])
             lb = label(icon, "icon", 0.5)
             b.add(lb)
             b.connect("clicked", lambda _b, c=cmd: self._command(c))
             inner.pack_start(b, False, False, 0)
             if cmd == "play-pause":
                 self.play_lbl = lb
+                self.play_button = b
         self.ctrl.pack_start(inner, True, True, 0)
 
         # volume
@@ -2877,6 +2901,7 @@ class MediaPanel:
             self.title.set_text("Not Playing")
             self.artist.set_text("")
             self.play_lbl.set_text(I["play"])
+            self.play_button.set_tooltip_text("Play")
             self._set_art(None)
             self._show_progress()
             return False
@@ -2887,6 +2912,7 @@ class MediaPanel:
         self.title.set_text(title or "Sem título")
         self.artist.set_text(" — ".join(p for p in (artist, album) if p))
         self.play_lbl.set_text(I["pause"] if status == "Playing" else I["play"])
+        self.play_button.set_tooltip_text("Pause" if status == "Playing" else "Play")
         try:
             self.length = int(length) / 1e6
         except ValueError:
@@ -2942,6 +2968,7 @@ class MediaPanel:
             self.position, self.pos_at = self._current_pos(), time.monotonic()
             self.status = "Playing" if playing else "Paused"
             self.play_lbl.set_text(I["pause"] if playing else I["play"])
+            self.play_button.set_tooltip_text("Pause" if playing else "Play")
         GLib.timeout_add(350, lambda: self.refresh() and False)
 
     def _on_seek(self, _scale, _scroll, value):
@@ -3087,7 +3114,7 @@ def clip_ago(t):
 
 
 class ClipboardPanel:
-    """Histórico da área de transferência (o que o scripts/clipboard guarda).
+    """Histórico da área de transferência (o que o hyprmac-clipboard guarda).
     Abre como o scratchpad: no centro, na frente de tudo, com a tela esmaecida
     atrás. Digitar filtra, ↑↓ escolhem, Enter/clique colam, Esc ou clique fora fecham."""
 
@@ -3529,8 +3556,9 @@ class Banner(Gtk.Revealer):
     """Um banner no estilo macOS: ícone do app, título, "now", texto e ações."""
 
     def __init__(self, center, nid, app_icon, image, summary, body, actions, timeout):
-        super().__init__(transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN,
-                         transition_duration=240)
+        super().__init__(transition_type=(Gtk.RevealerTransitionType.NONE if reduce_motion()
+                                          else Gtk.RevealerTransitionType.SLIDE_DOWN),
+                         transition_duration=0 if reduce_motion() else 240)
         self.center, self.nid = center, nid
         self.timeout, self.timer, self.started, self.remaining = timeout, None, 0, timeout
         self.created = time.time()
@@ -3835,7 +3863,8 @@ class NotificationCenter:
             # o layer-shell prendia a altura em 1 px.
             banner.set_transition_type(Gtk.RevealerTransitionType.NONE)
             banner.set_reveal_child(True)
-            banner.set_transition_type(Gtk.RevealerTransitionType.SLIDE_DOWN)
+            banner.set_transition_type(Gtk.RevealerTransitionType.NONE if reduce_motion()
+                                       else Gtk.RevealerTransitionType.SLIDE_DOWN)
             self.win.show()
         else:
             # só se ainda estiver na tela: um banner do mesmo app pode tê-lo empilhado
@@ -5105,6 +5134,25 @@ class SoundMenu(BarPanel):
         self.refresh_soon(350)
 
 
+class FocusMenu(BarPanel):
+    """Modos de foco já disponíveis no shell, dentro da Central de Controle."""
+
+    def __init__(self, read_mode, set_mode, hosted=False):
+        self.read_mode = read_mode
+        self.set_mode = set_mode
+        super().__init__(hosted=hosted)
+
+    def fetch(self):
+        return self.read_mode()
+
+    def build(self, mode):
+        self.title_row("Focus")
+        self.device(I["moon"], "Do Not Disturb", mode == "dnd",
+                    action=lambda: self.set_mode("dnd"), close=False)
+        self.device(I["moon"], "Sleep", mode == "sleep",
+                    action=lambda: self.set_mode("sleep"), close=False)
+
+
 # ───────────────────────────── OSD de volume/brilho (BAR-11) ─────────────────────────────
 # Tahoe (referencias/telas/osd-volume-alto-falantes.png e osd-volume-arrastando.png; escala
 # 1,125 px/pt calibrada pela largura das notificações, 344): painel de vidro 344×74, canto
@@ -5589,7 +5637,7 @@ class ShellMenu:
         submenu.connect("unmap", lambda _menu: set_class(item, "submenu-open", False))
 
     def _item(self, menu, text, action=None, markup=False, sensitive=True, submenu=None,
-              shortcut=None, check=None):
+              shortcut=None, check=None, icon_name=None):
         """Item de 24 px; `shortcut` (ex.: "⌘H") vai à direita, em cinza; `check`
         True/False faz dele um item de estado (coluna da marca, menu_check_column)."""
         it = Gtk.MenuItem()
@@ -5606,6 +5654,16 @@ class ShellMenu:
             it.add(lb)
         if check is not None:
             menu_check(it, check)
+        if icon_name:
+            if not Gtk.IconTheme.get_default().has_icon(icon_name):
+                icon_name = "application-x-executable-symbolic"
+            icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.MENU)
+            icon.set_pixel_size(14)
+            icon.set_size_request(16, 16)
+            icon.set_margin_end(8)
+            box = menu_item_box(it)
+            box.pack_start(icon, False, False, 0)
+            box.reorder_child(icon, 0)
         it.set_sensitive(sensitive)
         if submenu is not None:
             self._attach_submenu(it, submenu)
@@ -5623,7 +5681,7 @@ class ShellMenu:
 
 APPS = None     # AppIndex compartilhado (nomes/ícones dos .desktop), criado em main()
 A11Y_PATH = os.path.expanduser("~/.config/hyprmac/acessibilidade.json")
-A11Y = {"reduce_transparency": False, "increase_contrast": False}   # scripts/acessibilidade
+A11Y = {"reduce_transparency": False, "increase_contrast": False}   # hyprmac-acessibilidade
 
 # Ajustes ▸ Aparência ▸ Estilo de ícones e widgets: default · dark · clear · tinted
 APPEARANCE_PATH = os.path.expanduser("~/.config/hyprmac/aparencia.json")
@@ -5670,7 +5728,7 @@ def set_icon_style(style):
 
 
 def accent_rgb():
-    """Cor de destaque atual (gerada por scripts/accent em gtk/accent3.css)."""
+    """Cor de destaque atual (gerada por hyprmac-accent em gtk/accent3.css)."""
     try:
         with open(os.path.join(ROOT, "gtk", "accent3.css")) as f:
             m = re.search(r"@define-color mac_accent\s+#([0-9A-Fa-f]{6})", f.read())
@@ -5739,7 +5797,7 @@ def display_name(cls):
 
 class AppMenu(ShellMenu):
     """Menu do app (nome em negrito na barra) com o nome real: "About Brave",
-    "Hide Brave", "Quit Brave". As ações usam scripts/janela (⌘H/⌥⌘H/⌘Q)."""
+    "Hide Brave", "Quit Brave". As ações usam hyprmac-janela (⌘H/⌥⌘H/⌘Q)."""
 
     def _build(self):
         m = self._new_menu()
@@ -5747,25 +5805,135 @@ class AppMenu(ShellMenu):
         cls = win.get("class") or win.get("initialClass") or ""
         has = bool(cls) and cls != "hyprmac-shell"
         name = display_name(cls) if has else "App"
-        janela = os.path.join(ROOT, "scripts", "janela")
-        about = os.path.join(ROOT, "waybar", "scripts", "app-about.sh")
-        self._item(m, f"About {name}", lambda: spawn(about), sensitive=has)
+        janela = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-janela")
+        about = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-waybar") + " app-about"
+        self._item(m, f"About {name}", lambda: spawn(about), sensitive=has,
+                   icon_name="dialog-information-symbolic")
         self._sep(m)
         # ⌘, do Mac = Ctrl+vírgula nos apps do Linux que têm Preferências
         self._item(m, "Settings…",
                    lambda: dispatch('hl.dsp.send_shortcut({ mods = "CTRL", key = "comma" })'),
-                   sensitive=has, shortcut="⌃,")
+                   sensitive=has, shortcut="⌃,", icon_name="preferences-system-symbolic")
         self._sep(m)
         self._item(m, f"Hide {name}", lambda: spawn(f"{janela} hide-app"), sensitive=has,
-                   shortcut="⌘H")
+                   shortcut="⌘H", icon_name="window-minimize-symbolic")
         self._item(m, "Hide Others", lambda: spawn(f"{janela} hide-others"), sensitive=has,
-                   shortcut="⌥⌘H")
-        self._item(m, "Show All", lambda: spawn(f"{janela} show-all"))
+                   shortcut="⌥⌘H", icon_name="view-conceal-symbolic")
+        self._item(m, "Show All", lambda: spawn(f"{janela} show-all"),
+                   icon_name="view-restore-symbolic")
         self._sep(m)
         self._item(m, f"Quit {name}", lambda: spawn(f"{janela} quit-app"), sensitive=has,
-                   shortcut="⌘Q")
+                   shortcut="⌘Q", icon_name="application-exit-symbolic")
         m.show_all()
         return m
+
+
+class AppleMenu(ShellMenu):
+    """Menu Apple no shell: submenus GTK ficam no mesmo processo que o popup."""
+
+    def _recent_item(self, menu, title, icon, action):
+        item = self._item(menu, title, action)
+        box = menu_item_box(item)
+        if icon:
+            picture = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
+            picture.set_pixel_size(16)
+            picture.set_margin_end(7)
+            box.pack_start(picture, False, False, 0)
+            box.reorder_child(picture, 0)
+        child = next((widget for widget in box.get_children()
+                      if isinstance(widget, Gtk.Label)), None)
+        if child:
+            child.set_max_width_chars(48)
+            child.set_ellipsize(Pango.EllipsizeMode.END)
+        return item
+
+    def _recent_menu(self):
+        menu = self._new_menu()
+        manager = Gtk.RecentManager.get_default()
+        recent = sorted(manager.get_items(), key=lambda info: info.get_modified(), reverse=True)
+        try:
+            with open(os.path.expanduser("~/.config/hyprmac/ajustes.json")) as state:
+                limit = int(json.load(state).get("recents", 10))
+        except (OSError, ValueError, TypeError, AttributeError):
+            limit = 10
+        limit = limit if limit in (5, 10, 15) else 10
+        apps, documents, servers = [], [], []
+        seen_apps = set()
+        installed_apps = {}
+        for app in Gio.AppInfo.get_all():
+            app_id = app.get_id()
+            names = (app.get_name(), app.get_display_name(),
+                     app_id, app_id.removesuffix(".desktop") if app_id else None)
+            for name in names:
+                if name:
+                    installed_apps.setdefault(name, app)
+        for info in recent:
+            uri = info.get_uri()
+            if not uri:
+                continue
+            if uri.startswith("file:"):
+                if len(documents) < limit:
+                    documents.append(info)
+            elif len(servers) < limit:
+                servers.append(info)
+            for app_name in info.get_applications():
+                if app_name in seen_apps or len(apps) >= limit:
+                    continue
+                app = installed_apps.get(app_name)
+                if app:
+                    apps.append(app)
+                    seen_apps.add(app_name)
+
+        for title, entries in (("Applications", apps), ("Documents", documents),
+                               ("Servers", servers)):
+            menu.append(menu_header(title))
+            if not entries:
+                self._item(menu, "No Recent Items", sensitive=False)
+            for entry in entries:
+                if title == "Applications":
+                    self._recent_item(menu, entry.get_name(), entry.get_icon(),
+                                      lambda app=entry: app.launch([], None))
+                else:
+                    self._recent_item(menu, entry.get_display_name(), entry.get_gicon(),
+                                      lambda uri=entry.get_uri():
+                                      Gio.AppInfo.launch_default_for_uri(uri, None))
+            self._sep(menu)
+        self._item(menu, "Clear Menu", manager.purge_items,
+                   sensitive=bool(recent))
+        return menu
+
+    def _build(self):
+        menu = self._new_menu()
+        self._item(menu, "About This Mac", lambda: open_settings("about"),
+                   icon_name="dialog-information-symbolic")
+        self._sep(menu)
+        self._item(menu, "System Settings…", open_settings,
+                   icon_name="preferences-system-symbolic")
+        self._item(menu, "App Store", lambda: spawn(os.path.join(HERE, "hyprmac-app")
+                                                   + " dev.hyprmac.AppStore"),
+                   icon_name="system-software-install-symbolic")
+        self._sep(menu)
+        self._item(menu, "Recent Items", submenu=self._recent_menu(),
+                   icon_name="document-open-recent-symbolic")
+        self._sep(menu)
+        self._item(menu, "Force Quit…", lambda: spawn(os.path.join(HERE, "hyprmac-shell")
+                                                    + " force-quit"), shortcut="⌥⌘⎋",
+                   icon_name="process-stop-symbolic")
+        self._sep(menu)
+        self._item(menu, "Sleep", lambda: spawn("systemctl suspend"),
+                   icon_name="weather-clear-night-symbolic")
+        self._item(menu, "Restart…", lambda: spawn("systemctl reboot"),
+                   icon_name="system-reboot-symbolic")
+        self._item(menu, "Shut Down…", lambda: spawn("systemctl poweroff"),
+                   icon_name="system-shutdown-symbolic")
+        self._sep(menu)
+        self._item(menu, "Lock Screen", lambda: spawn(os.path.join(HERE, "hyprmac-lock")),
+                   shortcut="⌃⌘Q", icon_name="system-lock-screen-symbolic")
+        username = os.environ.get("USER", "User").capitalize()
+        self._item(menu, f"Log Out {username}…", lambda: dispatch("hl.dsp.exit()"),
+                   icon_name="system-log-out-symbolic")
+        menu.show_all()
+        return menu
 
 
 class CCContextMenu(ShellMenu):
@@ -6308,7 +6476,7 @@ def main():
     update_app_menus(hypr_json("activewindow").get("class", ""))
     hypr_events(app_menu_focus_event)
 
-    # Acessibilidade: Reduzir Transparência / Aumentar Contraste (scripts/acessibilidade)
+    # Acessibilidade: Reduzir Transparência / Aumentar Contraste (hyprmac-acessibilidade)
     a11y_css = {"reduce_transparency": Gtk.CssProvider(), "increase_contrast": Gtk.CssProvider()}
     a11y_css["reduce_transparency"].load_from_path(os.path.join(HERE, "a11y-transparencia.css"))
     a11y_css["increase_contrast"].load_from_path(os.path.join(HERE, "a11y-contraste.css"))
@@ -6388,11 +6556,19 @@ def main():
     main_mon = by_name.get(CFG["main_monitor"]) or (all_mons[0] if all_mons else None)
     widgets = DesktopWidgets(main_mon, wallpaper)
     desktop_icons = DesktopIcons(main_mon, wallpaper)   # noqa: F841  (arquivos de ~/Desktop, como no Finder)
+
+    def refresh_folders():
+        desktop_icons.refresh()
+        for dock_view in DOCKS:
+            dock_view._pb_cache.clear()
+            dock_view.refresh()
+        return False
     global APPS
     APPS = AppIndex(app_name, _pixbuf_from_icon, SW_ICON)
     cc = ControlCenter()
     wmenu = WindowMenu()
     app_menu = AppMenu()
+    apple_menu = AppleMenu()
     view_menu = ViewMenu()
     cc_menu = CCContextMenu()
     wifi_menu = WifiMenu()
@@ -6418,7 +6594,7 @@ def main():
     hot = HotCorners(all_mons, {
         "mission-control": lambda: spawn(f"{ROOT}/shell/hyprmac-overview toggle"),
         "app-windows": lambda: spawn(f"{ROOT}/shell/hyprmac-overview app"),
-        "desktop": lambda: spawn(f"{ROOT}/scripts/janela show-desktop"),
+        "desktop": lambda: spawn(os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-janela") + " show-desktop"),
         "notification-center": notifs.panel.toggle,
         "apps": lambda: spot.command("apps"),            # o modo Apps do Spotlight (⌘1)
         "display-sleep": lambda: dispatch('hl.dsp.dpms({ action = "off" })'),
@@ -6433,6 +6609,7 @@ def main():
         "force-quit": force_quit.toggle,
         "toggle-cc": cc.toggle,
         "wallpaper-reload": reload_wallpaper,
+        "refresh-folders": refresh_folders,
         "edit-controls": cc.edit,
         "bar-controls": cc.bar_controls,
         "toggle-sleep": cc._sleep_click,
@@ -6454,6 +6631,7 @@ def main():
         "spotlight": spot.command,
         "window-menu": wmenu.popup,
         "app-menu": app_menu.popup,
+        "apple-menu": apple_menu.popup,
         "view-menu": view_menu.popup,
         "cc-menu": cc_menu.popup,
         "toggle-wifi": wifi_menu.toggle,

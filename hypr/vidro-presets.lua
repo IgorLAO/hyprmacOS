@@ -125,8 +125,10 @@ hg.preset("hyprmac-painel", {
 -- Ajustado: reference cc-tahoe-alvo-usuario.png mostra vidro MENOS translúcido que o atual
 hg.preset("hyprmac-central", {
     inherits             = "hyprmac-painel",
-    -- CoreMaterial modulesBackground blurRadius=25 → normalized 25/50=0.5
-    blur_strength        = fosco and 2.0 or 0.5,
+    -- hyprglass interpreta blur_strength como escala de raio de 12 px;
+    -- 2.0 reduz os detalhes nítidos vistos no teste local sobre as rochas.
+    -- Os 25 px atribuídos a modulesBackground no registro local não certificam runtime Tahoe.
+    blur_strength        = 2.0,
     -- a lente das bordas é o que faz o Liquid Glass: o fundo dobra na faixa do chanfro
     -- (edge_thickness 0,15 herdado = ~20 pt); o miolo segue sólido pelo tom (brilho/contraste)
     refraction_strength  = fosco and 0 or 1.0,

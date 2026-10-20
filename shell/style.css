@@ -1327,11 +1327,11 @@ window.spot-backdrop { background: transparent; }
               inset 0 1px 1px rgba(103, 103, 103, 0.55),
               inset 0 -1px 1px rgba(103, 103, 103, 0.35);
 }
-.spot-field { padding: 0 18px 0 16px; }
+.spot-field { padding: 0 18px 0 20px; }
 .hyprmac .spot-glass {
-  font-size: 22px;
-  min-width: 26px;
-  margin-right: 10px;
+  font-size: 31px;
+  min-width: 34px;
+  margin-right: 12px;
   color: rgba(255, 255, 255, 0.55);
 }
 .hyprmac .spot-mode {
@@ -1352,7 +1352,7 @@ window.spot-backdrop { background: transparent; }
   background: none;
   box-shadow: none;
   outline: none;
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.96);
   caret-color: #0091FF;
@@ -1360,6 +1360,11 @@ window.spot-backdrop { background: transparent; }
 /* placeholder: o GTK3 o desenha com a cor nomeada placeholder_text_color (padrão: cinza
  * 128 fixo, que some sobre o vidro). Escuro: rótulo secundário #FFF/0.55 */
 @define-color placeholder_text_color rgba(255, 255, 255, 0.55);
+.hyprmac .spot-placeholder {
+  font-size: 30px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+}
 .hyprmac entry.spot-entry selection { background-color: rgba(0, 145, 255, 0.45); }
 /* a conclusão em linha: o resto do nome numa cápsula clara + "— Abrir" */
 .hyprmac .spot-hint {

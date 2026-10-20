@@ -251,3 +251,106 @@ def spot_calc(q):
         v = round(v, 10)
         v = int(v) if v.is_integer() else v
     return f"{v:,}".replace(",", " ") if isinstance(v, int) else str(v)
+
+# A view GTK conserva esta API; normalização e ranking usam o núcleo Rust após
+# instalação. O fallback permite executar testes e o shell antes do primeiro build.
+import ctypes
+import json
+from pathlib import Path
+
+_SPOT_LIB = (Path(__file__).resolve().parents[1]
+             / "core/spotlight-search/target/release/libhyprmac_spotlight_search.so")
+try:
+    _spot_rust = ctypes.CDLL(str(_SPOT_LIB))
+    _spot_rust.hyprmac_spot_fold.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _spot_rust.hyprmac_spot_fold.restype = ctypes.c_size_t
+    _spot_rust.hyprmac_spot_score.argtypes = [ctypes.c_char_p] * 3
+    _spot_rust.hyprmac_spot_score.restype = ctypes.c_double
+    _spot_rust.hyprmac_spot_file_query.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _spot_rust.hyprmac_spot_file_query.restype = ctypes.c_size_t
+    _spot_rust.hyprmac_spot_filters.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _spot_rust.hyprmac_spot_filters.restype = ctypes.c_size_t
+    _spot_rust.hyprmac_spot_calc.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _spot_rust.hyprmac_spot_calc.restype = ctypes.c_ssize_t
+except OSError:
+    _spot_rust = None
+
+RUST_SEARCH_ACTIVE = _spot_rust is not None
+_python_spot_fold = spot_fold
+_python_spot_score = spot_score
+_python_spot_file_query = spot_file_query
+_python_spot_calc = spot_calc
+_python_spot_app_category = spot_app_category
+_python_spot_filter_command = spot_filter_command
+_python_spot_filter_results = spot_filter_results
+
+
+def _rust_text(call, text):
+    raw = (text or "").encode("utf-8")
+    buffer = ctypes.create_string_buffer(len(raw) * 4 + 64)
+    needed = call(raw, buffer, len(buffer))
+    if needed >= len(buffer):
+        buffer = ctypes.create_string_buffer(needed + 1)
+        call(raw, buffer, len(buffer))
+    return buffer.value.decode("utf-8")
+
+
+def spot_fold(text):
+    if _spot_rust is None:
+        return _python_spot_fold(text)
+    return _rust_text(_spot_rust.hyprmac_spot_fold, text)
+
+
+def spot_score(q, name, extra=""):
+    if _spot_rust is None:
+        return _python_spot_score(q, name, extra)
+    return _spot_rust.hyprmac_spot_score((q or "").encode("utf-8"),
+                                         (name or "").encode("utf-8"),
+                                         (extra or "").encode("utf-8"))
+
+
+def spot_file_query(text):
+    if _spot_rust is None:
+        return _python_spot_file_query(text)
+    query, kinds = json.loads(_rust_text(_spot_rust.hyprmac_spot_file_query, text))
+    return query, tuple(kinds)
+
+
+def spot_calc(q):
+    if _spot_rust is None:
+        return _python_spot_calc(q)
+    raw = (q or "").encode("utf-8")
+    buffer = ctypes.create_string_buffer(len(raw) * 4 + 64)
+    needed = _spot_rust.hyprmac_spot_calc(raw, buffer, len(buffer))
+    if needed == -1:
+        return _python_spot_calc(q)
+    if needed == 0:
+        return None
+    if needed >= len(buffer):
+        buffer = ctypes.create_string_buffer(needed + 1)
+        _spot_rust.hyprmac_spot_calc(raw, buffer, len(buffer))
+    return buffer.value.decode("utf-8")
+
+
+def _rust_filter(op, text, include_sources=False):
+    request = json.dumps({"op": op, "text": text or "",
+                          "include_sources": include_sources}, ensure_ascii=False)
+    return json.loads(_rust_text(_spot_rust.hyprmac_spot_filters, request))
+
+
+def spot_app_category(cats):
+    if _spot_rust is None:
+        return _python_spot_app_category(cats)
+    return _rust_filter("category", cats)
+
+
+def spot_filter_command(text):
+    if _spot_rust is None:
+        return _python_spot_filter_command(text)
+    return _rust_filter("command", text)
+
+
+def spot_filter_results(text, include_sources=False):
+    if _spot_rust is None:
+        return _python_spot_filter_results(text, include_sources)
+    return _rust_filter("results", text, include_sources)

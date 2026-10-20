@@ -2,6 +2,1121 @@
   "schema": 1,
   "items": [
     {
+      "path": "core/accent/palette.json",
+      "language": "json",
+      "bytes": 445,
+      "lines": 10,
+      "summary": "[ ]",
+      "symbols": [],
+      "imports": [],
+      "tags": [],
+      "sha256": "5e5f4065402f5c78468b2912c2fcc76fd114ed0b5440fdfe037aea6fb5013a18"
+    },
+    {
+      "path": "core/accent/src/main.rs",
+      "language": "rust",
+      "bytes": 5839,
+      "lines": 187,
+      "summary": "use serde_json::Value; use std::env;",
+      "symbols": [
+        "root",
+        "palette",
+        "colors",
+        "hex",
+        "mix",
+        "current",
+        "dark_mode",
+        "write_if_changed",
+        "generated",
+        "apply",
+        "run",
+        "main",
+        "palette_contains_all_eight_tahoe_colors",
+        "generated_css_uses_same_accent_across_toolkits"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "super::*"
+      ],
+      "tags": [
+        "menu",
+        "theme"
+      ],
+      "sha256": "31359bfcf6843566538c1ac4b7a60411cf3fe19005a9dd6a82734ebc8079e399"
+    },
+    {
+      "path": "core/accessibility/src/main.rs",
+      "language": "rust",
+      "bytes": 5404,
+      "lines": 162,
+      "summary": "use serde_json::{json, Value}; use std::env;",
+      "symbols": [
+        "root",
+        "config_path",
+        "load",
+        "write_if_changed",
+        "css",
+        "apply",
+        "run",
+        "main",
+        "solid_and_high_contrast_css_use_dark_values"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "super::*"
+      ],
+      "tags": [
+        "menu",
+        "window"
+      ],
+      "sha256": "80bf5e14a308c17ea9700dab2990d117c524183635eaf084d4476f2876b27096"
+    },
+    {
+      "path": "core/activity-probe/src/main.rs",
+      "language": "rust",
+      "bytes": 6682,
+      "lines": 212,
+      "summary": "! Read-only Linux process snapshot prototype for a future Activity Monitor. use std::env;",
+      "symbols": [
+        "Process",
+        "parse_stat",
+        "parse_rss_kib",
+        "read_process",
+        "snapshot",
+        "json_string",
+        "json_line",
+        "benchmark",
+        "main",
+        "stat",
+        "parses_parentheses_spaces_and_escape_characters",
+        "rejects_truncated_or_overflowed_stat",
+        "parses_rss_and_missing_process"
+      ],
+      "imports": [
+        "std::env",
+        "std::fs",
+        "std::io::{self, Write}",
+        "std::path::Path",
+        "std::time::Instant",
+        "super::*"
+      ],
+      "tags": [
+        "lock"
+      ],
+      "sha256": "3fff32bbde8cc83d99627630be4db30b72bfb026aa6e30318dff5c81c4b113ed"
+    },
+    {
+      "path": "core/appearance/src/main.rs",
+      "language": "rust",
+      "bytes": 4515,
+      "lines": 155,
+      "summary": "use chrono::{Local, Timelike}; use serde_json::Value;",
+      "symbols": [
+        "root",
+        "wanted",
+        "mode",
+        "current",
+        "check",
+        "stop_previous_watchers",
+        "start",
+        "main",
+        "automatic_schedule",
+        "watcher_name_is_distinct_from_screen_idle_service"
+      ],
+      "imports": [
+        "chrono::{Local, Timelike}",
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::os::unix::ffi::OsStrExt",
+        "std::os::unix::fs::symlink",
+        "std::os::unix::process::CommandExt",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "super::*"
+      ],
+      "tags": [
+        "theme"
+      ],
+      "sha256": "6364569062b6552dea626ed174ff16dc0655cba1d54ed2bc2dfd55abba49dbff"
+    },
+    {
+      "path": "core/audit/src/main.rs",
+      "language": "rust",
+      "bytes": 9165,
+      "lines": 242,
+      "summary": "! Auditoria da base curada, fontes locais e links operacionais. use percent_encoding::percent_decode_str;",
+      "symbols": [
+        "Document",
+        "database",
+        "count",
+        "check_db",
+        "documents",
+        "links",
+        "audit",
+        "main"
+      ],
+      "imports": [
+        "percent_encoding::percent_decode_str",
+        "regex::Regex",
+        "rusqlite::{params, Connection, OpenFlags}",
+        "serde_json::{json, Map, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [],
+      "sha256": "836c0d3ac80e65485ca17bedf388cb427564ab90e319ec54eed28b1a793f36d5"
+    },
+    {
+      "path": "core/capture-bar/src/main.rs",
+      "language": "rust",
+      "bytes": 24432,
+      "lines": 717,
+      "summary": "! Barra de captura ⇧⌘5. A interface e suas opções executam em Rust. use gtk::cairo::{Context, Operator};",
+      "symbols": [
+        "Options",
+        "ToggleOption",
+        "label",
+        "selected",
+        "toggle",
+        "default",
+        "from_json",
+        "to_json",
+        "repo_root",
+        "config_file",
+        "pid_file",
+        "load_options",
+        "save_options",
+        "toggle_previous",
+        "dark_theme",
+        "glass_loaded",
+        "accent_color",
+        "style",
+        "rounded",
+        "icon",
+        "folder",
+        "launch",
+        "begin_capture",
+        "menu_item",
+        "options_menu",
+        "build_ui",
+        "title_for_mode",
+        "main_result",
+        "main",
+        "options_round_trip_preserves_other_settings_and_validates_modes",
+        "capture_and_record_destinations_keep_video_out_of_screenshots"
+      ],
+      "imports": [
+        "gtk::cairo::{Context, Operator}",
+        "gtk::gdk",
+        "gtk::glib::{self, ControlFlow}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, KeyboardMode, Layer, LayerShell}",
+        "serde_json::{Map, Value}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::fs",
+        "std::os::unix::process::CommandExt",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command",
+        "std::rc::Rc",
+        "std::time::Duration",
+        "super::*"
+      ],
+      "tags": [
+        "menu",
+        "glass",
+        "theme",
+        "window"
+      ],
+      "sha256": "43d6fd1864f5571682f46d0516629316d98ba147d802f7069d6f2f7a3a6b9d29"
+    },
+    {
+      "path": "core/capture-bar/src/style.css",
+      "language": "css",
+      "bytes": 1780,
+      "lines": 49,
+      "summary": "window.captura { background: transparent; } .cap-bar {",
+      "symbols": [
+        "window.captura",
+        ".cap-bar",
+        ".cap-bar button",
+        ".cap-bar button.rec",
+        ".cap-bar button.modo",
+        ".cap-bar button.modo.primeiro",
+        ".cap-bar button:hover",
+        ".cap-bar button.selected",
+        ".cap-bar button.texto",
+        ".cap-bar button.texto label",
+        ".cap-bar .chev",
+        ".cap-bar button.capturar",
+        ".cap-bar button.capturar label",
+        ".cap-bar button.capturar:hover",
+        ".cap-bar button.fechar",
+        ".cap-bar button.fechar:hover",
+        ".cap-bar .x",
+        ".cap-sep",
+        "tooltip",
+        "tooltip label"
+      ],
+      "imports": [],
+      "tags": [
+        "window"
+      ],
+      "sha256": "db1fe3583117262f9b0f17db2e39ab9ce07d93be8d7b5d161027445a2ca4461c"
+    },
+    {
+      "path": "core/capture-thumbnail/src/main.rs",
+      "language": "rust",
+      "bytes": 7878,
+      "lines": 241,
+      "summary": "! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26.",
+      "symbols": [
+        "State",
+        "thumbnail_size",
+        "rounded",
+        "open_target",
+        "arm",
+        "run",
+        "main",
+        "thumbnail_fits_both_axes_and_preserves_portrait"
+      ],
+      "imports": [
+        "gdk_pixbuf::{InterpType, Pixbuf}",
+        "gtk::gdk::{self, prelude::GdkContextExt}",
+        "gtk::glib::{self, ControlFlow, Propagation, SourceId}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, Layer, LayerShell}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::f64::consts::PI",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::rc::Rc",
+        "std::time::Duration",
+        "super::thumbnail_size"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "5bb5ae7bccead0415dd8dd715d236baf722a536ef85264ffe30931ed24cef934"
+    },
+    {
+      "path": "core/clipboard/src/main.rs",
+      "language": "rust",
+      "bytes": 9277,
+      "lines": 302,
+      "summary": "use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value};",
+      "symbols": [
+        "cache_dir",
+        "index_path",
+        "now",
+        "capture",
+        "forget_files",
+        "retained",
+        "load",
+        "save",
+        "digest",
+        "image_item",
+        "text_item",
+        "store",
+        "clear",
+        "pick",
+        "stop_previous_watchers",
+        "watch",
+        "main",
+        "text_dedup_ignores_edge_whitespace_and_preserves_kind",
+        "old_entries_expire",
+        "image_is_normalized_and_thumbnail_is_bounded"
+      ],
+      "imports": [
+        "image::{imageops::FilterType, GenericImageView, ImageFormat}",
+        "serde_json::{json, Value}",
+        "sha1::{Digest, Sha1}",
+        "std::env",
+        "std::fs",
+        "std::io::{self, Read}",
+        "std::os::unix::ffi::OsStrExt",
+        "std::os::unix::process::CommandExt",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::time::{SystemTime, UNIX_EPOCH}",
+        "super::*",
+        "std::io::Cursor"
+      ],
+      "tags": [],
+      "sha256": "9318675b684b3347a4f843c7ad26d6192e7097829c88ddf5fe1045c852f95923"
+    },
+    {
+      "path": "core/code-index/src/main.rs",
+      "language": "rust",
+      "bytes": 9824,
+      "lines": 312,
+      "summary": "! Índice leve de código para busca progressiva dos componentes. use regex::Regex;",
+      "symbols": [
+        "language",
+        "symbol_pattern",
+        "import_pattern",
+        "unique_values",
+        "summary",
+        "tags",
+        "collect",
+        "markdown",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::{json, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "walkdir::WalkDir"
+      ],
+      "tags": [
+        "dock",
+        "control center",
+        "spotlight",
+        "notification",
+        "lock",
+        "menu",
+        "glass",
+        "theme",
+        "window",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "35d8198e60d7a00f6b47b2141e0dc48d1a2b1ca05d018acb847d73e99deaa38e"
+    },
+    {
+      "path": "core/comparison/src/main.rs",
+      "language": "rust",
+      "bytes": 12950,
+      "lines": 364,
+      "summary": "! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex;",
+      "symbols": [
+        "Area",
+        "string",
+        "icon",
+        "points",
+        "read_value",
+        "evaluate",
+        "areas_for",
+        "percent",
+        "optional",
+        "write_db",
+        "report",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, Connection}",
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [],
+      "sha256": "f5a9728cc3137da0ee56e2ed9afac3e65e045d9bcec34dcd2921caadf73e28a2"
+    },
+    {
+      "path": "core/dock-geometry/src/lib.rs",
+      "language": "rust",
+      "bytes": 7113,
+      "lines": 269,
+      "summary": "! Geometria lógica do Dock, sem GTK, relógios nem acesso ao compositor. [repr(C)]",
+      "symbols": [
+        "Metrics",
+        "Drawn",
+        "HitPoint",
+        "from_icon",
+        "shifts",
+        "layout",
+        "index_at",
+        "fixed_layout_and_hit_testing",
+        "magnification_keeps_center"
+      ],
+      "imports": [
+        "super::*"
+      ],
+      "tags": [
+        "dock"
+      ],
+      "sha256": "93a3d8b98febd052e017f0eef4adb52520acc02d05286dcf42861220cd93b2e0"
+    },
+    {
+      "path": "core/dock-model/src/lib.rs",
+      "language": "rust",
+      "bytes": 9274,
+      "lines": 271,
+      "summary": "! Conteúdo e política do Dock, sem GTK, ícones ou socket do compositor. use serde_json::{json, Value};",
+      "symbols": [
+        "needs_refresh",
+        "build_plan",
+        "reorder",
+        "pin_slot",
+        "insert_pin",
+        "dispatch",
+        "sections_keep_focus_order_and_minimized",
+        "finder_cannot_move"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "std::collections::{HashMap, HashSet}",
+        "std::ffi::{c_char, CStr}",
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "window"
+      ],
+      "sha256": "4a982bb44499c364f32e8af720bc237ee1cd84a18f47e760b8848f04c8b37179"
+    },
+    {
+      "path": "core/folder-color/src/lib.rs",
+      "language": "rust",
+      "bytes": 5363,
+      "lines": 165,
+      "summary": "! Recoloração de ícones de pasta; a view GTK fornece os pixels e o alvo. use serde_json::Value;",
+      "symbols": [
+        "parse_hex",
+        "palette",
+        "color_from_preferences",
+        "tint_rgba",
+        "preserves_transparency_and_highlight",
+        "rejects_short_buffer",
+        "resolves_palette_and_custom_color"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::sync::OnceLock",
+        "super::*"
+      ],
+      "tags": [
+        "lock"
+      ],
+      "sha256": "ebaaade68c998563c6f8339eb780e7405a818a737623761557ba1c532707a3d0"
+    },
+    {
+      "path": "core/knowledge-index/src/main.rs",
+      "language": "rust",
+      "bytes": 22535,
+      "lines": 347,
+      "summary": "! Índice incremental da BaseConhecimento, preservando a curadoria SQLite. use regex::Regex;",
+      "symbols": [
+        "hash",
+        "text",
+        "data",
+        "value",
+        "sql",
+        "string",
+        "join_array",
+        "py_json",
+        "tipo_de",
+        "Metadata",
+        "initial_metadata",
+        "markdown_parts",
+        "contour_parts",
+        "text_parts",
+        "image_links",
+        "normalize",
+        "migrate",
+        "setup",
+        "source_files",
+        "index_sources",
+        "derived_images",
+        "tokens",
+        "record_hashes",
+        "count",
+        "run",
+        "main",
+        "source_classification_is_conservative",
+        "markdown_sections_keep_their_ancestry"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, types::Value as SqlValue, Connection, OptionalExtension}",
+        "serde_json::{json, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::collections::HashSet",
+        "std::env",
+        "std::error::Error",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command",
+        "walkdir::WalkDir",
+        "super::*"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "90429eea5e83e98bad57b8752fb34bca54b947cb0981232b914b48c2f6cb8450"
+    },
+    {
+      "path": "core/motion/src/lib.rs",
+      "language": "rust",
+      "bytes": 1456,
+      "lines": 41,
+      "summary": "! Núcleo matemático das molas usadas pelo shell, Dock e Spotlight. ! ABI C pequena para a camada GTK atual; sem estado global, GTK ou timers.",
+      "symbols": [
+        "SpringState",
+        "spring_step",
+        "delayed_frame_is_bounded_and_settles"
+      ],
+      "imports": [
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "spotlight"
+      ],
+      "sha256": "a982164c205de4828865b730d0d4e4b87bf9b97fd0eaa6dea639fb5114db0c1e"
+    },
+    {
+      "path": "core/query/src/main.rs",
+      "language": "rust",
+      "bytes": 18150,
+      "lines": 324,
+      "summary": "! Consulta somente leitura à Base de Conhecimento. use regex::Regex;",
+      "symbols": [
+        "Options",
+        "parse",
+        "help",
+        "query",
+        "display",
+        "cell",
+        "nonnull",
+        "fallback",
+        "python_json",
+        "fts_query",
+        "like",
+        "no_accents",
+        "is_word",
+        "whole_word",
+        "norm_code",
+        "main_query",
+        "main",
+        "fts_preserves_explicit_syntax_and_expands_plain_terms",
+        "normalized_catalog_search_keeps_word_boundaries",
+        "sql_mode_cannot_modify_database"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, params_from_iter, types::Value as SqlValue, Connection, OpenFlags}",
+        "serde_json::{Map, Value}",
+        "std::env",
+        "std::path::{Path, PathBuf}",
+        "unicode_normalization::{char::is_combining_mark, UnicodeNormalization}",
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "control center",
+        "spotlight",
+        "glass",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "f8d01f4656da011c9162c304c34bee77a919ade20734fcacd2f2489550dd97e7"
+    },
+    {
+      "path": "core/runtime-helpers/src/main.rs",
+      "language": "rust",
+      "bytes": 3004,
+      "lines": 82,
+      "summary": "! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value;",
+      "symbols": [
+        "config_path",
+        "config_value",
+        "scratchpad_count",
+        "lock_ready",
+        "main"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command"
+      ],
+      "tags": [
+        "lock",
+        "window"
+      ],
+      "sha256": "b9f79e4e6697ffdb6303557f9f79ee15d1c16ca0fd1f8b1000619ddfa0e688a1"
+    },
+    {
+      "path": "core/screen-recording/src/hypr.rs",
+      "language": "rust",
+      "bytes": 2974,
+      "lines": 92,
+      "summary": "! Consultas pontuais ao compositor para escolher monitor e janela de gravação. use serde_json::Value;",
+      "symbols": [
+        "run_output",
+        "focused_monitor",
+        "visible_windows",
+        "window_rectangles",
+        "visible_workspaces_filter_hidden_clients"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::process::Command",
+        "super::*"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "f53b0b1636428fe6514f4cb5cf33dc7254604a8e8b34cbdf798c4021c5387c34"
+    },
+    {
+      "path": "core/screen-recording/src/main.rs",
+      "language": "rust",
+      "bytes": 8478,
+      "lines": 277,
+      "summary": "! Gravação de tela ⇧⌘5; processo wf-recorder e controle GTK/LayerShell. mod hypr;",
+      "symbols": [
+        "Recorder",
+        "notify_missing",
+        "destination",
+        "file_name",
+        "pick_geometry",
+        "signal_bar",
+        "thumbnail",
+        "stop",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "gtk::glib::{self, ControlFlow}",
+        "hypr::{focused_monitor, window_rectangles}",
+        "process_control::{recording_delay, runtime_file, stop_existing}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Child, Command, Stdio}",
+        "std::rc::Rc",
+        "std::time::{Duration, Instant}",
+        "std::io::Write"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "2950419f867148bd4ee3865f41cd4a69ac47464354f8473a029d55a7737d8209"
+    },
+    {
+      "path": "core/screen-recording/src/process_control.rs",
+      "language": "rust",
+      "bytes": 2254,
+      "lines": 71,
+      "summary": "! Estado do processo de gravação: PID guardado e timer de início. use std::env;",
+      "symbols": [
+        "runtime_file",
+        "stop_existing",
+        "is_recorder_command_line",
+        "recording_delay",
+        "only_recorder_command_line_can_be_stopped",
+        "recording_timer_accepts_only_short_nonnegative_values"
+      ],
+      "imports": [
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "super::*"
+      ],
+      "tags": [],
+      "sha256": "d910df8d2b149ef9198ee02854ef3388c871b6dd98611ceca6f484d26d25d00e"
+    },
+    {
+      "path": "core/screen-recording/src/ui.rs",
+      "language": "rust",
+      "bytes": 3227,
+      "lines": 79,
+      "summary": "use super::{stop, Recorder}; use gtk::gdk;",
+      "symbols": [
+        "show"
+      ],
+      "imports": [
+        "super::{stop, Recorder}",
+        "gtk::gdk",
+        "gtk::glib::{self, ControlFlow}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, Layer, LayerShell}",
+        "std::cell::RefCell",
+        "std::rc::Rc",
+        "std::time::Duration"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "2fa59519144961edb40f45c536152c94d175a332b8117dcb7c555f109a22b25f"
+    },
+    {
+      "path": "core/screenshot/src/main.rs",
+      "language": "rust",
+      "bytes": 9809,
+      "lines": 298,
+      "summary": "! Capturas do shell: preserva os modos e as opções do comando scripts/screenshot. use serde_json::Value;",
+      "symbols": [
+        "output",
+        "hypr_json",
+        "point_size",
+        "visible_rectangles",
+        "select_rectangle",
+        "capture",
+        "config_sound",
+        "command_exists",
+        "main_result",
+        "main",
+        "pick_uses_only_visible_clients_on_active_workspaces"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::collections::HashSet",
+        "std::env",
+        "std::fs::{self, File}",
+        "std::io::Write",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::thread",
+        "std::time::Duration",
+        "super::*",
+        "serde_json::json"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "5b60cc9bacd0a6cfc3c96cbdc2d1d5e8ba83dfa8db4a51c544104fc865bb0d66"
+    },
+    {
+      "path": "core/spotlight-history/src/lib.rs",
+      "language": "rust",
+      "bytes": 6775,
+      "lines": 186,
+      "summary": "! Histórico dos modos do Spotlight, independente da view GTK e do lançador. use serde::Serialize;",
+      "symbols": [
+        "load",
+        "ids",
+        "record",
+        "save",
+        "read_drun_cache",
+        "write_drun_cache",
+        "dispatch",
+        "recent_entry_replaces_old_and_preserves_other_modes",
+        "cache_sums_duplicate_desktop_entries"
+      ],
+      "imports": [
+        "serde::Serialize",
+        "serde_json::{json, Map, Value}",
+        "std::ffi::{c_char, CStr}",
+        "std::fs",
+        "std::path::Path",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight"
+      ],
+      "sha256": "57bf360cde5ec23391d726b71b3950d52d22a7b8ca802d16a675b1d290e0ce0d"
+    },
+    {
+      "path": "core/spotlight-quickkeys/src/lib.rs",
+      "language": "rust",
+      "bytes": 7423,
+      "lines": 157,
+      "summary": "! Teclas rápidas personalizáveis do Spotlight, sem GTK e sem estado global. use regex::Regex;",
+      "symbols": [
+        "normalize",
+        "suggest",
+        "as_string",
+        "object",
+        "effective",
+        "assign",
+        "after_run",
+        "load",
+        "save",
+        "dispatch",
+        "collision_moves_previous_owner",
+        "suggestion_only_after_first_run"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde::Serialize",
+        "serde_json::{json, Map, Value}",
+        "std::collections::HashSet",
+        "std::ffi::{c_char, CStr}",
+        "std::fs",
+        "std::path::Path",
+        "std::sync::LazyLock",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "7e42417deddf9bd07164a47993e52e08befd9475e8e23044ff3967fad4db8685"
+    },
+    {
+      "path": "core/spotlight-search/src/calc.rs",
+      "language": "rust",
+      "bytes": 6062,
+      "lines": 137,
+      "summary": "! Avaliador restrito das contas digitadas no Spotlight. ! Recusa expressões fora do contrato antigo; valores de precisão incerta",
+      "symbols": [
+        "CalcResult",
+        "Parser",
+        "new",
+        "spaces",
+        "eat",
+        "two_stars",
+        "expression",
+        "term",
+        "factor",
+        "power",
+        "atom",
+        "grouped_int",
+        "calculate",
+        "arithmetic_precedence_and_power_limit"
+      ],
+      "imports": [
+        "regex::Regex",
+        "std::sync::LazyLock",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "b59e0a1a33334b6d223ff9f3346dab74fb316638ba1c30e6e4ee98dc4682265a"
+    },
+    {
+      "path": "core/spotlight-search/src/filters.rs",
+      "language": "rust",
+      "bytes": 5520,
+      "lines": 202,
+      "summary": "! Categorias e seletores do Spotlight. Ordem e nomes são os do módulo GTK atual. use serde_json::{json, Value};",
+      "symbols": [
+        "app_category",
+        "filter_command",
+        "filter_results",
+        "dispatch",
+        "category_uses_first_matching_group",
+        "selectors_keep_scope_and_order"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "crate::fold",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight"
+      ],
+      "sha256": "b0dd99affb4463c3f57314ad99903306ac4afecc3dcb191f8a154a30c1b6d09f"
+    },
+    {
+      "path": "core/spotlight-search/src/lib.rs",
+      "language": "rust",
+      "bytes": 7002,
+      "lines": 176,
+      "summary": "! Núcleo de normalização e ranking da busca Spotlight, sem GTK ou IPC. mod calc;",
+      "symbols": [
+        "file_kind",
+        "file_query",
+        "fold",
+        "words",
+        "score",
+        "c_input",
+        "accented_names_match_normalized_queries",
+        "ranking_keeps_name_over_extra_and_word_initials",
+        "file_type_tokens_preserve_other_query_words"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::json",
+        "std::ffi::{c_char, CStr}",
+        "std::sync::LazyLock",
+        "unicode_normalization::{char::canonical_combining_class, UnicodeNormalization}",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "d7188c9d5c75c9fa3ecc9d5448a6988a1eb66b7f8260f139bc1f0f78b05479e2"
+    },
+    {
+      "path": "core/status-map/src/main.rs",
+      "language": "rust",
+      "bytes": 15457,
+      "lines": 422,
+      "summary": "! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex;",
+      "symbols": [
+        "color",
+        "label",
+        "weight",
+        "xml",
+        "add",
+        "behaviors",
+        "parameters",
+        "apps",
+        "worst",
+        "squarify",
+        "grid",
+        "score",
+        "svg_map",
+        "legend",
+        "badge",
+        "read",
+        "write_if_changed",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::Value",
+        "std::fs",
+        "std::path::{Path, PathBuf}"
+      ],
+      "tags": [
+        "dock",
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "8dbd98318531affeca5df03ef6927f90261123962df43301065cf9ab24d58924"
+    },
+    {
+      "path": "core/waybar-status/src/main.rs",
+      "language": "rust",
+      "bytes": 14931,
+      "lines": 455,
+      "summary": "use chrono::{Datelike, Local, Timelike}; use regex::Regex;",
+      "symbols": [
+        "runtime_path",
+        "config_path",
+        "read_json",
+        "visible",
+        "status",
+        "process_exists",
+        "active_class",
+        "menu",
+        "headphones",
+        "layout_status",
+        "show_layout",
+        "layout_events",
+        "about_message",
+        "app_about",
+        "pref_bool",
+        "clock_text",
+        "clock_line",
+        "clock",
+        "run",
+        "main",
+        "clock_options",
+        "missing_config_hides_optional_items",
+        "layout_uses_main_keyboard_and_active_index",
+        "about_formats_package_and_executable"
+      ],
+      "imports": [
+        "chrono::{Datelike, Local, Timelike}",
+        "regex::Regex",
+        "serde_json::{json, Value}",
+        "std::env",
+        "std::fs",
+        "std::io::{self, Read, Write}",
+        "std::os::fd::AsRawFd",
+        "std::os::unix::net::UnixStream",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::time::Duration",
+        "super::*",
+        "chrono::TimeZone"
+      ],
+      "tags": [
+        "lock",
+        "menu",
+        "window",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "afecbf598989b69d43d3b61ef076dea891263fa07cdf9d28ace91faecab495fc"
+    },
+    {
+      "path": "core/waybar-status/src/menu_extras.rs",
+      "language": "rust",
+      "bytes": 6468,
+      "lines": 179,
+      "summary": "! Persistência das preferências SNI da barra, compartilhada com o script de diagnóstico. use serde_json::{json, Value};",
+      "symbols": [
+        "config_path",
+        "validate",
+        "update",
+        "save",
+        "run",
+        "preserves_unknown_fields_and_order",
+        "deduplicates_order_and_rejects_invalid_state"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "std::env",
+        "std::fs::{self, OpenOptions}",
+        "std::io::Write",
+        "std::os::fd::AsRawFd",
+        "std::os::unix::fs::OpenOptionsExt",
+        "std::path::{Path, PathBuf}",
+        "super::*"
+      ],
+      "tags": [
+        "lock",
+        "menu"
+      ],
+      "sha256": "cdd98c58ab548a806860c9bdbacb4c112367a645247689d2cd36c5e537244569"
+    },
+    {
+      "path": "core/window-actions/src/main.rs",
+      "language": "rust",
+      "bytes": 9175,
+      "lines": 263,
+      "summary": "use serde_json::Value; use std::env;",
+      "symbols": [
+        "hypr",
+        "snapshot",
+        "field",
+        "workspace_id",
+        "address",
+        "next_window",
+        "move_window",
+        "plan",
+        "run",
+        "main",
+        "opening_order_wraps_in_both_directions",
+        "desktop_toggle_round_trip_preserves_workspace",
+        "visible_window_cycle_skips_hidden_and_unmapped"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::env",
+        "std::process::{Command, Stdio}",
+        "super::*",
+        "serde_json::json"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "b4405d9b34ad3f707c1102017d6243ad9ed663c5441a2a7cb7175559ba78ad40"
+    },
+    {
       "path": "ghostty/macos.css",
       "language": "css",
       "bytes": 2498,
@@ -189,8 +1304,8 @@
     {
       "path": "gtk/gtk4.css",
       "language": "css",
-      "bytes": 10793,
-      "lines": 377,
+      "bytes": 12133,
+      "lines": 406,
       "summary": "hyprmac — GTK 4 / libadwaita no modo escuro do macOS Tahoe Carregado por ~/.config/gtk-4.0/gtk.css. As cores vêm de palette4.css",
       "symbols": [
         "window.csd.background",
@@ -251,7 +1366,12 @@
         "tabbar tab:hover",
         "tabbar tab:selected",
         "tabbar tab label",
-        "tabbar tabbox > separator"
+        "tabbar tabbox > separator",
+        "window.nautilus-window .navigation-sidebar > row",
+        "window.nautilus-window .navigation-sidebar > row:selected",
+        "window.nautilus-window .navigation-sidebar > row:selected image",
+        "window.nautilus-window .navigation-sidebar > row.header label",
+        "window.nautilus-window .sidebar-pane headerbar .title"
       ],
       "imports": [],
       "tags": [
@@ -260,13 +1380,13 @@
         "theme",
         "window"
       ],
-      "sha256": "13b0a5a568e850e7c6eff6272d8419c7f116222abc220e1bbef26c826a36dc52"
+      "sha256": "646e5c25d786be0bcfe75168577dc61372c8fe89089b9d4a1e596dfbffa0202d"
     },
     {
       "path": "gtk/palette3-dark.css",
       "language": "css",
-      "bytes": 3352,
-      "lines": 59,
+      "bytes": 3274,
+      "lines": 58,
       "summary": "hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */",
       "symbols": [],
       "imports": [],
@@ -276,7 +1396,7 @@
         "theme",
         "window"
       ],
-      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
+      "sha256": "0d3b7997bf4d9602f666aab1aefc9e6c359ed017bb896b90b37029e5bf7bdef1"
     },
     {
       "path": "gtk/palette3-light.css",
@@ -297,8 +1417,8 @@
     {
       "path": "gtk/palette3.css",
       "language": "css",
-      "bytes": 3352,
-      "lines": 59,
+      "bytes": 3274,
+      "lines": 58,
       "summary": "hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */",
       "symbols": [],
       "imports": [],
@@ -308,12 +1428,12 @@
         "theme",
         "window"
       ],
-      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
+      "sha256": "0d3b7997bf4d9602f666aab1aefc9e6c359ed017bb896b90b37029e5bf7bdef1"
     },
     {
       "path": "gtk/palette4-dark.css",
       "language": "css",
-      "bytes": 3139,
+      "bytes": 3126,
       "lines": 81,
       "summary": "hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */",
       "symbols": [
@@ -326,7 +1446,7 @@
         "theme",
         "window"
       ],
-      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
+      "sha256": "6eabeb11cbffc7fe4353221bb17098b656a291d0f1b5a8926687468513b59c7e"
     },
     {
       "path": "gtk/palette4-light.css",
@@ -349,7 +1469,7 @@
     {
       "path": "gtk/palette4.css",
       "language": "css",
-      "bytes": 3139,
+      "bytes": 3126,
       "lines": 81,
       "summary": "hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */",
       "symbols": [
@@ -362,13 +1482,27 @@
         "theme",
         "window"
       ],
-      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
+      "sha256": "6eabeb11cbffc7fe4353221bb17098b656a291d0f1b5a8926687468513b59c7e"
+    },
+    {
+      "path": "hypr/app-factory-classes.lua",
+      "language": "lua",
+      "bytes": 1034,
+      "lines": 58,
+      "summary": "Generated by scripts/generate-app-factory; factory apps only. return {",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "hypr",
+        "lock"
+      ],
+      "sha256": "02f7148155d4ebb16ccbb458aab8f468b8c2d94ec42e0387e31579007223a4f5"
     },
     {
       "path": "hypr/hyprmac.lua",
       "language": "lua",
-      "bytes": 25435,
-      "lines": 554,
+      "bytes": 29682,
+      "lines": 625,
       "summary": "hyprmac — aparência macOS Tahoe (modo escuro) para Hyprland Carregado no fim do hyprland.lua; tudo aqui sobrescreve os padrões de lá.",
       "symbols": [
         "dark_mode",
@@ -390,13 +1524,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "bc5a9a5950da37030f6a4b787a95b51c6ddd05943506abfea07bc05850e82565"
+      "sha256": "c84c22c25463fc4d7de3ab836f8999f236c616e79e565f0ace2908602495e97f"
     },
     {
       "path": "hypr/vidro-presets.lua",
       "language": "lua",
-      "bytes": 11925,
-      "lines": 219,
+      "bytes": 26464,
+      "lines": 457,
       "summary": "hyprmac — presets de Liquid Glass para o plugin hyprglass Presets próprios e camadas só valem quando o Hyprland LÊ a config (o hyprglass os guarda",
       "symbols": [
         "ler",
@@ -407,6 +1541,7 @@
       "tags": [
         "hypr",
         "dock",
+        "control center",
         "spotlight",
         "notification",
         "menu",
@@ -417,63 +1552,25 @@
         "center",
         "control_center"
       ],
-      "sha256": "7c0fbba532e19687e69c390bf93f31c3897183b9ec717ac59454e265e01d742e"
+      "sha256": "35bbe3afd7756e9e20b6b6ad67d2617205ea64b352c31975232fb7b2510e77bc"
     },
     {
-      "path": "scripts/accent",
-      "language": "python",
-      "bytes": 4369,
-      "lines": 112,
-      "summary": "\"\"\"hyprmac — cor de destaque do sistema (Ajustes ▸ Aparência ▸ Cor de Destaque do macOS). accent                 reaplica a cor atual (usado por scripts/theme ao trocar claro/escuro)",
-      "symbols": [
-        "rgb",
-        "hexa",
-        "misturar",
-        "tons",
-        "cor_atual",
-        "modo_escuro",
-        "escrever",
-        "aplicar",
-        "main"
-      ],
+      "path": "scripts/agent-loader.js",
+      "language": "javascript",
+      "bytes": 1688,
+      "lines": 55,
+      "summary": "Agent Loader - carrega as dependências e configuração para cada agente const fs = require('fs');",
+      "symbols": [],
       "imports": [
-        "os",
-        "subprocess",
-        "sys",
-        "accent_palette"
+        "fs",
+        "path"
       ],
       "tags": [
         "scripts",
         "menu",
-        "theme"
+        "glass"
       ],
-      "sha256": "764c71bc4fd88265bfe0f6c47b1df31275a939e8d567fe99fbf9beb8839b6d95"
-    },
-    {
-      "path": "scripts/acessibilidade",
-      "language": "python",
-      "bytes": 3735,
-      "lines": 91,
-      "summary": "\"\"\"hyprmac — Reduzir Transparência e Aumentar Contraste (Acessibilidade ▸ Tela no macOS). acessibilidade                         reaplica o estado salvo",
-      "symbols": [
-        "carregar",
-        "escrever",
-        "aplicar",
-        "main"
-      ],
-      "imports": [
-        "json",
-        "os",
-        "subprocess",
-        "sys"
-      ],
-      "tags": [
-        "scripts",
-        "menu",
-        "glass",
-        "window"
-      ],
-      "sha256": "9165ea8aea1a38fe35391d0b8f0f0245f9af5e43b8ef7023ad0f67d568224736"
+      "sha256": "4cbce24b0104108de35abebbac920495d43f628de02b2bab0ba329ae1fc23bed"
     },
     {
       "path": "scripts/bar-style",
@@ -508,182 +1605,87 @@
     },
     {
       "path": "scripts/captura",
-      "language": "python",
-      "bytes": 17077,
-      "lines": 422,
-      "summary": "\"\"\"hyprmac — barra de Captura de Tela (⇧⌘5 do macOS), sem gravação. Cápsula de vidro escuro no rodapé da tela, como no Tahoe:",
-      "symbols": [
-        "escuro",
-        "vidro_real",
-        "css",
-        "carregar",
-        "salvar",
-        "pasta",
-        "icone",
-        "draw",
-        "ret",
-        "Barra",
-        "__init__",
-        "_chev",
-        "_sep",
-        "_modo",
-        "_opcoes",
-        "cab",
-        "opc",
-        "_tecla",
-        "capturar",
-        "main"
-      ],
-      "imports": [
-        "json",
-        "os",
-        "subprocess",
-        "sys",
-        "cairo",
-        "gi",
-        "gi.repository"
-      ],
-      "tags": [
-        "scripts",
-        "dock",
-        "menu",
-        "glass",
-        "window"
-      ],
-      "sha256": "47059bfeacde29689e99575bc396992c082b73d21bcd66a990e31f41e90db43d"
-    },
-    {
-      "path": "scripts/captura-miniatura",
-      "language": "python",
-      "bytes": 6346,
-      "lines": 172,
-      "summary": "\"\"\"hyprmac — miniatura flutuante depois de uma captura de tela (como no macOS). captura-miniatura <imagem.png> [--abrir <arquivo>]",
-      "symbols": [
-        "editor",
-        "rounded",
-        "main",
-        "draw",
-        "sair",
-        "armar",
-        "soltou"
-      ],
-      "imports": [
-        "os",
-        "subprocess",
-        "sys",
-        "gi",
-        "gi.repository",
-        "math"
-      ],
-      "tags": [
-        "scripts",
-        "window"
-      ],
-      "sha256": "4b66008c31be0d2694ffd1a45be099db38d86a0af570b3a92ea0c40812b15894"
-    },
-    {
-      "path": "scripts/clipboard",
-      "language": "python",
-      "bytes": 5352,
-      "lines": 159,
-      "summary": "\"\"\"hyprmac — histórico da área de transferência (como o ⌘Espaço ⌘4 do Tahoe). clipboard watch    vigia a área de transferência (autostart do hyprmac.lua)",
-      "symbols": [
-        "sh",
-        "load",
-        "save",
-        "forget_files",
-        "store",
-        "save_image",
-        "image_meta",
-        "pick",
-        "clear",
-        "watch"
-      ],
-      "imports": [
-        "hashlib",
-        "json",
-        "os",
-        "subprocess",
-        "sys",
-        "time",
-        "gi",
-        "gi.repository"
-      ],
+      "language": "bash",
+      "bytes": 382,
+      "lines": 6,
+      "summary": "⇧⌘5: a barra GTK e seu estado ficam no executável Rust. Rótulos Tahoe preservados no binário: \"Capture Entire Screen\", \"Capture Selected Portion\", \"Options\", \"Save to\", \"Show Floating Thumbnail\", \"Capture\".",
+      "symbols": [],
+      "imports": [],
       "tags": [
         "scripts"
       ],
-      "sha256": "59782525a1ed73d3b569fa11c08298b089fbd5895e4df7e7af0f1acd836fb3b9"
+      "sha256": "ae4cba6ac1101540fddbcd0236d1876ba12e91636c427f38b8cd5b325980f2e8"
+    },
+    {
+      "path": "scripts/extract-notes-specs.js",
+      "language": "javascript",
+      "bytes": 9814,
+      "lines": 325,
+      "summary": "const fs = require('fs'); const path = require('path');",
+      "symbols": [],
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "tags": [
+        "scripts",
+        "lock",
+        "menu",
+        "window"
+      ],
+      "sha256": "5c4ecfddeab7c4877d737772d6c11c6d8d98f83c87c3b10456beec019429d2f5"
+    },
+    {
+      "path": "scripts/generate-app-factory",
+      "language": "python",
+      "bytes": 8623,
+      "lines": 193,
+      "summary": "\"\"\"Generate missing HyprMac app entries from the curated Tahoe package inventory. Only writes its own generated files. Existing, differing files are reported and",
+      "symbols": [
+        "slug",
+        "write_owned",
+        "icon_source",
+        "export_icon",
+        "manifest_for",
+        "desktop_for",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "sys",
+        "pathlib",
+        "app_factory_registry",
+        "PIL"
+      ],
+      "tags": [
+        "scripts",
+        "lock",
+        "menu",
+        "window"
+      ],
+      "sha256": "a9dd71374f639927fb0dc5dfde34f29c5f314504c6358f452a074eb8a4499ff7"
     },
     {
       "path": "scripts/gravacao",
-      "language": "python",
-      "bytes": 9878,
-      "lines": 261,
-      "summary": "\"\"\"hyprmac — gravação de tela da ferramenta ⇧⌘5 (como no macOS). gravacao screen   grava o monitor em foco",
-      "symbols": [
-        "destino",
-        "monitor_focado",
-        "parar_existente",
-        "Controle",
-        "__init__",
-        "_sem_ferramenta",
-        "_janela",
-        "_pisca",
-        "_tic",
-        "parar",
-        "_miniatura",
-        "janelas_visiveis",
-        "main"
-      ],
-      "imports": [
-        "os",
-        "signal",
-        "subprocess",
-        "sys",
-        "time",
-        "gi",
-        "json",
-        "gi.repository"
-      ],
+      "language": "bash",
+      "bytes": 164,
+      "lines": 4,
+      "summary": "Gravação de tela ⇧⌘5: controle e interface no executável Rust. set -euo pipefail",
+      "symbols": [],
+      "imports": [],
       "tags": [
-        "scripts",
-        "menu",
-        "window"
+        "scripts"
       ],
-      "sha256": "ad77ae4d5ccc867b9eaf886a777745016eab6cadc09f2fee5cd30f62f2bed568"
-    },
-    {
-      "path": "scripts/janela",
-      "language": "python",
-      "bytes": 4120,
-      "lines": 99,
-      "summary": "\"\"\"hyprmac — comandos de app no estilo macOS (atalhos e menu do app). janela quit-app      fecha todas as janelas do app em foco        (⌘Q)",
-      "symbols": [
-        "hypr",
-        "clients",
-        "active",
-        "dispatch",
-        "move_hidden",
-        "main"
-      ],
-      "imports": [
-        "json",
-        "subprocess",
-        "sys"
-      ],
-      "tags": [
-        "scripts",
-        "menu",
-        "window"
-      ],
-      "sha256": "ee22f033d1cc0c912e5f8120c0d627c354ba96fb468389b038ebd99347ba488f"
+      "sha256": "62d742fb857e789a1b2b4cbe61a1b8646b5ca39098f135fee16b5ed201d8b093"
     },
     {
       "path": "scripts/menu-extras",
       "language": "python",
-      "bytes": 8098,
-      "lines": 191,
-      "summary": "\"\"\"Configuração e diagnóstico pontuais dos extras SNI. Não permanece residente.\"\"\" ROOT = Path(__file__).resolve().parent.parent",
+      "bytes": 9740,
+      "lines": 223,
+      "summary": "\"\"\"Configuração e diagnóstico pontuais dos extras SNI. Só \"start\" fica residente, como supervisor da Waybar (relança a barra se ela cair).\"\"\"",
       "symbols": [
         "call",
         "items",
@@ -691,6 +1693,7 @@
         "save",
         "pids",
         "start",
+        "supervise",
         "main"
       ],
       "imports": [
@@ -699,9 +1702,11 @@
         "json",
         "os",
         "pathlib",
+        "signal",
         "subprocess",
         "sys",
         "tempfile",
+        "time",
         "gi.repository"
       ],
       "tags": [
@@ -709,13 +1714,28 @@
         "lock",
         "menu"
       ],
-      "sha256": "9302990c169b0f715ab742cfc51eeca35465f12f1d20c4563ac7883eb3a0e98a"
+      "sha256": "445a685863d6562a19e9f826d7a7efc805d9bec76866436a018ce2fbc7878014"
+    },
+    {
+      "path": "scripts/mineração-agents.sh",
+      "language": "bash",
+      "bytes": 1280,
+      "lines": 44,
+      "summary": "Sistema de múltiplos agentes para minerar o DMG macOS 26.6.1 Cada agente trabalha em um componente específico",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "scripts",
+        "menu",
+        "glass"
+      ],
+      "sha256": "bb09d4efc940c02a3443fdf82c9dd8a0a593f74fbc8595d7abe174924cf8dce5"
     },
     {
       "path": "scripts/ocioso",
       "language": "bash",
-      "bytes": 2556,
-      "lines": 65,
+      "bytes": 2181,
+      "lines": 51,
       "summary": "hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só",
       "symbols": [
         "cfg"
@@ -725,13 +1745,13 @@
         "scripts",
         "lock"
       ],
-      "sha256": "9f53a395dcf6e52e0c19aff3fee633a97f2af73473b5c63341b7df929ea4b54b"
+      "sha256": "8e93bb393d0db558060a4fb9e7112b277c46c43f40095c07196faf98b657c4a1"
     },
     {
       "path": "scripts/scratchpad",
       "language": "bash",
-      "bytes": 650,
-      "lines": 14,
+      "bytes": 560,
+      "lines": 12,
       "summary": "hyprmac — mostra/esconde o scratchpad (área especial \"magic\"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que",
       "symbols": [],
       "imports": [],
@@ -739,29 +1759,26 @@
         "scripts",
         "window"
       ],
-      "sha256": "d4590fe55a7caeb21d2f948ff5f3701db75e66ce286ae276c09edf135cc3c726"
+      "sha256": "59d57ec783d88111da6328f177e6e6fbd39d3c566b74d15e6966f15b3da5e62c"
     },
     {
       "path": "scripts/screenshot",
       "language": "bash",
-      "bytes": 3467,
-      "lines": 89,
-      "summary": "hyprmac — capturas de tela no estilo macOS (grim + slurp) ",
-      "symbols": [
-        "json_field",
-        "espera"
-      ],
+      "bytes": 163,
+      "lines": 4,
+      "summary": "Captura do shell: modos region, screen, window e pick no executável Rust. set -euo pipefail",
+      "symbols": [],
       "imports": [],
       "tags": [
         "scripts",
         "window"
       ],
-      "sha256": "82dfc16f6bf9c0b2469f64a59e7b36aa5c7aca1766e3b147cd3f677f8f23a884"
+      "sha256": "92c7c235fecb24a290ab2088074d0e2e8862b216178e641d3d9ee6e8d902272d"
     },
     {
       "path": "scripts/spotlight",
       "language": "bash",
-      "bytes": 3775,
+      "bytes": 3789,
       "lines": 106,
       "summary": "hyprmac — Spotlight do shell GTK. Chamar de novo fecha. spotlight [apps|files|actions|clipboard]",
       "symbols": [
@@ -775,13 +1792,13 @@
         "spotlight",
         "menu"
       ],
-      "sha256": "d8d844cbf194797c7e8da19df16437a834d9f067049f6499078635866359f8df"
+      "sha256": "b26a6c242e2d0099ed5e947c786a1401325f66e263763e7ccb19bb17b199f25e"
     },
     {
       "path": "scripts/spotlight-itens",
       "language": "python",
-      "bytes": 25422,
-      "lines": 672,
+      "bytes": 29391,
+      "lines": 773,
       "summary": "\"\"\"hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o \"Restart…/Shut Down…/Log Out…\"",
       "symbols": [
         "esc",
@@ -810,6 +1827,8 @@
         "waybar_config",
         "menu_title",
         "menu_entries",
+        "active_class",
+        "menu_visible",
         "menu_actions",
         "action_items",
         "action_line",
@@ -822,7 +1841,8 @@
         "read_drun_cache",
         "write_drun_cache",
         "cmd_drun_cache",
-        "main"
+        "main",
+        "_history_call"
       ],
       "imports": [
         "hashlib",
@@ -838,7 +1858,8 @@
         "xml.etree.ElementTree",
         "urllib.parse",
         "gi",
-        "gi.repository"
+        "gi.repository",
+        "ctypes"
       ],
       "tags": [
         "scripts",
@@ -853,12 +1874,26 @@
         "center",
         "control_center"
       ],
-      "sha256": "6378586f8acc7315b2efb68b0a7a6ec423607ad1ee7d63e953d6d6154189a941"
+      "sha256": "f3ce9f7e9ca39e5661a27d31da281e1992b8c0503c0e473039d7926040d01280"
+    },
+    {
+      "path": "scripts/status-map",
+      "language": "bash",
+      "bytes": 248,
+      "lines": 5,
+      "summary": "Gera os mapas e o bloco de status com o executável Rust. set -euo pipefail",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "scripts",
+        "lock"
+      ],
+      "sha256": "e1a2725fef221c5779edee8a3dec263a06c277dd148e989d772ad4ebf3ea45cb"
     },
     {
       "path": "scripts/theme",
       "language": "bash",
-      "bytes": 3061,
+      "bytes": 3089,
       "lines": 70,
       "summary": "hyprmac — alterna o tema do sistema entre claro e escuro theme [toggle|light|dark]",
       "symbols": [],
@@ -870,13 +1905,13 @@
         "glass",
         "theme"
       ],
-      "sha256": "a44238beda22258ed3658e5701b9603792de55015bfcdb7365b8adbcb1d16239"
+      "sha256": "c3212313b72612674188759d8e3e94a269edb198234c26bf5acabdd37cb5ff65"
     },
     {
       "path": "scripts/vidro",
       "language": "bash",
-      "bytes": 5580,
-      "lines": 144,
+      "bytes": 5680,
+      "lines": 145,
       "summary": "hyprmac — Liquid Glass via plugin hyprglass (refração, realce especular, chanfro) vidro instalar     compila o hyprglass na tag certa para o Hyprland em uso",
       "symbols": [
         "patches",
@@ -897,7 +1932,7 @@
         "menu",
         "glass"
       ],
-      "sha256": "80dc57b21a1576083647a16058aa7ab99167639f43bde8811bf998ae0bbd32fb"
+      "sha256": "1e4c1899ea0af5a5c640962ff8667d4253ad03067274d040860800dbc2c90539"
     },
     {
       "path": "scripts/vpn",
@@ -996,23 +2031,26 @@
     {
       "path": "shell/accent_palette.py",
       "language": "python",
-      "bytes": 916,
-      "lines": 22,
+      "bytes": 788,
+      "lines": 17,
       "summary": "\"\"\"Destaques AppKit Tahoe 26; não confundir com system*Color do kit.\"\"\" nome → (escuro, claro): controlAccent*Color do macOS Tahoe 26.6.1 (25G76), lidos de",
       "symbols": [
         "accent_hex"
       ],
-      "imports": [],
+      "imports": [
+        "json",
+        "pathlib"
+      ],
       "tags": [
         "shell"
       ],
-      "sha256": "398f0b535db9a1d4fa36f8fb1d0c06a62e5bc5ea6da543f061bd67798f1fcaa0"
+      "sha256": "73121b2c5f3c7484464911e28494698c9866889c81cedd83322ff0445be3d605"
     },
     {
       "path": "shell/ajustes.css",
       "language": "css",
-      "bytes": 20924,
-      "lines": 454,
+      "bytes": 21195,
+      "lines": 457,
       "summary": "hyprmac — Ajustes do Sistema (System Settings do Tahoe). Kit macOS 27: janela #1E1E1E (escuro) / #FFFFFF (claro), raio 26; barra lateral",
       "symbols": [
         "window.settings",
@@ -1144,7 +2182,1193 @@
         "glass",
         "window"
       ],
-      "sha256": "6225f3f085d57baae2b4382024a1d818be35194e8a93c1176cca9679f12a26dd"
+      "sha256": "f6c46ed765530d74811f715111238902469d86566d6d2f3b8f07ed39ea0b556a"
+    },
+    {
+      "path": "shell/app-manifests/ActivityMonitor.json",
+      "language": "json",
+      "bytes": 1043,
+      "lines": 33,
+      "summary": "\"id\": \"dev.hyprmac.ActivityMonitor\", \"name\": \"Activity Monitor\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "bc1a5566d08ae4eaf5976bc3e849e300071c0422b094b4cf43679701ef813f4b"
+    },
+    {
+      "path": "shell/app-manifests/AirPortUtility.json",
+      "language": "json",
+      "bytes": 887,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.AirPortUtility\", \"name\": \"AirPort Utility\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "9d9e63d8dc8ab02ed1e6bab5d4d00f28a01f09c351ab79da1e6e23b24675b474"
+    },
+    {
+      "path": "shell/app-manifests/AppStore.json",
+      "language": "json",
+      "bytes": 834,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.AppStore\", \"name\": \"App Store\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "19479e5a58125f5783910866e580a5d1fa027e526c2de439ffa701e84c616cc2"
+    },
+    {
+      "path": "shell/app-manifests/Apps.json",
+      "language": "json",
+      "bytes": 811,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Apps\", \"name\": \"Apps\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "bbabd5c7ef785fc5dad1aa94ae03c472057c134ee66b51b339dbd72a8e411d42"
+    },
+    {
+      "path": "shell/app-manifests/AudioMIDISetup.json",
+      "language": "json",
+      "bytes": 888,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.AudioMIDISetup\", \"name\": \"Audio MIDI Setup\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "7a20fecd8e17f2c7e03a015f84850de65a4df759b28a133384455ffce95ce97c"
+    },
+    {
+      "path": "shell/app-manifests/Automator.json",
+      "language": "json",
+      "bytes": 836,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Automator\", \"name\": \"Automator\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "0c5b697d7f4e3dade5f7bc4c1c50525577af7da3a163e02521007250ce2f4fe1"
+    },
+    {
+      "path": "shell/app-manifests/BluetoothFileExchange.json",
+      "language": "json",
+      "bytes": 924,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.BluetoothFileExchange\", \"name\": \"Bluetooth File Exchange\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "084ad99d4f7103daf4b990f8b1dc8239165ce0b9afcdb1b5dc2168fa5fc16cd2"
+    },
+    {
+      "path": "shell/app-manifests/Books.json",
+      "language": "json",
+      "bytes": 811,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Books\", \"name\": \"Books\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "128d8afda9593f3cf187e18ecc44c66fb9e0a9d25c1fae48fd584a80b3b50ed9"
+    },
+    {
+      "path": "shell/app-manifests/BootCampAssistant.json",
+      "language": "json",
+      "bytes": 900,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.BootCampAssistant\", \"name\": \"Boot Camp Assistant\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "ea917f76fe2b637e19589c613251bd7d2a3e0359092e9e3caa6cd259dc0d3cba"
+    },
+    {
+      "path": "shell/app-manifests/Calendar.json",
+      "language": "json",
+      "bytes": 917,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.Calendar\", \"name\": \"Calendar\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "7010e06a1bc074d09d99174a04e2c52f2513e9856cbe6da0485c3deb295e066f"
+    },
+    {
+      "path": "shell/app-manifests/Chess.json",
+      "language": "json",
+      "bytes": 812,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Chess\", \"name\": \"Chess\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d2fa7c57f930e7fe04401d17f8b132d987d95d1d2149aa25f2409b30ef995f52"
+    },
+    {
+      "path": "shell/app-manifests/Clock.json",
+      "language": "json",
+      "bytes": 892,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.Clock\", \"name\": \"Clock\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "lock",
+        "menu",
+        "window"
+      ],
+      "sha256": "03f1d12759f16da9d4bcfbcd3a5f1106cc7f7f94603153b916c5cba3db8cce7a"
+    },
+    {
+      "path": "shell/app-manifests/ColorSyncUtility.json",
+      "language": "json",
+      "bytes": 891,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.ColorSyncUtility\", \"name\": \"ColorSync Utility\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "de3031b99a94e9b2eb78b34686b864dbe3ba46d688001c57cd9032121dc3b54d"
+    },
+    {
+      "path": "shell/app-manifests/Console.json",
+      "language": "json",
+      "bytes": 923,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.Console\", \"name\": \"Console\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "358cac2fd1f5c50c3defa68cd2ab5cbcad194d3fe0e2edbe2d334be2d3565cff"
+    },
+    {
+      "path": "shell/app-manifests/Contacts.json",
+      "language": "json",
+      "bytes": 835,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Contacts\", \"name\": \"Contacts\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "11916690bc84d321f7ea833e002f3529ed629f3385d03b779c069fdeecb018d1"
+    },
+    {
+      "path": "shell/app-manifests/Dictionary.json",
+      "language": "json",
+      "bytes": 846,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Dictionary\", \"name\": \"Dictionary\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "9b593a8df295a7a9dbfdd040e4b505cdcfca840e0c61c863e2f0b426abf04250"
+    },
+    {
+      "path": "shell/app-manifests/DigitalColorMeter.json",
+      "language": "json",
+      "bytes": 900,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.DigitalColorMeter\", \"name\": \"Digital Color Meter\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d04d5197e7a5f935243fabdc9780d4d851b9ad55ff30e4b0aef843962ac2cef5"
+    },
+    {
+      "path": "shell/app-manifests/DiskUtility.json",
+      "language": "json",
+      "bytes": 959,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.DiskUtility\", \"name\": \"Disk Utility\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "ee93402afcd38bee0fc3ca4335cbe2446a1710ef6e33a568de8ba7131c77a752"
+    },
+    {
+      "path": "shell/app-manifests/FaceTime.json",
+      "language": "json",
+      "bytes": 826,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.FaceTime\", \"name\": \"FaceTime\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "f3b925e14ec882ce3033f2c91b3854962bbea2fe67a640338e8da822b49ccc86"
+    },
+    {
+      "path": "shell/app-manifests/FindMy.json",
+      "language": "json",
+      "bytes": 814,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.FindMy\", \"name\": \"FindMy\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d659ef9ee3329154985f389b72dc10358134a0240dc6ff2fd2006a453c44e22c"
+    },
+    {
+      "path": "shell/app-manifests/FontBook.json",
+      "language": "json",
+      "bytes": 831,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.FontBook\", \"name\": \"Font Book\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "498be22ed74472c385d03b58f5b70fd4477a0f8dab69b533ba2440dfb420541f"
+    },
+    {
+      "path": "shell/app-manifests/Freeform.json",
+      "language": "json",
+      "bytes": 829,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Freeform\", \"name\": \"Freeform\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "83208fc2e43eaf8017f314fd2c803012e5567cdb02f88c9c8f2ff51c65294c74"
+    },
+    {
+      "path": "shell/app-manifests/Games.json",
+      "language": "json",
+      "bytes": 808,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Games\", \"name\": \"Games\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "2cc9476551f7496eceaf54dce8ba92ee575fef1b49306c0cc73ca833ffc025b4"
+    },
+    {
+      "path": "shell/app-manifests/Grapher.json",
+      "language": "json",
+      "bytes": 834,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Grapher\", \"name\": \"Grapher\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d8904ae1e5a6957465338e600ba3391beafcf8b082dfc076ba778c5603ea5d14"
+    },
+    {
+      "path": "shell/app-manifests/Home.json",
+      "language": "json",
+      "bytes": 803,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Home\", \"name\": \"Home\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "157b85168157274a4a5c4d59c7ebfd92acac0f503ba9ebee0a932247923c9255"
+    },
+    {
+      "path": "shell/app-manifests/ImageCapture.json",
+      "language": "json",
+      "bytes": 858,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.ImageCapture\", \"name\": \"Image Capture\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "7a5547c735fd443fcbf81b7c37083349b9e66762b0ac22acc560381a0710899c"
+    },
+    {
+      "path": "shell/app-manifests/ImagePlayground.json",
+      "language": "json",
+      "bytes": 879,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.ImagePlayground\", \"name\": \"Image Playground\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "ca0d9f15aa66cf9e44392153f9b434b09a87eb10c3b07acfa3c7a76d7bc0eb9d"
+    },
+    {
+      "path": "shell/app-manifests/Magnifier.json",
+      "language": "json",
+      "bytes": 845,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Magnifier\", \"name\": \"Magnifier\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "bc7d8f0eca7e88b616f893ffe0a608469a70beb82bb025a90c8604a2271e40e2"
+    },
+    {
+      "path": "shell/app-manifests/Mail.json",
+      "language": "json",
+      "bytes": 815,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Mail\", \"name\": \"Mail\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "7b48874cde7efd41f3a81ae208526bc70564872fdc50660afc1d384543eb643c"
+    },
+    {
+      "path": "shell/app-manifests/Maps.json",
+      "language": "json",
+      "bytes": 802,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Maps\", \"name\": \"Maps\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "12a631f1f11bbef36d9f4ba79407deb94fa3459426bde3793dde9de8efbef3f0"
+    },
+    {
+      "path": "shell/app-manifests/Messages.json",
+      "language": "json",
+      "bytes": 827,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Messages\", \"name\": \"Messages\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "c95892428982e2dcadb257a4b80916e7eb46dd170861308568c1b5365ce81bc1"
+    },
+    {
+      "path": "shell/app-manifests/MigrationAssistant.json",
+      "language": "json",
+      "bytes": 901,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.MigrationAssistant\", \"name\": \"Migration Assistant\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "bc476acafdf9e20c3e12918cf80ae124ee620cd2bce7541fc81bbcb50df8f66d"
+    },
+    {
+      "path": "shell/app-manifests/Music.json",
+      "language": "json",
+      "bytes": 1365,
+      "lines": 52,
+      "summary": "\"id\": \"dev.hyprmac.Music\", \"name\": \"Music\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "ddb2b9b10f2b13f45004bece4598d4da6cc870c27afbe4f1e242dcded3e1e980"
+    },
+    {
+      "path": "shell/app-manifests/News.json",
+      "language": "json",
+      "bytes": 803,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.News\", \"name\": \"News\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "9080a333b00ccd22bb996c2c1f3a53260d4bd737e767ffa1c7d484b912ea2216"
+    },
+    {
+      "path": "shell/app-manifests/Passwords.json",
+      "language": "json",
+      "bytes": 832,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Passwords\", \"name\": \"Passwords\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "fd089976ff4c176361aa43c48d4ed5c3166639edd894d79a3caae51f130b9851"
+    },
+    {
+      "path": "shell/app-manifests/Phone.json",
+      "language": "json",
+      "bytes": 814,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Phone\", \"name\": \"Phone\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "51876ec8b04b979f0eb76865cd5b96b8855dbc04e6150d359b4f0c1a730a72ed"
+    },
+    {
+      "path": "shell/app-manifests/Podcasts.json",
+      "language": "json",
+      "bytes": 827,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Podcasts\", \"name\": \"Podcasts\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "e86ce73254e05f530533afe300051783ceb9fd36ddda27d890bcec876cdacb2c"
+    },
+    {
+      "path": "shell/app-manifests/PrintCenter.json",
+      "language": "json",
+      "bytes": 857,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.PrintCenter\", \"name\": \"Print Center\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "e7ccfffc2ff8ef4431f262a6aa3a138830757094f3a5c27c40f9900f55002b85"
+    },
+    {
+      "path": "shell/app-manifests/QuickTimePlayer.json",
+      "language": "json",
+      "bytes": 968,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.QuickTimePlayer\", \"name\": \"QuickTime Player\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "45835aaf8deb4acc63dbac4cfdbab082c76cbe8f911b7f84953e59150153e32b"
+    },
+    {
+      "path": "shell/app-manifests/Reminders.json",
+      "language": "json",
+      "bytes": 929,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.Reminders\", \"name\": \"Reminders\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "6809ad8b4d3e7dc4c841964921f4a11818dae7882208669c08844f554a32d081"
+    },
+    {
+      "path": "shell/app-manifests/ScreenSharing.json",
+      "language": "json",
+      "bytes": 873,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.ScreenSharing\", \"name\": \"Screen Sharing\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "ed3d1d6fd33af6628dee371c7280d6e1d6452513f4c55f4ec1e46642a8f6688a"
+    },
+    {
+      "path": "shell/app-manifests/ScriptEditor.json",
+      "language": "json",
+      "bytes": 868,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.ScriptEditor\", \"name\": \"Script Editor\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "8e70ee8460c7220d62969116798db30f8896463e7c5555a6a5bc2d4a559b76af"
+    },
+    {
+      "path": "shell/app-manifests/Shortcuts.json",
+      "language": "json",
+      "bytes": 833,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Shortcuts\", \"name\": \"Shortcuts\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d4cf99ca1dabf65e814e687bb469baa9db272386a2a56ab4d85af5c8726e0c61"
+    },
+    {
+      "path": "shell/app-manifests/Siri.json",
+      "language": "json",
+      "bytes": 811,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Siri\", \"name\": \"Siri\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "dcd1f5f7c9a19fbd15ac8af3fd5f4da1563dde06628da70d8db9a005162b609a"
+    },
+    {
+      "path": "shell/app-manifests/Stickies.json",
+      "language": "json",
+      "bytes": 830,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Stickies\", \"name\": \"Stickies\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "1d796caa3f41faf979c19c84ca7f3ef256052e1cab02ebf75236d64ac25656ea"
+    },
+    {
+      "path": "shell/app-manifests/Stocks.json",
+      "language": "json",
+      "bytes": 814,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Stocks\", \"name\": \"Stocks\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "d9222d9006910e81de09c74744008dbfaf1b35b51fcff728ee84e3779e47f1f8"
+    },
+    {
+      "path": "shell/app-manifests/SystemInformation.json",
+      "language": "json",
+      "bytes": 1053,
+      "lines": 33,
+      "summary": "\"id\": \"dev.hyprmac.SystemInformation\", \"name\": \"System Information\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "373ffa0f833de072a249cde926f89faae543733e892710f696d31019deb74e79"
+    },
+    {
+      "path": "shell/app-manifests/TV.json",
+      "language": "json",
+      "bytes": 795,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.TV\", \"name\": \"TV\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "9354644c92ca54e69bf3e9ce7e92f62fcca544d7465016e1372a53f0c64d08af"
+    },
+    {
+      "path": "shell/app-manifests/Terminal.json",
+      "language": "json",
+      "bytes": 971,
+      "lines": 31,
+      "summary": "\"id\": \"dev.hyprmac.Terminal\", \"name\": \"Terminal\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "502820a06383ab2f0031dbf37b0d479f383ef5c68cff089aa12f44387557e1d4"
+    },
+    {
+      "path": "shell/app-manifests/TimeMachine.json",
+      "language": "json",
+      "bytes": 851,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.TimeMachine\", \"name\": \"Time Machine\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "206baad387f6dbad1e5b4cafe8c2c1e235fc7731976ed4e8fe9aba73609ff404"
+    },
+    {
+      "path": "shell/app-manifests/Tips.json",
+      "language": "json",
+      "bytes": 808,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Tips\", \"name\": \"Tips\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "479bfde884ec49db9fa23bb57b29f3ed55b1593dda714078cdb010fdfefe1782"
+    },
+    {
+      "path": "shell/app-manifests/VoiceMemos.json",
+      "language": "json",
+      "bytes": 939,
+      "lines": 28,
+      "summary": "\"id\": \"dev.hyprmac.VoiceMemos\", \"name\": \"VoiceMemos\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "8a05588596f400f3e26148f915fc56454983d96601f5eb6aff1ba2d061aedb1b"
+    },
+    {
+      "path": "shell/app-manifests/VoiceOverUtility.json",
+      "language": "json",
+      "bytes": 891,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.VoiceOverUtility\", \"name\": \"VoiceOver Utility\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "3b40582e85faf5df5f3c32c62c11aa4b7a95f3c1a21409d16107fba97b41a1e1"
+    },
+    {
+      "path": "shell/app-manifests/Weather.json",
+      "language": "json",
+      "bytes": 821,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.Weather\", \"name\": \"Weather\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "b8049585c7af134db3bbda1a47ef3d49c72ef3b23f5a213895cc129a31d2e90c"
+    },
+    {
+      "path": "shell/app-manifests/iPhoneMirroring.json",
+      "language": "json",
+      "bytes": 872,
+      "lines": 24,
+      "summary": "\"id\": \"dev.hyprmac.iPhoneMirroring\", \"name\": \"iPhone Mirroring\",",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "shell",
+        "menu",
+        "window"
+      ],
+      "sha256": "1193b6f81fba4769fc7e0476bc371f27caaa3f54532af77684f73ac01b0d589f"
+    },
+    {
+      "path": "shell/app_factory_activity.py",
+      "language": "python",
+      "bytes": 4393,
+      "lines": 113,
+      "summary": "\"\"\"Read-only Linux process panel for the HyprMac Activity Monitor pilot.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "sample_processes",
+        "ActivityPanel",
+        "__init__",
+        "_refresh",
+        "_destroy"
+      ],
+      "imports": [
+        "os",
+        "pathlib",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "a0548af941e040bae679e7d2b695b8da902371a25079165eb08bf5d5e274c6b7"
+    },
+    {
+      "path": "shell/app_factory_calendar.py",
+      "language": "python",
+      "bytes": 8136,
+      "lines": 209,
+      "summary": "\"\"\"Local calendar pilot, with events saved in the user's HyprMac config.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "CalendarStore",
+        "__init__",
+        "for_day",
+        "save_event",
+        "remove_event",
+        "_write",
+        "CalendarPanel",
+        "_date",
+        "_refresh",
+        "_date_changed",
+        "_edit",
+        "_remove",
+        "_save",
+        "_clear_form"
+      ],
+      "imports": [
+        "datetime",
+        "json",
+        "os",
+        "tempfile",
+        "uuid",
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "sys",
+        "button"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "573db40db94ad17d299036ae21ebf496a5f44f6dd19395d91bb4336d19bc75d6"
+    },
+    {
+      "path": "shell/app_factory_clock.py",
+      "language": "python",
+      "bytes": 7232,
+      "lines": 180,
+      "summary": "\"\"\"Local Clock pilot: stopwatch, timer and alarms while its window is open.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "ClockPanel",
+        "__init__",
+        "_toggle_stopwatch",
+        "_reset_stopwatch",
+        "_toggle_timer",
+        "_reset_timer",
+        "_add_alarm",
+        "_remove_alarm",
+        "_refresh_alarms",
+        "_tick",
+        "_alert",
+        "_read_alarms",
+        "_write_alarms",
+        "_destroy"
+      ],
+      "imports": [
+        "datetime",
+        "json",
+        "time",
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "sys",
+        "button"
+      ],
+      "tags": [
+        "shell",
+        "lock",
+        "window"
+      ],
+      "sha256": "ed96537410725a6b09b24a2edf21a75311d2564f3ce4bb2b9868274023b032a2"
+    },
+    {
+      "path": "shell/app_factory_console.py",
+      "language": "python",
+      "bytes": 4049,
+      "lines": 106,
+      "summary": "\"\"\"Read-only, on-demand Console panel backed by the local journal.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "read_journal",
+        "ConsolePanel",
+        "__init__",
+        "refresh",
+        "_fetch",
+        "_finish",
+        "_render",
+        "_destroy"
+      ],
+      "imports": [
+        "__future__",
+        "subprocess",
+        "threading",
+        "gi",
+        "gi.repository",
+        "tahoe.compatibility.button"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "964fee4e69c0217faa5fe3f5fa94a48febff93aba56226f08db4e0d315f84287"
+    },
+    {
+      "path": "shell/app_factory_disk_utility.py",
+      "language": "python",
+      "bytes": 3800,
+      "lines": 105,
+      "summary": "\"\"\"Read-only disk and partition inventory for the App Factory.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "DiskUtilityPanel",
+        "__init__",
+        "refresh",
+        "_fetch",
+        "_finish",
+        "add",
+        "_destroy"
+      ],
+      "imports": [
+        "__future__",
+        "threading",
+        "gi",
+        "gi.repository",
+        "shell.linux_storage_adapter",
+        "linux_storage_adapter"
+      ],
+      "tags": [
+        "shell",
+        "lock",
+        "window"
+      ],
+      "sha256": "a705e44e170454d8ec0968ab2c07eab5c8d577647603a52fd2706128ea6e6018"
+    },
+    {
+      "path": "shell/app_factory_quicktime.py",
+      "language": "python",
+      "bytes": 8591,
+      "lines": 202,
+      "summary": "\"\"\"Local media player panel backed by one GStreamer playbin instance.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "_clock_time",
+        "QuickTimePanel",
+        "__init__",
+        "open_file",
+        "_open_dialog",
+        "_toggle_play",
+        "_seek_to_selection",
+        "_update_position",
+        "_new_sample",
+        "_show_frame",
+        "_on_message",
+        "_destroy"
+      ],
+      "imports": [
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "tahoe.compatibility.button"
+      ],
+      "tags": [
+        "shell",
+        "lock",
+        "window"
+      ],
+      "sha256": "1464706d759e10bb2d46e9a3f57fbd201a6321f9a90ddb8dfa17891c89bdf8cd"
+    },
+    {
+      "path": "shell/app_factory_registry.py",
+      "language": "python",
+      "bytes": 4504,
+      "lines": 96,
+      "summary": "\"\"\"Small, GTK independent registry for HyprMac application manifests.\"\"\" ROOT = Path(__file__).resolve().parent",
+      "symbols": [
+        "validate_manifest",
+        "load_manifest",
+        "all_manifests"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "pathlib"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "46b53ebfb12336db28d3b484f63eb61830b38d601dc7ddd705e9dbf4013aedfd"
+    },
+    {
+      "path": "shell/app_factory_reminders.py",
+      "language": "python",
+      "bytes": 5644,
+      "lines": 158,
+      "summary": "\"\"\"Local reminders for HyprMac, with no Apple account or sync service.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "ReminderStore",
+        "__init__",
+        "_load",
+        "_save",
+        "add",
+        "complete",
+        "delete",
+        "RemindersPanel",
+        "_add",
+        "_complete",
+        "_delete",
+        "_refresh"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "pathlib",
+        "tempfile",
+        "uuid",
+        "gi",
+        "gi.repository",
+        "sys",
+        "button",
+        "tahoe.controls.button"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "65dbeb2cde47047c37d76da1020ce6a8f01379c6be1288fdf856c6ee2afaed58"
+    },
+    {
+      "path": "shell/app_factory_system_info.py",
+      "language": "python",
+      "bytes": 2870,
+      "lines": 87,
+      "summary": "\"\"\"Local Linux hardware summary for the System Information factory app. The values describe the current Linux host; this is not an Apple system report.",
+      "symbols": [
+        "_read",
+        "_cpu_model",
+        "_memory",
+        "collect_system_info",
+        "SystemInfoPanel",
+        "__init__",
+        "_refresh"
+      ],
+      "imports": [
+        "os",
+        "pathlib",
+        "socket",
+        "gi",
+        "gi.repository",
+        "tahoe.compatibility.button"
+      ],
+      "tags": [
+        "shell"
+      ],
+      "sha256": "323ffaedff05397614e46bb8434f15d9b36e43b22da08168cd74d689fe2799d3"
+    },
+    {
+      "path": "shell/app_factory_voice_memos.py",
+      "language": "python",
+      "bytes": 6355,
+      "lines": 166,
+      "summary": "\"\"\"Local Voice Memos panel using PipeWire recording and GStreamer playback.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "list_recordings",
+        "_stop_process",
+        "VoiceMemosPanel",
+        "__init__",
+        "_toggle_recording",
+        "_stop_recording",
+        "_play",
+        "_stop_playback",
+        "_poll",
+        "_refresh",
+        "_destroy"
+      ],
+      "imports": [
+        "datetime",
+        "pathlib",
+        "shutil",
+        "subprocess",
+        "uuid",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "shell",
+        "window"
+      ],
+      "sha256": "45a9445bae6255c3b7a93612c96c40a7d173c9a8407cf48fe30fe9e2f07ce36e"
+    },
+    {
+      "path": "shell/app_factory_window.py",
+      "language": "python",
+      "bytes": 9522,
+      "lines": 226,
+      "summary": "\"\"\"Shared GTK3 window for manifest based HyprMac apps. The GTK theme supplies the existing Tahoe titlebar and traffic lights.  A",
+      "symbols": [
+        "_icon",
+        "FactoryWindow",
+        "__init__",
+        "_transition_duration",
+        "_reveal",
+        "_toolbar_action",
+        "_select_sidebar",
+        "_keys",
+        "_about",
+        "_restore_size",
+        "_save_size",
+        "run_app",
+        "FactoryApp",
+        "do_activate",
+        "_smoke_close"
+      ],
+      "imports": [
+        "importlib",
+        "json",
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "app_theme",
+        "tahoe.compatibility.button"
+      ],
+      "tags": [
+        "shell",
+        "menu",
+        "theme",
+        "window"
+      ],
+      "sha256": "ac7320ead3e70a5bcd402ce5e850e6db4fa18eb4ce11cdf507c3dca505766905"
     },
     {
       "path": "shell/app_index.py",
@@ -1175,10 +3399,49 @@
       "sha256": "778980f33282ef659768083aa68a074382fd9c7ca04f20af4a4f26fbc09092ef"
     },
     {
+      "path": "shell/app_theme.py",
+      "language": "python",
+      "bytes": 1377,
+      "lines": 36,
+      "summary": "\"\"\"Sincroniza classes claro/escuro dos apps GTK próprios com a preferência do desktop. Cada app preserva seu CSS e sua geometria. Este módulo só acompanha a mudança",
+      "symbols": [
+        "bind_color_scheme",
+        "update"
+      ],
+      "imports": [
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "shell",
+        "theme"
+      ],
+      "sha256": "7b75548deb0321a2ebc9eccc2534620bd2b5e9d0634d75e9af847901a2ca6fb0"
+    },
+    {
+      "path": "shell/clock_format.py",
+      "language": "python",
+      "bytes": 2248,
+      "lines": 58,
+      "summary": "\"\"\"Texto do relógio da barra de menus com as Clock Options do Tahoe 26. Opções e padrões conforme ClockPreferences (ControlCenter.app) e as strings de",
+      "symbols": [
+        "prefs_of",
+        "needs_seconds_tick",
+        "clock_text"
+      ],
+      "imports": [],
+      "tags": [
+        "shell",
+        "lock",
+        "menu"
+      ],
+      "sha256": "49081975da163537f4c99371fe41e231b1c63fca121762340b9a48440f5fa850"
+    },
+    {
       "path": "shell/cocoa_entry.py",
       "language": "python",
-      "bytes": 4431,
-      "lines": 102,
+      "bytes": 4748,
+      "lines": 107,
       "summary": "\"\"\"Edição compartilhada dos campos GTK3 próprios do HyprMac. Mapeamentos: AppKit StandardKeyBinding.dict, Tahoe 26.6.1 (25G76).",
       "symbols": [
         "is_modified_arrow",
@@ -1193,13 +3456,43 @@
       "tags": [
         "shell"
       ],
-      "sha256": "de16539f66868eda714ab3eafc36a54bf2ad3884826983e2b1cb3333e8672ed4"
+      "sha256": "f4bd867a02b02df4651e0166121852fd8c7e938df23743b4cb31ff692148aeae"
+    },
+    {
+      "path": "shell/darwin_diskarbitration_service.py",
+      "language": "python",
+      "bytes": 3063,
+      "lines": 92,
+      "summary": "\"\"\"Darwin-compatible DiskArbitration service for HyprMac. Maps Apple's DiskArbitration framework (DASession / DADisk) semantics to the",
+      "symbols": [
+        "Volume",
+        "to_dict",
+        "_volume_from_udisks",
+        "DiskArbitrationService",
+        "__init__",
+        "list_volumes",
+        "_read_backend",
+        "backend_name",
+        "darwin_disk_list"
+      ],
+      "imports": [
+        "__future__",
+        "dataclasses",
+        "typing",
+        "shell.linux_storage_adapter",
+        "linux_storage_adapter"
+      ],
+      "tags": [
+        "shell",
+        "lock"
+      ],
+      "sha256": "03ae08b2db81d6f9e6e133126a1b5ac0e700a66bfd1ff974749fc374ac9bf1ba"
     },
     {
       "path": "shell/desktop_surface.py",
       "language": "python",
-      "bytes": 61911,
-      "lines": 1275,
+      "bytes": 67650,
+      "lines": 1385,
       "summary": "\"\"\"Wallpaper, desktop widgets and desktop icons in the shared shell process.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
         "create_desktop_classes",
@@ -1252,9 +3545,14 @@
         "DesktopIcons",
         "_items",
         "_cell",
+        "_draw_folder_icon",
         "_deselect",
         "_select",
         "_open",
+        "_set_customization",
+        "_choose_folder_color",
+        "_choose_folder_emoji",
+        "_customize_menu",
         "_click",
         "WidgetGallery",
         "show"
@@ -1273,6 +3571,8 @@
         "cairo",
         "gi",
         "gi.repository",
+        "accent_palette",
+        "folder_appearance",
         "xml.etree.ElementTree",
         "hashlib",
         "calendar"
@@ -1284,7 +3584,70 @@
         "theme",
         "window"
       ],
-      "sha256": "4e38bd80cc035f9e85734712175d3a1f23452cb0dbe4bffa0d3bced3dbfed63e"
+      "sha256": "757dfcc7384deb4f89020c75d3afa8169bc286acb2eb8e39ab0ea1896b8fb693"
+    },
+    {
+      "path": "shell/diario.css",
+      "language": "css",
+      "bytes": 4050,
+      "lines": 64,
+      "summary": "hyprmac — Journal (Diário do macOS Tahoe 26), a partir de referencias/desejos/journal-app.png: lateral flutuante (margem 8, raio 18) com os cartões Insights/Places desenhados em cairo,",
+      "symbols": [
+        ".dark",
+        ".light",
+        ".dark label",
+        ".light label",
+        ".sidebar-floating",
+        ".light .sidebar-floating",
+        ".dark .sidebar-floating",
+        ".sidebar-header",
+        ".lights",
+        "button.light-btn",
+        "button.light-btn.close",
+        "button.light-btn.minimize",
+        "button.light-btn.zoom",
+        "button.hide-sidebar-btn",
+        "button.journals-add-btn",
+        ".light button.journals-add-btn",
+        ".dark button.journals-add-btn",
+        ".journals-section-title",
+        ".all-entries-row",
+        ".all-entries-row label",
+        ".all-entries-label",
+        ".all-entries-count",
+        ".all-entries-icon",
+        ".main-area",
+        ".main-header",
+        ".main-header-title",
+        "button.main-add-btn",
+        ".light button.main-add-btn",
+        ".dark button.main-add-btn",
+        ".search-capsule",
+        ".light .search-capsule",
+        ".dark .search-capsule",
+        ".empty-title",
+        ".empty-desc",
+        ".dark .empty-title",
+        ".entries-list",
+        ".entries-list row",
+        ".entry-row",
+        ".entry-card",
+        ".light .entry-card",
+        ".dark .entry-card",
+        ".entry-card-date",
+        ".entry-card-title",
+        ".entry-card-text",
+        ".dark .month-header",
+        ".light .month-header",
+        "button.done-btn",
+        ".editor-textview",
+        ".editor-textview text"
+      ],
+      "imports": [],
+      "tags": [
+        "shell"
+      ],
+      "sha256": "623869042a08cc245380f92aef9f2d68143cf9682b5b99aa2e99c66cb7295226"
     },
     {
       "path": "shell/dock_drop.py",
@@ -1311,29 +3674,39 @@
     {
       "path": "shell/dock_geometry.py",
       "language": "python",
-      "bytes": 1687,
-      "lines": 50,
+      "bytes": 6593,
+      "lines": 167,
       "summary": "\"\"\"Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.\"\"\" @dataclass(frozen=True)",
       "symbols": [
         "DockMetrics",
         "from_icon",
+        "magnification_shifts",
         "layout",
-        "index_at"
+        "index_at",
+        "_RawMetrics",
+        "_RawDrawn",
+        "_raw",
+        "_from_icon",
+        "_shifts",
+        "_layout",
+        "_index_at"
       ],
       "imports": [
-        "dataclasses"
+        "dataclasses",
+        "ctypes",
+        "pathlib"
       ],
       "tags": [
         "shell",
         "dock"
       ],
-      "sha256": "530d91f5798fa2459776606f10bc088b875b0d1aba77dd8f169732073e315736"
+      "sha256": "beb0ff952bc52751f65b116e5399d9439779522a06553aa4522008bc0a398aa3"
     },
     {
       "path": "shell/dock_model.py",
       "language": "python",
-      "bytes": 3814,
-      "lines": 89,
+      "bytes": 8890,
+      "lines": 210,
       "summary": "\"\"\"Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.\"\"\" REFRESH_EVENTS = frozenset((",
       "symbols": [
         "needs_refresh",
@@ -1341,21 +3714,26 @@
         "reorder_pinned",
         "movable",
         "pin_slot",
-        "insert_pin"
+        "insert_pin",
+        "_call"
       ],
-      "imports": [],
+      "imports": [
+        "ctypes",
+        "json",
+        "pathlib"
+      ],
       "tags": [
         "shell",
         "dock",
         "window"
       ],
-      "sha256": "188a44fed3ccf8e5d13a787c6772f0e3b8b9b5fb9161f0cf93927bb3cd2f3a52"
+      "sha256": "8f3f8bd4e8427f9fe7bd826c0d2fd3ea52f97763e8675ab8635aba824f012bd0"
     },
     {
       "path": "shell/dock_motion.py",
       "language": "python",
-      "bytes": 3813,
-      "lines": 91,
+      "bytes": 4732,
+      "lines": 106,
       "summary": "\"\"\"Estado das molas, magnificação e quique do Dock; sem relógios ou timers próprios.\"\"\" class DockMotion:",
       "symbols": [
         "DockMotion",
@@ -1374,13 +3752,13 @@
         "dock",
         "lock"
       ],
-      "sha256": "1aa9c6ebed79e7f1e209027cb35bded02420c7997874d8c818c591c7b57f8a23"
+      "sha256": "cc49f3b9175d721e34b287deda8f50b683e47626d4ee41cae7868c90f175eb01"
     },
     {
       "path": "shell/dock_widget.py",
       "language": "python",
-      "bytes": 66456,
-      "lines": 1326,
+      "bytes": 66474,
+      "lines": 1327,
       "summary": "\"\"\"GTK view for the Dock. The shell supplies its shared UI and compositor services.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
         "desktop_id",
@@ -1479,7 +3857,8 @@
         "dock_model",
         "dock_motion",
         "dock_drop",
-        "glass_motion"
+        "glass_motion",
+        "folder_appearance"
       ],
       "tags": [
         "shell",
@@ -1492,25 +3871,57 @@
         "theme",
         "window"
       ],
-      "sha256": "eae669a6d5637eb98b90b4c28183944c22621c5a53c5f0db864d35d081eede24"
+      "sha256": "856c53f53223a2f78f873bb96df8b7bbe6d5fa25e3461aae6782bffd5c35330b"
+    },
+    {
+      "path": "shell/folder_appearance.py",
+      "language": "python",
+      "bytes": 4757,
+      "lines": 113,
+      "summary": "\"\"\"Ponte GTK para a cor de pastas; transformação dos pixels em Rust.\"\"\" gi.require_version(\"GdkPixbuf\", \"2.0\")",
+      "symbols": [
+        "folder_customization",
+        "set_folder_customization",
+        "folder_color",
+        "folder_pixbuf"
+      ],
+      "imports": [
+        "ctypes",
+        "errno",
+        "json",
+        "os",
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "accent_palette"
+      ],
+      "tags": [
+        "shell"
+      ],
+      "sha256": "5fab2cc092da841d32884c2d86e69df2ae9bceb009af2ece59115de62646248b"
     },
     {
       "path": "shell/glass_motion.py",
       "language": "python",
-      "bytes": 1199,
-      "lines": 27,
-      "summary": "\"\"\"Mola de transição baseada no GlassContainer do Tahoe 26.6.1 (25G76). TransitionSettings.default: duration=.5, bounce=.3 (SwiftUICore), recuperados",
+      "bytes": 1516,
+      "lines": 43,
+      "summary": "\"\"\"Mola compartilhada do shell, Dock e Spotlight. O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível.",
       "symbols": [
-        "transition_step"
+        "_SpringState",
+        "spring_step"
       ],
       "imports": [
-        "math"
+        "ctypes",
+        "math",
+        "pathlib"
       ],
       "tags": [
         "shell",
+        "dock",
+        "spotlight",
         "glass"
       ],
-      "sha256": "7bd952e39a0e156fdddb9e575cc58222f16062289db11fbb51fb163195336489"
+      "sha256": "949e69f1ab6ba8a98cf2ab3db6b58179927be958f30b078a22673d4f4fdf79d8"
     },
     {
       "path": "shell/hypr_events.py",
@@ -1540,8 +3951,8 @@
     {
       "path": "shell/hyprmac-ajustes",
       "language": "python",
-      "bytes": 157674,
-      "lines": 3425,
+      "bytes": 162650,
+      "lines": 3530,
       "summary": "\"\"\"hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth,",
       "symbols": [
         "G",
@@ -1662,8 +4073,8 @@
         "fill_radios",
         "set_variant",
         "set_style",
-        "radios",
-        "pane_menubar"
+        "set_folder_color",
+        "radios"
       ],
       "imports": [
         "ast",
@@ -1684,26 +4095,258 @@
         "gi",
         "gi.repository",
         "accent_palette",
-        "cocoa_entry"
+        "cocoa_entry",
+        "menubar_items",
+        "clock_format"
       ],
       "tags": [
         "shell",
         "dock",
+        "control center",
         "spotlight",
         "notification",
         "lock",
         "menu",
         "glass",
         "theme",
+        "window",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "97b36d9f04393106b93f40b79f8fe737a834e3258bc1de5292521260a0dde3fe"
+    },
+    {
+      "path": "shell/hyprmac-app",
+      "language": "python",
+      "bytes": 815,
+      "lines": 26,
+      "summary": "\"\"\"Launch a manifest based HyprMac application by its app ID.\"\"\" def main():",
+      "symbols": [
+        "main"
+      ],
+      "imports": [
+        "argparse",
+        "os",
+        "app_factory_registry",
+        "app_factory_window"
+      ],
+      "tags": [
+        "shell",
         "window"
       ],
-      "sha256": "c53c542c3d981f467947a30d49f8cf2a4463ae47e24c1fac2eb8af326a09055a"
+      "sha256": "f1079fa9e828b0c249727068f53c22df35b666f203e55c5f61977f36a249405c"
+    },
+    {
+      "path": "shell/hyprmac-calculadora",
+      "language": "python",
+      "bytes": 17547,
+      "lines": 426,
+      "summary": "\"\"\"Calculator Basic; a lógica pode ser importada sem GTK ou display.\"\"\" APP_ID = \"dev.hyprmac.Calculator\"",
+      "symbols": [
+        "format_number",
+        "Calculator",
+        "__init__",
+        "reset",
+        "display",
+        "clear_label",
+        "active_operator",
+        "_fail",
+        "_calculate",
+        "press",
+        "_press",
+        "gtk_types",
+        "CalculatorView",
+        "update_theme",
+        "zoom",
+        "drag",
+        "fit_result",
+        "refresh",
+        "on_key",
+        "CalculatorApp",
+        "do_activate",
+        "load_css",
+        "main"
+      ],
+      "imports": [
+        "sys",
+        "decimal",
+        "gi",
+        "gi.repository",
+        "argparse",
+        "time"
+      ],
+      "tags": [
+        "shell",
+        "theme",
+        "window"
+      ],
+      "sha256": "07d96edfb370ca820a88041b5109f6b0a21efb61cf41489242a2b88c8a8a898c"
+    },
+    {
+      "path": "shell/hyprmac-diario",
+      "language": "python",
+      "bytes": 27155,
+      "lines": 715,
+      "summary": "Rascunho FreeLLM (JRN-01) completado e ajustado pelo orquestrador; CSS em shell/diario.css. gi.require_version('Gtk', '3.0')",
+      "symbols": [
+        "is_dark",
+        "load_css",
+        "Entry",
+        "__init__",
+        "get_diario_dir",
+        "load_entries",
+        "count_this_year",
+        "save_entry",
+        "entry_streak",
+        "filter_entries",
+        "group_entries_by_month",
+        "InsightsCard",
+        "set_count",
+        "on_draw",
+        "PlacesCard",
+        "ButterflyGlyph",
+        "EntryRow",
+        "JournalView",
+        "build_ui",
+        "on_close_clicked",
+        "on_minimize_clicked",
+        "on_zoom_clicked",
+        "on_toggle_sidebar",
+        "load_and_refresh",
+        "show_empty_state",
+        "show_entries_list",
+        "on_new_entry",
+        "on_entry_activated",
+        "on_entry_button_press",
+        "on_delete_entry",
+        "on_done_clicked",
+        "on_buffer_changed",
+        "on_search_changed",
+        "on_key_press",
+        "JournalApp",
+        "do_activate",
+        "run_snapshot",
+        "main"
+      ],
+      "imports": [
+        "gi",
+        "gi.repository",
+        "os",
+        "sys",
+        "time",
+        "tempfile",
+        "datetime",
+        "cairo",
+        "cocoa_entry",
+        "app_theme"
+      ],
+      "tags": [
+        "shell",
+        "menu",
+        "theme",
+        "window"
+      ],
+      "sha256": "dbcb8ea4b89628186222db0191cb3cf622bc3c2006db0759397a73405d7addc6"
+    },
+    {
+      "path": "shell/hyprmac-fotos",
+      "language": "python",
+      "bytes": 37607,
+      "lines": 980,
+      "summary": "Rascunho FreeLLM (FOT-01/FOT-02, emendado) completado e ajustado pelo orquestrador. gi.require_version('Gtk', '3.0')",
+      "symbols": [
+        "_duracao_texto",
+        "video_info",
+        "_video_trabalhador",
+        "is_dark",
+        "get_pictures_dir",
+        "get_media_files",
+        "load_favoritos",
+        "save_favoritos",
+        "photo_date",
+        "animations_enabled",
+        "PhotoViewerState",
+        "__init__",
+        "current",
+        "open",
+        "move",
+        "close",
+        "toggle_favorite_path",
+        "round_pixbuf",
+        "get_albums",
+        "SidebarRow",
+        "PhotoCell",
+        "set_selected",
+        "set_pixbuf",
+        "on_draw",
+        "_draw_base",
+        "PhotosAppView",
+        "on_close_clicked",
+        "on_minimize_clicked",
+        "on_zoom_clicked",
+        "build_ui",
+        "build_viewer",
+        "switch_page",
+        "open_viewer",
+        "update_viewer",
+        "close_viewer",
+        "play_video",
+        "on_cell_button_press",
+        "add_sidebar_section",
+        "on_sidebar_row_selected",
+        "load_items",
+        "_load_thumbnail_for_cell",
+        "entregar",
+        "on_item_button_press",
+        "select_cell",
+        "on_item_activated",
+        "on_key_pressed",
+        "toggle_favorite",
+        "delete_selected",
+        "cell_size",
+        "on_zoom_changed",
+        "on_search_changed",
+        "load_css",
+        "PhotosApp",
+        "do_startup",
+        "do_activate",
+        "do_shutdown",
+        "run_snapshot",
+        "capture",
+        "main"
+      ],
+      "imports": [
+        "gi",
+        "gi.repository",
+        "os",
+        "sys",
+        "json",
+        "time",
+        "cairo",
+        "hashlib",
+        "queue",
+        "subprocess",
+        "threading",
+        "datetime",
+        "cocoa_entry",
+        "app_theme"
+      ],
+      "tags": [
+        "shell",
+        "dock",
+        "menu",
+        "glass",
+        "theme",
+        "window"
+      ],
+      "sha256": "3a03096937dd90f39b34d72f2eee4724ff4304b2d3bf34ce606189884e85ca89"
     },
     {
       "path": "shell/hyprmac-lock",
       "language": "python",
-      "bytes": 55247,
-      "lines": 1409,
+      "bytes": 56006,
+      "lines": 1430,
       "summary": "\"\"\"hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock). Uso:",
       "symbols": [
         "parse_args",
@@ -1719,6 +4362,7 @@
         "faillock_count",
         "test_auth",
         "load_config",
+        "reduce_motion",
         "G",
         "clock_conf",
         "run",
@@ -1821,14 +4465,86 @@
         "glass",
         "window"
       ],
-      "sha256": "b7eb70cababc36a6651d97d7ca28e721d339df3ff1e33cf8e4b32b3b0cf49304"
+      "sha256": "9b69c0240c4fbea90e556f0bd8977d9fb839257bede00c0c54b390bf4c34159b"
+    },
+    {
+      "path": "shell/hyprmac-notas",
+      "language": "python",
+      "bytes": 34813,
+      "lines": 830,
+      "summary": "gi.require_version('Gtk', '3.0') gi.require_version('Gdk', '3.0')",
+      "symbols": [
+        "is_dark",
+        "load_css",
+        "NotesTextView",
+        "do_draw_layer",
+        "NoteRow",
+        "__init__",
+        "FolderRow",
+        "NotesView",
+        "build_ui",
+        "on_header_drag",
+        "on_close_clicked",
+        "on_minimize_clicked",
+        "on_zoom_clicked",
+        "on_toggle_list_clicked",
+        "flush_current_note",
+        "update_folders_list",
+        "on_folder_selected",
+        "create_new_folder",
+        "finish_folder_rename",
+        "on_folder_rename_focus_out",
+        "on_folder_rename_key",
+        "update_headers",
+        "create_header_widget",
+        "update_notes_list",
+        "on_note_selected",
+        "on_buffer_changed",
+        "save_current_note",
+        "update_tags",
+        "on_textview_draw",
+        "on_textview_button_press",
+        "create_new_note",
+        "toggle_checklist_on_current_line",
+        "mark_checked_current_line",
+        "transform_note",
+        "delete_selected_note",
+        "on_key_press",
+        "NotesApp",
+        "do_activate",
+        "run_snapshot",
+        "main"
+      ],
+      "imports": [
+        "gi",
+        "gi.repository",
+        "os",
+        "sys",
+        "time",
+        "tempfile",
+        "datetime",
+        "re",
+        "cairo",
+        "cocoa_entry",
+        "app_theme",
+        "notes_store"
+      ],
+      "tags": [
+        "shell",
+        "dock",
+        "lock",
+        "menu",
+        "theme",
+        "window"
+      ],
+      "sha256": "57825fc14e5a09ee625fca8343575ee825fce83c8e66c96d7f0a8eb5ceee2d5a"
     },
     {
       "path": "shell/hyprmac-overview",
       "language": "python",
-      "bytes": 63770,
-      "lines": 1502,
-      "summary": "\"\"\"hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell). Como a Apple fez (macOS Tahoe/27, ⌃↑):",
+      "bytes": 67506,
+      "lines": 1581,
+      "summary": "\"\"\"hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell). Comportamentos alvo (macOS Tahoe 26, ⌃↑; medidas locais ainda aproximadas):",
       "symbols": [
         "overview_accent",
         "load_config",
@@ -1841,6 +4557,9 @@
         "ease_out",
         "ease_in_out",
         "inside",
+        "desktop_name",
+        "spaces_layout",
+        "space_hit",
         "scaled_surface",
         "pixbuf_surface",
         "capture",
@@ -1876,6 +4595,9 @@
         "_win_surfaces",
         "_compose_desk",
         "_place_desks",
+        "_band_expansion",
+        "_expand_band",
+        "_leave",
         "_paint_window",
         "_win_rect",
         "_draw",
@@ -1932,24 +4654,44 @@
       ],
       "tags": [
         "shell",
+        "dock",
         "menu",
         "theme",
         "window"
       ],
-      "sha256": "266766a85a9a8ab9fb47ed284a89e4cf88f0a65c650db354670af8ed7d7e3e4a"
+      "sha256": "22784d3d5985b419d4c20029d16ec5b59487a8d452f040d5c3a09be0e56bdf61"
     },
     {
       "path": "shell/hyprmac-preview",
       "language": "python",
-      "bytes": 11334,
-      "lines": 269,
+      "bytes": 30217,
+      "lines": 665,
       "summary": "\"\"\"Visualizador local: ações documentadas no Preview 26.6.1, layout experimental.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
-        "Preview",
+        "image_transform",
+        "screen_to_image",
+        "markup_output_path",
+        "MarkupModel",
         "__init__",
+        "add",
+        "undo",
+        "draw",
+        "Preview",
         "do_activate",
         "do_open",
         "build",
+        "build_markup_bar",
+        "select_markup_tool",
+        "draw_color_swatch",
+        "select_markup_color",
+        "toggle_markup",
+        "markup_point",
+        "markup_press",
+        "markup_motion",
+        "markup_release",
+        "undo_markup",
+        "marked_surface",
+        "save_markup",
         "button",
         "close",
         "cancel_thumbnails",
@@ -1960,32 +4702,36 @@
         "select_page",
         "dimensions",
         "update",
+        "key_press",
         "set_zoom",
         "fit",
         "rotate",
         "toggle_sidebar",
-        "inspect",
-        "draw"
+        "inspect"
       ],
       "imports": [
         "math",
+        "os",
+        "sys",
+        "cairo",
         "pathlib",
         "gi",
         "gi.repository",
-        "cairo",
-        "sys"
+        "app_theme"
       ],
       "tags": [
         "shell",
+        "menu",
+        "theme",
         "window"
       ],
-      "sha256": "513b92a954b859b19991cd8934f94c2eb8659d508577e1718135873bef24b5b7"
+      "sha256": "db77ca8881dc92bd3ef79285014f4df8a09c586648cadfa040f5571d2400ce1b"
     },
     {
       "path": "shell/hyprmac-shell",
       "language": "python",
-      "bytes": 266430,
-      "lines": 6278,
+      "bytes": 282793,
+      "lines": 6631,
       "summary": "\"\"\"hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell).",
       "symbols": [
         "load_config",
@@ -2084,6 +4830,7 @@
         "close_detail",
         "_prune_details",
         "_launch",
+        "_record_click",
         "_load_layout",
         "_save_layout",
         "_build_grid",
@@ -2100,14 +4847,13 @@
         "_clip_to",
         "_animate_height",
         "_set_editing",
+        "_show_control_gallery",
+        "_bar_card",
+        "update",
+        "_build_bar_gallery",
+        "bar_controls",
         "_sync_mic",
-        "_change",
-        "_remove",
-        "_add",
-        "_reset_layout",
-        "_edit_press",
-        "_edit_motion",
-        "_apply_preview"
+        "_change"
       ],
       "imports": [
         "datetime",
@@ -2162,13 +4908,39 @@
         "center",
         "control_center"
       ],
-      "sha256": "b11256bf93ebaf47774d41500a585b72d6ab439794fbacd81c5dc44faa977510"
+      "sha256": "8aad0c0cf33dae6a01def19049137196a6efbc0ec70219e2a89cb9cdca9c627b"
+    },
+    {
+      "path": "shell/linux_storage_adapter.py",
+      "language": "python",
+      "bytes": 4104,
+      "lines": 105,
+      "summary": "\"\"\"Native Linux storage adapter used by HyprMac. Wraps UDisks2 (preferred) with a read-only lsblk fallback. This is the",
+      "symbols": [
+        "_property",
+        "_decode_device",
+        "read_udisks_devices",
+        "read_block_devices",
+        "format_capacity"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "subprocess",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "shell",
+        "lock"
+      ],
+      "sha256": "d75001dc6392f2bb5e0a1e511ec5a1e1ed2bd1dab5d24c7e80b06d47e1608df4"
     },
     {
       "path": "shell/lock.css",
       "language": "css",
-      "bytes": 3883,
-      "lines": 130,
+      "bytes": 3970,
+      "lines": 135,
       "summary": "hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14\" = 1512×982 pt, 1,744 px/pt",
       "symbols": [
         ".hyprmac-lock-window",
@@ -2190,6 +4962,7 @@
         ".lock-go",
         ".lock-go:hover",
         ".lock-go label",
+        ".lock-field.reduce-motion .lock-go",
         ".lock-msg"
       ],
       "imports": [],
@@ -2198,7 +4971,175 @@
         "lock",
         "window"
       ],
-      "sha256": "bfe7b2bab8e6782a01f709149a41ccce8814442d9b22becb0353cd9653dc5377"
+      "sha256": "3f62c358dbb2e641efa17d6d3d214b779cc90de52f398cbea97637292682c9dd"
+    },
+    {
+      "path": "shell/menubar_items.py",
+      "language": "python",
+      "bytes": 2720,
+      "lines": 76,
+      "summary": "\"\"\"Itens da barra de menus que podem ser mostrados/ocultados (Menu Bar Controls). Compartilhado por Ajustes ▸ Menu Bar e pela galeria da Central de Controle (\"Add to Menu",
+      "symbols": [
+        "_conf_path",
+        "hidden",
+        "css_for",
+        "set_shown"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "subprocess"
+      ],
+      "tags": [
+        "shell",
+        "spotlight",
+        "menu",
+        "window",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "c14d8d936d994e8c46ab5281ee545d7aa3c1757331fbc19c6f8fdd653a3702cb"
+    },
+    {
+      "path": "shell/notas.css",
+      "language": "css",
+      "bytes": 6258,
+      "lines": 100,
+      "summary": "hyprmac — Notes (Notes do macOS Tahoe 26). Medido em BaseConhecimento/referencias/desejos/notes-app-escuro.png (1×): barra de 52,",
+      "symbols": [
+        ".dark",
+        ".light",
+        ".header-bar",
+        ".dark .header-bar",
+        ".light .header-bar",
+        ".lights",
+        ".light-btn",
+        ".light-btn.close",
+        ".light-btn.minimize",
+        ".light-btn.zoom",
+        ".toggle-list-btn",
+        ".capsule",
+        ".dark .toggle-list-btn",
+        ".dark .capsule",
+        ".light .toggle-list-btn",
+        ".light .capsule",
+        ".capsule button",
+        ".capsule button:disabled",
+        ".capsule button:hover",
+        ".toggle-list-btn:hover",
+        ".notes-title",
+        ".notes-count",
+        ".dark .notes-count",
+        ".light .notes-count",
+        ".search-capsule",
+        ".dark .search-capsule",
+        ".light .search-capsule",
+        ".sidebar",
+        ".dark .sidebar",
+        ".light .sidebar",
+        ".sidebar list",
+        ".sidebar row",
+        ".group-header",
+        ".dark .group-header",
+        ".light .group-header",
+        ".note-card",
+        ".sidebar row:selected .note-card",
+        ".light .sidebar row:selected .note-card",
+        ".sidebar row:selected",
+        ".note-card-title",
+        ".note-card-time",
+        ".note-card-preview",
+        ".dark .note-card-preview",
+        ".light .note-card-preview",
+        ".editor-date",
+        ".dark .editor-date",
+        ".light .editor-date",
+        ".editor-textview",
+        ".editor-textview text",
+        ".dark .editor-textview text",
+        ".light .editor-textview text",
+        ".header-bar button",
+        ".header-bar button.light-btn",
+        ".dark label",
+        ".light label",
+        ".folders-sidebar",
+        ".dark .folders-sidebar",
+        ".light .folders-sidebar",
+        ".folders-section",
+        ".folders-sidebar list",
+        ".folders-sidebar row",
+        ".folder-card",
+        ".dark .folders-sidebar row:selected .folder-card",
+        ".light .folders-sidebar row:selected .folder-card",
+        ".folder-icon",
+        ".dark .folders-section",
+        ".dark .folder-count",
+        ".light .folders-section",
+        ".light .folder-count",
+        ".folder-name-entry",
+        ".dark .folder-name-entry",
+        ".light .folder-name-entry",
+        ".new-folder-btn",
+        ".new-folder-btn:hover"
+      ],
+      "imports": [],
+      "tags": [
+        "shell"
+      ],
+      "sha256": "3d79a958191a2d897a39817ab80194cbb1c7f21803e61e79f70c13e764d323a8"
+    },
+    {
+      "path": "shell/notes_store.py",
+      "language": "python",
+      "bytes": 11139,
+      "lines": 320,
+      "summary": "\"\"\"Núcleo do Notas (hyprmac-notas), sem GTK. Cada nota é um arquivo Markdown em ~/.local/share/hyprmac/notas: a primeira linha",
+      "symbols": [
+        "Folder",
+        "folder_path",
+        "folder_name",
+        "list_folders",
+        "create_folder",
+        "rename_folder",
+        "move_note",
+        "Note",
+        "__init__",
+        "title",
+        "preview",
+        "strip_check",
+        "is_check",
+        "is_checked",
+        "toggle_check",
+        "checklist_off",
+        "move_checked_to_bottom",
+        "flush",
+        "set_all",
+        "delete_checked",
+        "group_label",
+        "list_time",
+        "header_date",
+        "Store",
+        "load",
+        "new",
+        "recently_deleted",
+        "save",
+        "delete",
+        "matches"
+      ],
+      "imports": [
+        "datetime",
+        "os",
+        "re",
+        "time",
+        "dataclasses"
+      ],
+      "tags": [
+        "shell",
+        "lock",
+        "menu"
+      ],
+      "sha256": "5789b8813d8795b051f1188bdcaa43838f84fb352eef496bfb64544656d1b8e4"
     },
     {
       "path": "shell/session_overlays.py",
@@ -2244,13 +5185,13 @@
         "dock",
         "window"
       ],
-      "sha256": "88b3950c9dddf909868ceba7c5deb7ad3a6724b3c0b2160d88678cfce6aa5021"
+      "sha256": "7c9224c4aa1c9bb942406e66d40f902cb2e1df4737bc97e760bee4cd70b22002"
     },
     {
       "path": "shell/spotlight_controls.py",
       "language": "python",
-      "bytes": 10040,
-      "lines": 228,
+      "bytes": 10204,
+      "lines": 231,
       "summary": "\"\"\"Controles de modo do Spotlight: desenho e animação GTK3. O painel permanece no processo do shell. Este módulo apenas desenha os",
       "symbols": [
         "draw_appstore_a",
@@ -2283,33 +5224,77 @@
         "lock",
         "glass"
       ],
-      "sha256": "118df65908a98f2190dffe99a2cc68b8b6c9f24079571aa3250b025a0fc31dd9"
+      "sha256": "1f99294818845ae21d81550d27bd8b424e8a4fd8f55d8d60f045149047c6b92b"
     },
     {
-      "path": "shell/spotlight_search.py",
+      "path": "shell/spotlight_quickkeys.py",
       "language": "python",
-      "bytes": 5516,
-      "lines": 134,
-      "summary": "\"\"\"Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26.",
+      "bytes": 6040,
+      "lines": 174,
+      "summary": "\"\"\"Quick keys do Spotlight (macOS Tahoe 26), sem GTK. Mac User Guide ▸ \"Take actions and shortcuts in Spotlight\": \"Click 'Add quick keys' next",
       "symbols": [
-        "spot_app_category",
-        "spot_fold",
-        "spot_filter_command",
-        "spot_score",
-        "spot_calc",
-        "ev"
+        "load",
+        "save",
+        "normalize",
+        "effective",
+        "suggest",
+        "assign",
+        "after_run",
+        "_call"
       ],
       "imports": [
+        "json",
+        "os",
         "re",
-        "unicodedata",
-        "ast",
-        "operator"
+        "ctypes",
+        "pathlib"
       ],
       "tags": [
         "shell",
         "spotlight"
       ],
-      "sha256": "2c212712261a5a19773f560c7cca62a539545fdf49f4a178f2101d075c0a2b1e"
+      "sha256": "8259dffc4db9c078c60f6ff8f256645359ae61bd5c6b61cf2ee0f1247d194418"
+    },
+    {
+      "path": "shell/spotlight_search.py",
+      "language": "python",
+      "bytes": 14658,
+      "lines": 356,
+      "summary": "\"\"\"Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26.",
+      "symbols": [
+        "spot_app_category",
+        "spot_fold",
+        "spot_filter_command",
+        "spot_filters",
+        "spot_filter_results",
+        "spot_filter_scope",
+        "spot_file_query",
+        "take",
+        "spot_file_matches",
+        "spot_app_scope",
+        "spot_app_results",
+        "spot_score",
+        "spot_calc",
+        "ev",
+        "_rust_text",
+        "_rust_filter"
+      ],
+      "imports": [
+        "re",
+        "mimetypes",
+        "unicodedata",
+        "ast",
+        "operator",
+        "ctypes",
+        "json",
+        "pathlib"
+      ],
+      "tags": [
+        "shell",
+        "spotlight",
+        "window"
+      ],
+      "sha256": "59fa76dfc5b1bdea30e5fe3989b64070ce091a3df23c97b621215355e3f144c2"
     },
     {
       "path": "shell/spotlight_view.py",
@@ -2417,8 +5402,8 @@
     {
       "path": "shell/style-light.css",
       "language": "css",
-      "bytes": 19273,
-      "lines": 441,
+      "bytes": 19640,
+      "lines": 446,
       "summary": "keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */ @define-color shell_focus #3b99fc;",
       "symbols": [
         ".weather",
@@ -2523,6 +5508,14 @@
         ".ccg-empty",
         ".ccg-hint",
         ".ccg-foot",
+        ".ccg-bar-heading-title",
+        ".ccg-bar-title",
+        ".ccg-bar-icon",
+        ".ccg-bar-heading-sub",
+        ".ccg-bar-detail",
+        ".ccg-bar-card",
+        ".cc button.ccg-bar-action",
+        ".cc button.ccg-bar-action:disabled",
         ".cc button.ccg-done",
         ".cc button.ccg-done:hover",
         ".clip-panel",
@@ -2532,15 +5525,7 @@
         ".hyprmac button.clip-pill label",
         "entry.clip-search",
         "entry.clip-search image",
-        "list.clip-list row:hover",
-        "list.clip-list row:selected",
-        ".clip-kind",
-        ".clip-text",
-        ".clip-time",
-        ".clip-foot",
-        ".clip-empty",
-        ".ccg-main .ccg-empty",
-        ".hyprmac-forcequit .fq-frame"
+        "list.clip-list row:hover"
       ],
       "imports": [],
       "tags": [
@@ -2552,13 +5537,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "e37a5972ec6d04e976c51a4332e4cafeed4cc1e1a5e62d5b592c4a0a2de5e3aa"
+      "sha256": "eef3485513b0b8c5caf4a791650b91493377d106eb3964db3379af4d27ff534d"
     },
     {
       "path": "shell/style.css",
       "language": "css",
-      "bytes": 58695,
-      "lines": 1720,
+      "bytes": 59849,
+      "lines": 1749,
       "summary": "hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe). O desfoque de fundo vem do Hyprland (layer rules \"hyprmac-widgets\" e \"hyprmac-cc\");",
       "symbols": [
         "window.hyprmac",
@@ -2696,7 +5681,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "3538c9b6addae685a8499c07c75ebd938b5b0bd477247cb4865b92ef4186fcb5"
+      "sha256": "6daf3936f30c67f91c23be8dc699ac335d2f465557befcd40be3ea412ae1ae97"
     },
     {
       "path": "shell/vidro-camadas-claro.css",
@@ -2728,8 +5713,8 @@
     {
       "path": "shell/vidro-camadas.css",
       "language": "css",
-      "bytes": 4271,
-      "lines": 89,
+      "bytes": 4407,
+      "lines": 93,
       "summary": "hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas — o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto)",
       "symbols": [
         ".xmenu",
@@ -2767,7 +5752,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "5b60df2261749d18f4f369e9459db0767affbd046554dcc0e9886f4b854e6247"
+      "sha256": "a81d8f0ca91fc140202e81f7e94045612a0f4d8db93d2aa7c977e0199b2e911b"
     },
     {
       "path": "shell/vidro.py",
@@ -2826,20 +5811,19 @@
     {
       "path": "tests/test_accent_palette.py",
       "language": "python",
-      "bytes": 2741,
+      "bytes": 2852,
       "lines": 58,
       "summary": "\"\"\"Integração do destaque entre gerador, Ajustes e Mission Control.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
       "symbols": [
-        "generator",
         "AccentIntegrationTests",
         "test_generated_outputs_follow_shared_palette_in_both_appearances",
         "test_overview_uses_theme_and_gnome_aliases"
       ],
       "imports": [
         "ast",
-        "importlib.machinery",
-        "importlib.util",
         "pathlib",
+        "os",
+        "subprocess",
         "sys",
         "tempfile",
         "unittest",
@@ -2850,7 +5834,470 @@
         "tests",
         "theme"
       ],
-      "sha256": "e317e06af4cd648e8547cf561bed7e69f3943f01a3c2562dd75f5002656319b1"
+      "sha256": "31a98abe3aac2cd3e01426e168228a9d8f38cb1ebbb5536a76a9961675fa3981"
+    },
+    {
+      "path": "tests/test_agentes_tool.py",
+      "language": "python",
+      "bytes": 3920,
+      "lines": 99,
+      "summary": "\"\"\"Tests for BaseConhecimento/ferramentas/agentes.py without network.\"\"\" Import agentes via importlib to avoid side effects and path issues",
+      "symbols": [
+        "AgentesToolTests",
+        "test_contexto_faixa_numera_linhas_corretas",
+        "test_contexto_limite_caracteres_sistema_exit",
+        "test_rodar_reusa_cache_quando_hash_igual"
+      ],
+      "imports": [
+        "importlib.util",
+        "json",
+        "os",
+        "tempfile",
+        "unittest",
+        "hashlib"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "a5f29a73dab8d83660cb3f2ffe6744628ba326b43c7c56e013a9f4b94835289c"
+    },
+    {
+      "path": "tests/test_ajustes_textos.py",
+      "language": "python",
+      "bytes": 6856,
+      "lines": 136,
+      "summary": "\"\"\"Textos dos Ajustes conferidos nas tabelas en/Base do Tahoe 26.6.1, sem GTK.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "strings",
+        "AjustesTextosTests",
+        "test_wifi_preserva_rotulo_do_controle_de_hotspots",
+        "test_rotulo_de_hotspots_existe_nos_termos_de_busca_originais",
+        "test_hero_omite_rotulo_vazio_e_preserva_descricao",
+        "test_substituicoes_presentes_no_painel_correto",
+        "test_cada_texto_alterado_existe_no_json_de_origem",
+        "test_textos_sem_fonte_removidos",
+        "test_heroes_sem_descricao_comprovada",
+        "test_wallet_preserva_botao_de_adicao"
+      ],
+      "imports": [
+        "ast",
+        "json",
+        "pathlib",
+        "unittest",
+        "unittest.mock"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "d7e439fee8a4d0b7bb585dc0fdb488e807ab9c51c29b10fba12dfed7b9bdf9f6"
+    },
+    {
+      "path": "tests/test_aparencia.py",
+      "language": "python",
+      "bytes": 1887,
+      "lines": 45,
+      "summary": "\"\"\"Integração do comando Rust de aparência automática com a configuração e o tema.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "AutoAppearance",
+        "run_check",
+        "test_auto_switches_only_when_current_theme_differs"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "pathlib",
+        "subprocess",
+        "tempfile",
+        "unittest",
+        "datetime"
+      ],
+      "tags": [
+        "tests",
+        "theme"
+      ],
+      "sha256": "8ea2a22d899fe81e12f4ccca1147e43c8c3ab5c8c21f4ce4f0f79899f058bc0b"
+    },
+    {
+      "path": "tests/test_app_factory.py",
+      "language": "python",
+      "bytes": 3425,
+      "lines": 77,
+      "summary": "\"\"\"Shared artifact checks for the manifest based application factory.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "AppFactoryArtifactsTest",
+        "setUpClass",
+        "test_manifest_registry_covers_missing_apps_only",
+        "test_launchers_and_icons_are_usable",
+        "test_catalog_and_existing_apps"
+      ],
+      "imports": [
+        "configparser",
+        "json",
+        "os",
+        "re",
+        "shlex",
+        "sys",
+        "unittest",
+        "pathlib",
+        "PIL",
+        "app_factory_registry"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "4019e9b40b616bd44b7fab438bddc4b80867a7de0b80cf54a3919907166c1908"
+    },
+    {
+      "path": "tests/test_app_launchers.py",
+      "language": "python",
+      "bytes": 1203,
+      "lines": 33,
+      "summary": "\"\"\"Identidade e entrada executável dos apps GTK próprios instalados.\"\"\" gi.require_version(\"GdkPixbuf\", \"2.0\")",
+      "symbols": [
+        "AppLaunchersTests",
+        "test_exec_and_tahoe_icon_are_resolvable"
+      ],
+      "imports": [
+        "pathlib",
+        "unittest",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "b9f22b875d4094071898a7798d6e6771df4ebff69598b657f44d01d5c6631414"
+    },
+    {
+      "path": "tests/test_app_search_keys.py",
+      "language": "python",
+      "bytes": 2383,
+      "lines": 65,
+      "summary": "\"\"\"Shared Cocoa editing reaches the actual search fields of the three apps.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "load_app",
+        "AppSearchKeysTests",
+        "test_shared_editing_in_notes_journal_and_photos"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "pathlib",
+        "types",
+        "sys",
+        "tempfile",
+        "unittest",
+        "gi",
+        "gi.repository",
+        "notes_store"
+      ],
+      "tags": [
+        "tests",
+        "window"
+      ],
+      "sha256": "ec041ad6f8cb1d628f1561e866f83e0a5cb9b4d25cb758006f5f0afeff30605e"
+    },
+    {
+      "path": "tests/test_app_theme.py",
+      "language": "python",
+      "bytes": 2013,
+      "lines": 66,
+      "summary": "\"\"\"Tema compartilhado deve acompanhar GSettings sem alterar CSS de cada app.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
+      "symbols": [
+        "FakeSettings",
+        "__init__",
+        "get_string",
+        "connect",
+        "disconnect",
+        "change",
+        "AppThemeTests",
+        "test_classes_follow_theme_and_disconnect_on_destroy",
+        "test_long_lived_apps_follow_theme"
+      ],
+      "imports": [
+        "sys",
+        "pathlib",
+        "unittest",
+        "gi",
+        "gi.repository",
+        "app_theme"
+      ],
+      "tags": [
+        "tests",
+        "theme",
+        "window"
+      ],
+      "sha256": "db3b4e4a4ac43304392791b888005f3dd7e8baf227d91a4a704f360291b1195e"
+    },
+    {
+      "path": "tests/test_calculator.py",
+      "language": "python",
+      "bytes": 9625,
+      "lines": 244,
+      "summary": "\"\"\"Lógica Basic sem GTK, janelas ou display.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "CalculatorTests",
+        "setUp",
+        "enter",
+        "sequence",
+        "test_initial_state",
+        "test_four_operations",
+        "test_decimal_arithmetic_is_exact",
+        "test_display_rounding_does_not_round_accumulator",
+        "test_context_is_local",
+        "test_chained_operations",
+        "test_operator_replacement",
+        "test_operator_highlight",
+        "test_repeated_equals",
+        "test_equals_without_second_operand",
+        "test_equals_without_operation",
+        "test_new_entry_resets_repeat_and_expression",
+        "test_percent_standalone",
+        "test_percent_with_operations",
+        "test_change_sign",
+        "test_negative_operand",
+        "test_clear_entry_preserves_pending_operation",
+        "test_clear_entry_then_equals",
+        "test_all_clear_resets_everything",
+        "test_clear_result_resets_repeat",
+        "test_division_by_zero_and_recovery",
+        "test_backspace_and_pending_operation",
+        "test_decimal_entry_and_scientific_display",
+        "test_operator_aliases",
+        "test_unknown_keys_are_ignored",
+        "FormatTests",
+        "test_format",
+        "KeyboardTests",
+        "setUpClass",
+        "key",
+        "test_physical_keys_and_escape",
+        "test_numpad_and_backspace",
+        "test_copy_with_control_or_super",
+        "test_css_is_valid_gtk3_ascii"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "decimal",
+        "pathlib",
+        "types",
+        "unittest",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "543ceccc3e4b99e3093c037c7b974d1bf13605f6daa0f5b1b14c34f943694f9a"
+    },
+    {
+      "path": "tests/test_cc_edit.py",
+      "language": "python",
+      "bytes": 8417,
+      "lines": 168,
+      "summary": "\"\"\"CCN-02: editar a Central como no Tahoe (Mac User Guide ▸ Use Control Center) e pedidos do usuário: ao arrastar sobre um controle os outros se realocam já durante o arrasto, e uma",
+      "symbols": [
+        "module_ns",
+        "load",
+        "ev",
+        "Packing",
+        "test_pack_and_reorder",
+        "test_reorder_is_stable_under_pointer",
+        "test_fit_size",
+        "EditControls",
+        "drag",
+        "test_others_reflow_during_drag_and_commit_on_release",
+        "test_drag_out_removes",
+        "test_plain_click_does_not_resize",
+        "test_control_click_and_right_click_open_size_menu",
+        "test_handle_stretches_and_shrinks",
+        "test_handle_without_change_does_nothing",
+        "LivePreviewInGtk",
+        "test_widgets_and_ghosts_move"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "types",
+        "unittest.mock",
+        "unittest",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests",
+        "control center",
+        "menu",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "719641619c0edca63cb030fb3347f262faae9cc65ce14cfb53ba6510c60a2fa0"
+    },
+    {
+      "path": "tests/test_cc_english.py",
+      "language": "python",
+      "bytes": 3503,
+      "lines": 68,
+      "summary": "\"\"\"Central de Controle e nomes de apps em inglês, como os menus (strings do ControlCenter 26.6.1).\"\"\" SHELL = (Path(__file__).resolve().parents[1] / \"shell\" / \"hyprmac-shell\").read_text(encoding=\"utf-8\")",
+      "symbols": [
+        "CCEnglishTests",
+        "portugues",
+        "test_titulos_de_toggle_e_slider",
+        "test_nomes_de_apps",
+        "test_central_de_notificacoes",
+        "test_todos_os_textos_de_interface_do_shell",
+        "CapturaEnglishTests",
+        "test_textos_do_tahoe"
+      ],
+      "imports": [
+        "pathlib",
+        "re",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "notification",
+        "menu",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "5295f9e7530e4c5901d607987f9ea8cd619a358ab879214dca2e16a438fae1c9"
+    },
+    {
+      "path": "tests/test_cc_gallery.py",
+      "language": "python",
+      "bytes": 2913,
+      "lines": 89,
+      "summary": "\"\"\"Tests for GALLERY_CATS and GALLERY_KEY_CAT extracted via AST.\"\"\" def _shell_path():",
+      "symbols": [
+        "_shell_path",
+        "_load_assignments",
+        "TestCcGallery",
+        "setUpClass",
+        "test_gallery_cats_exists",
+        "test_first_item",
+        "test_names_alphabetical",
+        "test_key_cat_categories_exist",
+        "test_names_in_allowed_set"
+      ],
+      "imports": [
+        "ast",
+        "os",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "4a5e05aa60073fb50f22f07315d6626e22a594deabf8391fb74ae1a3e410baa9"
+    },
+    {
+      "path": "tests/test_clipboard_panel.py",
+      "language": "python",
+      "bytes": 2736,
+      "lines": 62,
+      "summary": "\"\"\"SPT-04: histórico da área de transferência conforme o Mac User Guide (Tahoe 26). \"Click the copy icon to the right of the item, or select the item and press",
+      "symbols": [
+        "load",
+        "ClipboardHistory",
+        "panel",
+        "test_control_c_copies_selected_item",
+        "test_control_c_with_text_selected_in_field_copies_text",
+        "test_ui_is_english_with_more_menu_and_copy_icon"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "types",
+        "unittest.mock",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "menu"
+      ],
+      "sha256": "425a4d3dcea8af275e2511ae722ae01b45ee166ed0e23946a992f10a61df1baf"
+    },
+    {
+      "path": "tests/test_clock_format.py",
+      "language": "python",
+      "bytes": 10619,
+      "lines": 242,
+      "summary": "\"\"\"Clock Options do relógio da barra (Tahoe 26). Casos-base escritos às cegas pelo auxiliar TST-01 a partir do contrato; os do fim são do orquestrador.\"\"\"",
+      "symbols": [
+        "TestClockFormat",
+        "setUp",
+        "test_defaults",
+        "test_needs_seconds_tick",
+        "test_example_default_h24_true",
+        "test_example_show_date_always_h24_true",
+        "test_example_show_date_always_no_dow_h24_false",
+        "test_example_h24_false_no_ampm_with_seconds",
+        "test_example_flash_odd_seconds",
+        "test_midnight_12h",
+        "test_noon_12h",
+        "test_single_digit_hour_24h",
+        "test_show_date_always",
+        "test_show_date_never",
+        "test_show_date_when_space_allows_false",
+        "test_show_date_when_space_allows_true",
+        "test_show_date_invalid_defaults_to_when_space_allows",
+        "test_show_date_missing_key_uses_default",
+        "test_show_day_of_week_false_with_date",
+        "test_show_day_of_week_false_without_date",
+        "test_flash_separators_length_even_vs_odd",
+        "test_flash_separators_without_seconds",
+        "test_show_ampm_no_effect_in_24h",
+        "test_show_ampm_effect_in_12h",
+        "test_english_names_regardless_of_locale",
+        "_try_locale",
+        "test_markup_flash_keeps_colon_width",
+        "test_unknown_keys_and_none_are_ignored"
+      ],
+      "imports": [
+        "sys",
+        "pathlib",
+        "unittest",
+        "datetime",
+        "clock_format",
+        "locale"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "9ca444107ac24f7c9fae5c7d8c3429a56c214ed224122d34363ea2cc1d59c6f4"
+    },
+    {
+      "path": "tests/test_clock_script.py",
+      "language": "python",
+      "bytes": 3924,
+      "lines": 115,
+      "summary": "\"\"\"Tests for the Rust Waybar clock subprocess behavior. Roda o script com HOME temporário, verifica primeira linha JSON e",
+      "symbols": [
+        "_read_line",
+        "TestClockScript",
+        "test_clock_script_reload_via_sigusr1"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "re",
+        "select",
+        "signal",
+        "subprocess",
+        "tempfile",
+        "unittest",
+        "pathlib"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "ed4cb44c68b0b67415916b3cfef7d23b8afb014bde1de5e7c644234e96598db7"
     },
     {
       "path": "tests/test_cocoa_entry.py",
@@ -2887,6 +6334,32 @@
         "window"
       ],
       "sha256": "4d0ac413f4cfad0b4d0f7457ed18a9da310e8c190a29a8d751459d27f98d43d5"
+    },
+    {
+      "path": "tests/test_darwin_diskarbitration_service.py",
+      "language": "python",
+      "bytes": 2864,
+      "lines": 85,
+      "summary": "ROOT = Path(__file__).resolve().parents[1] sys.path.insert(0, str(ROOT))",
+      "symbols": [
+        "fake_read_block_devices",
+        "test_list_volumes_from_udisks",
+        "test_darwin_disk_list_dicts",
+        "test_empty_on_error",
+        "TestDarwinDiskArbitrationService"
+      ],
+      "imports": [
+        "importlib.util",
+        "sys",
+        "types",
+        "pathlib",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "96b2729a95be8b12d83a9b327d074e372a79fbbe96fcd62629e502485d9e7319"
     },
     {
       "path": "tests/test_dock.py",
@@ -2995,10 +6468,41 @@
       "sha256": "9edc83c340b8108402ed477287c367e88f08e9b77c4913cffa9cf4d7802f07ca"
     },
     {
+      "path": "tests/test_factory_backends.py",
+      "language": "python",
+      "bytes": 2738,
+      "lines": 67,
+      "summary": "\"\"\"Behavior checks for local App Factory backends.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "LocalBackendTests",
+        "test_reminders_persist_and_toggle",
+        "test_calendar_persists_and_orders_events",
+        "test_linux_readers_and_recording_process_cleanup"
+      ],
+      "imports": [
+        "os",
+        "pathlib",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "unittest",
+        "app_factory_activity",
+        "app_factory_calendar",
+        "app_factory_disk_utility",
+        "app_factory_reminders",
+        "app_factory_system_info",
+        "app_factory_voice_memos"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "5d727f71ea021657b55efc4f78c70e52393927fb9d638b352e36179907c3f9c1"
+    },
+    {
       "path": "tests/test_fidelity_qa.py",
       "language": "python",
-      "bytes": 2943,
-      "lines": 71,
+      "bytes": 2978,
+      "lines": 72,
       "summary": "\"\"\"QA independente de gestos e atualização, executando métodos reais do Dock.\"\"\" class DockGestureLifecycleQA(unittest.TestCase):",
       "symbols": [
         "DockGestureLifecycleQA",
@@ -3011,26 +6515,59 @@
         "types",
         "unittest",
         "unittest.mock",
-        "test_dock"
+        "test_dock",
+        "glass_motion"
       ],
       "tags": [
         "tests",
         "dock",
+        "glass",
         "window"
       ],
-      "sha256": "1178ea8283e78dbedd08326916b62bf975fd77536a6727d34e45b50d4fd0d788"
+      "sha256": "521536842c260a29aa86a0283d0c8ae2be0ba49454e254c424038c59aab45235"
+    },
+    {
+      "path": "tests/test_folder_customization.py",
+      "language": "python",
+      "bytes": 1516,
+      "lines": 35,
+      "summary": "\"\"\"Persistência da aparência individual de pastas da Mesa.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "FolderCustomization",
+        "test_attributes_follow_rename_and_can_be_cleared",
+        "test_invalid_color_does_not_write"
+      ],
+      "imports": [
+        "errno",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "folder_appearance"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "af6de3f4b2a1839e7eb9a715c8eb39aadaeffcb56b839ea11adafbb758f8a895"
     },
     {
       "path": "tests/test_glass_motion.py",
       "language": "python",
-      "bytes": 1724,
-      "lines": 41,
+      "bytes": 5182,
+      "lines": 126,
       "summary": "sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell')) class GlassTransitionTests(unittest.TestCase):",
       "symbols": [
         "GlassTransitionTests",
-        "test_frame_partition_independence",
-        "test_reversal_conserves_velocity_and_settles",
-        "test_matches_tahoe_oscillator_coefficients"
+        "test_moves_toward_target",
+        "test_zero_time_step",
+        "test_negative_time_step_clamped",
+        "test_large_time_step_clamped",
+        "test_settling_condition",
+        "test_frequency_effect",
+        "test_damping_effect",
+        "test_deterministic",
+        "test_extreme_values",
+        "test_slow_spring_parameters"
       ],
       "imports": [
         "math",
@@ -3043,7 +6580,7 @@
         "tests",
         "glass"
       ],
-      "sha256": "019f0ee591ad908830db0114ea610ce47650ac6c34e089a1addaedffc8ee4799"
+      "sha256": "ee182cc76d5d8abd6d2f5cd91d430a363872b1c37f70b6d3667ee3ae59e91ec6"
     },
     {
       "path": "tests/test_install_preflight.py",
@@ -3071,19 +6608,99 @@
       "sha256": "c1f4994ab71b44b129a415b92d8618bd477476d98f5df3eb1399fbc19aa5fe97"
     },
     {
+      "path": "tests/test_journal_features.py",
+      "language": "python",
+      "bytes": 10238,
+      "lines": 200,
+      "summary": "\"\"\"Journal: lógica e callbacks sem criar janelas GTK.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "JournalFeaturesTests",
+        "setUp",
+        "entry",
+        "view",
+        "test_streak_counts_days_once_and_stops_at_gap",
+        "test_streak_requires_today",
+        "test_streak_crosses_month_and_year",
+        "test_insights_draws_streak_only_from_two_days",
+        "test_month_groups_sorted_with_english_labels_and_years",
+        "test_search_matches_title_or_body_case_insensitively",
+        "test_open_edit_done_saves_same_entry_and_formats_first_line",
+        "test_done_can_clear_existing_entry_but_skips_empty_new_entry",
+        "test_new_entries_in_same_second_do_not_overwrite",
+        "test_delete_cancel_keeps_entry_and_accept_uses_system_trash",
+        "test_right_click_menu_deletes_clicked_entry",
+        "test_trash_failure_keeps_entry_and_reports_error"
+      ],
+      "imports": [
+        "datetime",
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "pathlib",
+        "tempfile",
+        "types",
+        "unittest",
+        "unittest.mock"
+      ],
+      "tags": [
+        "tests",
+        "menu",
+        "window"
+      ],
+      "sha256": "e5f1cc4c7676f9a8b64596489678fbee9109a030417c1f002e572478d6a13bdd"
+    },
+    {
+      "path": "tests/test_journal_store.py",
+      "language": "python",
+      "bytes": 9984,
+      "lines": 265,
+      "summary": "\"\"\"Journal Store (shell/hyprmac-diario): pure functions for diary entries. Tests cover: get_diario_dir, load_entries, count_this_year, save_entry.",
+      "symbols": [
+        "carregar_diario",
+        "JournalStoreTests",
+        "setUp",
+        "tearDown",
+        "test_get_diario_dir_creates_directory",
+        "test_get_diario_dir_returns_existing",
+        "test_load_entries_empty_directory",
+        "test_load_entries_order_by_mtime_desc",
+        "test_load_entries_title_is_first_line",
+        "test_load_entries_title_untitled_when_empty",
+        "test_load_entries_only_md_files",
+        "test_count_this_year_current_year_only",
+        "test_count_this_year_all_current_year",
+        "test_count_this_year_none_current_year",
+        "test_save_entry_creates_new_file",
+        "test_save_entry_updates_existing_file",
+        "test_save_entry_preserves_path_on_update",
+        "test_save_entry_creates_directory_if_needed",
+        "test_entry_object_has_correct_attributes"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "sys",
+        "tempfile",
+        "time",
+        "unittest",
+        "pathlib",
+        "shutil"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "a7b546422d1b9aa30e0fc767a643f147f8302afee8ebeab2d14323ddc8b41efc"
+    },
+    {
       "path": "tests/test_keyboard_focus.py",
       "language": "python",
-      "bytes": 9183,
-      "lines": 207,
-      "summary": "\"\"\"MIC-04: foco global pelo teclado (HIG ▸ Keyboards). ⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (scripts/janela next-any/prev-any);",
+      "bytes": 7956,
+      "lines": 178,
+      "summary": "\"\"\"MIC-04: foco global pelo teclado (HIG ▸ Keyboards). ⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (`hyprmac-janela next-any/prev-any`);",
       "symbols": [
-        "load_janela",
         "load_dock",
         "press",
-        "WindowCycle",
-        "setUp",
-        "test_next_and_previous_follow_opening_order_and_wrap",
-        "test_without_active_window_focuses_first_or_last",
         "DockKeyboard",
         "test_control_f3_highlights_first_icon_and_takes_keyboard",
         "test_arrows_skip_separator_and_stop_at_ends",
@@ -3101,8 +6718,6 @@
       ],
       "imports": [
         "ast",
-        "importlib.machinery",
-        "importlib.util",
         "pathlib",
         "types",
         "unittest.mock",
@@ -3110,16 +6725,15 @@
       ],
       "tags": [
         "tests",
-        "dock",
-        "window"
+        "dock"
       ],
-      "sha256": "15a69718c4f16b3641324ed136b746f8fd675c46daed883bd385382c990fdca1"
+      "sha256": "2e01479df5b02dffa5cab4efbd741c17caeb063118b5ec5b07277238a80f25de"
     },
     {
       "path": "tests/test_menu_extras.py",
       "language": "python",
-      "bytes": 2214,
-      "lines": 53,
+      "bytes": 3214,
+      "lines": 80,
       "summary": "\"\"\"Preferências dos extras: isolamento, persistência e identidades SNI.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
       "symbols": [
         "ExtraPreferences",
@@ -3127,7 +6741,13 @@
         "command",
         "test_hide_show_preserves_order_and_other_preferences",
         "test_order_is_stable_and_duplicates_are_removed",
-        "test_invalid_config_is_not_overwritten"
+        "test_invalid_config_is_not_overwritten",
+        "WaybarSupervisor",
+        "run_codes",
+        "run",
+        "test_crash_is_relaunched_until_requested_stop",
+        "test_clean_exit_or_kill_stops",
+        "test_crash_loop_gives_up"
       ],
       "imports": [
         "importlib.machinery",
@@ -3135,13 +6755,636 @@
         "pathlib",
         "tempfile",
         "unittest",
+        "unittest.mock",
+        "types"
+      ],
+      "tags": [
+        "tests",
+        "lock",
+        "menu"
+      ],
+      "sha256": "f09e2f7733a973d21634e488aef77836e33e2085ec342b660af9192ce6462350"
+    },
+    {
+      "path": "tests/test_menubar_items.py",
+      "language": "python",
+      "bytes": 2095,
+      "lines": 53,
+      "summary": "\"\"\"Itens da barra de menus mostrados/ocultados por Ajustes e pela galeria da Central.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "MenuBarItemsTests",
+        "setUp",
+        "css",
+        "test_ocultar_e_mostrar_gera_css_e_preserva_outras_chaves",
+        "test_config_ausente_ou_corrompida",
+        "test_mapa_da_central_aponta_para_itens_existentes",
+        "test_chave_desconhecida_nao_vira_seletor"
+      ],
+      "imports": [
+        "json",
+        "os",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "menubar_items"
+      ],
+      "tags": [
+        "tests",
+        "menu",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "b41c053b3e4d94d07dd061a3acf00ffe5647f500a054fab6a65777b35307aef0"
+    },
+    {
+      "path": "tests/test_monitor_hook.py",
+      "language": "python",
+      "bytes": 2051,
+      "lines": 52,
+      "summary": "\"\"\"Monitor que volta do sono profundo: o shell agenda um único reload 3 s após o último monitoradded.\"\"\" SHELL = (Path(__file__).resolve().parents[1] / \"shell\" / \"hyprmac-shell\").read_text(encoding=\"utf-8\")",
+      "symbols": [
+        "carregar_handler",
+        "MonitorHookTests",
+        "setUp",
+        "test_inscrito_nos_eventos",
+        "test_outros_eventos_nao_agendam",
+        "test_dois_eventos_deixam_um_agendamento",
+        "test_recarregar_chama_reload"
+      ],
+      "imports": [
+        "pathlib",
+        "textwrap",
+        "unittest"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "6ca1446c134af4326120869f8e11d676cc576603d079ad30f37c1581c7cadbe3"
+    },
+    {
+      "path": "tests/test_mouse_prefs.py",
+      "language": "python",
+      "bytes": 2219,
+      "lines": 55,
+      "summary": "\"\"\"MIC-07: \"Tracking speed\" e \"Natural scrolling\" dos Ajustes sobrevivem ao hyprctl reload. O hyprmac.lua lê mouse_* do config.json a cada carga; sem as chaves, não mexe no que o",
+      "symbols": [
+        "snippet",
+        "MousePrefs",
+        "apply",
+        "test_without_keys_user_config_wins",
+        "test_saved_choices_are_reapplied",
+        "test_sensitivity_is_clamped",
+        "test_settings_pane_saves_both"
+      ],
+      "imports": [
+        "json",
+        "pathlib",
+        "shutil",
+        "subprocess",
+        "tempfile",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "fddba6627db50b3da9d8e08f592460b1e055604a568d6aed5e60b0b26402df87"
+    },
+    {
+      "path": "tests/test_nc_when.py",
+      "language": "python",
+      "bytes": 2654,
+      "lines": 72,
+      "summary": "def get_when_text_func(): script_path = Path(__file__).resolve().parents[1] / \"shell\" / \"hyprmac-shell\"",
+      "symbols": [
+        "get_when_text_func",
+        "TestWhenText",
+        "setUp",
+        "test_now",
+        "test_minutes_ago",
+        "test_same_day_hours_ago",
+        "test_yesterday",
+        "test_three_days_ago",
+        "test_twenty_days_ago"
+      ],
+      "imports": [
+        "os",
+        "unittest",
+        "unittest.mock",
+        "time",
+        "datetime",
+        "pathlib"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "34c1a997a34a22fc956c51e1e80990623d6282caa84e3af47172e74fab7000a1"
+    },
+    {
+      "path": "tests/test_notes_app.py",
+      "language": "python",
+      "bytes": 3850,
+      "lines": 105,
+      "summary": "\"\"\"App Notes (shell/hyprmac-notas): clique no círculo da lista, salvamento sem perder os marcadores ocultos e troca de nota sem laço salvar/selecionar. Defeitos achados pelos",
+      "symbols": [
+        "carregar_app",
+        "bombear",
+        "NotesAppTests",
+        "setUp",
+        "tearDown",
+        "texto",
+        "clicar_linha",
+        "test_constantes_medidas",
+        "test_clique_no_circulo_alterna_e_fora_nao",
+        "test_salvar_mantem_marcadores_ocultos",
+        "test_trocar_de_nota_sem_laco"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "time",
+        "unittest",
+        "gi",
+        "gi.repository",
+        "notes_store"
+      ],
+      "tags": [
+        "tests",
+        "window"
+      ],
+      "sha256": "d41b8e31bc489d5b7f0a0fbf02f25b67f5f5eacb887a5bcead8129af7f9e09cb"
+    },
+    {
+      "path": "tests/test_notes_folders.py",
+      "language": "python",
+      "bytes": 9248,
+      "lines": 204,
+      "summary": "\"\"\"Pastas do Notes: persistência isolada e integração GTK 3 quando há display.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "NotesFoldersTests",
+        "setUp",
+        "test_counts_and_default_api_do_not_include_subfolders",
+        "test_unique_folder_names_and_rename_persist",
+        "test_invalid_names_and_paths_cannot_escape_root",
+        "test_move_preserves_text_mtime_and_does_not_overwrite",
+        "test_recently_deleted_only_contains_notes_from_this_root",
+        "NotesFoldersAppTests",
+        "select_folder",
+        "test_toggle_keeps_notes_list_visible",
+        "test_select_create_and_switch_to_empty_folder",
+        "test_switch_folder_flushes_pending_edits",
+        "test_inline_folder_rename_and_validation",
+        "test_delete_pending_edit_and_read_only_trash",
+        "test_both_snapshot_modes_generate_png"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "notes_store",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests",
+        "window"
+      ],
+      "sha256": "30f6f20816d327752003ffb96d0220d85e6829e0b4dc476d62f315f468b71108"
+    },
+    {
+      "path": "tests/test_notes_store.py",
+      "language": "python",
+      "bytes": 21973,
+      "lines": 606,
+      "summary": "\"\"\"Tests for shell/notes_store.py (hyprmac-notas core).\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "TestNoteProperties",
+        "test_title_first_non_empty_line",
+        "test_title_strips_checklist_marker",
+        "test_title_checked_item",
+        "test_title_empty_note_returns_new_note",
+        "test_title_only_whitespace_returns_new_note",
+        "test_preview_text_after_title",
+        "test_preview_empty_note_returns_no_additional_text",
+        "test_preview_only_title_returns_no_additional_text",
+        "test_preview_strips_checklist_markers",
+        "test_preview_multiple_spaces_collapsed",
+        "TestStripCheck",
+        "test_strip_unchecked",
+        "test_strip_checked_lowercase",
+        "test_strip_checked_uppercase",
+        "test_strip_with_indent",
+        "test_strip_non_checklist_line",
+        "test_strip_empty_line",
+        "TestIsCheck",
+        "test_unchecked",
+        "test_checked_lowercase",
+        "test_checked_uppercase",
+        "test_with_indent",
+        "test_non_checklist",
+        "test_empty",
+        "TestIsChecked",
+        "test_unchecked_false",
+        "test_checked_lowercase_true",
+        "test_checked_uppercase_true",
+        "test_non_checklist_false",
+        "TestToggleCheck",
+        "test_toggle_unchecked_to_checked",
+        "test_toggle_checked_to_unchecked",
+        "test_toggle_uppercase_checked_to_unchecked",
+        "test_toggle_preserves_indent",
+        "test_toggle_regular_line_becomes_unchecked",
+        "test_toggle_empty_line",
+        "TestChecklistOff",
+        "test_remove_unchecked",
+        "test_remove_checked",
+        "test_preserves_indent",
+        "test_non_checklist_unchanged",
+        "TestMoveCheckedToBottom",
+        "test_single_block_moves_checked_to_bottom",
+        "test_multiple_blocks_handled_separately",
+        "test_non_checklist_lines_break_blocks",
+        "test_all_unchecked_unchanged",
+        "test_all_checked_unchanged_order",
+        "test_empty_text",
+        "test_no_checklist_items",
+        "TestSetAll",
+        "test_set_all_checked",
+        "test_set_all_unchecked",
+        "test_non_checklist_lines_unchanged",
+        "TestDeleteChecked",
+        "test_removes_checked_items",
+        "test_keeps_unchecked",
+        "test_removes_all_checked",
+        "TestGroupLabel",
+        "setUp",
+        "test_today",
+        "test_yesterday",
+        "test_previous_7_days",
+        "test_previous_30_days",
+        "test_current_year_month",
+        "test_previous_year",
+        "test_future_date_returns_today",
+        "TestListTime",
+        "test_today_24h",
+        "test_today_12h_am",
+        "test_today_12h_pm",
+        "test_today_12h_midnight",
+        "test_today_12h_noon",
+        "test_older_date_format",
+        "test_year_rollover",
+        "TestHeaderDate",
+        "test_24h_format",
+        "test_12h_format_am",
+        "test_12h_format_pm",
+        "test_12h_midnight",
+        "test_12h_noon",
+        "TestStore",
+        "tearDown",
+        "test_new_creates_note_with_timestamp_filename",
+        "test_new_creates_unique_filenames",
+        "test_save_writes_text_and_updates_mtime",
+        "test_load_returns_notes_sorted_by_mtime_desc",
+        "test_load_ignores_non_md_files",
+        "test_delete_moves_to_trash_files_with_trashinfo",
+        "test_delete_handles_duplicate_names_in_trash",
+        "test_matches_empty_query_returns_true",
+        "test_matches_case_insensitive",
+        "test_matches_partial",
+        "test_matches_no_match",
+        "TestStoreIntegration",
+        "test_full_workflow_create_edit_delete",
+        "test_multiple_notes_sorted_by_edit_time"
+      ],
+      "imports": [
+        "sys",
+        "pathlib",
+        "tempfile",
+        "os",
+        "shutil",
+        "time",
+        "datetime",
+        "unittest",
+        "notes_store"
+      ],
+      "tags": [
+        "tests",
+        "lock"
+      ],
+      "sha256": "21076570bc6a65b09e26d04299ada67038855b738b81f93249ab234a7fda11b1"
+    },
+    {
+      "path": "tests/test_overview_spaces.py",
+      "language": "python",
+      "bytes": 13738,
+      "lines": 303,
+      "summary": "\"\"\"Spaces e App Exposé: lógica real do overview, sem importar GTK ou criar janelas.\"\"\" SOURCE = Path(__file__).resolve().parents[1] / \"shell/hyprmac-overview\"",
+      "symbols": [
+        "load_logic",
+        "monitor",
+        "client",
+        "screen",
+        "event",
+        "SpacesLayoutTests",
+        "setUp",
+        "test_names_use_tahoe_english_format",
+        "test_layout_fits_many_spaces_and_reserves_plus",
+        "test_drop_maps_each_thumbnail_and_rejects_background",
+        "test_collapsed_names_are_targets_but_thumbnails_are_not",
+        "test_name_target_stays_stable_during_expansion",
+        "test_prepare_keeps_current_empty_space_and_separates_monitors",
+        "SpacesInteractionTests",
+        "test_hover_expands_and_leaving_collapses_without_motion",
+        "test_expansion_reverses_without_jump",
+        "test_drag_to_space_dispatches_without_follow_and_updates_models",
+        "test_drop_on_current_space_or_background_does_not_move",
+        "test_click_desktop_selects_workspace_and_monitor",
+        "test_click_name_survives_expansion_between_press_and_release",
+        "test_drag_into_collapsed_bar_expands_and_retains_window",
+        "AppExposeTests",
+        "test_only_focused_app_including_its_hidden_windows",
+        "test_hidden_windows_only_on_focused_monitor",
+        "test_escape_and_background_click_close_without_selecting",
+        "test_app_pointer_movement_does_not_create_invisible_drag",
+        "test_toggle_app_uses_focused_class_and_handles_missing_active_window",
+        "test_cancel_restores_fly_mode_without_dispatch",
+        "test_flight_reversal_preserves_visible_progress",
+        "test_reduce_motion_finishes_open_and_close_immediately"
+      ],
+      "imports": [
+        "ast",
+        "math",
+        "pathlib",
+        "types",
+        "unittest",
         "unittest.mock"
       ],
       "tags": [
         "tests",
-        "menu"
+        "window"
       ],
-      "sha256": "e8308d6d81fdebdc3f7c4f1ea76f49bf9d4918bb825108e41a92653962f28f83"
+      "sha256": "4027f4c2dbc362753b2ed9c1d713d271afb61a606f259a99afdc5d770f979a18"
+    },
+    {
+      "path": "tests/test_panel_emerge.py",
+      "language": "python",
+      "bytes": 5233,
+      "lines": 151,
+      "summary": "\"\"\"MIC-10: abertura dos painéis (emerge) contínua, sincronizada e interrompível. HIG Motion: \"Let people cancel motion… don't make people wait for an animation",
+      "symbols": [
+        "Edge",
+        "LayerShell",
+        "__init__",
+        "set_margin",
+        "Clock",
+        "get_frame_time",
+        "start_at_monotonic",
+        "Size",
+        "Window",
+        "get_preferred_size",
+        "add_tick_callback",
+        "remove_tick_callback",
+        "load",
+        "run_frames",
+        "EmergeMotion",
+        "open_panel",
+        "test_first_frame_keeps_origin_and_ends_at_base",
+        "test_progress_has_no_jump",
+        "test_duration_matches_hyprland_popin",
+        "test_closing_midway_freezes_margins",
+        "test_reopen_midway_restarts_with_popin",
+        "test_reduce_motion_places_base_at_once"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "re",
+        "sys",
+        "time",
+        "unittest",
+        "glass_motion"
+      ],
+      "tags": [
+        "tests",
+        "lock",
+        "glass",
+        "window"
+      ],
+      "sha256": "952a036ace284531f9b059d45e7c2960cd5a85179d575bbe444c2877fe0cbe1e"
+    },
+    {
+      "path": "tests/test_photos_library.py",
+      "language": "python",
+      "bytes": 6646,
+      "lines": 174,
+      "summary": "\"\"\"Tests for shell/hyprmac-fotos pure functions: get_media_files, get_albums, load_favoritos/save_favoritos.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "carregar_app",
+        "touch",
+        "PhotosLibraryTests",
+        "setUp",
+        "test_get_media_files_filtro_extensao_maiusculas_recursao_ordem",
+        "test_get_media_files_ignora_ocultos",
+        "test_get_media_files_dir_inexistente",
+        "test_get_albums_subpastas_diretas",
+        "test_favoritos_ida_e_volta",
+        "test_favoritos_arquivo_ausente",
+        "test_favoritos_arquivo_corrompido",
+        "test_favoritos_persiste_vazio"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "sys",
+        "tempfile",
+        "time",
+        "unittest",
+        "pathlib",
+        "json"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "f5fffb39939bc64363c0b23d4d20096e22f67bd4c4072c454235193f61e7b632"
+    },
+    {
+      "path": "tests/test_photos_viewer.py",
+      "language": "python",
+      "bytes": 9097,
+      "lines": 185,
+      "summary": "\"\"\"Lógica e handlers do visualizador, sem instanciar widgets ou abrir janelas.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "PhotosViewerTests",
+        "setUp",
+        "test_empty_navigation",
+        "test_grid_order_and_boundaries",
+        "test_order_survives_grid_change",
+        "test_filtered_order_from_library",
+        "test_close_returns_current_selection_and_reopen",
+        "test_invalid_open_preserves_current",
+        "test_favorites_toggle_and_persist",
+        "test_date_english_without_zero_padding",
+        "test_missing_date",
+        "test_reduce_motion_setting_and_failure",
+        "test_stack_transition_respects_setting",
+        "fake_view",
+        "test_keyboard_opens_and_toggles",
+        "test_viewer_arrows_and_escape",
+        "test_double_click_selects_and_opens",
+        "test_escape_restores_current_cell",
+        "test_video_launch_uses_file_uri",
+        "test_favorite_handler_updates_badge_without_reload",
+        "test_snapshot_viewer_dispatch"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "os",
+        "tempfile",
+        "unittest",
+        "datetime",
+        "pathlib",
+        "types"
+      ],
+      "tags": [
+        "tests",
+        "window"
+      ],
+      "sha256": "2ffce6f83b451e1e32e6a7734476be986a91c9787fb608d3c1e903c290e1a829"
+    },
+    {
+      "path": "tests/test_preview_logic.py",
+      "language": "python",
+      "bytes": 8982,
+      "lines": 233,
+      "summary": "\"\"\"Testes unitários para a lógica do shell/hyprmac-preview sem abrir janelas GTK.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
+      "symbols": [
+        "load_preview_module",
+        "PreviewLogicTests",
+        "setUpClass",
+        "setUp",
+        "test_set_zoom_manual_disables_auto_fit_and_clamps",
+        "test_set_zoom_auto_keeps_auto_fit",
+        "test_key_press_page_down_right_advances_page",
+        "test_key_press_page_up_left_goes_back",
+        "test_key_press_other_key_returns_false",
+        "test_key_press_no_document_returns_false",
+        "test_update_pdf_shows_page_of_count",
+        "test_update_image_shows_dimensions",
+        "test_update_no_document_no_image_clears_title",
+        "test_update_rotated_dimensions"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "sys",
+        "unittest",
+        "pathlib",
+        "unittest.mock"
+      ],
+      "tags": [
+        "tests",
+        "window"
+      ],
+      "sha256": "223887bf6b051009816cb1462b715cd79cb2a9281b531134c915bdcee31bf255"
+    },
+    {
+      "path": "tests/test_preview_markup.py",
+      "language": "python",
+      "bytes": 8012,
+      "lines": 167,
+      "summary": "\"\"\"Lógica e renderização de marcação, sem criar janelas GTK.\"\"\" def load_preview():",
+      "symbols": [
+        "load_preview",
+        "PreviewMarkupTests",
+        "test_annotations_capture_style_and_copy_points",
+        "test_undo_removes_last_annotation",
+        "test_coordinates_invert_canvas_transform_at_every_rotation_and_zoom",
+        "test_output_name_handles_collisions_and_marked_original",
+        "test_every_tool_draws_on_cairo_surface_and_preserves_transform",
+        "make_app",
+        "test_drag_uses_image_coordinates_and_retains_only_final_shape_endpoint",
+        "test_drag_clamps_to_image_and_disabled_markup_ignores_input",
+        "test_sketch_click_draws_a_dot_and_pending_stroke_is_not_committed",
+        "test_save_preserves_original_and_exports_native_rotated_dimensions",
+        "test_shortcuts_accept_control_and_super_for_images_only"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "pathlib",
+        "tempfile",
+        "unittest",
+        "unittest.mock",
+        "cairo"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "aa84a239dbfd9ca181042f52e94a5d6a770766cb20eb8324a2373713a7a1537c"
+    },
+    {
+      "path": "tests/test_preview_theme.py",
+      "language": "python",
+      "bytes": 2100,
+      "lines": 48,
+      "summary": "\"\"\"Tests for shell/hyprmac-preview theme-related code without importing gi/GTK. Checks:",
+      "symbols": [
+        "TestPreviewTheme",
+        "setUp",
+        "test_css_contains_light_rules",
+        "test_build_binds_window_to_color_scheme",
+        "test_scroll_gets_preview_area_class"
+      ],
+      "imports": [
+        "re",
+        "unittest",
+        "pathlib"
+      ],
+      "tags": [
+        "tests",
+        "lock",
+        "theme",
+        "window"
+      ],
+      "sha256": "cde6234d30b5812300aa94e3779a1a00948d629f5758a09dc6fc0c19510667bd"
+    },
+    {
+      "path": "tests/test_reduce_motion.py",
+      "language": "python",
+      "bytes": 8022,
+      "lines": 175,
+      "summary": "\"\"\"Testes de regressão para Reduce Motion (Reduzir Movimento). Verifica por inspeção de código-fonte (AST/regex, sem abrir janelas):",
+      "symbols": [
+        "ReduceMotionTests",
+        "test_reduce_motion_switch_calls_gsettings_and_hyprctl_reload",
+        "test_glass_knob_go_method_checks_enable_animations_and_returns_early",
+        "test_hyprmac_lua_workspaces_animations_use_fade_when_rm_true",
+        "test_hyprmac_lua_workspaces_default_uses_slide"
+      ],
+      "imports": [
+        "ast",
+        "re",
+        "pathlib",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "lock",
+        "glass"
+      ],
+      "sha256": "fe6f002a7ea6a000aaae3832763e5ee6a4c3e1859f3cc80fb1a2d7e9e42a47a2"
     },
     {
       "path": "tests/test_reduce_motion_shell.py",
@@ -3175,8 +7418,8 @@
     {
       "path": "tests/test_shell_events.py",
       "language": "python",
-      "bytes": 3542,
-      "lines": 83,
+      "bytes": 3652,
+      "lines": 80,
       "summary": "\"\"\"Regressões do assinante único do Hyprland e dos menus dinâmicos da barra.\"\"\" ROOT = Path(__file__).resolve().parents[1]",
       "symbols": [
         "EventBusTests",
@@ -3186,12 +7429,10 @@
         "test_stale_snapshot_falls_back_to_hyprctl"
       ],
       "imports": [
-        "importlib.util",
         "json",
         "os",
         "pathlib",
         "queue",
-        "re",
         "socket",
         "subprocess",
         "sys",
@@ -3205,7 +7446,33 @@
         "menu",
         "window"
       ],
-      "sha256": "ca61c2d5356dfb8990648eee8008f841b5e5b060a5d477ae8ea5b935350977a6"
+      "sha256": "05e58a69f5fa55a3ccdaacd5ec8b11e1aa83c53b56bf95aa5cc82a8483c6b72f"
+    },
+    {
+      "path": "tests/test_slider_apply.py",
+      "language": "python",
+      "bytes": 2768,
+      "lines": 66,
+      "summary": "\"\"\"CCN-05: sliders da Central respondem já durante o arrasto, sem empilhar processos. LatestCommand roda um processo por vez e sempre com o valor mais novo: um wpctl/ddcutil",
+      "symbols": [
+        "load",
+        "LatestValue",
+        "test_drag_applies_in_order_and_ends_on_last_value",
+        "test_volume_unmutes_like_the_mac",
+        "test_sliders_use_it"
+      ],
+      "imports": [
+        "ast",
+        "pathlib",
+        "tempfile",
+        "unittest",
+        "gi",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "a95ce75391d03781b924d6cc28ead80bcca6dadb1e2664eeb62869943e386a96"
     },
     {
       "path": "tests/test_sni_watcher.py",
@@ -3296,6 +7563,35 @@
         "spotlight"
       ],
       "sha256": "a9d99b17f7de4c95ea5aafbff443a1bc30c6051c0f3d59b2bf530e0f4876167e"
+    },
+    {
+      "path": "tests/test_spotlight_menus.py",
+      "language": "python",
+      "bytes": 2055,
+      "lines": 55,
+      "summary": "\"\"\"SPT-06: o Spotlight busca os comandos dos menus do app à frente, com os nomes da barra. Os módulos de menu da Waybar só aparecem para certos apps (app-menu.py <rótulo> <regex>);",
+      "symbols": [
+        "load",
+        "FrontmostAppMenus",
+        "setUp",
+        "menus",
+        "test_browser_menus_only_with_browser_in_front",
+        "test_editor_menus_with_code_in_front",
+        "test_titles_match_the_bar",
+        "test_commands_of_hidden_menus_stay_available_for_quick_actions"
+      ],
+      "imports": [
+        "importlib.machinery",
+        "importlib.util",
+        "pathlib",
+        "unittest"
+      ],
+      "tags": [
+        "tests",
+        "spotlight",
+        "menu"
+      ],
+      "sha256": "9724f7de9ccf09ce7bc5e024df9d5c17680f6a407bc1899839cc398d44ce4127"
     },
     {
       "path": "tests/test_spotlight_mode_hover.py",
@@ -3434,6 +7730,48 @@
       "sha256": "d00d5fd7bef1e384240a11fb2548cb831781ab39e5e47b305c857bce73ed83d5"
     },
     {
+      "path": "tests/test_spotlight_types.py",
+      "language": "python",
+      "bytes": 7235,
+      "lines": 142,
+      "summary": "\"\"\"Fontes do seletor e filtros MIME, sem criar janelas.\"\"\" spot_file_query, spot_filter_results, spot_filter_scope,",
+      "symbols": [
+        "SourceSelectorTests",
+        "test_shell_sources_and_original_filters",
+        "test_actions_has_distinct_symbolic_icon",
+        "test_files_enters_existing_mode",
+        "test_clipboard_reuses_panel_and_history",
+        "test_return_before_debounce_uses_new_source",
+        "FileTypeTests",
+        "setUp",
+        "test_query_aliases_and_name_terms",
+        "test_unknown_types_and_substrings_stay_literal",
+        "test_mime_and_extension_exclude_misleading_folder_names",
+        "search",
+        "test_real_search_all_and_files_filter_without_matching_literal_token",
+        "test_real_selector_includes_sources",
+        "test_folder_scope_respects_type_and_name",
+        "test_finder_scope_applies_same_mime_filter",
+        "test_file_entry_caches_real_gio_mime"
+      ],
+      "imports": [
+        "os",
+        "pathlib",
+        "tempfile",
+        "time",
+        "unittest",
+        "unittest.mock",
+        "test_spotlight_selector",
+        "spotlight_search",
+        "gi.repository"
+      ],
+      "tags": [
+        "tests",
+        "spotlight"
+      ],
+      "sha256": "d4a0adcaceab06342b706ba5691b6250fd076406bcf329b407f424000f61258f"
+    },
+    {
       "path": "tests/test_system_fidelity.py",
       "language": "python",
       "bytes": 10885,
@@ -3483,9 +7821,114 @@
       "sha256": "ca0acfb90afa878d90617feb0ff04176b9b9693f4eefff877d3b04375aa94fe6"
     },
     {
+      "path": "tests/test_tahoe_button.py",
+      "language": "python",
+      "bytes": 2661,
+      "lines": 80,
+      "summary": "\"\"\"Test Tahoe button components.\"\"\" sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))",
+      "symbols": [
+        "test_tahoe_button_creation",
+        "test_tahoe_button_factories",
+        "test_tahoe_button_styling"
+      ],
+      "imports": [
+        "sys",
+        "os",
+        "gi",
+        "gi.repository",
+        "tahoe.controls.button"
+      ],
+      "tags": [
+        "tests",
+        "menu"
+      ],
+      "sha256": "fa439b7ec2092b4436c5af532d20b11ee524d3a5a1e0ead6fae55786a2cc3de5"
+    },
+    {
+      "path": "tests/test_tahoe_button_integration.py",
+      "language": "python",
+      "bytes": 2892,
+      "lines": 96,
+      "summary": "\"\"\"Integration test for Tahoe button components in a simple GTK application.\"\"\" sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))",
+      "symbols": [
+        "on_standard_clicked",
+        "on_toggle_toggled",
+        "on_menu_clicked",
+        "on_check_toggled",
+        "create_test_application",
+        "main"
+      ],
+      "imports": [
+        "sys",
+        "os",
+        "gi",
+        "gi.repository",
+        "tahoe.controls.button"
+      ],
+      "tags": [
+        "tests",
+        "menu",
+        "window"
+      ],
+      "sha256": "afcfc5fee5aae63c96a8f4d9396507909a6543b78dce6de50dc66271f3319118"
+    },
+    {
+      "path": "tests/test_tahoe_button_styling.py",
+      "language": "python",
+      "bytes": 3678,
+      "lines": 98,
+      "summary": "\"\"\"Test Tahoe button styling against GTK theme.\"\"\" sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))",
+      "symbols": [
+        "test_tahoe_button_inherits_gtk_styling",
+        "test_tahoe_button_has_proper_properties",
+        "test_tahoe_button_can_be_styled",
+        "test_tahoe_toggle_button_styling",
+        "test_tahoe_menu_button_styling",
+        "test_tahoe_check_button_styling"
+      ],
+      "imports": [
+        "sys",
+        "os",
+        "gi",
+        "gi.repository",
+        "tahoe.controls.button"
+      ],
+      "tags": [
+        "tests",
+        "menu",
+        "theme"
+      ],
+      "sha256": "e86d467dfdb6674fa667b884daa6fa9aabd7240326319b74b50656b3bc9b628f"
+    },
+    {
+      "path": "tests/test_tahoe_compatibility_button.py",
+      "language": "python",
+      "bytes": 3635,
+      "lines": 101,
+      "summary": "\"\"\"Test Tahoe compatibility layer button components.\"\"\" sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))",
+      "symbols": [
+        "test_tahoe_button_creation",
+        "test_tahoe_button_factories",
+        "test_tahoe_button_styling",
+        "test_button_in_app_factories"
+      ],
+      "imports": [
+        "sys",
+        "os",
+        "gi",
+        "gi.repository",
+        "tahoe.compatibility.button"
+      ],
+      "tags": [
+        "tests",
+        "menu"
+      ],
+      "sha256": "869c23054d9ec03dc665af892eaff41f88afc801ba4eced85b1a082a74c37271"
+    },
+    {
       "path": "tests/test_volume_feedback.py",
       "language": "python",
-      "bytes": 4186,
+      "bytes": 4211,
       "lines": 103,
       "summary": "\"\"\"MIC-12: \"Play feedback when volume is changed\" (Ajustes ▸ Som do macOS Tahoe 26). support.apple.com/guide/mac-help/mchlp2207/26: \"when you press one of the volume",
       "symbols": [
@@ -3514,7 +7957,7 @@
         "lock",
         "theme"
       ],
-      "sha256": "dc1e696baa31cb8bdf081ddc4846bc8b3d9b944dc9f6b0a88b472a85065afe6a"
+      "sha256": "080b206da32876f7b5dd9b1ba857a292ac13a6e7e8f9b5f960c3f2376b8a736a"
     },
     {
       "path": "waybar/a11y.css",
@@ -3559,8 +8002,8 @@
     {
       "path": "waybar/config.jsonc",
       "language": "jsonc",
-      "bytes": 25528,
-      "lines": 565,
+      "bytes": 28178,
+      "lines": 616,
       "summary": "hyprmac — Waybar inspirada no macOS Tahoe \"layer\": \"top\",",
       "symbols": [],
       "imports": [],
@@ -3575,13 +8018,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "71c7d13ca991b31128db7fec12909dd43f96a164e171c9662f4753d5bd47a107"
+      "sha256": "4f7ee3985b6ca541f66a90785dbc2d617d86e6a73e1e62f81774be365ee4c401"
     },
     {
       "path": "waybar/contrast-dark.css",
       "language": "css",
-      "bytes": 4472,
-      "lines": 115,
+      "bytes": 4568,
+      "lines": 117,
       "summary": "hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre",
       "symbols": [
         "window#waybar:not(.x) #clock",
@@ -3604,13 +8047,13 @@
         "menu",
         "window"
       ],
-      "sha256": "eb29871b79c1650f720357a5f3ff428aad1d93082165bf86a39ea9ef584fc230"
+      "sha256": "290045347416e5e6aa6ffe0da64bbf86634a95626a8dd9cbe5570d9eb54ec353"
     },
     {
       "path": "waybar/contrast.css",
       "language": "css",
-      "bytes": 4451,
-      "lines": 115,
+      "bytes": 4547,
+      "lines": 117,
       "summary": "hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre",
       "symbols": [
         "window#waybar:not(.x) #clock",
@@ -3633,7 +8076,7 @@
         "menu",
         "window"
       ],
-      "sha256": "165b57dcdca2c1deaa4d7a690c1106217479881acc168c5f6265cc737ff12ab7"
+      "sha256": "53ffdb9ba7ae7a01e44bd850891c06e5de2bf61c00afd93c8fa56ff1a22ea6ac"
     },
     {
       "path": "waybar/mode.css",
@@ -3679,47 +8122,6 @@
       "sha256": "6b1a8b7b4c24f1c19fb7e9f228caabbe110073712a4422cf4d7ea10879d9eeb1"
     },
     {
-      "path": "waybar/scripts/app-about.sh",
-      "language": "bash",
-      "bytes": 1026,
-      "lines": 30,
-      "summary": "\"About <App>\" do menu do app: mostra nome, versão e pacote do app em foco numa notificação (o Linux não tem uma janela \"Sobre\" padrão para todo app).",
-      "symbols": [],
-      "imports": [],
-      "tags": [
-        "waybar",
-        "scripts",
-        "menu",
-        "window"
-      ],
-      "sha256": "cac5c9992376b543f9282dbc275ef16a5682b9348ca8de3e84cb2c9ac7e5be35"
-    },
-    {
-      "path": "waybar/scripts/app-menu.py",
-      "language": "python",
-      "bytes": 1300,
-      "lines": 40,
-      "summary": "\"\"\"Um resultado de menu por foco; o shell sinaliza a Waybar quando a classe muda. Uso: app-menu.py <rótulo> <regex de classe>. O snapshot atômico do shell evita",
-      "symbols": [
-        "active_class",
-        "main"
-      ],
-      "imports": [
-        "json",
-        "os",
-        "re",
-        "sys",
-        "subprocess"
-      ],
-      "tags": [
-        "waybar",
-        "scripts",
-        "menu",
-        "window"
-      ],
-      "sha256": "d98e2b8eedd8cf99d5ddd8235bc284266ad5f37687f64209472fc2c15c4a53b5"
-    },
-    {
       "path": "waybar/scripts/camera.sh",
       "language": "bash",
       "bytes": 720,
@@ -3734,11 +8136,25 @@
       "sha256": "2ec7b681e1ccb71a45df66d78b0b67a40deb0f73edb7411d4de8959834241757"
     },
     {
+      "path": "waybar/scripts/cc-click.sh",
+      "language": "bash",
+      "bytes": 383,
+      "lines": 10,
+      "summary": "Quando o indicador vira alto-falante, o clique abre saídas/volume. osd=\"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-osd-active\"",
+      "symbols": [],
+      "imports": [],
+      "tags": [
+        "waybar",
+        "scripts"
+      ],
+      "sha256": "1e718759dfd70ecdfb45b8806f357f4140be496a4fb46144971b16f00a35ee0b"
+    },
+    {
       "path": "waybar/scripts/cc-state.sh",
       "language": "bash",
-      "bytes": 253,
-      "lines": 7,
-      "summary": "Estado do ícone da Central de Controle: \"active\" enquanto o painel está aberto. if [ -e \"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-cc-open\" ]; then",
+      "bytes": 542,
+      "lines": 15,
+      "summary": "Estado do ícone da Central de Controle: \"active\" enquanto o painel está aberto. osd=\"${XDG_RUNTIME_DIR:-/tmp}/hyprmac-osd-active\"",
       "symbols": [],
       "imports": [],
       "tags": [
@@ -3748,45 +8164,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "433d3d87036d0667d06635bfd09b4f5c54fc68edfaf3e310b884709ee80da045"
-    },
-    {
-      "path": "waybar/scripts/clock.sh",
-      "language": "bash",
-      "bytes": 691,
-      "lines": 15,
-      "summary": "Relógio da barra de menus como na referência do Tahoe (\"Sun 12:07\"): dia da semana abreviado + hora, sem data; a data completa fica na dica. Em inglês, como os menus,",
-      "symbols": [],
-      "imports": [],
-      "tags": [
-        "waybar",
-        "scripts",
-        "lock",
-        "menu"
-      ],
-      "sha256": "b45653e8a1dca38ef330b9c3d3d17c0929a7c036ab442f95a1136e93a8c4a9be"
-    },
-    {
-      "path": "waybar/scripts/input-source.sh",
-      "language": "bash",
-      "bytes": 1449,
-      "lines": 36,
-      "summary": "\"\"\"Fonte de entrada na barra (\"BR\", como no Tahoe): sigla do layout ativo do teclado principal, em maiúsculas. Reescreve a cada troca de layout (evento activelayout do",
-      "symbols": [
-        "mostrar"
-      ],
-      "imports": [],
-      "tags": [
-        "waybar",
-        "scripts"
-      ],
-      "sha256": "b2d63fa2be54b5cec7fde07f354b6e039f3969a38616f7918540f87295a76bc1"
+      "sha256": "cdca2aff278caa0ac44f3e259b330d694b76cb61ce1ed956c45adc9deb8f8753"
     },
     {
       "path": "waybar/style.css",
       "language": "css",
-      "bytes": 14443,
-      "lines": 493,
+      "bytes": 16051,
+      "lines": 547,
       "summary": "hyprmac — barra de menus inspirada no macOS Tahoe ",
       "symbols": [
         "*",
@@ -3807,6 +8191,13 @@
         "#custom-input",
         "#custom-controlcenter:hover",
         "#custom-controlcenter.active",
+        "#custom-controlcenter.brightness",
+        "#custom-controlcenter.volume",
+        "#custom-add-controls",
+        "#custom-add-controls:hover",
+        "#custom-sleep.off",
+        "#custom-recording.on",
+        "#custom-recording.on:hover",
         "#bluetooth.disabled",
         "#pulseaudio.muted",
         "#battery",
@@ -3839,6 +8230,7 @@
         "#custom-camera.on",
         "window.popup decoration",
         ".menu",
+        ".menu:not(.x)",
         "menu menuitem",
         "menu menuitem label",
         "menu menuitem label.shortcut",
@@ -3862,7 +8254,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "c104ce735664706c7648725b32a0d011e930597f043dbf27a74ec0b573591f53"
+      "sha256": "d16ee5572d0e4f7dd56fc8d38177129431ec284d68dbad393e05840b36de6dd8"
     },
     {
       "path": "waybar/theme.css",
@@ -3881,11 +8273,11 @@
     {
       "path": "waybar/themes/light.css",
       "language": "css",
-      "bytes": 1135,
+      "bytes": 1161,
       "lines": 44,
       "summary": "hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x)",
       "symbols": [
-        ".menu:not(.x)",
+        "window.popup .menu:not(.x)",
         "menu:not(.x) menuitem label",
         "menu:not(.x) menuitem:disabled label",
         "menu:not(.x) menuitem:hover",
@@ -3898,9 +8290,10 @@
       "tags": [
         "waybar",
         "menu",
-        "theme"
+        "theme",
+        "window"
       ],
-      "sha256": "de29c5fb9f67c2311ad36db9e95d75c877ef5a9e9bdcbc08a9a93bfce9d1008d"
+      "sha256": "df43d4acd29019e312ad79cac6abf5f41b7e0be818615bcc3ad626ad51b72a70"
     },
     {
       "path": "waybar/vidro.css",

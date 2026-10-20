@@ -251,6 +251,17 @@ hl.layer_rule({
     no_anim      = true,
 })
 
+-- A barra de captura e o menu Options são vidro próprio: desfocar o conteúdo
+-- atrás deles preserva a leitura do texto quando aparecem sobre vídeos.
+hl.layer_rule({
+    name  = "hyprmac-capture-bar",
+    match = { namespace = "^hyprmac-captura-barra$" },
+    blur         = true,
+    blur_popups  = true,
+    ignore_alpha = 0.2,
+    no_anim      = true,
+})
+
 -- Notificações: banners de vidro (desfoque) deslizando da direita
 hl.layer_rule({
     name  = "hyprmac-notifications",
@@ -480,7 +491,7 @@ hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic", f
 -- Atalhos do macOS (⌘ = Super). Substituem os do hyprland.lua que brigavam
 -- com o reflexo do Mac: Super+M encerrava a sessão e Super+Q abria o terminal.
 --------------------------------------------------------------------------
-local janela = hyprmac .. "/scripts/janela"
+local janela = home .. "/.local/bin/hyprmac-janela"
 hl.unbind("SUPER + M")
 hl.unbind("SUPER + Q")
 -- Minimizar para o Dock (⌘M): o shell calcula o ícone de destino e pede o Genie ao hyprglass
@@ -587,8 +598,8 @@ hl.bind("SUPER + SHIFT + 4",        hl.dsp.exec_cmd(shot .. " region"))
 hl.bind("SUPER + SHIFT + CTRL + 3", hl.dsp.exec_cmd("env HYPRMAC_SHOT_CLIPBOARD=1 " .. shot .. " screen"))
 hl.bind("SUPER + SHIFT + CTRL + 4", hl.dsp.exec_cmd("env HYPRMAC_SHOT_CLIPBOARD=1 " .. shot .. " region"))
 -- Ferramenta de Captura e Gravação (⇧⌘5): barra com captura, gravação e opções
-hl.bind("SUPER + SHIFT + 5", hl.dsp.exec_cmd(hyprmac .. "/scripts/captura"))
-hl.bind("SUPER + Print",     hl.dsp.exec_cmd(hyprmac .. "/scripts/captura"))
+hl.bind("SUPER + SHIFT + 5", hl.dsp.exec_cmd(home .. "/.local/bin/hyprmac-capture-bar"))
+hl.bind("SUPER + Print",     hl.dsp.exec_cmd(home .. "/.local/bin/hyprmac-capture-bar"))
 
 --------------------------------------------------------------------------
 -- Autostart
@@ -596,10 +607,10 @@ hl.bind("SUPER + Print",     hl.dsp.exec_cmd(hyprmac .. "/scripts/captura"))
 hl.on("hyprland.start", function ()
     hl.exec_cmd(hyprmac .. "/scripts/menu-extras start")
     hl.exec_cmd(hyprmac .. "/shell/hyprmac-shell")
-    hl.exec_cmd(hyprmac .. "/scripts/clipboard watch")   -- histórico da área de transferência
+    hl.exec_cmd(home .. "/.local/bin/hyprmac-clipboard watch")   -- histórico da área de transferência
     hl.exec_cmd(hyprmac .. "/shell/hyprmac-lock --warm-cache")   -- prepara o fundo da tela de bloqueio
     hl.exec_cmd(hyprmac .. "/scripts/ocioso start")   -- apaga a tela após 10 min sem uso (como o Mac)
-    hl.exec_cmd(hyprmac .. "/scripts/aparencia start") -- aparência Auto: troca após 1 min ocioso
+    hl.exec_cmd(home .. "/.local/bin/hyprmac-aparencia start") -- aparência Auto: troca após 1 min ocioso
     hl.exec_cmd(hyprmac .. "/shell/hyprmac-overview")             -- Mission Control pronto para abrir rápido
     hl.exec_cmd(hyprmac .. "/scripts/vidro carregar")             -- Liquid Glass (hyprglass); compila na 1ª vez
 end)

@@ -1,5 +1,9 @@
 # Prioridades
 
+## Migração integral Python → Rust — solicitação de 2026-10-18
+
+A branch `migration/python-to-rust` iniciou a substituição do Python por Rust por contrato executável. A Waybar, a ação About e a escrita de preferências SNI usam `core/waybar-status/`; aparência, janelas, clipboard, acessibilidade, destaque, cor de pastas, miniatura, comando e barra de captura, gravação de tela, consultas de runtime, mola compartilhada, modelo e geometria do Dock, busca, teclas rápidas e histórico do Spotlight, mapa de status, comparação, auditoria, índice e consulta da base usam `core/appearance/`, `core/window-actions/`, `core/clipboard/`, `core/accessibility/`, `core/accent/`, `core/folder-color/`, `core/capture-thumbnail/`, `core/screenshot/`, `core/capture-bar/`, `core/screen-recording/`, `core/runtime-helpers/`, `core/motion/`, `core/dock-model/`, `core/dock-geometry/`, `core/spotlight-search/`, `core/spotlight-quickkeys/`, `core/spotlight-history/`, `core/status-map/`, `core/comparison/`, `core/audit/`, `core/code-index/`, `core/knowledge-index/` e `core/query/`. Restam o shell GTK e suas views, os apps, outros scripts de integração, as demais ferramentas de conhecimento e os testes. Preservar a componentização atual de `hyprmac-shell` na migração: serviços compartilhados, views e núcleos de Dock/Spotlight separados. Preservar funcionamento e validação por componente durante a troca; a solicitação atual do usuário substitui a recomendação histórica de Rust optativo abaixo.
+
 ## Expansão de aplicativos — direção do usuário em 2026-10-11
 
 A App Factory cobre os 55 ausentes com identidade XDG, ícone e janela ou
@@ -33,6 +37,14 @@ Ciclo atual: clique fora e troca de menus pela barra (MIC-02), registrado em
 MIC-04 permanecem parciais e testados localmente.
 Próximas oportunidades: taxonomia da galeria e opções reais do relógio da barra;
 consultar `tahoe26:pesquisa:shared-controls-opportunities` antes de analisar novamente.
+
+Pesquisa Apple Developer de 2026-10-20: ícones semânticos e alinhamento por seção
+foram aplicados ao menu Apple e ao `AppMenu`; estender a menus contextuais e
+menus File/Edit de apps externos após obter referência equivalente (BAR-04);
+conferir agrupamento de controles e borda de rolagem nos apps GTK com a sessão WWDC25 310;
+testar menus, vidro e movimento em claro/escuro, transparência/contraste/movimento reduzidos
+conforme HIG Materials e Adopting Liquid Glass. Antes de alterar geometria ou material,
+obter captura Tahoe 26 equivalente. Pesquisa SQLite: `tahoe26:pesquisa:apple-developer-menus-20261020`.
 
 ## Reconstrução dos 70 apps e adoção gradual de Rust
 

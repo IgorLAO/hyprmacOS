@@ -1,27 +1,17 @@
 """MIC-04: foco global pelo teclado (HIG ▸ Keyboards).
 
-⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (scripts/janela next-any/prev-any);
+⌃F4 / ⌃⇧F4 percorrem as janelas de qualquer app (`hyprmac-janela next-any/prev-any`);
 ⌃F3 leva o foco ao Dock: ←/→ percorrem os ícones (pulando separadores), Return ou
 Espaço abrem, Esc devolve o foco. Métodos reais do Dock carregados por AST.
 """
 
 import ast
-import importlib.machinery
-import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def load_janela():
-    loader = importlib.machinery.SourceFileLoader("janela", str(ROOT / "scripts" / "janela"))
-    spec = importlib.util.spec_from_loader("janela", loader)
-    module = importlib.util.module_from_spec(spec)
-    loader.exec_module(module)
-    return module
 
 
 KEYS = SimpleNamespace(KEY_Left=1, KEY_Right=2, KEY_Home=3, KEY_End=4, KEY_Return=5,
@@ -53,25 +43,6 @@ def load_dock():
 
 def press(dock, key):
     return dock._key(None, SimpleNamespace(keyval=key))
-
-
-class WindowCycle(unittest.TestCase):
-    def setUp(self):
-        self.janela = load_janela()
-        self.wins = [{"address": "0xc", "stableId": 3}, {"address": "0xa", "stableId": 1},
-                     {"address": "0xb", "stableId": 2}]
-
-    def test_next_and_previous_follow_opening_order_and_wrap(self):
-        proxima = self.janela.proxima
-        self.assertEqual(proxima(self.wins, {"address": "0xa"}, 1)["address"], "0xb")
-        self.assertEqual(proxima(self.wins, {"address": "0xc"}, 1)["address"], "0xa")
-        self.assertEqual(proxima(self.wins, {"address": "0xa"}, -1)["address"], "0xc")
-
-    def test_without_active_window_focuses_first_or_last(self):
-        proxima = self.janela.proxima
-        self.assertEqual(proxima(self.wins, None, 1)["address"], "0xa")
-        self.assertEqual(proxima(self.wins, {}, -1)["address"], "0xc")
-        self.assertIsNone(proxima([], None, 1))
 
 
 class DockKeyboard(unittest.TestCase):

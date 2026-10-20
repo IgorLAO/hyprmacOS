@@ -310,7 +310,7 @@ def create_session_overlays(*, add_class, app_name, dispatch, gdk_monitors,
 
         def _quit_selected(self):
             """Q: encerra o app selecionado (fecha todas as janelas da classe, como o
-            ⌘Q do scripts/janela) e o tira da fila; o seletor continua aberto."""
+            ⌘Q do hyprmac-janela) e o tira da fila; o seletor continua aberto."""
             if not self.items:
                 return
             cls = self.items[self.sel][3]

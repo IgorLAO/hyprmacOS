@@ -65,23 +65,12 @@
   "custom/apple": {
     "format": "",
     "tooltip": false,
-    "menu": "on-click",
-    "menu-file": "~/.config/waybar/menus/apple.xml",
-    "menu-actions": {
-      "about":    "~/Projects/hyprmac/shell/hyprmac-ajustes about",
-      "settings": "~/Projects/hyprmac/shell/hyprmac-ajustes",
-      "forcequit": "~/Projects/hyprmac/shell/hyprmac-shell force-quit",
-      "sleep":    "systemctl suspend",
-      "lock":     "~/Projects/hyprmac/shell/hyprmac-lock",
-      "reboot":   "systemctl reboot",
-      "poweroff": "systemctl poweroff",
-      "logout":   "hyprctl dispatch 'hl.dsp.exit()'"
-    }
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command apple-menu"
   },
 
   // Nome do app em foco, em negrito; o clique abre o menu do app como no macOS.
   // Montado na hora pelo hyprmac-shell, com o nome real ("About Brave",
-  // "Hide Brave", "Quit Brave"); Hide/Hide Others/Show All/Quit usam scripts/janela.
+  // "Hide Brave", "Quit Brave"); Hide/Hide Others/Show All/Quit usam hyprmac-janela.
   "hyprland/window": {
     "format": "{class}",
     "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command app-menu",
@@ -122,7 +111,7 @@
   },
 
   "custom/menu-arquivo": {
-    "exec": "~/.config/waybar/scripts/app-menu.py File '.'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu File '.'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -139,7 +128,7 @@
 
   // mesma coisa sem janela em foco (Finder): itens indisponíveis esmaecidos
   "custom/menu-arquivo-mesa": {
-    "exec": "~/.config/waybar/scripts/app-menu.py File '^$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu File '^$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -155,7 +144,7 @@
 
   // atalhos enviados à janela em foco (o menu da barra não tira o foco dela)
   "custom/menu-editar": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Edit '.'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Edit '.'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -182,7 +171,7 @@
 
   // mesma coisa sem janela em foco (Finder): itens indisponíveis esmaecidos
   "custom/menu-editar-mesa": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Edit '^$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Edit '^$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -218,7 +207,7 @@
   // Menus do VS Code (Selection entre Edit e View; Go, Run e Terminal entre View e
   // Window), como no Code para Mac: só aparecem com o Code em foco
   "custom/menu-selecao": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Selection '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Selection '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -240,7 +229,7 @@
   },
 
   "custom/menu-codigo-ir": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Go '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Go '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -260,7 +249,7 @@
   },
 
   "custom/menu-executar": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Run '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Run '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -276,7 +265,7 @@
   },
 
   "custom/menu-terminal": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Terminal '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Terminal '^(Code|code|code-oss|code-url-handler|Code - OSS|codium|VSCodium)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -292,7 +281,7 @@
 
   // Menu Playback do Spotify (entre View e Window, como no Spotify para Mac)
   "custom/menu-reproducao": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Playback '^(spotify|Spotify)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Playback '^(spotify|Spotify)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -315,7 +304,7 @@
   // Menu Format do Notes (shell/hyprmac-notas), entre Edit e View como no Tahoe; as ações
   // chegam ao app pelo D-Bus padrão do GApplication (org.gtk.Actions)
   "custom/menu-formatar": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Format '^dev\\.hyprmac\\.Notes$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Format '^dev\\.hyprmac\\.Notes$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -334,7 +323,7 @@
 
   // Menu Go do Finder (mesa vazia ou nautilus/Nautilus em foco), entre View e Window
   "custom/menu-ir": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Go '^(|org\\.kde\\.nautilus|org\\.gnome\\.Nautilus)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Go '^(|org\\.kde\\.nautilus|org\\.gnome\\.Nautilus)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -357,9 +346,9 @@
 
   // Menus do navegador, como os do Safari na referência (History, Bookmarks,
   // Develop entre View e Window): só aparecem com um navegador em foco
-  // (scripts/app-menu.py); os itens mandam o atalho equivalente do Chromium/Firefox.
+  // (hyprmac-waybar app-menu); os itens mandam o atalho equivalente do Chromium/Firefox.
   "custom/menu-historico": {
-    "exec": "~/.config/waybar/scripts/app-menu.py History '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu History '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -376,7 +365,7 @@
     }
   },
   "custom/menu-favoritos": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Bookmarks '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Bookmarks '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -391,7 +380,7 @@
     }
   },
   "custom/menu-desenvolver": {
-    "exec": "~/.config/waybar/scripts/app-menu.py Develop '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
+    "exec": "~/.local/bin/hyprmac-waybar app-menu Develop '^(brave-browser|Brave-browser|brave-origin|google-chrome|Google-chrome|chromium|Chromium|firefox|org\\.mozilla\\.firefox|zen|librewolf)$'",
     "return-type": "json",
     "interval": "once",
     "signal": 11,
@@ -482,7 +471,7 @@
   },
 
   "custom/add-controls": {
-    "exec": "~/.config/waybar/scripts/add-controls.py",
+    "exec": "~/.local/bin/hyprmac-waybar add-controls",
     "return-type": "json",
     "interval": "once",
     "signal": 12,
@@ -490,7 +479,7 @@
   },
 
   "custom/recording": {
-    "exec": "~/.config/waybar/scripts/recording.py",
+    "exec": "~/.local/bin/hyprmac-waybar recording",
     "return-type": "json",
     "interval": "once",
     "signal": 13,
@@ -498,14 +487,14 @@
   },
 
   "custom/headphones": {
-    "exec": "~/.config/waybar/scripts/headphones.py",
+    "exec": "~/.local/bin/hyprmac-waybar headphones",
     "return-type": "json",
     "interval": 8,
     "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-sound"
   },
 
   "custom/sleep": {
-    "exec": "~/.config/waybar/scripts/sleep-focus.py",
+    "exec": "~/.local/bin/hyprmac-waybar sleep-focus",
     "return-type": "json",
     "interval": "once",
     "signal": 14,
@@ -568,7 +557,7 @@
   // Fonte de entrada ("BR" num quadrado contornado, como no Tahoe); o clique
   // troca para o próximo layout, se houver mais de um
   "custom/input": {
-    "exec": "~/.config/waybar/scripts/input-source.sh",
+    "exec": "~/.local/bin/hyprmac-waybar input-source",
     "return-type": "json",
     "on-click": "hyprctl switchxkblayout current next"
   },
@@ -607,7 +596,7 @@
   },
 
   "custom/clock": {
-    "exec": "~/.config/waybar/scripts/clock.py",
+    "exec": "~/.local/bin/hyprmac-waybar clock",
     // abre a Central de Notificações do hyprmac-shell
     "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command toggle-nc",
     "return-type": "json",

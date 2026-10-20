@@ -94,3 +94,81 @@ def after_run(overrides, action, keys):
     out = dict(overrides)
     out[action["id"]] = key
     return out
+
+# A view GTK conserva esta interface enquanto a lógica roda no módulo Rust.
+# O código acima fica como reserva para um checkout ainda não compilado.
+import ctypes
+from pathlib import Path
+
+_LIB = (Path(__file__).resolve().parents[1]
+        / "core/spotlight-quickkeys/target/release/libhyprmac_spotlight_quickkeys.so")
+try:
+    _rust = ctypes.CDLL(str(_LIB))
+    _rust.hyprmac_quickkeys.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+    _rust.hyprmac_quickkeys.restype = ctypes.c_size_t
+except OSError:
+    _rust = None
+
+RUST_ACTIVE = _rust is not None
+_python_load, _python_save = load, save
+_python_normalize, _python_effective = normalize, effective
+_python_suggest, _python_assign, _python_after_run = suggest, assign, after_run
+
+
+def _call(request):
+    raw = json.dumps(request, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    buffer = ctypes.create_string_buffer(len(raw) * 4 + 64)
+    needed = _rust.hyprmac_quickkeys(raw, buffer, len(buffer))
+    if needed >= len(buffer):
+        buffer = ctypes.create_string_buffer(needed + 1)
+        _rust.hyprmac_quickkeys(raw, buffer, len(buffer))
+    return json.loads(buffer.value)
+
+
+def load(path=PATH):
+    if _rust is None:
+        return _python_load(path)
+    return _call({"op": "load", "path": os.fspath(path)})
+
+
+def save(overrides, path=PATH):
+    if _rust is None:
+        return _python_save(overrides, path)
+    result = _call({"op": "save", "path": os.fspath(path), "overrides": overrides})
+    if isinstance(result, dict) and "error" in result:
+        raise OSError(result["error"])
+
+
+def normalize(text):
+    if _rust is None:
+        return _python_normalize(text)
+    return _call({"op": "normalize", "text": text or ""})
+
+
+def effective(actions, overrides):
+    if _rust is None:
+        return _python_effective(actions, overrides)
+    simple = [{"id": action["id"], "key": action.get("key") or ""} for action in actions]
+    return _call({"op": "effective", "actions": simple, "overrides": overrides})
+
+
+def suggest(label, taken):
+    if _rust is None:
+        return _python_suggest(label, taken)
+    return _call({"op": "suggest", "label": label or "", "taken": list(taken)})
+
+
+def assign(overrides, action_id, key, keys):
+    if _rust is None:
+        return _python_assign(overrides, action_id, key, keys)
+    return _call({"op": "assign", "overrides": overrides, "action_id": action_id,
+                  "key": key or "", "keys": keys})
+
+
+def after_run(overrides, action, keys):
+    if _rust is None:
+        return _python_after_run(overrides, action, keys)
+    simple = {field: action[field] for field in ("id", "label", "name") if field in action}
+    result = _call({"op": "after_run", "overrides": overrides,
+                    "action": simple, "keys": keys})
+    return result["value"] if result["changed"] else overrides

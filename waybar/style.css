@@ -478,6 +478,13 @@ menu,
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
 
+/* Material escuro de leitura: esta regra vence o véu de 4% gerado em vidro.css.
+ * O popup continua translúcido, mas mantém contraste sobre papéis claros. */
+menu:not(.x),
+.menu:not(.x) {
+  background: rgba(8, 8, 10, 0.90);
+}
+
 /* Itens de 24 de altura; destaque azul #0069F9 com raio 8 */
 menu menuitem {
   min-height: 24px;

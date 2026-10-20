@@ -21,6 +21,10 @@
   border-color: @shell_glass_border;
   box-shadow: none;
 }
+/* Menus com texto precisam de tinta mais forte sobre papel de parede claro. */
+.xmenu {
+  background-color: rgba(8, 8, 10, 0.90);
+}
 .spot-panel {
   background-color: @shell_glass_spotlight;
   border-color: @shell_glass_border;
@@ -63,7 +67,7 @@
  * próprio pelo passe de popups do patch ("hyprmac-menu:popups") */
 menu.hyprmac-menu,
 .hyprmac-menu menu {
-  background-color: @shell_glass_text;
+  background-color: rgba(8, 8, 10, 0.90);
   border-color: @shell_glass_border;
   box-shadow: none;
 }

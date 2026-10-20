@@ -1,0 +1,10 @@
+[package]
+name = "hyprmac-waybar"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+libc = "0.2"
+regex = "1"
+serde_json = "1"

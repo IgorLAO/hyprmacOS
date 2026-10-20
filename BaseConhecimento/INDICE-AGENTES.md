@@ -136,7 +136,7 @@ $B/consultar.py --codigo "dock"
 $B/consultar.py --codigo "control center"
 
 # Regenerar o índice leve de código após alterar arquivos estruturais
-python3 $B/indexar_codigo.py
+$B/indexar_codigo.py
 ```
 
 Depois de alterar documentação, tokens ou referências textuais:
