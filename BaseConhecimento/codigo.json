@@ -3491,8 +3491,8 @@
     {
       "path": "shell/desktop_surface.py",
       "language": "python",
-      "bytes": 62161,
-      "lines": 1281,
+      "bytes": 67650,
+      "lines": 1385,
       "summary": "\"\"\"Wallpaper, desktop widgets and desktop icons in the shared shell process.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
         "create_desktop_classes",
@@ -3545,9 +3545,14 @@
         "DesktopIcons",
         "_items",
         "_cell",
+        "_draw_folder_icon",
         "_deselect",
         "_select",
         "_open",
+        "_set_customization",
+        "_choose_folder_color",
+        "_choose_folder_emoji",
+        "_customize_menu",
         "_click",
         "WidgetGallery",
         "show"
@@ -3566,6 +3571,7 @@
         "cairo",
         "gi",
         "gi.repository",
+        "accent_palette",
         "folder_appearance",
         "xml.etree.ElementTree",
         "hashlib",
@@ -3578,7 +3584,7 @@
         "theme",
         "window"
       ],
-      "sha256": "50adbda30d20b1ffd9c13b020fa09ebc1fada9e676a98966ebbd5ec4bdd97683"
+      "sha256": "757dfcc7384deb4f89020c75d3afa8169bc286acb2eb8e39ab0ea1896b8fb693"
     },
     {
       "path": "shell/diario.css",
@@ -3870,16 +3876,20 @@
     {
       "path": "shell/folder_appearance.py",
       "language": "python",
-      "bytes": 3165,
-      "lines": 74,
+      "bytes": 4757,
+      "lines": 113,
       "summary": "\"\"\"Ponte GTK para a cor de pastas; transformação dos pixels em Rust.\"\"\" gi.require_version(\"GdkPixbuf\", \"2.0\")",
       "symbols": [
+        "folder_customization",
+        "set_folder_customization",
         "folder_color",
         "folder_pixbuf"
       ],
       "imports": [
         "ctypes",
+        "errno",
         "json",
+        "os",
         "pathlib",
         "gi",
         "gi.repository",
@@ -3888,7 +3898,7 @@
       "tags": [
         "shell"
       ],
-      "sha256": "40cf16d4d09dc93dbc15d51cb93b814a890acca97c314ccad3e318e713076028"
+      "sha256": "5fab2cc092da841d32884c2d86e69df2ae9bceb009af2ece59115de62646248b"
     },
     {
       "path": "shell/glass_motion.py",
@@ -4720,8 +4730,8 @@
     {
       "path": "shell/hyprmac-shell",
       "language": "python",
-      "bytes": 282572,
-      "lines": 6629,
+      "bytes": 282793,
+      "lines": 6631,
       "summary": "\"\"\"hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell).",
       "symbols": [
         "load_config",
@@ -4898,7 +4908,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "014c26542773fa2538cb4168e228235eb60774b44a705def7dbf13c128797ba4"
+      "sha256": "8aad0c0cf33dae6a01def19049137196a6efbc0ec70219e2a89cb9cdca9c627b"
     },
     {
       "path": "shell/linux_storage_adapter.py",
@@ -6517,6 +6527,30 @@
       "sha256": "521536842c260a29aa86a0283d0c8ae2be0ba49454e254c424038c59aab45235"
     },
     {
+      "path": "tests/test_folder_customization.py",
+      "language": "python",
+      "bytes": 1516,
+      "lines": 35,
+      "summary": "\"\"\"Persistência da aparência individual de pastas da Mesa.\"\"\" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / \"shell\"))",
+      "symbols": [
+        "FolderCustomization",
+        "test_attributes_follow_rename_and_can_be_cleared",
+        "test_invalid_color_does_not_write"
+      ],
+      "imports": [
+        "errno",
+        "pathlib",
+        "sys",
+        "tempfile",
+        "unittest",
+        "folder_appearance"
+      ],
+      "tags": [
+        "tests"
+      ],
+      "sha256": "af6de3f4b2a1839e7eb9a715c8eb39aadaeffcb56b839ea11adafbb758f8a895"
+    },
+    {
       "path": "tests/test_glass_motion.py",
       "language": "python",
       "bytes": 5182,
@@ -8018,15 +8052,31 @@
     {
       "path": "waybar/contrast.css",
       "language": "css",
-      "bytes": 0,
-      "lines": 0,
-      "summary": "contrast.css",
-      "symbols": [],
+      "bytes": 4547,
+      "lines": 117,
+      "summary": "hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre",
+      "symbols": [
+        "window#waybar:not(.x) #clock",
+        "window#waybar:not(.x) #clock:hover",
+        "window#waybar:not(.x) #mpris.paused",
+        "window#waybar:not(.x) #workspaces button",
+        "window#waybar:not(.x) #workspaces button:hover",
+        "window#waybar:not(.x) #custom-controlcenter",
+        "window#waybar:not(.x) #custom-controlcenter.active",
+        "window#waybar:not(.x) #custom-input",
+        "window#waybar:not(.x) #custom-menu-desenvolver",
+        "window#waybar:not(.x) #custom-menu-desenvolver:hover",
+        "window#waybar:not(.x) #tray > widget.menu-open"
+      ],
       "imports": [],
       "tags": [
-        "waybar"
+        "waybar",
+        "spotlight",
+        "lock",
+        "menu",
+        "window"
       ],
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "sha256": "53ffdb9ba7ae7a01e44bd850891c06e5de2bf61c00afd93c8fa56ff1a22ea6ac"
     },
     {
       "path": "waybar/mode.css",

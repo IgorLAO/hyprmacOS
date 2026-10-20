@@ -146,14 +146,14 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/clock_format.py` | python | 58 | shell, lock, menu | """Texto do relógio da barra de menus com as Clock Options do Tahoe 26. Opções e padrões conforme ClockPreferences (ControlCenter.app) e as strings de |
 | `shell/cocoa_entry.py` | python | 107 | shell | """Edição compartilhada dos campos GTK3 próprios do HyprMac. Mapeamentos: AppKit StandardKeyBinding.dict, Tahoe 26.6.1 (25G76). |
 | `shell/darwin_diskarbitration_service.py` | python | 92 | shell, lock | """Darwin-compatible DiskArbitration service for HyprMac. Maps Apple's DiskArbitration framework (DASession / DADisk) semantics to the |
-| `shell/desktop_surface.py` | python | 1281 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
+| `shell/desktop_surface.py` | python | 1385 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
 | `shell/diario.css` | css | 64 | shell | hyprmac — Journal (Diário do macOS Tahoe 26), a partir de referencias/desejos/journal-app.png: lateral flutuante (margem 8, raio 18) com os cartões Insights/Places desenhados em cairo, |
 | `shell/dock_drop.py` | python | 64 | shell, dock | """Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.""" def desktop_file_from_uris(uris, new_file): |
 | `shell/dock_geometry.py` | python | 167 | shell, dock | """Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.""" @dataclass(frozen=True) |
 | `shell/dock_model.py` | python | 210 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
 | `shell/dock_motion.py` | python | 106 | shell, dock, lock | """Estado das molas, magnificação e quique do Dock; sem relógios ou timers próprios.""" class DockMotion: |
 | `shell/dock_widget.py` | python | 1327 | shell, dock, spotlight, notification, lock, menu | """GTK view for the Dock. The shell supplies its shared UI and compositor services.""" gi.require_version("Gtk", "3.0") |
-| `shell/folder_appearance.py` | python | 74 | shell | """Ponte GTK para a cor de pastas; transformação dos pixels em Rust.""" gi.require_version("GdkPixbuf", "2.0") |
+| `shell/folder_appearance.py` | python | 113 | shell | """Ponte GTK para a cor de pastas; transformação dos pixels em Rust.""" gi.require_version("GdkPixbuf", "2.0") |
 | `shell/glass_motion.py` | python | 43 | shell, dock, spotlight, glass | """Mola compartilhada do shell, Dock e Spotlight. O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível. |
 | `shell/hypr_events.py` | python | 49 | shell | """Uma conexão com o socket de eventos do Hyprland para todo o shell GTK.""" class EventBus: |
 | `shell/hyprmac-ajustes` | python | 3530 | shell, dock, control center, spotlight, notification, lock | """hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth, |
@@ -165,7 +165,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/hyprmac-notas` | python | 830 | shell, dock, lock, menu, theme, window | gi.require_version('Gtk', '3.0') gi.require_version('Gdk', '3.0') |
 | `shell/hyprmac-overview` | python | 1581 | shell, dock, menu, theme, window | """hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell). Comportamentos alvo (macOS Tahoe 26, ⌃↑; medidas locais ainda aproximadas): |
 | `shell/hyprmac-preview` | python | 665 | shell, menu, theme, window | """Visualizador local: ações documentadas no Preview 26.6.1, layout experimental.""" gi.require_version("Gtk", "3.0") |
-| `shell/hyprmac-shell` | python | 6629 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
+| `shell/hyprmac-shell` | python | 6631 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
 | `shell/linux_storage_adapter.py` | python | 105 | shell, lock | """Native Linux storage adapter used by HyprMac. Wraps UDisks2 (preferred) with a read-only lsblk fallback. This is the |
 | `shell/lock.css` | css | 135 | shell, lock, window | hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14" = 1512×982 pt, 1,744 px/pt |
 | `shell/menubar_items.py` | python | 76 | shell, spotlight, menu, window, control, center | """Itens da barra de menus que podem ser mostrados/ocultados (Menu Bar Controls). Compartilhado por Ajustes ▸ Menu Bar e pela galeria da Central de Controle ("Add to Menu |
@@ -203,6 +203,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `tests/test_dock_recipe.py` | python | 58 | tests, dock | """Casos dimensionais conferidos com emulação ARM64 independente (25G76).""" PATH = Path(__file__).resolve().parents[1] / 'BaseConhecimento/ferramentas/receita_dock.py' |
 | `tests/test_factory_backends.py` | python | 67 | tests | """Behavior checks for local App Factory backends.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell")) |
 | `tests/test_fidelity_qa.py` | python | 72 | tests, dock, glass, window | """QA independente de gestos e atualização, executando métodos reais do Dock.""" class DockGestureLifecycleQA(unittest.TestCase): |
+| `tests/test_folder_customization.py` | python | 35 | tests | """Persistência da aparência individual de pastas da Mesa.""" sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shell")) |
 | `tests/test_glass_motion.py` | python | 126 | tests, glass | sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'shell')) class GlassTransitionTests(unittest.TestCase): |
 | `tests/test_install_preflight.py` | python | 59 | tests, lock | """O instalador não substitui configurações por fontes ausentes.""" INSTALL = (Path(__file__).resolve().parents[1] / "install.sh").read_text() |
 | `tests/test_journal_features.py` | python | 200 | tests, menu, window | """Journal: lógica e callbacks sem criar janelas GTK.""" ROOT = Path(__file__).resolve().parents[1] |
@@ -247,7 +248,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `waybar/barra-ocultos.css` | css | 0 | waybar | barra-ocultos.css |
 | `waybar/config.jsonc` | jsonc | 616 | waybar, dock, spotlight, lock, menu, window | hyprmac — Waybar inspirada no macOS Tahoe "layer": "top", |
 | `waybar/contrast-dark.css` | css | 117 | waybar, spotlight, lock, menu, window | hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre |
-| `waybar/contrast.css` | css | 0 | waybar | contrast.css |
+| `waybar/contrast.css` | css | 117 | waybar, spotlight, lock, menu, window | hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre |
 | `waybar/mode.css` | css | 0 | waybar | mode.css |
 | `waybar/modes/light.css` | css | 118 | waybar, spotlight, lock, menu, window | hyprmac — barra de menus clara e fosca (estilo macOS com vidro claro) Copiado para waybar/mode.css pelo script scripts/bar-style. |
 | `waybar/scripts/camera.sh` | bash | 16 | waybar, scripts | Câmera em uso → cápsula verde com o ícone da câmera na barra (o indicador de privacidade do macOS; o módulo "privacy" do Waybar não conhece câmera). |

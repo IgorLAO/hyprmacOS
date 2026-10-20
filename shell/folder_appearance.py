@@ -1,7 +1,9 @@
 """Ponte GTK para a cor de pastas; transformação dos pixels em Rust."""
 
 import ctypes
+import errno
 import json
+import os
 from pathlib import Path
 
 import gi
@@ -29,6 +31,43 @@ RUST_ACTIVE = _rust is not None
 _SETTINGS = Path.home() / ".config/hyprmac/ajustes.json"
 _ICON = Path(__file__).resolve().parent / "icones/Folder_Icon.png"
 _COLORS = frozenset(("red", "orange", "yellow", "green", "blue", "purple", "pink", "graphite"))
+_COLOR_ATTR = "user.hyprmac.folder_color"
+_EMOJI_ATTR = "user.hyprmac.folder_emoji"
+
+
+def folder_customization(path):
+    """Lê a escolha específica da pasta sem alterar a preferência global."""
+    try:
+        color = os.getxattr(path, _COLOR_ATTR).decode("ascii")
+    except (OSError, UnicodeError):
+        color = None
+    try:
+        emoji = os.getxattr(path, _EMOJI_ATTR).decode("utf-8")
+    except (OSError, UnicodeError):
+        emoji = None
+    valid_color = isinstance(color, str) and len(color) == 7 and color.startswith("#") \
+        and all(c in "0123456789abcdefABCDEF" for c in color[1:])
+    return (color if valid_color else None, emoji if emoji and len(emoji) <= 8 else None)
+
+
+def set_folder_customization(path, *, color=None, emoji=None):
+    """None preserva a propriedade; string vazia a remove."""
+    if color not in (None, "") and (len(color) != 7 or not color.startswith("#") or
+                                   any(c not in "0123456789abcdefABCDEF" for c in color[1:])):
+        raise ValueError("cor de pasta inválida")
+    if emoji is not None and len(emoji) > 8:
+        raise ValueError("emoji de pasta muito longo")
+    for key, value, encoding in ((_COLOR_ATTR, color, "ascii"), (_EMOJI_ATTR, emoji, "utf-8")):
+        if value is None:
+            continue
+        if value == "":
+            try:
+                os.removexattr(path, key)
+            except OSError as error:
+                if error.errno != errno.ENODATA:
+                    raise
+        else:
+            os.setxattr(path, key, value.encode(encoding))
 
 
 def folder_color():

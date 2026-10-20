@@ -1,5 +1,11 @@
 # Estado atual do HyprMac
 
+## Aparência individual das pastas da Mesa — 2026-10-20
+
+- Evidência SIS-07/FIL-09: a [nota oficial do macOS Tahoe 26](https://support.apple.com/en-us/122868) confirma a personalização de pastas por cor, símbolo e emoji. Ela não define o material, a paleta ou a posição exata do símbolo no ícone.
+- Implementação SIS-07/FIL-09: o menu contextual das pastas da Mesa oferece oito cores, cor personalizada, cinco símbolos, entrada de emoji e retorno à aparência padrão. Cor e símbolo/emoji ficam em atributos estendidos da própria pasta; a cor usa o recoloridor Rust existente. Um glifo ausente aparece como estrela, e a entrada de emoji avisa quando a fonte instalada não consegue mostrá-lo.
+- Validação SIS-07/FIL-09: leitura, gravação, renomeação e remoção dos atributos passaram em diretório temporário; os dois testes dirigidos passaram. O submenu GTK foi construído e acionado por sinais para persistir vermelho e estrela. O método real de desenho foi renderizado isoladamente em 100×104 px e inspecionado em `/tmp/hyprmac-p3-folder-symbol.png`. Neste ambiente não há fonte de emoji; gerenciadores de arquivos externos não leem esses atributos. Geometria e material do ícone continuam sem comparação equivalente Tahoe 26.
+
 ## Movimento reduzido em banners — 2026-10-20
 
 - Implementação MIC-14/SIS-05: banners de notificação agora usam `Gtk.RevealerTransitionType.NONE` e duração zero quando Reduce Motion está ativo, inclusive ao restaurar o tipo de transição após a entrada na camada.

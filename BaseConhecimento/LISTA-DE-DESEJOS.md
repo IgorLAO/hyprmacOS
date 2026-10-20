@@ -228,7 +228,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | FIL-06 | P2 | Barra lateral Tahoe com Liquid Glass | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-07 | P1 | Drag-and-drop consistente com Dock e aplicativos | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-08 | P2 | Informações do arquivo e ações rápidas | A_VERIFICAR | NAO_AVALIADO | — |
-| FIL-09 | P2 | Cores, símbolos e emojis para pastas | PARCIAL | TESTADO_LOCAL | 2026-10-20: cor de pastas na Mesa e Downloads do Dock por `core/folder-color/`; símbolos, emojis e pastas do gerenciador de arquivos ainda pendentes. Renderização local do ícone vermelho e build Rust conferidos; sem comparação equivalente Tahoe 26. |
+| FIL-09 | P2 | Cores, símbolos e emojis para pastas | PARCIAL | TESTADO_LOCAL | 2026-10-20: cor de pastas na Mesa e Downloads do Dock por `core/folder-color/`; pastas da Mesa agora aceitam cor e símbolo/emoji individuais em xattrs, com renderização GTK e menu testados por sinais; emoji depende de fonte instalada e gerenciadores externos ainda não leem a personalização. Ícone vermelho e símbolo renderizados localmente; sem comparação equivalente Tahoe 26. |
 
 ## MIC — Microinterações e consistência
 
