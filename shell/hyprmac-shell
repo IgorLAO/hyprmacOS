@@ -3529,8 +3529,9 @@ class Banner(Gtk.Revealer):
     """Um banner no estilo macOS: ícone do app, título, "now", texto e ações."""
 
     def __init__(self, center, nid, app_icon, image, summary, body, actions, timeout):
-        super().__init__(transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN,
-                         transition_duration=240)
+        super().__init__(transition_type=(Gtk.RevealerTransitionType.NONE if reduce_motion()
+                                          else Gtk.RevealerTransitionType.SLIDE_DOWN),
+                         transition_duration=0 if reduce_motion() else 240)
         self.center, self.nid = center, nid
         self.timeout, self.timer, self.started, self.remaining = timeout, None, 0, timeout
         self.created = time.time()
@@ -3835,7 +3836,8 @@ class NotificationCenter:
             # o layer-shell prendia a altura em 1 px.
             banner.set_transition_type(Gtk.RevealerTransitionType.NONE)
             banner.set_reveal_child(True)
-            banner.set_transition_type(Gtk.RevealerTransitionType.SLIDE_DOWN)
+            banner.set_transition_type(Gtk.RevealerTransitionType.NONE if reduce_motion()
+                                       else Gtk.RevealerTransitionType.SLIDE_DOWN)
             self.win.show()
         else:
             # só se ainda estiver na tela: um banner do mesmo app pode tê-lo empilhado

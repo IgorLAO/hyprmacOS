@@ -1,5 +1,10 @@
 # Estado atual do HyprMac
 
+## Movimento reduzido em banners — 2026-10-20
+
+- Implementação MIC-14/SIS-05: banners de notificação agora usam `Gtk.RevealerTransitionType.NONE` e duração zero quando Reduce Motion está ativo, inclusive ao restaurar o tipo de transição após a entrada na camada.
+- Validação MIC-14/SIS-05: `py_compile` e os oito testes dirigidos de movimento reduzido passaram; o shell foi recarregado. A transição de uma notificação real com a preferência ativada e a comparação com Tahoe 26 ainda precisam de inspeção visual.
+
 ## Preferências SNI em Rust — 2026-10-20
 
 - Implementação BAR-03: `hyprmac-waybar menu-extras-pref` passou a alterar ordem e visibilidade dos itens SNI em Rust. `scripts/menu-extras` conserva listagem, diagnóstico e supervisão da Waybar; usa o núcleo Rust compilado para `hide`, `show` e `order`, com a rotina Python como reserva antes do build. A escrita continua protegida por `flock`, usa substituição atômica e preserva campos não conhecidos do JSON.
