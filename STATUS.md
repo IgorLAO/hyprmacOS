@@ -1,5 +1,10 @@
 # Estado atual do HyprMac
 
+## Preferências SNI em Rust — 2026-10-20
+
+- Implementação BAR-03: `hyprmac-waybar menu-extras-pref` passou a alterar ordem e visibilidade dos itens SNI em Rust. `scripts/menu-extras` conserva listagem, diagnóstico e supervisão da Waybar; usa o núcleo Rust compilado para `hide`, `show` e `order`, com a rotina Python como reserva antes do build. A escrita continua protegida por `flock`, usa substituição atômica e preserva campos não conhecidos do JSON.
+- Validação BAR-03: seis testes Rust e Python dirigidos passaram; `cargo clippy` sem avisos, formatação e build release passaram. Os ensaios usaram configuração temporária, inclusive identidade `title:` com espaços, deduplicação da ordem e rejeição de configuração inválida sem sobrescrita. Vinte escritores concorrentes preservaram todas as identidades e um JSON válido. Nenhum item SNI real foi ocultado ou reordenado nesta rodada; aparência e interação do tray ainda precisam de comparação Tahoe 26.
+
 ## Itens recentes do menu Apple — 2026-10-20
 
 - Implementação BAR-06/BAR-17: o submenu Recent Items agora relaciona aplicativos do histórico GTK pelo nome visível e pelo ID `.desktop`. Isso inclui System Settings quando o histórico o registra como `dev.hyprmac.Settings`.

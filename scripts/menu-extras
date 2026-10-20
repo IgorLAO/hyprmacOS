@@ -188,6 +188,17 @@ def main():
                 print(n)
         print('Itens registrados:', len(items()))
     else:
+        rust = ROOT / 'core/waybar-status/target/release/hyprmac-waybar'
+        if rust.exists():
+            identities = args.identities if args.command == 'order' else [args.identity]
+            result = subprocess.run([str(rust), 'menu-extras-pref', args.command, *identities],
+                                    env={**os.environ, 'HYPRMAC_MENU_EXTRAS_CONFIG': str(CONFIG)},
+                                    capture_output=True, text=True)
+            if result.returncode:
+                raise ValueError(result.stderr.strip() or 'Falha ao salvar extras')
+            if not (CACHE / 'waybar').exists():
+                print('Preferência salva; requer scripts/build-waybar-extras.', file=sys.stderr)
+            return
         CONFIG.parent.mkdir(parents=True, exist_ok=True)
         with CONFIG.with_suffix('.lock').open('a') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)

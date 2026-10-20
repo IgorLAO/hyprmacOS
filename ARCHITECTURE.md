@@ -13,7 +13,7 @@ e arquivos de configuração, não por um único aplicativo.
 | Views do shell | `shell/desktop_surface.py`, `shell/dock_widget.py`, `shell/session_overlays.py`, `shell/spotlight_view.py` | Papel de parede, widgets e ícones da mesa; desenho, gestos e menus do Dock; alternador de apps e Force Quit; view do Spotlight. Recebem serviços do processo principal por fábrica, sem conexão ou processo adicional. |
 | Janelas auxiliares | `shell/hyprmac-ajustes`, `shell/hyprmac-overview`, `shell/hyprmac-lock` | Ajustes (GTK3), Mission Control (GTK3/LayerShell) e bloqueio (GTK4/PAM/ext-session-lock-v1). |
 | Barra | `waybar/config.jsonc`, `waybar/style.css`, `waybar/scripts/` | Menus globais, extras e estado do aplicativo em foco. |
-| Comandos da barra | `core/waybar-status/` | Binário Rust para menus condicionais, relógio, fonte de entrada, quatro indicadores e ação About; instalado em `~/.local/bin/hyprmac-waybar`. |
+| Comandos da barra | `core/waybar-status/` | Binário Rust para menus condicionais, relógio, fonte de entrada, quatro indicadores, ação About e persistência das preferências SNI; instalado em `~/.local/bin/hyprmac-waybar`. |
 | Aparência automática | `core/appearance/` | Binário Rust decide o tema em modo Auto após 60 s de inatividade, usando o vigia C existente. |
 | Ações de janela | `core/window-actions/` | Binário Rust executa Hide, Quit, Show Desktop e ciclo de foco por snapshots do Hyprland. |
 | Clipboard | `core/clipboard/` | Binário Rust vigia, guarda e limpa o histórico usado pelo painel GTK do shell. |
@@ -125,7 +125,8 @@ versão desconhecida é secundário até ser confrontado com Tahoe 26.
 O tray nativo da Waybar recebe uma extensão fixada em 0.15.0 por
 `waybar/patches/tahoe-sni.patch`, compilada isoladamente por
 `scripts/build-waybar-extras`. `scripts/menu-extras` inicia uma instância e faz
-consultas/configuração pontuais. Um FileMonitor no próprio tray aplica filtros
+consultas pontuais; a escrita de preferências usa `core/waybar-status/src/menu_extras.rs`,
+com reserva Python antes do build. Um FileMonitor no próprio tray aplica filtros
 e ordem de `~/.config/hyprmac/menu-extras.json` sem reiniciar a barra; nenhum
 daemon SNI adicional é criado. Os Ajustes listam registros SNI para visibilidade.
 Detalhes e limites estão em `BaseConhecimento/componentes/barra-de-menus.md`.

@@ -10,6 +10,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
+mod menu_extras;
+
 fn runtime_path(name: &str) -> PathBuf {
     Path::new(&env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/tmp".into())).join(name)
 }
@@ -350,7 +352,7 @@ fn clock() -> Result<(), String> {
 fn run() -> Result<(), String> {
     let mut args = env::args().skip(1);
     let command = args.next().ok_or(
-        "uso: hyprmac-waybar <app-menu|add-controls|recording|headphones|sleep-focus|clock|input-source|app-about>",
+        "uso: hyprmac-waybar <app-menu|add-controls|recording|headphones|sleep-focus|clock|input-source|app-about|menu-extras-pref>",
     )?;
     if command == "clock" {
         return clock();
@@ -360,6 +362,9 @@ fn run() -> Result<(), String> {
     }
     if command == "app-about" {
         return app_about();
+    }
+    if command == "menu-extras-pref" {
+        return menu_extras::run(&args.collect::<Vec<_>>());
     }
     let result = match command.as_str() {
         "app-menu" => menu(&args.collect::<Vec<_>>())?,

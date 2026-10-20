@@ -484,6 +484,31 @@
       "sha256": "4a982bb44499c364f32e8af720bc237ee1cd84a18f47e760b8848f04c8b37179"
     },
     {
+      "path": "core/folder-color/src/lib.rs",
+      "language": "rust",
+      "bytes": 5363,
+      "lines": 165,
+      "summary": "! Recoloração de ícones de pasta; a view GTK fornece os pixels e o alvo. use serde_json::Value;",
+      "symbols": [
+        "parse_hex",
+        "palette",
+        "color_from_preferences",
+        "tint_rgba",
+        "preserves_transparency_and_highlight",
+        "rejects_short_buffer",
+        "resolves_palette_and_custom_color"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::sync::OnceLock",
+        "super::*"
+      ],
+      "tags": [
+        "lock"
+      ],
+      "sha256": "ebaaade68c998563c6f8339eb780e7405a818a737623761557ba1c532707a3d0"
+    },
+    {
       "path": "core/knowledge-index/src/main.rs",
       "language": "rust",
       "bytes": 22535,
@@ -609,8 +634,8 @@
     {
       "path": "core/runtime-helpers/src/main.rs",
       "language": "rust",
-      "bytes": 2729,
-      "lines": 53,
+      "bytes": 3004,
+      "lines": 82,
       "summary": "! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value;",
       "symbols": [
         "config_path",
@@ -630,7 +655,7 @@
         "lock",
         "window"
       ],
-      "sha256": "7f1c4d47497d1f108836eb2edfca6c800c3c3da2d2484e210f6ab5c727180d60"
+      "sha256": "b9f79e4e6697ffdb6303557f9f79ee15d1c16ca0fd1f8b1000619ddfa0e688a1"
     },
     {
       "path": "core/screen-recording/src/hypr.rs",
@@ -973,8 +998,8 @@
     {
       "path": "core/waybar-status/src/main.rs",
       "language": "rust",
-      "bytes": 14791,
-      "lines": 450,
+      "bytes": 14931,
+      "lines": 455,
       "summary": "use chrono::{Datelike, Local, Timelike}; use regex::Regex;",
       "symbols": [
         "runtime_path",
@@ -1025,7 +1050,38 @@
         "center",
         "control_center"
       ],
-      "sha256": "edf60881f752b931bc7c1c796d37a746286c4d46a73c5a74f5146ec0d9c01bb0"
+      "sha256": "afecbf598989b69d43d3b61ef076dea891263fa07cdf9d28ace91faecab495fc"
+    },
+    {
+      "path": "core/waybar-status/src/menu_extras.rs",
+      "language": "rust",
+      "bytes": 6468,
+      "lines": 179,
+      "summary": "! Persistência das preferências SNI da barra, compartilhada com o script de diagnóstico. use serde_json::{json, Value};",
+      "symbols": [
+        "config_path",
+        "validate",
+        "update",
+        "save",
+        "run",
+        "preserves_unknown_fields_and_order",
+        "deduplicates_order_and_rejects_invalid_state"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "std::env",
+        "std::fs::{self, OpenOptions}",
+        "std::io::Write",
+        "std::os::fd::AsRawFd",
+        "std::os::unix::fs::OpenOptionsExt",
+        "std::path::{Path, PathBuf}",
+        "super::*"
+      ],
+      "tags": [
+        "lock",
+        "menu"
+      ],
+      "sha256": "cdd98c58ab548a806860c9bdbacb4c112367a645247689d2cd36c5e537244569"
     },
     {
       "path": "core/window-actions/src/main.rs",
@@ -1627,8 +1683,8 @@
     {
       "path": "scripts/menu-extras",
       "language": "python",
-      "bytes": 9006,
-      "lines": 212,
+      "bytes": 9740,
+      "lines": 223,
       "summary": "\"\"\"Configuração e diagnóstico pontuais dos extras SNI. Só \"start\" fica residente, como supervisor da Waybar (relança a barra se ela cair).\"\"\"",
       "symbols": [
         "call",
@@ -1658,7 +1714,7 @@
         "lock",
         "menu"
       ],
-      "sha256": "70a39992fb92397d0804005a915af0bfd65a480fbd084d5d7f24878f54bb5908"
+      "sha256": "445a685863d6562a19e9f826d7a7efc805d9bec76866436a018ce2fbc7878014"
     },
     {
       "path": "scripts/mineração-agents.sh",
@@ -3435,8 +3491,8 @@
     {
       "path": "shell/desktop_surface.py",
       "language": "python",
-      "bytes": 61930,
-      "lines": 1275,
+      "bytes": 62161,
+      "lines": 1281,
       "summary": "\"\"\"Wallpaper, desktop widgets and desktop icons in the shared shell process.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
         "create_desktop_classes",
@@ -3510,6 +3566,7 @@
         "cairo",
         "gi",
         "gi.repository",
+        "folder_appearance",
         "xml.etree.ElementTree",
         "hashlib",
         "calendar"
@@ -3521,7 +3578,7 @@
         "theme",
         "window"
       ],
-      "sha256": "cd2cb5f78a7550f5af3fe3bb5f129acc8ace97bae101c8d6eeda7cf1d646cf8e"
+      "sha256": "50adbda30d20b1ffd9c13b020fa09ebc1fada9e676a98966ebbd5ec4bdd97683"
     },
     {
       "path": "shell/diario.css",
@@ -3694,8 +3751,8 @@
     {
       "path": "shell/dock_widget.py",
       "language": "python",
-      "bytes": 66456,
-      "lines": 1326,
+      "bytes": 66474,
+      "lines": 1327,
       "summary": "\"\"\"GTK view for the Dock. The shell supplies its shared UI and compositor services.\"\"\" gi.require_version(\"Gtk\", \"3.0\")",
       "symbols": [
         "desktop_id",
@@ -3794,7 +3851,8 @@
         "dock_model",
         "dock_motion",
         "dock_drop",
-        "glass_motion"
+        "glass_motion",
+        "folder_appearance"
       ],
       "tags": [
         "shell",
@@ -3807,7 +3865,30 @@
         "theme",
         "window"
       ],
-      "sha256": "eae669a6d5637eb98b90b4c28183944c22621c5a53c5f0db864d35d081eede24"
+      "sha256": "856c53f53223a2f78f873bb96df8b7bbe6d5fa25e3461aae6782bffd5c35330b"
+    },
+    {
+      "path": "shell/folder_appearance.py",
+      "language": "python",
+      "bytes": 3165,
+      "lines": 74,
+      "summary": "\"\"\"Ponte GTK para a cor de pastas; transformação dos pixels em Rust.\"\"\" gi.require_version(\"GdkPixbuf\", \"2.0\")",
+      "symbols": [
+        "folder_color",
+        "folder_pixbuf"
+      ],
+      "imports": [
+        "ctypes",
+        "json",
+        "pathlib",
+        "gi",
+        "gi.repository",
+        "accent_palette"
+      ],
+      "tags": [
+        "shell"
+      ],
+      "sha256": "40cf16d4d09dc93dbc15d51cb93b814a890acca97c314ccad3e318e713076028"
     },
     {
       "path": "shell/glass_motion.py",
@@ -3860,8 +3941,8 @@
     {
       "path": "shell/hyprmac-ajustes",
       "language": "python",
-      "bytes": 161775,
-      "lines": 3511,
+      "bytes": 162650,
+      "lines": 3530,
       "summary": "\"\"\"hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth,",
       "symbols": [
         "G",
@@ -3982,8 +4063,8 @@
         "fill_radios",
         "set_variant",
         "set_style",
-        "radios",
-        "pane_menubar"
+        "set_folder_color",
+        "radios"
       ],
       "imports": [
         "ast",
@@ -4023,7 +4104,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "415c4f023dd32e3d67fa76324a51fbc26fe6321e007925c2fb95930ef0ca442a"
+      "sha256": "97b36d9f04393106b93f40b79f8fe737a834e3258bc1de5292521260a0dde3fe"
     },
     {
       "path": "shell/hyprmac-app",
@@ -4254,8 +4335,8 @@
     {
       "path": "shell/hyprmac-lock",
       "language": "python",
-      "bytes": 55247,
-      "lines": 1409,
+      "bytes": 56006,
+      "lines": 1430,
       "summary": "\"\"\"hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock). Uso:",
       "symbols": [
         "parse_args",
@@ -4271,6 +4352,7 @@
         "faillock_count",
         "test_auth",
         "load_config",
+        "reduce_motion",
         "G",
         "clock_conf",
         "run",
@@ -4373,7 +4455,7 @@
         "glass",
         "window"
       ],
-      "sha256": "b7eb70cababc36a6651d97d7ca28e721d339df3ff1e33cf8e4b32b3b0cf49304"
+      "sha256": "9b69c0240c4fbea90e556f0bd8977d9fb839257bede00c0c54b390bf4c34159b"
     },
     {
       "path": "shell/hyprmac-notas",
@@ -4638,8 +4720,8 @@
     {
       "path": "shell/hyprmac-shell",
       "language": "python",
-      "bytes": 276402,
-      "lines": 6499,
+      "bytes": 282572,
+      "lines": 6629,
       "summary": "\"\"\"hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell).",
       "symbols": [
         "load_config",
@@ -4816,7 +4898,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "eeb2d36361da97d45df6383443c4685975fc25b82f5e0ce559070f12ec5edb3b"
+      "sha256": "014c26542773fa2538cb4168e228235eb60774b44a705def7dbf13c128797ba4"
     },
     {
       "path": "shell/linux_storage_adapter.py",
@@ -4847,8 +4929,8 @@
     {
       "path": "shell/lock.css",
       "language": "css",
-      "bytes": 3883,
-      "lines": 130,
+      "bytes": 3970,
+      "lines": 135,
       "summary": "hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14\" = 1512×982 pt, 1,744 px/pt",
       "symbols": [
         ".hyprmac-lock-window",
@@ -4870,6 +4952,7 @@
         ".lock-go",
         ".lock-go:hover",
         ".lock-go label",
+        ".lock-field.reduce-motion .lock-go",
         ".lock-msg"
       ],
       "imports": [],
@@ -4878,7 +4961,7 @@
         "lock",
         "window"
       ],
-      "sha256": "bfe7b2bab8e6782a01f709149a41ccce8814442d9b22becb0353cd9653dc5377"
+      "sha256": "3f62c358dbb2e641efa17d6d3d214b779cc90de52f398cbea97637292682c9dd"
     },
     {
       "path": "shell/menubar_items.py",
@@ -7885,8 +7968,8 @@
     {
       "path": "waybar/config.jsonc",
       "language": "jsonc",
-      "bytes": 28571,
-      "lines": 627,
+      "bytes": 28178,
+      "lines": 616,
       "summary": "hyprmac — Waybar inspirada no macOS Tahoe \"layer\": \"top\",",
       "symbols": [],
       "imports": [],
@@ -7901,7 +7984,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "8e048e77be75ec7141734f18e106a6a52221e6cd5753a1c1251e317aed458272"
+      "sha256": "4f7ee3985b6ca541f66a90785dbc2d617d86e6a73e1e62f81774be365ee4c401"
     },
     {
       "path": "waybar/contrast-dark.css",

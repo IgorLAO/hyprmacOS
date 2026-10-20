@@ -18,10 +18,11 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/comparison/src/main.rs` | rust | 364 |  | ! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex; |
 | `core/dock-geometry/src/lib.rs` | rust | 269 | dock | ! Geometria lógica do Dock, sem GTK, relógios nem acesso ao compositor. [repr(C)] |
 | `core/dock-model/src/lib.rs` | rust | 271 | dock, window | ! Conteúdo e política do Dock, sem GTK, ícones ou socket do compositor. use serde_json::{json, Value}; |
+| `core/folder-color/src/lib.rs` | rust | 165 | lock | ! Recoloração de ícones de pasta; a view GTK fornece os pixels e o alvo. use serde_json::Value; |
 | `core/knowledge-index/src/main.rs` | rust | 347 | window | ! Índice incremental da BaseConhecimento, preservando a curadoria SQLite. use regex::Regex; |
 | `core/motion/src/lib.rs` | rust | 41 | dock, spotlight | ! Núcleo matemático das molas usadas pelo shell, Dock e Spotlight. ! ABI C pequena para a camada GTK atual; sem estado global, GTK ou timers. |
 | `core/query/src/main.rs` | rust | 324 | dock, control center, spotlight, glass, control, center | ! Consulta somente leitura à Base de Conhecimento. use regex::Regex; |
-| `core/runtime-helpers/src/main.rs` | rust | 53 | lock, window | ! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value; |
+| `core/runtime-helpers/src/main.rs` | rust | 82 | lock, window | ! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value; |
 | `core/screen-recording/src/hypr.rs` | rust | 92 | window | ! Consultas pontuais ao compositor para escolher monitor e janela de gravação. use serde_json::Value; |
 | `core/screen-recording/src/main.rs` | rust | 277 | window | ! Gravação de tela ⇧⌘5; processo wf-recorder e controle GTK/LayerShell. mod hypr; |
 | `core/screen-recording/src/process_control.rs` | rust | 71 |  | ! Estado do processo de gravação: PID guardado e timer de início. use std::env; |
@@ -33,7 +34,8 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/spotlight-search/src/filters.rs` | rust | 202 | spotlight | ! Categorias e seletores do Spotlight. Ordem e nomes são os do módulo GTK atual. use serde_json::{json, Value}; |
 | `core/spotlight-search/src/lib.rs` | rust | 176 | spotlight, lock | ! Núcleo de normalização e ranking da busca Spotlight, sem GTK ou IPC. mod calc; |
 | `core/status-map/src/main.rs` | rust | 422 | dock, spotlight, lock | ! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex; |
-| `core/waybar-status/src/main.rs` | rust | 450 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |
+| `core/waybar-status/src/main.rs` | rust | 455 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |
+| `core/waybar-status/src/menu_extras.rs` | rust | 179 | lock, menu | ! Persistência das preferências SNI da barra, compartilhada com o script de diagnóstico. use serde_json::{json, Value}; |
 | `core/window-actions/src/main.rs` | rust | 263 | window | use serde_json::Value; use std::env; |
 | `ghostty/macos.css` | css | 78 | ghostty, menu, window | hyprmac — barra de título do Ghostty como a do Terminal no Mac: kit "Windows/Dark/Default + Title": barra de 33, padding 9, semáforo em |
 | `gtk/a11y3.css` | css | 1 | gtk | gerado por scripts/acessibilidade */ |
@@ -58,7 +60,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `scripts/extract-notes-specs.js` | javascript | 325 | scripts, lock, menu, window | const fs = require('fs'); const path = require('path'); |
 | `scripts/generate-app-factory` | python | 193 | scripts, lock, menu, window | """Generate missing HyprMac app entries from the curated Tahoe package inventory. Only writes its own generated files. Existing, differing files are reported and |
 | `scripts/gravacao` | bash | 4 | scripts | Gravação de tela ⇧⌘5: controle e interface no executável Rust. set -euo pipefail |
-| `scripts/menu-extras` | python | 212 | scripts, lock, menu | """Configuração e diagnóstico pontuais dos extras SNI. Só "start" fica residente, como supervisor da Waybar (relança a barra se ela cair).""" |
+| `scripts/menu-extras` | python | 223 | scripts, lock, menu | """Configuração e diagnóstico pontuais dos extras SNI. Só "start" fica residente, como supervisor da Waybar (relança a barra se ela cair).""" |
 | `scripts/mineração-agents.sh` | bash | 44 | scripts, menu, glass | Sistema de múltiplos agentes para minerar o DMG macOS 26.6.1 Cada agente trabalha em um componente específico |
 | `scripts/ocioso` | bash | 51 | scripts, lock | hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só |
 | `scripts/scratchpad` | bash | 12 | scripts, window | hyprmac — mostra/esconde o scratchpad (área especial "magic"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que |
@@ -144,27 +146,28 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/clock_format.py` | python | 58 | shell, lock, menu | """Texto do relógio da barra de menus com as Clock Options do Tahoe 26. Opções e padrões conforme ClockPreferences (ControlCenter.app) e as strings de |
 | `shell/cocoa_entry.py` | python | 107 | shell | """Edição compartilhada dos campos GTK3 próprios do HyprMac. Mapeamentos: AppKit StandardKeyBinding.dict, Tahoe 26.6.1 (25G76). |
 | `shell/darwin_diskarbitration_service.py` | python | 92 | shell, lock | """Darwin-compatible DiskArbitration service for HyprMac. Maps Apple's DiskArbitration framework (DASession / DADisk) semantics to the |
-| `shell/desktop_surface.py` | python | 1275 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
+| `shell/desktop_surface.py` | python | 1281 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
 | `shell/diario.css` | css | 64 | shell | hyprmac — Journal (Diário do macOS Tahoe 26), a partir de referencias/desejos/journal-app.png: lateral flutuante (margem 8, raio 18) com os cartões Insights/Places desenhados em cairo, |
 | `shell/dock_drop.py` | python | 64 | shell, dock | """Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.""" def desktop_file_from_uris(uris, new_file): |
 | `shell/dock_geometry.py` | python | 167 | shell, dock | """Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.""" @dataclass(frozen=True) |
 | `shell/dock_model.py` | python | 210 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
 | `shell/dock_motion.py` | python | 106 | shell, dock, lock | """Estado das molas, magnificação e quique do Dock; sem relógios ou timers próprios.""" class DockMotion: |
-| `shell/dock_widget.py` | python | 1326 | shell, dock, spotlight, notification, lock, menu | """GTK view for the Dock. The shell supplies its shared UI and compositor services.""" gi.require_version("Gtk", "3.0") |
+| `shell/dock_widget.py` | python | 1327 | shell, dock, spotlight, notification, lock, menu | """GTK view for the Dock. The shell supplies its shared UI and compositor services.""" gi.require_version("Gtk", "3.0") |
+| `shell/folder_appearance.py` | python | 74 | shell | """Ponte GTK para a cor de pastas; transformação dos pixels em Rust.""" gi.require_version("GdkPixbuf", "2.0") |
 | `shell/glass_motion.py` | python | 43 | shell, dock, spotlight, glass | """Mola compartilhada do shell, Dock e Spotlight. O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível. |
 | `shell/hypr_events.py` | python | 49 | shell | """Uma conexão com o socket de eventos do Hyprland para todo o shell GTK.""" class EventBus: |
-| `shell/hyprmac-ajustes` | python | 3511 | shell, dock, control center, spotlight, notification, lock | """hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth, |
+| `shell/hyprmac-ajustes` | python | 3530 | shell, dock, control center, spotlight, notification, lock | """hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth, |
 | `shell/hyprmac-app` | python | 26 | shell, window | """Launch a manifest based HyprMac application by its app ID.""" def main(): |
 | `shell/hyprmac-calculadora` | python | 426 | shell, theme, window | """Calculator Basic; a lógica pode ser importada sem GTK ou display.""" APP_ID = "dev.hyprmac.Calculator" |
 | `shell/hyprmac-diario` | python | 715 | shell, menu, theme, window | Rascunho FreeLLM (JRN-01) completado e ajustado pelo orquestrador; CSS em shell/diario.css. gi.require_version('Gtk', '3.0') |
 | `shell/hyprmac-fotos` | python | 980 | shell, dock, menu, glass, theme, window | Rascunho FreeLLM (FOT-01/FOT-02, emendado) completado e ajustado pelo orquestrador. gi.require_version('Gtk', '3.0') |
-| `shell/hyprmac-lock` | python | 1409 | shell, lock, glass, window | """hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock). Uso: |
+| `shell/hyprmac-lock` | python | 1430 | shell, lock, glass, window | """hyprmac-lock — tela de bloqueio no estilo do macOS Tahoe (GTK4 + ext-session-lock). Uso: |
 | `shell/hyprmac-notas` | python | 830 | shell, dock, lock, menu, theme, window | gi.require_version('Gtk', '3.0') gi.require_version('Gdk', '3.0') |
 | `shell/hyprmac-overview` | python | 1581 | shell, dock, menu, theme, window | """hyprmac-overview — Mission Control do macOS para o Hyprland (GTK3 + gtk-layer-shell). Comportamentos alvo (macOS Tahoe 26, ⌃↑; medidas locais ainda aproximadas): |
 | `shell/hyprmac-preview` | python | 665 | shell, menu, theme, window | """Visualizador local: ações documentadas no Preview 26.6.1, layout experimental.""" gi.require_version("Gtk", "3.0") |
-| `shell/hyprmac-shell` | python | 6499 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
+| `shell/hyprmac-shell` | python | 6629 | shell, dock, control center, spotlight, notification, lock | """hyprmac-shell — papel de parede, widgets da mesa e Central de Controle no estilo macOS Tahoe, para Hyprland (GTK3 + gtk-layer-shell). |
 | `shell/linux_storage_adapter.py` | python | 105 | shell, lock | """Native Linux storage adapter used by HyprMac. Wraps UDisks2 (preferred) with a read-only lsblk fallback. This is the |
-| `shell/lock.css` | css | 130 | shell, lock, window | hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14" = 1512×982 pt, 1,744 px/pt |
+| `shell/lock.css` | css | 135 | shell, lock, window | hyprmac-lock — tela de bloqueio no estilo macOS Tahoe. Medidas em PONTOS da tela oficial da WWDC25 (MacBook Pro 14" = 1512×982 pt, 1,744 px/pt |
 | `shell/menubar_items.py` | python | 76 | shell, spotlight, menu, window, control, center | """Itens da barra de menus que podem ser mostrados/ocultados (Menu Bar Controls). Compartilhado por Ajustes ▸ Menu Bar e pela galeria da Central de Controle ("Add to Menu |
 | `shell/notas.css` | css | 100 | shell | hyprmac — Notes (Notes do macOS Tahoe 26). Medido em BaseConhecimento/referencias/desejos/notes-app-escuro.png (1×): barra de 52, |
 | `shell/notes_store.py` | python | 320 | shell, lock, menu | """Núcleo do Notas (hyprmac-notas), sem GTK. Cada nota é um arquivo Markdown em ~/.local/share/hyprmac/notas: a primeira linha |
@@ -242,7 +245,7 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `waybar/a11y.css` | css | 1 | waybar | gerado por scripts/acessibilidade */ |
 | `waybar/accent.css` | css | 3 | waybar, menu | gerado por scripts/accent — cor de destaque: blue (escuro) */ @define-color accent         #007AFF; |
 | `waybar/barra-ocultos.css` | css | 0 | waybar | barra-ocultos.css |
-| `waybar/config.jsonc` | jsonc | 627 | waybar, dock, spotlight, lock, menu, window | hyprmac — Waybar inspirada no macOS Tahoe "layer": "top", |
+| `waybar/config.jsonc` | jsonc | 616 | waybar, dock, spotlight, lock, menu, window | hyprmac — Waybar inspirada no macOS Tahoe "layer": "top", |
 | `waybar/contrast-dark.css` | css | 117 | waybar, spotlight, lock, menu, window | hyprmac — barra TRANSPARENTE sobre papel de parede claro: texto e ícones escuros. No macOS Tahoe a barra transparente troca a cor do conteúdo conforme o fundo: preto sobre |
 | `waybar/contrast.css` | css | 0 | waybar | contrast.css |
 | `waybar/mode.css` | css | 0 | waybar | mode.css |
