@@ -1,32 +1,35 @@
-"""Animation mathematics for HyprMac Tahoe compatibility.
+"""Mola compartilhada do shell, Dock e Spotlight.
 
-Pure mathematical functions for spring-based animations, extracted from
-shell/hyprmac-shell for independent testing and reuse. GTK/Wayland-free.
-
-Mola usada pelo pressionar dos botões, pelo Dock e pelos controles do Spotlight.
-A abertura dos painéis (emerge) segue a curva macPop do Hyprland, não esta mola.
-A "spring(0.3, 0.7) 150 ms" atribuída ao DesignLibrary.framework vem do registro
-tahoe26:apps:DesignLibrary.framework:animations, marcado invalid: não usar.
+O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível.
+A função Python conserva o contrato durante um checkout ainda não instalado.
+Não há GTK, estado global de animação ou temporizador neste módulo.
 """
 
+import ctypes
 import math
+from pathlib import Path
+
+
+class _SpringState(ctypes.Structure):
+    _fields_ = [("value", ctypes.c_double), ("velocity", ctypes.c_double)]
+
+
+_LIB = Path(__file__).resolve().parents[1] / "core/motion/target/release/libhyprmac_motion.so"
+try:
+    _rust = ctypes.CDLL(str(_LIB))
+    _rust.hyprmac_spring_step.argtypes = [ctypes.c_double] * 6
+    _rust.hyprmac_spring_step.restype = _SpringState
+except OSError:
+    _rust = None
+
+RUST_ACTIVE = _rust is not None
 
 
 def spring_step(value, velocity, target, dt, frequency=3.7, damping=0.82):
-    """
-    Uma mola amortecida com passo em segundos, estável mesmo após quadro perdido.
-
-    Args:
-        value: Current position/value
-        velocity: Current velocity
-        target: Target position/value to spring toward
-        dt: Time delta in seconds
-        frequency: Spring frequency (Hz). Default 3.7 for HyprMac
-        damping: Damping coefficient. Default 0.82 for HyprMac
-
-    Returns:
-        tuple: (new_value, new_velocity)
-    """
+    """Avança uma mola amortecida por um frame, limitando a duração a 50 ms."""
+    if _rust is not None:
+        state = _rust.hyprmac_spring_step(value, velocity, target, dt, frequency, damping)
+        return state.value, state.velocity
     dt = min(max(dt, 0.0), 0.05)
     omega = 2 * math.pi * frequency
     steps = max(1, math.ceil(dt / 0.008))

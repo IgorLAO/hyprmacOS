@@ -123,11 +123,11 @@ Dock; não certificar um simples fade/scale como equivalente.
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
 | BAR-01 | P0 | Barra transparente conforme o estado e a referência Tahoe | A_VERIFICAR | NAO_AVALIADO | — |
-| BAR-02 | P0 | Menu do aplicativo ativo acompanhando as mudanças de foco | RELATADO_PARCIAL | NAO_AVALIADO | E1 |
+| BAR-02 | P0 | Menu do aplicativo ativo acompanhando as mudanças de foco | PARCIAL | TESTADO_LOCAL | E1; 2026-10-20: `AppMenu` aberto com rótulo Firefox e seis ações com ícones semânticos no tema escuro (`/tmp/hyprmac-app-menu-icons-20261020.png`). Mudança de foco, clique físico e outros apps ainda sem rodada equivalente. |
 | BAR-03 | P0 | Ícones de status dos aplicativos via D-Bus/SNI | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-04 | P0 | Menus suspensos com geometria e materiais Tahoe | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-05 | P1 | Trocar imediatamente entre menus abertos ao mover o ponteiro, sem novo clique | A_VERIFICAR | NAO_AVALIADO | — |
-| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-11: About This Mac → Ajustes ▸ About, Force Quit → janela do shell; sem Recent Items (submenu derruba a Waybar) |
+| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-20: menu no shell com Recent Items (apps/documentos/servidores do histórico GTK), App Store e ações anteriores; dez comandos principais com ícones semânticos em coluna, seguindo orientação WWDC25 310. Captura local `/tmp/hyprmac-apple-menu-icons-20261020.png`; submenu e ações ainda sem teste físico, glifos/medidas sem confronto Apple Tahoe 26 equivalente. |
 | BAR-07 | P1 | Indicadores de Wi-Fi, bateria, áudio e Bluetooth | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-08 | P1 | Personalizar e reorganizar controles | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-09 | P1 | Estados visuais ativo e pressionado dos itens | A_VERIFICAR | NAO_AVALIADO | — |
@@ -139,14 +139,14 @@ Dock; não certificar um simples fade/scale como equivalente.
 
 | ID | P | Comportamento / critério a confrontar | Implementação | Validação | Evidência |
 |---|---|---|---|---|---|
-| GLS-01 | P0 | Transparência com blur contextual | A_VERIFICAR | NAO_AVALIADO | — |
+| GLS-01 | P0 | Transparência com blur contextual | PARCIAL | TESTADO_LOCAL | 2026-10-19: preset dos módulos da Central ajustado de 0,5 para 2,0 no hyprglass; o fundo azul permaneceu visível e as rochas dentro dos sliders perderam nitidez em captura da mesma cena. Referência visual: anúncio oficial Tahoe 26 da Central. Valor e comportamento em outros fundos/estados ainda não comparados em ambiente equivalente (`tahoe26:validacao:gls01-cc-blur-20261019`). |
 | GLS-02 | P0 | Refração do conteúdo atrás do componente | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-03 | P0 | Máscaras alfa corretas, inclusive nos cantos arredondados | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-04 | P0 | Contornos luminosos sutis | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-05 | P0 | Contraste adaptado ao conteúdo de fundo | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-06 | P1 | Transições suaves entre estados e materiais | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-07 | P1 | Sombras e profundidade coerentes | A_VERIFICAR | NAO_AVALIADO | — |
-| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | PARCIAL | NAO_AVALIADO | 2026-10-18: fundos dos menus GTK3/4, shell e Waybar ajustados para alfa 0,94 conforme referência enviada; captura com menu aberto e comparação Tahoe pendentes |
+| GLS-08 | P1 | Materiais distintos para menus, painéis e controles | PARCIAL | TESTADO_LOCAL | 2026-10-19: menus escuros GTK3/4, shell e Waybar ajustados para preto translúcido alfa 0,90; Janela, File da Waybar, Options da barra Rust e menu GTK4 do Nautilus abertos no desktop. O popup Options recebeu desfoque do compositor e deixou de mostrar texto de vídeo ao fundo. GTK3 externo e tema claro não inspecionados; original Tahoe 26 ausente, alfa experimental e comparação visual pendente |
 | GLS-09 | P1 | Comportamento consistente em temas claro e escuro | A_VERIFICAR | NAO_AVALIADO | — |
 | GLS-10 | P1 | Estados hover, pressed, focus e disabled | A_VERIFICAR | NAO_AVALIADO | — |
 
@@ -228,7 +228,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | FIL-06 | P2 | Barra lateral Tahoe com Liquid Glass | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-07 | P1 | Drag-and-drop consistente com Dock e aplicativos | A_VERIFICAR | NAO_AVALIADO | — |
 | FIL-08 | P2 | Informações do arquivo e ações rápidas | A_VERIFICAR | NAO_AVALIADO | — |
-| FIL-09 | P2 | Cores, símbolos e emojis para pastas | A_VERIFICAR | NAO_AVALIADO | — |
+| FIL-09 | P2 | Cores, símbolos e emojis para pastas | PARCIAL | TESTADO_LOCAL | 2026-10-20: cor de pastas na Mesa e Downloads do Dock por `core/folder-color/`; símbolos, emojis e pastas do gerenciador de arquivos ainda pendentes. Renderização local do ícone vermelho e build Rust conferidos; sem comparação equivalente Tahoe 26. |
 
 ## MIC — Microinterações e consistência
 
@@ -247,7 +247,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | MIC-11 | P1 | Temas claro/escuro sincronizados entre aplicativos | PARCIAL | TESTADO_LOCAL | `shell/app_theme.py` liga Notes, Journal, Photos, App Factory e (2026-10-11) Preview à troca de tema com a janela aberta; aparência Auto troca sozinha após 1 min ocioso, como no Tahoe (`tahoe26:validacao:mic11-aparencia-auto`). Pendentes: agenda real de Night Shift (hoje 7h–19h), apps de terceiros fora de GTK/Qt |
 | MIC-12 | P2 | Sons de sistema e feedback de operações | PARCIAL | TESTADO_LOCAL | 2026-10-11: "Play feedback when volume is changed" (som a cada tecla, ⇧ inverte, opção em Ajustes ▸ Som) conforme o guia do Mac para Tahoe 26 (`tahoe26:validacao:mic12-volume-feedback`). "Play user interface sound effects" real: esvaziar o Lixo e captura de tela tocam sons (`tahoe26:validacao:mic12-ui-sound-effects`). Pendentes: soltar no Lixo do Dock, sons de alerta; sons são do tema freedesktop, não os da Apple |
 | MIC-13 | P0 | Layout correto em monitores HiDPI | PARCIAL | TESTADO_LOCAL | 2026-10-11: monitor secundário em escala 2 — barra e apps nítidos; Spotlight deixou de cortar o 4º botão em telas estreitas (`tahoe26:validacao:mic13-hidpi`). Pendentes: Dock/Central em HiDPI, escala fracionária |
-| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | E6 — Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py. 2026-10-11: entrada esticada e grade do Spotlight e troca de layout da Mídia passaram a respeitar Reduce Motion (critério WWDC25 219: sem propriedades elásticas); tests/test_reduce_motion_shell.py + medição no desktop (`tahoe26:validacao:mic14-reduce-motion-shell`). Pendentes: tremida do bloqueio sem evidência; comparação com Tahoe em Reduce Motion |
+| MIC-14 | P1 | Respeitar a preferência de movimento reduzido | PARCIAL | TESTADO_LOCAL | E6 — Ajustes recarrega o Hyprland (Spaces slide↔fade validado); slider de vidro; tests/test_reduce_motion.py. 2026-10-11: entrada esticada e grade do Spotlight e troca de layout da Mídia passaram a respeitar Reduce Motion (critério WWDC25 219: sem propriedades elásticas); tests/test_reduce_motion_shell.py + medição no desktop (`tahoe26:validacao:mic14-reduce-motion-shell`). 2026-10-20: bloqueio troca a tremida por erro textual, testado em GTK isolado (`tahoe26:validacao:mic14-lock-reduced-motion`). Pendente: comparação visual e de movimento com Tahoe 26. |
 | MIC-15 | P1 | Consistência ao conectar e desconectar monitores | PARCIAL | TESTADO_LOCAL | 2026-10-11: desligar/religar o monitor secundário preserva barra, janelas e camadas; o shell se recompõe após monitoradded (`tahoe26:validacao:mic15-monitores`). Pendentes: monitor principal com o Dock, hotplug físico |
 
 ## INT — Integrações avançadas — expansão posterior
@@ -346,6 +346,9 @@ Updated: 2026-10-06.
 - [ ] **Notes App** (`notes-app-claro-tela.png`, `notes-app-escuro.png`): Three-pane layout (Folders, Notes List, Editor), yellow text cursor, circular checklist toggles.
   - Parcial 2026-10-11 (`shell/hyprmac-notas`): lista + editor, cursor amarelo, círculos de checklist clicáveis, menu Format na barra; sem painel de pastas (`tahoe26:aplicacao:notes-app`).
 - [x] **Screen Capture Bar Options** (`captura-barra-opcoes.png` — Completed 2026-10-04: ⇧⌘5 toolbar with capture modes, timer, and recording options).
+  - Comparação visual parcial de 2026-10-19 (SIS-06): a barra Rust clara, no modo Record Entire Screen, mediu 549×51 px diante de imagem Apple Tahoe 26 de 1096×102 px, presumida em escala 2×. Tema escuro ganhou material preto translúcido de alfa 0,76 e foi inspecionado sobre vídeo. A referência antiga `captura-barra-opcoes.png` continua ausente; material, ícones e estados interativos ainda não têm confronto equivalente.
+  - Implementação posterior SIS-06: opções separadas por modo; captura oferece `Show Mouse Pointer` persistente e passa `-c` ao `grim` Rust; gravação mantém `Record Microphone`. Menus inspecionados no desktop e argumentos do backend testados localmente. Permanecem ausentes `Show Mouse Clicks`, seleção de microfone e HDR/SDR nos ambientes compatíveis; fidelidade Tahoe ainda parcial.
+  - Implementação posterior SIS-06: opções novas e captura direta agora começam com `Desktop` como destino, de acordo com o padrão documentado pela Apple para capturas e gravações. Configurações antigas preservam seu destino; teste Rust, Clippy, formatação e builds release passaram. Um `grim` substituto confirmou o caminho direto em `~/Desktop`; gravação real não foi inspecionada após esse ajuste.
 - [ ] **Image Viewer / Markup** (`preview-imagem-janela.png`): Header with file name and dropdown; bottom annotation bar (crop, shapes, text, signature).
 - [ ] **Photos Library** (`fotos-biblioteca.png`): Sidebar collections, pinned items, video duration overlays, and selection outlines.
   - Parcial 2026-10-11 (`shell/hyprmac-fotos`): Library/Pinned/Albums, grade quadrada, contorno de seleção; duração de vídeo ainda 0:00 (`tahoe26:aplicacao:photos-app`).

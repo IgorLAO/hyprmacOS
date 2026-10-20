@@ -10,10 +10,28 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `core/activity-probe/src/main.rs` | rust | 212 | lock | ! Read-only Linux process snapshot prototype for a future Activity Monitor. use std::env; |
 | `core/appearance/src/main.rs` | rust | 155 | theme | use chrono::{Local, Timelike}; use serde_json::Value; |
 | `core/audit/src/main.rs` | rust | 242 |  | ! Auditoria da base curada, fontes locais e links operacionais. use percent_encoding::percent_decode_str; |
+| `core/capture-bar/src/main.rs` | rust | 717 | menu, glass, theme, window | ! Barra de captura ⇧⌘5. A interface e suas opções executam em Rust. use gtk::cairo::{Context, Operator}; |
+| `core/capture-bar/src/style.css` | css | 49 | window | window.captura { background: transparent; } .cap-bar { |
 | `core/capture-thumbnail/src/main.rs` | rust | 241 | window | ! Miniatura flutuante de captura. Medidas herdadas do kit macOS 27, ! ainda sem conferência visual com Tahoe 26. |
 | `core/clipboard/src/main.rs` | rust | 302 |  | use image::{imageops::FilterType, GenericImageView, ImageFormat}; use serde_json::{json, Value}; |
 | `core/code-index/src/main.rs` | rust | 312 | dock, control center, spotlight, notification, lock, menu | ! Índice leve de código para busca progressiva dos componentes. use regex::Regex; |
 | `core/comparison/src/main.rs` | rust | 364 |  | ! Recalcula a matriz interna a partir de parametros.json e de valores no código. use regex::Regex; |
+| `core/dock-geometry/src/lib.rs` | rust | 269 | dock | ! Geometria lógica do Dock, sem GTK, relógios nem acesso ao compositor. [repr(C)] |
+| `core/dock-model/src/lib.rs` | rust | 271 | dock, window | ! Conteúdo e política do Dock, sem GTK, ícones ou socket do compositor. use serde_json::{json, Value}; |
+| `core/knowledge-index/src/main.rs` | rust | 347 | window | ! Índice incremental da BaseConhecimento, preservando a curadoria SQLite. use regex::Regex; |
+| `core/motion/src/lib.rs` | rust | 41 | dock, spotlight | ! Núcleo matemático das molas usadas pelo shell, Dock e Spotlight. ! ABI C pequena para a camada GTK atual; sem estado global, GTK ou timers. |
+| `core/query/src/main.rs` | rust | 324 | dock, control center, spotlight, glass, control, center | ! Consulta somente leitura à Base de Conhecimento. use regex::Regex; |
+| `core/runtime-helpers/src/main.rs` | rust | 53 | lock, window | ! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value; |
+| `core/screen-recording/src/hypr.rs` | rust | 92 | window | ! Consultas pontuais ao compositor para escolher monitor e janela de gravação. use serde_json::Value; |
+| `core/screen-recording/src/main.rs` | rust | 277 | window | ! Gravação de tela ⇧⌘5; processo wf-recorder e controle GTK/LayerShell. mod hypr; |
+| `core/screen-recording/src/process_control.rs` | rust | 71 |  | ! Estado do processo de gravação: PID guardado e timer de início. use std::env; |
+| `core/screen-recording/src/ui.rs` | rust | 79 | window | use super::{stop, Recorder}; use gtk::gdk; |
+| `core/screenshot/src/main.rs` | rust | 298 | window | ! Capturas do shell: preserva os modos e as opções do comando scripts/screenshot. use serde_json::Value; |
+| `core/spotlight-history/src/lib.rs` | rust | 186 | spotlight | ! Histórico dos modos do Spotlight, independente da view GTK e do lançador. use serde::Serialize; |
+| `core/spotlight-quickkeys/src/lib.rs` | rust | 157 | spotlight, lock | ! Teclas rápidas personalizáveis do Spotlight, sem GTK e sem estado global. use regex::Regex; |
+| `core/spotlight-search/src/calc.rs` | rust | 137 | spotlight, lock | ! Avaliador restrito das contas digitadas no Spotlight. ! Recusa expressões fora do contrato antigo; valores de precisão incerta |
+| `core/spotlight-search/src/filters.rs` | rust | 202 | spotlight | ! Categorias e seletores do Spotlight. Ordem e nomes são os do módulo GTK atual. use serde_json::{json, Value}; |
+| `core/spotlight-search/src/lib.rs` | rust | 176 | spotlight, lock | ! Núcleo de normalização e ranking da busca Spotlight, sem GTK ou IPC. mod calc; |
 | `core/status-map/src/main.rs` | rust | 422 | dock, spotlight, lock | ! Gera os mapas SVG e o bloco de status do README a partir dos dados curados. use regex::Regex; |
 | `core/waybar-status/src/main.rs` | rust | 450 | lock, menu, window, control, center, control_center | use chrono::{Datelike, Local, Timelike}; use regex::Regex; |
 | `core/window-actions/src/main.rs` | rust | 263 | window | use serde_json::Value; use std::env; |
@@ -24,29 +42,29 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `gtk/accent4.css` | css | 11 | gtk, theme | gerado por scripts/accent — cor de destaque: blue (escuro) */ @define-color mac_accent      #007AFF; |
 | `gtk/gtk3.css` | css | 615 | gtk, menu, theme, window | hyprmac — GTK 3 no modo escuro do macOS Tahoe Aplicado por cima do Adwaita-dark (embutido no GTK, nada instalado). |
 | `gtk/gtk4.css` | css | 406 | gtk, menu, theme, window | hyprmac — GTK 4 / libadwaita no modo escuro do macOS Tahoe Carregado por ~/.config/gtk-4.0/gtk.css. As cores vêm de palette4.css |
-| `gtk/palette3-dark.css` | css | 59 | gtk, menu, theme, window | hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */ |
+| `gtk/palette3-dark.css` | css | 58 | gtk, menu, theme, window | hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */ |
 | `gtk/palette3-light.css` | css | 59 | gtk, menu, theme, window | hyprmac — paleta GTK 3, modo claro */ ───────────── paleta ───────────── */ |
-| `gtk/palette3.css` | css | 59 | gtk, menu, theme, window | hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */ |
+| `gtk/palette3.css` | css | 58 | gtk, menu, theme, window | hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */ |
 | `gtk/palette4-dark.css` | css | 81 | gtk, menu, theme, window | hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */ |
 | `gtk/palette4-light.css` | css | 81 | gtk, menu, theme, window | hyprmac — paleta GTK 4 / libadwaita, modo claro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */ |
 | `gtk/palette4.css` | css | 81 | gtk, menu, theme, window | hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */ |
 | `hypr/app-factory-classes.lua` | lua | 58 | hypr, lock | Generated by scripts/generate-app-factory; factory apps only. return { |
-| `hypr/hyprmac.lua` | lua | 614 | hypr, dock, spotlight, notification, lock, menu | hyprmac — aparência macOS Tahoe (modo escuro) para Hyprland Carregado no fim do hyprland.lua; tudo aqui sobrescreve os padrões de lá. |
-| `hypr/vidro-presets.lua` | lua | 455 | hypr, dock, control center, spotlight, notification, menu | hyprmac — presets de Liquid Glass para o plugin hyprglass Presets próprios e camadas só valem quando o Hyprland LÊ a config (o hyprglass os guarda |
+| `hypr/hyprmac.lua` | lua | 625 | hypr, dock, spotlight, notification, lock, menu | hyprmac — aparência macOS Tahoe (modo escuro) para Hyprland Carregado no fim do hyprland.lua; tudo aqui sobrescreve os padrões de lá. |
+| `hypr/vidro-presets.lua` | lua | 457 | hypr, dock, control center, spotlight, notification, menu | hyprmac — presets de Liquid Glass para o plugin hyprglass Presets próprios e camadas só valem quando o Hyprland LÊ a config (o hyprglass os guarda |
 | `scripts/agent-loader.js` | javascript | 55 | scripts, menu, glass | Agent Loader - carrega as dependências e configuração para cada agente const fs = require('fs'); |
 | `scripts/bar-style` | bash | 15 | scripts, menu | hyprmac — alterna a barra de menus entre transparente e clara fosca bar-style [toggle/light/transparent] |
 | `scripts/build-waybar-extras` | bash | 57 | scripts, lock, menu | Build isolada do tray nativo 0.15.0; nunca instala sobre /usr/bin/waybar. set -euo pipefail |
-| `scripts/captura` | python | 422 | scripts, dock, menu, glass, window | """hyprmac — barra de Captura de Tela (⇧⌘5 do macOS), sem gravação. Cápsula de vidro escuro no rodapé da tela, como no Tahoe: |
+| `scripts/captura` | bash | 6 | scripts | ⇧⌘5: a barra GTK e seu estado ficam no executável Rust. Rótulos Tahoe preservados no binário: "Capture Entire Screen", "Capture Selected Portion", "Options", "Save to", "Show Floating Thumbnail", "Capture". |
 | `scripts/extract-notes-specs.js` | javascript | 325 | scripts, lock, menu, window | const fs = require('fs'); const path = require('path'); |
 | `scripts/generate-app-factory` | python | 193 | scripts, lock, menu, window | """Generate missing HyprMac app entries from the curated Tahoe package inventory. Only writes its own generated files. Existing, differing files are reported and |
-| `scripts/gravacao` | python | 280 | scripts, menu, window | """hyprmac — gravação de tela da ferramenta ⇧⌘5 (como no macOS). gravacao screen   grava o monitor em foco |
+| `scripts/gravacao` | bash | 4 | scripts | Gravação de tela ⇧⌘5: controle e interface no executável Rust. set -euo pipefail |
 | `scripts/menu-extras` | python | 212 | scripts, lock, menu | """Configuração e diagnóstico pontuais dos extras SNI. Só "start" fica residente, como supervisor da Waybar (relança a barra se ela cair).""" |
 | `scripts/mineração-agents.sh` | bash | 44 | scripts, menu, glass | Sistema de múltiplos agentes para minerar o DMG macOS 26.6.1 Cada agente trabalha em um componente específico |
-| `scripts/ocioso` | bash | 65 | scripts, lock | hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só |
-| `scripts/scratchpad` | bash | 14 | scripts, window | hyprmac — mostra/esconde o scratchpad (área especial "magic"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que |
-| `scripts/screenshot` | bash | 95 | scripts, window | hyprmac — capturas de tela no estilo macOS (grim + slurp)  |
+| `scripts/ocioso` | bash | 51 | scripts, lock | hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só |
+| `scripts/scratchpad` | bash | 12 | scripts, window | hyprmac — mostra/esconde o scratchpad (área especial "magic"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que |
+| `scripts/screenshot` | bash | 4 | scripts, window | Captura do shell: modos region, screen, window e pick no executável Rust. set -euo pipefail |
 | `scripts/spotlight` | bash | 106 | scripts, spotlight, menu | hyprmac — Spotlight do shell GTK. Chamar de novo fecha. spotlight [apps/files/actions/clipboard] |
-| `scripts/spotlight-itens` | python | 707 | scripts, control center, spotlight, notification, lock, menu | """hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o "Restart…/Shut Down…/Log Out…" |
+| `scripts/spotlight-itens` | python | 773 | scripts, control center, spotlight, notification, lock, menu | """hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o "Restart…/Shut Down…/Log Out…" |
 | `scripts/status-map` | bash | 5 | scripts, lock | Gera os mapas e o bloco de status com o executável Rust. set -euo pipefail |
 | `scripts/theme` | bash | 70 | scripts, spotlight, menu, glass, theme | hyprmac — alterna o tema do sistema entre claro e escuro theme [toggle/light/dark] |
 | `scripts/vidro` | bash | 145 | scripts, menu, glass | hyprmac — Liquid Glass via plugin hyprglass (refração, realce especular, chanfro) vidro instalar     compila o hyprglass na tag certa para o Hyprland em uso |
@@ -129,11 +147,11 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/desktop_surface.py` | python | 1275 | shell, lock, menu, theme, window | """Wallpaper, desktop widgets and desktop icons in the shared shell process.""" gi.require_version("Gtk", "3.0") |
 | `shell/diario.css` | css | 64 | shell | hyprmac — Journal (Diário do macOS Tahoe 26), a partir de referencias/desejos/journal-app.png: lateral flutuante (margem 8, raio 18) com os cartões Insights/Places desenhados em cairo, |
 | `shell/dock_drop.py` | python | 64 | shell, dock | """Abrir documentos no app de destino do Dock; sem GTK, cópia ou execução shell.""" def desktop_file_from_uris(uris, new_file): |
-| `shell/dock_geometry.py` | python | 65 | shell, dock | """Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.""" @dataclass(frozen=True) |
-| `shell/dock_model.py` | python | 89 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
+| `shell/dock_geometry.py` | python | 167 | shell, dock | """Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.""" @dataclass(frozen=True) |
+| `shell/dock_model.py` | python | 210 | shell, dock, window | """Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.""" REFRESH_EVENTS = frozenset(( |
 | `shell/dock_motion.py` | python | 106 | shell, dock, lock | """Estado das molas, magnificação e quique do Dock; sem relógios ou timers próprios.""" class DockMotion: |
 | `shell/dock_widget.py` | python | 1326 | shell, dock, spotlight, notification, lock, menu | """GTK view for the Dock. The shell supplies its shared UI and compositor services.""" gi.require_version("Gtk", "3.0") |
-| `shell/glass_motion.py` | python | 40 | shell, dock, spotlight, glass | """Animation mathematics for HyprMac Tahoe compatibility. Pure mathematical functions for spring-based animations, extracted from |
+| `shell/glass_motion.py` | python | 43 | shell, dock, spotlight, glass | """Mola compartilhada do shell, Dock e Spotlight. O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível. |
 | `shell/hypr_events.py` | python | 49 | shell | """Uma conexão com o socket de eventos do Hyprland para todo o shell GTK.""" class EventBus: |
 | `shell/hyprmac-ajustes` | python | 3511 | shell, dock, control center, spotlight, notification, lock | """hyprmac — Ajustes do Sistema (System Settings do macOS Tahoe). hyprmac-ajustes [painel]     abre (ou traz para a frente) num painel: wifi, bluetooth, |
 | `shell/hyprmac-app` | python | 26 | shell, window | """Launch a manifest based HyprMac application by its app ID.""" def main(): |
@@ -152,13 +170,13 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `shell/notes_store.py` | python | 320 | shell, lock, menu | """Núcleo do Notas (hyprmac-notas), sem GTK. Cada nota é um arquivo Markdown em ~/.local/share/hyprmac/notas: a primeira linha |
 | `shell/session_overlays.py` | python | 346 | shell, dock, window | """Force Quit and app switcher overlays for the shell session.""" gi.require_version("Gtk", "3.0") |
 | `shell/spotlight_controls.py` | python | 231 | shell, spotlight, lock, glass | """Controles de modo do Spotlight: desenho e animação GTK3. O painel permanece no processo do shell. Este módulo apenas desenha os |
-| `shell/spotlight_quickkeys.py` | python | 96 | shell, spotlight | """Quick keys do Spotlight (macOS Tahoe 26), sem GTK. Mac User Guide ▸ "Take actions and shortcuts in Spotlight": "Click 'Add quick keys' next |
-| `shell/spotlight_search.py` | python | 253 | shell, spotlight, window | """Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26. |
+| `shell/spotlight_quickkeys.py` | python | 174 | shell, spotlight | """Quick keys do Spotlight (macOS Tahoe 26), sem GTK. Mac User Guide ▸ "Take actions and shortcuts in Spotlight": "Click 'Add quick keys' next |
+| `shell/spotlight_search.py` | python | 356 | shell, spotlight, window | """Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26. |
 | `shell/spotlight_view.py` | python | 1566 | shell, dock, spotlight, lock, menu, glass | """Spotlight GTK view and transitions, using the shared search/control modules.""" gi.require_version("Gtk", "3.0") |
 | `shell/style-light.css` | css | 446 | shell, spotlight, menu, glass, control, center | keyboardFocusIndicatorColor, Aqua Tahoe 26.6.1 (25G76). */ @define-color shell_focus #3b99fc; |
 | `shell/style.css` | css | 1749 | shell, dock, spotlight, notification, lock, menu | hyprmac-shell — widgets e Central de Controle no estilo Liquid Glass (macOS Tahoe). O desfoque de fundo vem do Hyprland (layer rules "hyprmac-widgets" e "hyprmac-cc"); |
 | `shell/vidro-camadas-claro.css` | css | 25 | shell, spotlight, menu, glass, control, center | hyprmac — vidro real no tema CLARO: os painéis com texto (menus, notificações, Spotlight, Alt+Tab, histórico) levam mais branco por cima e texto escuro, como o menu "Folder color" e |
-| `shell/vidro-camadas.css` | css | 89 | shell, spotlight, menu, glass, control, center | hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas — o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto) |
+| `shell/vidro-camadas.css` | css | 93 | shell, spotlight, menu, glass, control, center | hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas — o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto) |
 | `shell/vidro.py` | python | 75 | shell, glass, theme, window | """Liquid Glass do hyprmac (plugin hyprglass) para janelas GTK. O vidro é desenhado pelo compositor; a janela GTK só precisa ser transparente onde o |
 | `tests/fixtures/status_notifier.py` | python | 120 | tests, menu | """SNI de teste: ícones ARGB, atenção/overlay, estado, eventos e menu D-Bus. Uso: status_notifier.py /tmp/events.jsonl |
 | `tests/test_accent_palette.py` | python | 58 | tests, theme | """Integração do destaque entre gerador, Ajustes e Mission Control.""" ROOT = Path(__file__).resolve().parents[1] |
@@ -232,9 +250,9 @@ Metadados para localizar candidatos antes de ler arquivos completos.
 | `waybar/scripts/camera.sh` | bash | 16 | waybar, scripts | Câmera em uso → cápsula verde com o ícone da câmera na barra (o indicador de privacidade do macOS; o módulo "privacy" do Waybar não conhece câmera). |
 | `waybar/scripts/cc-click.sh` | bash | 10 | waybar, scripts | Quando o indicador vira alto-falante, o clique abre saídas/volume. osd="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-osd-active" |
 | `waybar/scripts/cc-state.sh` | bash | 15 | waybar, scripts, control, center, control_center | Estado do ícone da Central de Controle: "active" enquanto o painel está aberto. osd="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-osd-active" |
-| `waybar/style.css` | css | 540 | waybar, spotlight, lock, menu, glass, theme | hyprmac — barra de menus inspirada no macOS Tahoe  |
+| `waybar/style.css` | css | 547 | waybar, spotlight, lock, menu, glass, theme | hyprmac — barra de menus inspirada no macOS Tahoe  |
 | `waybar/theme.css` | css | 0 | waybar, theme | theme.css |
-| `waybar/themes/light.css` | css | 44 | waybar, menu, theme | hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x) |
+| `waybar/themes/light.css` | css | 44 | waybar, menu, theme, window | hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x) |
 | `waybar/vidro.css` | css | 7 | waybar, menu, glass | gerado por scripts/vidro: menus com Liquid Glass do hyprglass */ menu:not(.x), |
 | `wofi/accent.css` | css | 2 | wofi | gerado por scripts/accent — cor de destaque: blue (escuro) */ @define-color accent #007AFF; |
 | `wofi/style.css` | css | 119 | wofi, spotlight, glass, theme, window | hyprmac — Spotlight (wofi) em Liquid Glass escuro. O desfoque vem da layer rule "hyprmac-spotlight" do Hyprland. */ |

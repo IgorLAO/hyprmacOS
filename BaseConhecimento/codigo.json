@@ -177,6 +177,104 @@
       "sha256": "836c0d3ac80e65485ca17bedf388cb427564ab90e319ec54eed28b1a793f36d5"
     },
     {
+      "path": "core/capture-bar/src/main.rs",
+      "language": "rust",
+      "bytes": 24432,
+      "lines": 717,
+      "summary": "! Barra de captura ⇧⌘5. A interface e suas opções executam em Rust. use gtk::cairo::{Context, Operator};",
+      "symbols": [
+        "Options",
+        "ToggleOption",
+        "label",
+        "selected",
+        "toggle",
+        "default",
+        "from_json",
+        "to_json",
+        "repo_root",
+        "config_file",
+        "pid_file",
+        "load_options",
+        "save_options",
+        "toggle_previous",
+        "dark_theme",
+        "glass_loaded",
+        "accent_color",
+        "style",
+        "rounded",
+        "icon",
+        "folder",
+        "launch",
+        "begin_capture",
+        "menu_item",
+        "options_menu",
+        "build_ui",
+        "title_for_mode",
+        "main_result",
+        "main",
+        "options_round_trip_preserves_other_settings_and_validates_modes",
+        "capture_and_record_destinations_keep_video_out_of_screenshots"
+      ],
+      "imports": [
+        "gtk::cairo::{Context, Operator}",
+        "gtk::gdk",
+        "gtk::glib::{self, ControlFlow}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, KeyboardMode, Layer, LayerShell}",
+        "serde_json::{Map, Value}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::fs",
+        "std::os::unix::process::CommandExt",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command",
+        "std::rc::Rc",
+        "std::time::Duration",
+        "super::*"
+      ],
+      "tags": [
+        "menu",
+        "glass",
+        "theme",
+        "window"
+      ],
+      "sha256": "43d6fd1864f5571682f46d0516629316d98ba147d802f7069d6f2f7a3a6b9d29"
+    },
+    {
+      "path": "core/capture-bar/src/style.css",
+      "language": "css",
+      "bytes": 1780,
+      "lines": 49,
+      "summary": "window.captura { background: transparent; } .cap-bar {",
+      "symbols": [
+        "window.captura",
+        ".cap-bar",
+        ".cap-bar button",
+        ".cap-bar button.rec",
+        ".cap-bar button.modo",
+        ".cap-bar button.modo.primeiro",
+        ".cap-bar button:hover",
+        ".cap-bar button.selected",
+        ".cap-bar button.texto",
+        ".cap-bar button.texto label",
+        ".cap-bar .chev",
+        ".cap-bar button.capturar",
+        ".cap-bar button.capturar label",
+        ".cap-bar button.capturar:hover",
+        ".cap-bar button.fechar",
+        ".cap-bar button.fechar:hover",
+        ".cap-bar .x",
+        ".cap-sep",
+        "tooltip",
+        "tooltip label"
+      ],
+      "imports": [],
+      "tags": [
+        "window"
+      ],
+      "sha256": "db1fe3583117262f9b0f17db2e39ab9ce07d93be8d7b5d161027445a2ca4461c"
+    },
+    {
       "path": "core/capture-thumbnail/src/main.rs",
       "language": "rust",
       "bytes": 7878,
@@ -331,6 +429,506 @@
       ],
       "tags": [],
       "sha256": "f5a9728cc3137da0ee56e2ed9afac3e65e045d9bcec34dcd2921caadf73e28a2"
+    },
+    {
+      "path": "core/dock-geometry/src/lib.rs",
+      "language": "rust",
+      "bytes": 7113,
+      "lines": 269,
+      "summary": "! Geometria lógica do Dock, sem GTK, relógios nem acesso ao compositor. [repr(C)]",
+      "symbols": [
+        "Metrics",
+        "Drawn",
+        "HitPoint",
+        "from_icon",
+        "shifts",
+        "layout",
+        "index_at",
+        "fixed_layout_and_hit_testing",
+        "magnification_keeps_center"
+      ],
+      "imports": [
+        "super::*"
+      ],
+      "tags": [
+        "dock"
+      ],
+      "sha256": "93a3d8b98febd052e017f0eef4adb52520acc02d05286dcf42861220cd93b2e0"
+    },
+    {
+      "path": "core/dock-model/src/lib.rs",
+      "language": "rust",
+      "bytes": 9274,
+      "lines": 271,
+      "summary": "! Conteúdo e política do Dock, sem GTK, ícones ou socket do compositor. use serde_json::{json, Value};",
+      "symbols": [
+        "needs_refresh",
+        "build_plan",
+        "reorder",
+        "pin_slot",
+        "insert_pin",
+        "dispatch",
+        "sections_keep_focus_order_and_minimized",
+        "finder_cannot_move"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "std::collections::{HashMap, HashSet}",
+        "std::ffi::{c_char, CStr}",
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "window"
+      ],
+      "sha256": "4a982bb44499c364f32e8af720bc237ee1cd84a18f47e760b8848f04c8b37179"
+    },
+    {
+      "path": "core/knowledge-index/src/main.rs",
+      "language": "rust",
+      "bytes": 22535,
+      "lines": 347,
+      "summary": "! Índice incremental da BaseConhecimento, preservando a curadoria SQLite. use regex::Regex;",
+      "symbols": [
+        "hash",
+        "text",
+        "data",
+        "value",
+        "sql",
+        "string",
+        "join_array",
+        "py_json",
+        "tipo_de",
+        "Metadata",
+        "initial_metadata",
+        "markdown_parts",
+        "contour_parts",
+        "text_parts",
+        "image_links",
+        "normalize",
+        "migrate",
+        "setup",
+        "source_files",
+        "index_sources",
+        "derived_images",
+        "tokens",
+        "record_hashes",
+        "count",
+        "run",
+        "main",
+        "source_classification_is_conservative",
+        "markdown_sections_keep_their_ancestry"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, types::Value as SqlValue, Connection, OptionalExtension}",
+        "serde_json::{json, Value}",
+        "sha2::{Digest, Sha256}",
+        "std::collections::HashSet",
+        "std::env",
+        "std::error::Error",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command",
+        "walkdir::WalkDir",
+        "super::*"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "90429eea5e83e98bad57b8752fb34bca54b947cb0981232b914b48c2f6cb8450"
+    },
+    {
+      "path": "core/motion/src/lib.rs",
+      "language": "rust",
+      "bytes": 1456,
+      "lines": 41,
+      "summary": "! Núcleo matemático das molas usadas pelo shell, Dock e Spotlight. ! ABI C pequena para a camada GTK atual; sem estado global, GTK ou timers.",
+      "symbols": [
+        "SpringState",
+        "spring_step",
+        "delayed_frame_is_bounded_and_settles"
+      ],
+      "imports": [
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "spotlight"
+      ],
+      "sha256": "a982164c205de4828865b730d0d4e4b87bf9b97fd0eaa6dea639fb5114db0c1e"
+    },
+    {
+      "path": "core/query/src/main.rs",
+      "language": "rust",
+      "bytes": 18150,
+      "lines": 324,
+      "summary": "! Consulta somente leitura à Base de Conhecimento. use regex::Regex;",
+      "symbols": [
+        "Options",
+        "parse",
+        "help",
+        "query",
+        "display",
+        "cell",
+        "nonnull",
+        "fallback",
+        "python_json",
+        "fts_query",
+        "like",
+        "no_accents",
+        "is_word",
+        "whole_word",
+        "norm_code",
+        "main_query",
+        "main",
+        "fts_preserves_explicit_syntax_and_expands_plain_terms",
+        "normalized_catalog_search_keeps_word_boundaries",
+        "sql_mode_cannot_modify_database"
+      ],
+      "imports": [
+        "regex::Regex",
+        "rusqlite::{params, params_from_iter, types::Value as SqlValue, Connection, OpenFlags}",
+        "serde_json::{Map, Value}",
+        "std::env",
+        "std::path::{Path, PathBuf}",
+        "unicode_normalization::{char::is_combining_mark, UnicodeNormalization}",
+        "super::*"
+      ],
+      "tags": [
+        "dock",
+        "control center",
+        "spotlight",
+        "glass",
+        "control",
+        "center",
+        "control_center"
+      ],
+      "sha256": "f8d01f4656da011c9162c304c34bee77a919ade20734fcacd2f2489550dd97e7"
+    },
+    {
+      "path": "core/runtime-helpers/src/main.rs",
+      "language": "rust",
+      "bytes": 2729,
+      "lines": 53,
+      "summary": "! Pequenas consultas de estado usadas pelos scripts do compositor. use serde_json::Value;",
+      "symbols": [
+        "config_path",
+        "config_value",
+        "scratchpad_count",
+        "lock_ready",
+        "main"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::Command"
+      ],
+      "tags": [
+        "lock",
+        "window"
+      ],
+      "sha256": "7f1c4d47497d1f108836eb2edfca6c800c3c3da2d2484e210f6ab5c727180d60"
+    },
+    {
+      "path": "core/screen-recording/src/hypr.rs",
+      "language": "rust",
+      "bytes": 2974,
+      "lines": 92,
+      "summary": "! Consultas pontuais ao compositor para escolher monitor e janela de gravação. use serde_json::Value;",
+      "symbols": [
+        "run_output",
+        "focused_monitor",
+        "visible_windows",
+        "window_rectangles",
+        "visible_workspaces_filter_hidden_clients"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::process::Command",
+        "super::*"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "f53b0b1636428fe6514f4cb5cf33dc7254604a8e8b34cbdf798c4021c5387c34"
+    },
+    {
+      "path": "core/screen-recording/src/main.rs",
+      "language": "rust",
+      "bytes": 8478,
+      "lines": 277,
+      "summary": "! Gravação de tela ⇧⌘5; processo wf-recorder e controle GTK/LayerShell. mod hypr;",
+      "symbols": [
+        "Recorder",
+        "notify_missing",
+        "destination",
+        "file_name",
+        "pick_geometry",
+        "signal_bar",
+        "thumbnail",
+        "stop",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "gtk::glib::{self, ControlFlow}",
+        "hypr::{focused_monitor, window_rectangles}",
+        "process_control::{recording_delay, runtime_file, stop_existing}",
+        "std::cell::RefCell",
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Child, Command, Stdio}",
+        "std::rc::Rc",
+        "std::time::{Duration, Instant}",
+        "std::io::Write"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "2950419f867148bd4ee3865f41cd4a69ac47464354f8473a029d55a7737d8209"
+    },
+    {
+      "path": "core/screen-recording/src/process_control.rs",
+      "language": "rust",
+      "bytes": 2254,
+      "lines": 71,
+      "summary": "! Estado do processo de gravação: PID guardado e timer de início. use std::env;",
+      "symbols": [
+        "runtime_file",
+        "stop_existing",
+        "is_recorder_command_line",
+        "recording_delay",
+        "only_recorder_command_line_can_be_stopped",
+        "recording_timer_accepts_only_short_nonnegative_values"
+      ],
+      "imports": [
+        "std::env",
+        "std::fs",
+        "std::path::{Path, PathBuf}",
+        "super::*"
+      ],
+      "tags": [],
+      "sha256": "d910df8d2b149ef9198ee02854ef3388c871b6dd98611ceca6f484d26d25d00e"
+    },
+    {
+      "path": "core/screen-recording/src/ui.rs",
+      "language": "rust",
+      "bytes": 3227,
+      "lines": 79,
+      "summary": "use super::{stop, Recorder}; use gtk::gdk;",
+      "symbols": [
+        "show"
+      ],
+      "imports": [
+        "super::{stop, Recorder}",
+        "gtk::gdk",
+        "gtk::glib::{self, ControlFlow}",
+        "gtk::prelude::*",
+        "gtk_layer_shell::{Edge, Layer, LayerShell}",
+        "std::cell::RefCell",
+        "std::rc::Rc",
+        "std::time::Duration"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "2fa59519144961edb40f45c536152c94d175a332b8117dcb7c555f109a22b25f"
+    },
+    {
+      "path": "core/screenshot/src/main.rs",
+      "language": "rust",
+      "bytes": 9809,
+      "lines": 298,
+      "summary": "! Capturas do shell: preserva os modos e as opções do comando scripts/screenshot. use serde_json::Value;",
+      "symbols": [
+        "output",
+        "hypr_json",
+        "point_size",
+        "visible_rectangles",
+        "select_rectangle",
+        "capture",
+        "config_sound",
+        "command_exists",
+        "main_result",
+        "main",
+        "pick_uses_only_visible_clients_on_active_workspaces"
+      ],
+      "imports": [
+        "serde_json::Value",
+        "std::collections::HashSet",
+        "std::env",
+        "std::fs::{self, File}",
+        "std::io::Write",
+        "std::path::{Path, PathBuf}",
+        "std::process::{Command, Stdio}",
+        "std::thread",
+        "std::time::Duration",
+        "super::*",
+        "serde_json::json"
+      ],
+      "tags": [
+        "window"
+      ],
+      "sha256": "5b60cc9bacd0a6cfc3c96cbdc2d1d5e8ba83dfa8db4a51c544104fc865bb0d66"
+    },
+    {
+      "path": "core/spotlight-history/src/lib.rs",
+      "language": "rust",
+      "bytes": 6775,
+      "lines": 186,
+      "summary": "! Histórico dos modos do Spotlight, independente da view GTK e do lançador. use serde::Serialize;",
+      "symbols": [
+        "load",
+        "ids",
+        "record",
+        "save",
+        "read_drun_cache",
+        "write_drun_cache",
+        "dispatch",
+        "recent_entry_replaces_old_and_preserves_other_modes",
+        "cache_sums_duplicate_desktop_entries"
+      ],
+      "imports": [
+        "serde::Serialize",
+        "serde_json::{json, Map, Value}",
+        "std::ffi::{c_char, CStr}",
+        "std::fs",
+        "std::path::Path",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight"
+      ],
+      "sha256": "57bf360cde5ec23391d726b71b3950d52d22a7b8ca802d16a675b1d290e0ce0d"
+    },
+    {
+      "path": "core/spotlight-quickkeys/src/lib.rs",
+      "language": "rust",
+      "bytes": 7423,
+      "lines": 157,
+      "summary": "! Teclas rápidas personalizáveis do Spotlight, sem GTK e sem estado global. use regex::Regex;",
+      "symbols": [
+        "normalize",
+        "suggest",
+        "as_string",
+        "object",
+        "effective",
+        "assign",
+        "after_run",
+        "load",
+        "save",
+        "dispatch",
+        "collision_moves_previous_owner",
+        "suggestion_only_after_first_run"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde::Serialize",
+        "serde_json::{json, Map, Value}",
+        "std::collections::HashSet",
+        "std::ffi::{c_char, CStr}",
+        "std::fs",
+        "std::path::Path",
+        "std::sync::LazyLock",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "7e42417deddf9bd07164a47993e52e08befd9475e8e23044ff3967fad4db8685"
+    },
+    {
+      "path": "core/spotlight-search/src/calc.rs",
+      "language": "rust",
+      "bytes": 6062,
+      "lines": 137,
+      "summary": "! Avaliador restrito das contas digitadas no Spotlight. ! Recusa expressões fora do contrato antigo; valores de precisão incerta",
+      "symbols": [
+        "CalcResult",
+        "Parser",
+        "new",
+        "spaces",
+        "eat",
+        "two_stars",
+        "expression",
+        "term",
+        "factor",
+        "power",
+        "atom",
+        "grouped_int",
+        "calculate",
+        "arithmetic_precedence_and_power_limit"
+      ],
+      "imports": [
+        "regex::Regex",
+        "std::sync::LazyLock",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "b59e0a1a33334b6d223ff9f3346dab74fb316638ba1c30e6e4ee98dc4682265a"
+    },
+    {
+      "path": "core/spotlight-search/src/filters.rs",
+      "language": "rust",
+      "bytes": 5520,
+      "lines": 202,
+      "summary": "! Categorias e seletores do Spotlight. Ordem e nomes são os do módulo GTK atual. use serde_json::{json, Value};",
+      "symbols": [
+        "app_category",
+        "filter_command",
+        "filter_results",
+        "dispatch",
+        "category_uses_first_matching_group",
+        "selectors_keep_scope_and_order"
+      ],
+      "imports": [
+        "serde_json::{json, Value}",
+        "crate::fold",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight"
+      ],
+      "sha256": "b0dd99affb4463c3f57314ad99903306ac4afecc3dcb191f8a154a30c1b6d09f"
+    },
+    {
+      "path": "core/spotlight-search/src/lib.rs",
+      "language": "rust",
+      "bytes": 7002,
+      "lines": 176,
+      "summary": "! Núcleo de normalização e ranking da busca Spotlight, sem GTK ou IPC. mod calc;",
+      "symbols": [
+        "file_kind",
+        "file_query",
+        "fold",
+        "words",
+        "score",
+        "c_input",
+        "accented_names_match_normalized_queries",
+        "ranking_keeps_name_over_extra_and_word_initials",
+        "file_type_tokens_preserve_other_query_words"
+      ],
+      "imports": [
+        "regex::Regex",
+        "serde_json::json",
+        "std::ffi::{c_char, CStr}",
+        "std::sync::LazyLock",
+        "unicode_normalization::{char::canonical_combining_class, UnicodeNormalization}",
+        "super::*"
+      ],
+      "tags": [
+        "spotlight",
+        "lock"
+      ],
+      "sha256": "d7188c9d5c75c9fa3ecc9d5448a6988a1eb66b7f8260f139bc1f0f78b05479e2"
     },
     {
       "path": "core/status-map/src/main.rs",
@@ -731,8 +1329,8 @@
     {
       "path": "gtk/palette3-dark.css",
       "language": "css",
-      "bytes": 3352,
-      "lines": 59,
+      "bytes": 3274,
+      "lines": 58,
       "summary": "hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */",
       "symbols": [],
       "imports": [],
@@ -742,7 +1340,7 @@
         "theme",
         "window"
       ],
-      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
+      "sha256": "0d3b7997bf4d9602f666aab1aefc9e6c359ed017bb896b90b37029e5bf7bdef1"
     },
     {
       "path": "gtk/palette3-light.css",
@@ -763,8 +1361,8 @@
     {
       "path": "gtk/palette3.css",
       "language": "css",
-      "bytes": 3352,
-      "lines": 59,
+      "bytes": 3274,
+      "lines": 58,
       "summary": "hyprmac — paleta GTK 3, modo escuro */ ───────────── paleta ───────────── */",
       "symbols": [],
       "imports": [],
@@ -774,12 +1372,12 @@
         "theme",
         "window"
       ],
-      "sha256": "6096b059f6e8ec9f97a381ff11e9d9e57a3ae2f378e770af8eed9965145593e3"
+      "sha256": "0d3b7997bf4d9602f666aab1aefc9e6c359ed017bb896b90b37029e5bf7bdef1"
     },
     {
       "path": "gtk/palette4-dark.css",
       "language": "css",
-      "bytes": 3139,
+      "bytes": 3126,
       "lines": 81,
       "summary": "hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */",
       "symbols": [
@@ -792,7 +1390,7 @@
         "theme",
         "window"
       ],
-      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
+      "sha256": "6eabeb11cbffc7fe4353221bb17098b656a291d0f1b5a8926687468513b59c7e"
     },
     {
       "path": "gtk/palette4-light.css",
@@ -815,7 +1413,7 @@
     {
       "path": "gtk/palette4.css",
       "language": "css",
-      "bytes": 3139,
+      "bytes": 3126,
       "lines": 81,
       "summary": "hyprmac — paleta GTK 4 / libadwaita, modo escuro */ ───────────── paleta (libadwaita ≥ 1.6 usa variáveis CSS) ───────────── */",
       "symbols": [
@@ -828,7 +1426,7 @@
         "theme",
         "window"
       ],
-      "sha256": "8dfaa02efdc44efa3cdae516f47a4b443fc28962b460c954c5e2aeff142f0d3b"
+      "sha256": "6eabeb11cbffc7fe4353221bb17098b656a291d0f1b5a8926687468513b59c7e"
     },
     {
       "path": "hypr/app-factory-classes.lua",
@@ -847,8 +1445,8 @@
     {
       "path": "hypr/hyprmac.lua",
       "language": "lua",
-      "bytes": 29293,
-      "lines": 614,
+      "bytes": 29682,
+      "lines": 625,
       "summary": "hyprmac — aparência macOS Tahoe (modo escuro) para Hyprland Carregado no fim do hyprland.lua; tudo aqui sobrescreve os padrões de lá.",
       "symbols": [
         "dark_mode",
@@ -870,13 +1468,13 @@
         "center",
         "control_center"
       ],
-      "sha256": "ef0788e30bb1c415962e037769445bd79c49b645aaece9db9e47297600752c5d"
+      "sha256": "c84c22c25463fc4d7de3ab836f8999f236c616e79e565f0ace2908602495e97f"
     },
     {
       "path": "hypr/vidro-presets.lua",
       "language": "lua",
-      "bytes": 26312,
-      "lines": 455,
+      "bytes": 26464,
+      "lines": 457,
       "summary": "hyprmac — presets de Liquid Glass para o plugin hyprglass Presets próprios e camadas só valem quando o Hyprland LÊ a config (o hyprglass os guarda",
       "symbols": [
         "ler",
@@ -898,7 +1496,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "a916dda782cdcd7ea19aca3e7f5e347d9c87648949061fa74c3134d6afe3dbb6"
+      "sha256": "35bbe3afd7756e9e20b6b6ad67d2617205ea64b352c31975232fb7b2510e77bc"
     },
     {
       "path": "scripts/agent-loader.js",
@@ -951,49 +1549,16 @@
     },
     {
       "path": "scripts/captura",
-      "language": "python",
-      "bytes": 16992,
-      "lines": 422,
-      "summary": "\"\"\"hyprmac — barra de Captura de Tela (⇧⌘5 do macOS), sem gravação. Cápsula de vidro escuro no rodapé da tela, como no Tahoe:",
-      "symbols": [
-        "escuro",
-        "vidro_real",
-        "css",
-        "carregar",
-        "salvar",
-        "pasta",
-        "icone",
-        "draw",
-        "ret",
-        "Barra",
-        "__init__",
-        "_chev",
-        "_sep",
-        "_modo",
-        "_opcoes",
-        "cab",
-        "opc",
-        "_tecla",
-        "capturar",
-        "main"
-      ],
-      "imports": [
-        "json",
-        "os",
-        "subprocess",
-        "sys",
-        "cairo",
-        "gi",
-        "gi.repository"
-      ],
+      "language": "bash",
+      "bytes": 382,
+      "lines": 6,
+      "summary": "⇧⌘5: a barra GTK e seu estado ficam no executável Rust. Rótulos Tahoe preservados no binário: \"Capture Entire Screen\", \"Capture Selected Portion\", \"Options\", \"Save to\", \"Show Floating Thumbnail\", \"Capture\".",
+      "symbols": [],
+      "imports": [],
       "tags": [
-        "scripts",
-        "dock",
-        "menu",
-        "glass",
-        "window"
+        "scripts"
       ],
-      "sha256": "0846026daa6c539bc6494bcf53fb50f2de3ff9390259b738f01c7a160a0e741d"
+      "sha256": "ae4cba6ac1101540fddbcd0236d1876ba12e91636c427f38b8cd5b325980f2e8"
     },
     {
       "path": "scripts/extract-notes-specs.js",
@@ -1048,43 +1613,16 @@
     },
     {
       "path": "scripts/gravacao",
-      "language": "python",
-      "bytes": 10688,
-      "lines": 280,
-      "summary": "\"\"\"hyprmac — gravação de tela da ferramenta ⇧⌘5 (como no macOS). gravacao screen   grava o monitor em foco",
-      "symbols": [
-        "destino",
-        "monitor_focado",
-        "parar_existente",
-        "Controle",
-        "__init__",
-        "_watch_recorder",
-        "_sem_ferramenta",
-        "_janela",
-        "_pisca",
-        "_tic",
-        "parar",
-        "_signal_bar",
-        "_miniatura",
-        "janelas_visiveis",
-        "main"
-      ],
-      "imports": [
-        "os",
-        "signal",
-        "subprocess",
-        "sys",
-        "time",
-        "gi",
-        "json",
-        "gi.repository"
-      ],
+      "language": "bash",
+      "bytes": 164,
+      "lines": 4,
+      "summary": "Gravação de tela ⇧⌘5: controle e interface no executável Rust. set -euo pipefail",
+      "symbols": [],
+      "imports": [],
       "tags": [
-        "scripts",
-        "menu",
-        "window"
+        "scripts"
       ],
-      "sha256": "b9012648211398ffaf315dc9d63038f10268caf711624004b970e425cbca1cd4"
+      "sha256": "62d742fb857e789a1b2b4cbe61a1b8646b5ca39098f135fee16b5ed201d8b093"
     },
     {
       "path": "scripts/menu-extras",
@@ -1140,8 +1678,8 @@
     {
       "path": "scripts/ocioso",
       "language": "bash",
-      "bytes": 2556,
-      "lines": 65,
+      "bytes": 2181,
+      "lines": 51,
       "summary": "hyprmac — inatividade como no Mac (Ajustes ▸ Tela de Bloqueio): ocioso start    inicia o vigia (shell/ocioso/hyprmac-ocioso), uma instância só",
       "symbols": [
         "cfg"
@@ -1151,13 +1689,13 @@
         "scripts",
         "lock"
       ],
-      "sha256": "9f53a395dcf6e52e0c19aff3fee633a97f2af73473b5c63341b7df929ea4b54b"
+      "sha256": "8e93bb393d0db558060a4fb9e7112b277c46c43f40095c07196faf98b657c4a1"
     },
     {
       "path": "scripts/scratchpad",
       "language": "bash",
-      "bytes": 650,
-      "lines": 14,
+      "bytes": 560,
+      "lines": 12,
       "summary": "hyprmac — mostra/esconde o scratchpad (área especial \"magic\"). Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que",
       "symbols": [],
       "imports": [],
@@ -1165,24 +1703,21 @@
         "scripts",
         "window"
       ],
-      "sha256": "d4590fe55a7caeb21d2f948ff5f3701db75e66ce286ae276c09edf135cc3c726"
+      "sha256": "59d57ec783d88111da6328f177e6e6fbd39d3c566b74d15e6966f15b3da5e62c"
     },
     {
       "path": "scripts/screenshot",
       "language": "bash",
-      "bytes": 3822,
-      "lines": 95,
-      "summary": "hyprmac — capturas de tela no estilo macOS (grim + slurp) ",
-      "symbols": [
-        "json_field",
-        "espera"
-      ],
+      "bytes": 163,
+      "lines": 4,
+      "summary": "Captura do shell: modos region, screen, window e pick no executável Rust. set -euo pipefail",
+      "symbols": [],
       "imports": [],
       "tags": [
         "scripts",
         "window"
       ],
-      "sha256": "041831d3004156ea831108e2a56d59fbea54f8719e6ef73f2cfb40cf1b937ee0"
+      "sha256": "92c7c235fecb24a290ab2088074d0e2e8862b216178e641d3d9ee6e8d902272d"
     },
     {
       "path": "scripts/spotlight",
@@ -1206,8 +1741,8 @@
     {
       "path": "scripts/spotlight-itens",
       "language": "python",
-      "bytes": 26951,
-      "lines": 707,
+      "bytes": 29391,
+      "lines": 773,
       "summary": "\"\"\"hyprmac — itens dos modos Arquivos (⌘2) e Ações (⌘3) do Spotlight, e o histórico. Chamado por scripts/spotlight; não abre janelas (só o \"Restart…/Shut Down…/Log Out…\"",
       "symbols": [
         "esc",
@@ -1250,7 +1785,8 @@
         "read_drun_cache",
         "write_drun_cache",
         "cmd_drun_cache",
-        "main"
+        "main",
+        "_history_call"
       ],
       "imports": [
         "hashlib",
@@ -1266,7 +1802,8 @@
         "xml.etree.ElementTree",
         "urllib.parse",
         "gi",
-        "gi.repository"
+        "gi.repository",
+        "ctypes"
       ],
       "tags": [
         "scripts",
@@ -1281,7 +1818,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "88130e634903808a754dce8672a34f8cddc7f96201e5ec910e4f09ac174719b0"
+      "sha256": "f3ce9f7e9ca39e5661a27d31da281e1992b8c0503c0e473039d7926040d01280"
     },
     {
       "path": "scripts/status-map",
@@ -3074,30 +3611,39 @@
     {
       "path": "shell/dock_geometry.py",
       "language": "python",
-      "bytes": 2330,
-      "lines": 65,
+      "bytes": 6593,
+      "lines": 167,
       "summary": "\"\"\"Medidas, layout de repouso e hit testing do Dock; unidades lógicas GTK.\"\"\" @dataclass(frozen=True)",
       "symbols": [
         "DockMetrics",
         "from_icon",
         "magnification_shifts",
         "layout",
-        "index_at"
+        "index_at",
+        "_RawMetrics",
+        "_RawDrawn",
+        "_raw",
+        "_from_icon",
+        "_shifts",
+        "_layout",
+        "_index_at"
       ],
       "imports": [
-        "dataclasses"
+        "dataclasses",
+        "ctypes",
+        "pathlib"
       ],
       "tags": [
         "shell",
         "dock"
       ],
-      "sha256": "f5766b0a9918b5d02c31df3c7a53dbcb1fc21417acb26fa7edcea8d60f23ac9a"
+      "sha256": "beb0ff952bc52751f65b116e5399d9439779522a06553aa4522008bc0a398aa3"
     },
     {
       "path": "shell/dock_model.py",
       "language": "python",
-      "bytes": 3814,
-      "lines": 89,
+      "bytes": 8890,
+      "lines": 210,
       "summary": "\"\"\"Conteúdo e política de atualização do Dock, sem GTK ou consultas ao compositor.\"\"\" REFRESH_EVENTS = frozenset((",
       "symbols": [
         "needs_refresh",
@@ -3105,15 +3651,20 @@
         "reorder_pinned",
         "movable",
         "pin_slot",
-        "insert_pin"
+        "insert_pin",
+        "_call"
       ],
-      "imports": [],
+      "imports": [
+        "ctypes",
+        "json",
+        "pathlib"
+      ],
       "tags": [
         "shell",
         "dock",
         "window"
       ],
-      "sha256": "188a44fed3ccf8e5d13a787c6772f0e3b8b9b5fb9161f0cf93927bb3cd2f3a52"
+      "sha256": "8f3f8bd4e8427f9fe7bd826c0d2fd3ea52f97763e8675ab8635aba824f012bd0"
     },
     {
       "path": "shell/dock_motion.py",
@@ -3261,14 +3812,17 @@
     {
       "path": "shell/glass_motion.py",
       "language": "python",
-      "bytes": 1495,
-      "lines": 40,
-      "summary": "\"\"\"Animation mathematics for HyprMac Tahoe compatibility. Pure mathematical functions for spring-based animations, extracted from",
+      "bytes": 1516,
+      "lines": 43,
+      "summary": "\"\"\"Mola compartilhada do shell, Dock e Spotlight. O cálculo roda em core/motion (Rust) quando a biblioteca compilada está disponível.",
       "symbols": [
+        "_SpringState",
         "spring_step"
       ],
       "imports": [
-        "math"
+        "ctypes",
+        "math",
+        "pathlib"
       ],
       "tags": [
         "shell",
@@ -3276,7 +3830,7 @@
         "spotlight",
         "glass"
       ],
-      "sha256": "58de08f50ca2a8bc022c436015efedb55c4ac4f30507d1a64d6b162f3065cb9b"
+      "sha256": "949e69f1ab6ba8a98cf2ab3db6b58179927be958f30b078a22673d4f4fdf79d8"
     },
     {
       "path": "shell/hypr_events.py",
@@ -4582,8 +5136,8 @@
     {
       "path": "shell/spotlight_quickkeys.py",
       "language": "python",
-      "bytes": 3194,
-      "lines": 96,
+      "bytes": 6040,
+      "lines": 174,
       "summary": "\"\"\"Quick keys do Spotlight (macOS Tahoe 26), sem GTK. Mac User Guide ▸ \"Take actions and shortcuts in Spotlight\": \"Click 'Add quick keys' next",
       "symbols": [
         "load",
@@ -4592,24 +5146,27 @@
         "effective",
         "suggest",
         "assign",
-        "after_run"
+        "after_run",
+        "_call"
       ],
       "imports": [
         "json",
         "os",
-        "re"
+        "re",
+        "ctypes",
+        "pathlib"
       ],
       "tags": [
         "shell",
         "spotlight"
       ],
-      "sha256": "5e7cb4dee31107d79d5653a87a8557ef289377f907f85a726daa9110136b8958"
+      "sha256": "8259dffc4db9c078c60f6ff8f256645359ae61bd5c6b61cf2ee0f1247d194418"
     },
     {
       "path": "shell/spotlight_search.py",
       "language": "python",
-      "bytes": 10789,
-      "lines": 253,
+      "bytes": 14658,
+      "lines": 356,
       "summary": "\"\"\"Categorias, ordenação e cálculo do Spotlight; sem dependência de GTK. As categorias legadas derivadas de frames rotulados macOS 27 exigem validação Tahoe 26.",
       "symbols": [
         "spot_app_category",
@@ -4625,21 +5182,26 @@
         "spot_app_results",
         "spot_score",
         "spot_calc",
-        "ev"
+        "ev",
+        "_rust_text",
+        "_rust_filter"
       ],
       "imports": [
         "re",
         "mimetypes",
         "unicodedata",
         "ast",
-        "operator"
+        "operator",
+        "ctypes",
+        "json",
+        "pathlib"
       ],
       "tags": [
         "shell",
         "spotlight",
         "window"
       ],
-      "sha256": "7954cf112241ca6136f2cf5b5a6af790f17affd8aff642dc2e1a59a927575af5"
+      "sha256": "59fa76dfc5b1bdea30e5fe3989b64070ce091a3df23c97b621215355e3f144c2"
     },
     {
       "path": "shell/spotlight_view.py",
@@ -5058,8 +5620,8 @@
     {
       "path": "shell/vidro-camadas.css",
       "language": "css",
-      "bytes": 4271,
-      "lines": 89,
+      "bytes": 4407,
+      "lines": 93,
       "summary": "hyprmac — vidro de verdade nas camadas (plugin hyprglass carregado; os DOIS temas — o vidro é o mesmo; no claro, vidro-camadas-claro.css só clareia os painéis com texto)",
       "symbols": [
         ".xmenu",
@@ -5097,7 +5659,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "5b60df2261749d18f4f369e9459db0767affbd046554dcc0e9886f4b854e6247"
+      "sha256": "a81d8f0ca91fc140202e81f7e94045612a0f4d8db93d2aa7c977e0199b2e911b"
     },
     {
       "path": "shell/vidro.py",
@@ -7249,7 +7811,7 @@
     {
       "path": "tests/test_volume_feedback.py",
       "language": "python",
-      "bytes": 4186,
+      "bytes": 4211,
       "lines": 103,
       "summary": "\"\"\"MIC-12: \"Play feedback when volume is changed\" (Ajustes ▸ Som do macOS Tahoe 26). support.apple.com/guide/mac-help/mchlp2207/26: \"when you press one of the volume",
       "symbols": [
@@ -7278,7 +7840,7 @@
         "lock",
         "theme"
       ],
-      "sha256": "dc1e696baa31cb8bdf081ddc4846bc8b3d9b944dc9f6b0a88b472a85065afe6a"
+      "sha256": "080b206da32876f7b5dd9b1ba857a292ac13a6e7e8f9b5f960c3f2376b8a736a"
     },
     {
       "path": "waybar/a11y.css",
@@ -7474,8 +8036,8 @@
     {
       "path": "waybar/style.css",
       "language": "css",
-      "bytes": 15819,
-      "lines": 540,
+      "bytes": 16051,
+      "lines": 547,
       "summary": "hyprmac — barra de menus inspirada no macOS Tahoe ",
       "symbols": [
         "*",
@@ -7535,6 +8097,7 @@
         "#custom-camera.on",
         "window.popup decoration",
         ".menu",
+        ".menu:not(.x)",
         "menu menuitem",
         "menu menuitem label",
         "menu menuitem label.shortcut",
@@ -7558,7 +8121,7 @@
         "center",
         "control_center"
       ],
-      "sha256": "ce5fd9747bf0a41a92b700055c885f2d775684c7fe18d9800ec0cbb51f3110db"
+      "sha256": "d16ee5572d0e4f7dd56fc8d38177129431ec284d68dbad393e05840b36de6dd8"
     },
     {
       "path": "waybar/theme.css",
@@ -7577,11 +8140,11 @@
     {
       "path": "waybar/themes/light.css",
       "language": "css",
-      "bytes": 1135,
+      "bytes": 1161,
       "lines": 44,
       "summary": "hyprmac — tema claro da barra: menus suspensos e dicas em vidro claro. Copiado para waybar/theme.css por scripts/theme. Os seletores com :not(.x)",
       "symbols": [
-        ".menu:not(.x)",
+        "window.popup .menu:not(.x)",
         "menu:not(.x) menuitem label",
         "menu:not(.x) menuitem:disabled label",
         "menu:not(.x) menuitem:hover",
@@ -7594,9 +8157,10 @@
       "tags": [
         "waybar",
         "menu",
-        "theme"
+        "theme",
+        "window"
       ],
-      "sha256": "de29c5fb9f67c2311ad36db9e95d75c877ef5a9e9bdcbc08a9a93bfce9d1008d"
+      "sha256": "df43d4acd29019e312ad79cac6abf5f41b7e0be818615bcc3ad626ad51b72a70"
     },
     {
       "path": "waybar/vidro.css",

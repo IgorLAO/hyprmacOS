@@ -65,6 +65,32 @@ link "$H/core/accent/target/release/hyprmac-accent" "$HOME/.local/bin/hyprmac-ac
 step "Miniatura flutuante em Rust"
 cargo build --release --locked --manifest-path "$H/core/capture-thumbnail/Cargo.toml"
 link "$H/core/capture-thumbnail/target/release/hyprmac-captura-miniatura" "$HOME/.local/bin/hyprmac-captura-miniatura" local/bin/hyprmac-captura-miniatura
+step "Captura de tela em Rust"
+cargo build --release --locked --manifest-path "$H/core/screenshot/Cargo.toml"
+link "$H/core/screenshot/target/release/hyprmac-screenshot" "$HOME/.local/bin/hyprmac-screenshot" local/bin/hyprmac-screenshot
+step "Barra de captura em Rust"
+cargo build --release --locked --manifest-path "$H/core/capture-bar/Cargo.toml"
+link "$H/core/capture-bar/target/release/hyprmac-capture-bar" "$HOME/.local/bin/hyprmac-capture-bar" local/bin/hyprmac-capture-bar
+step "Gravação de tela em Rust"
+cargo build --release --locked --manifest-path "$H/core/screen-recording/Cargo.toml"
+link "$H/core/screen-recording/target/release/hyprmac-screen-recording" "$HOME/.local/bin/hyprmac-screen-recording" local/bin/hyprmac-screen-recording
+step "Consultas de runtime em Rust"
+cargo build --release --locked --manifest-path "$H/core/runtime-helpers/Cargo.toml"
+link "$H/core/runtime-helpers/target/release/hyprmac-runtime" "$HOME/.local/bin/hyprmac-runtime" local/bin/hyprmac-runtime
+step "Molas compartilhadas do shell em Rust"
+cargo build --release --locked --manifest-path "$H/core/motion/Cargo.toml"
+step "Cor das pastas em Rust"
+cargo build --release --locked --manifest-path "$H/core/folder-color/Cargo.toml"
+step "Geometria do Dock em Rust"
+cargo build --release --locked --manifest-path "$H/core/dock-geometry/Cargo.toml"
+step "Modelo do Dock em Rust"
+cargo build --release --locked --manifest-path "$H/core/dock-model/Cargo.toml"
+step "Busca do Spotlight em Rust"
+cargo build --release --locked --manifest-path "$H/core/spotlight-search/Cargo.toml"
+step "Teclas rápidas do Spotlight em Rust"
+cargo build --release --locked --manifest-path "$H/core/spotlight-quickkeys/Cargo.toml"
+step "Histórico do Spotlight em Rust"
+cargo build --release --locked --manifest-path "$H/core/spotlight-history/Cargo.toml"
 link "$H/waybar"             "$C/waybar"             waybar
 # itens ocultos da barra (Ajustes ▸ Menu Bar): gerado em tempo de execução; o @import precisa dele
 [ -e "$H/waybar/barra-ocultos.css" ] || : > "$H/waybar/barra-ocultos.css"

@@ -94,9 +94,9 @@ class InterfaceSounds(unittest.TestCase):
     def test_empty_trash_and_screenshot_use_it(self):
         dock_view = (SOURCE.parent / "dock_widget.py").read_text()
         self.assertIn('ui_sound("trash-empty")', dock_view)
-        script = (SOURCE.parents[1] / "scripts" / "screenshot").read_text()
-        self.assertIn("ui_sound_effects", script)
-        self.assertIn("-i screen-capture", script)
+        capture = (SOURCE.parents[1] / "core" / "screenshot" / "src" / "main.rs").read_text()
+        self.assertIn("ui_sound_effects", capture)
+        self.assertIn('"-i", "screen-capture"', capture)
 
 
 if __name__ == "__main__":

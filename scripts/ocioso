@@ -11,11 +11,7 @@
 H="$HOME/Projects/hyprmac"
 idle_state="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-idle-pending"
 lock_ready="${XDG_RUNTIME_DIR:-/tmp}/hyprmac-lock.ready"
-cfg() { python3 -c "
-import json,os
-try: d=json.load(open(os.path.expanduser('~/.config/hyprmac/config.json')))
-except Exception: d={}
-print(d.get('$1', '$2'))"; }
+cfg() { "$HOME/.local/bin/hyprmac-runtime" config "$1" "$2"; }
 
 case "${1:-start}" in
   start)
@@ -33,17 +29,7 @@ case "${1:-start}" in
       for ((attempt=0; attempt<100; attempt++)); do
         # Input while a slow wallpaper/PAM setup is loading cancels screen-off.
         [ -f "$idle_state" ] && [ "$(cat "$idle_state")" = "$token" ] || exit 0
-        if python3 - "$lock_ready" "$H/shell/hyprmac-lock" <<'READY'
-import os, sys
-try:
-    pid = int(open(sys.argv[1]).read())
-    os.kill(pid, 0)
-    with open(f"/proc/{pid}/cmdline", "rb") as command:
-        arguments = command.read().split(b"\0")
-    sys.exit(0 if os.fsencode(sys.argv[2]) in arguments else 1)
-except (OSError, ValueError):
-    sys.exit(1)
-READY
+        if "$HOME/.local/bin/hyprmac-runtime" lock-ready "$lock_ready" "$H/shell/hyprmac-lock"
         then
           ready=true
           break

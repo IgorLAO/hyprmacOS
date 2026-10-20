@@ -65,18 +65,7 @@
   "custom/apple": {
     "format": "",
     "tooltip": false,
-    "menu": "on-click",
-    "menu-file": "~/.config/waybar/menus/apple.xml",
-    "menu-actions": {
-      "about":    "~/Projects/hyprmac/shell/hyprmac-ajustes about",
-      "settings": "~/Projects/hyprmac/shell/hyprmac-ajustes",
-      "forcequit": "~/Projects/hyprmac/shell/hyprmac-shell force-quit",
-      "sleep":    "systemctl suspend",
-      "lock":     "~/Projects/hyprmac/shell/hyprmac-lock",
-      "reboot":   "systemctl reboot",
-      "poweroff": "systemctl poweroff",
-      "logout":   "hyprctl dispatch 'hl.dsp.exit()'"
-    }
+    "on-click": "gdbus call --session --dest dev.hyprmac.Shell --object-path /dev/hyprmac/Shell --method dev.hyprmac.Shell.Command apple-menu"
   },
 
   // Nome do app em foco, em negrito; o clique abre o menu do app como no macOS.

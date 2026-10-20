@@ -1,0 +1,10 @@
+[package]
+name = "hyprmac-consultar"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1"
+rusqlite = "0.40.2"
+serde_json = { version = "1", features = ["preserve_order"] }
+unicode-normalization = "0.1.26"

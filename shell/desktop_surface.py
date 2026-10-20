@@ -19,6 +19,7 @@ gi.require_version("GtkLayerShell", "0.1")
 gi.require_version("PangoCairo", "1.0")
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, Gtk, Pango, PangoCairo
 from gi.repository import GtkLayerShell as LS
+from folder_appearance import folder_pixbuf
 
 E = LS.Edge
 
@@ -1074,6 +1075,11 @@ def create_desktop_classes(*, BAR_DARK_TEXT_L, BAR_STRIP, CACHE, CFG,
                 path = os.path.join(self.dir, n)
                 nome, pb = n, None
                 size = self.ICON * max(1, self.win.get_scale_factor())
+                if os.path.isdir(path):
+                    try:
+                        pb = folder_pixbuf(size)
+                    except GLib.Error:
+                        pb = None
                 if n.endswith(".desktop"):
                     try:
                         info = Gio.DesktopAppInfo.new_from_filename(path)

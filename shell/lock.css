@@ -121,6 +121,11 @@
   padding-left: 1px;
 }
 
+.lock-field.reduce-motion,
+.lock-field.reduce-motion .lock-go {
+  transition: none;
+}
+
 .lock-msg {
   margin-top: 6px;
   font-size: 12px;

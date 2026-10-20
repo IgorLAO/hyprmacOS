@@ -21,6 +21,7 @@ from dock_model import build_items as dock_items, needs_refresh as dock_needs_re
 from dock_motion import DockMotion
 from dock_drop import supports_documents as dock_supports_documents, open_documents as dock_open_documents, desktop_file_from_uris
 from glass_motion import spring_step
+from folder_appearance import folder_pixbuf, folder_color
 
 E = LS.Edge
 DOCK_PATH = os.path.expanduser("~/.config/hyprmac/dock.json")
@@ -164,7 +165,8 @@ def create_dock_class(*, CFG, A11Y, DOCKS, ROOT, ShellMenu, add_class,
             size = self.icon * max(1, self.win.get_scale_factor())
             kit = {"finder": "Finder", "apps": "Apps", "settings": "System_Settings",
                    "trash": "Trash_Full" if self._trash_full() else "Trash_Empty"}.get(kind)
-            key = (kind, kit, desktop_id(info) or cls, self.light, size)
+            key = (kind, kit, desktop_id(info) or cls, self.light, size,
+                   folder_color() if kind == "downloads" else None)
             if key in self._pb_cache:
                 return self._pb_cache[key]
             pb = None
@@ -174,8 +176,7 @@ def create_dock_class(*, CFG, A11Y, DOCKS, ROOT, ShellMenu, add_class,
                     pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                         os.path.join(DOCK_ICONS, f"{kit}-{variant}.png"), size, size, True)
                 elif kind == "downloads":
-                    pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                        os.path.join(DOCK_ICONS, "Folder_Icon.png"), size, size, True)
+                    pb = folder_pixbuf(size)
                 elif info and info.get_icon():
                     look = Gtk.IconTheme.get_default().lookup_by_gicon(
                         info.get_icon(), size, Gtk.IconLookupFlags.FORCE_SIZE)

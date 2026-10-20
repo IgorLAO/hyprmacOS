@@ -2094,11 +2094,30 @@ class Settings(Gtk.Window):
         f3.add_row(row("Icon & widget style", trailing=col, tall=True, top=True))
         # Tahoe: "Folder color" (curso do Tahoe: Appearance → Folder Color; menu em
         # referencias/telas/ajustes-aparencia-claro-cor-pastas.png)
+        def set_folder_color(value):
+            if value == "choose":
+                dialog = Gtk.ColorChooserDialog(title="Folder Color", transient_for=self)
+                current = Gdk.RGBA()
+                current.parse(mock("folder_color_custom", "#80c6ed"))
+                dialog.set_rgba(current)
+                response = dialog.run()
+                if response != Gtk.ResponseType.OK:
+                    dialog.destroy()
+                    self.open_pane("appearance")
+                    return
+                rgba = dialog.get_rgba()
+                value_hex = "#" + "".join(f"{round(channel * 255):02x}"
+                                         for channel in (rgba.red, rgba.green, rgba.blue))
+                dialog.destroy()
+                set_mock("folder_color_custom", value_hex)
+            set_mock("folder_color", value)
+            shell_cmd("refresh-folders")
+
         f3.add_row(row("Folder color", trailing=popup_button(
             [("auto", "Automatic"), ("red", "Red"), ("orange", "Orange"), ("yellow", "Yellow"),
              ("green", "Green"), ("blue", "Blue"), ("purple", "Purple"), ("pink", "Pink"),
              ("graphite", "Graphite"), ("choose", "Choose Color…")], mock("folder_color", "auto"),
-            lambda v: set_mock("folder_color", v),
+            set_folder_color,
             dot=lambda: ACCENTS.get({"graphite": "slate"}.get(mock("folder_color", "auto"),
                                                               mock("folder_color", "auto")),
                                     ACCENTS["blue"])[0 if dark else 1])))

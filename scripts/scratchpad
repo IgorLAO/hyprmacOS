@@ -3,9 +3,7 @@
 # Vazio, o Hyprland o fecha na hora (misc:close_special_on_empty) e parecia que
 # nada acontecia: aqui avisamos como guardar uma janela nele.
 set -uo pipefail
-n=$(hyprctl workspaces -j | python3 -c '
-import json, sys
-print(sum(w["windows"] for w in json.load(sys.stdin) if w["name"] == "special:magic"))')
+n=$("$HOME/.local/bin/hyprmac-runtime" scratchpad-count)
 if [ "${n:-0}" -gt 0 ]; then
   hyprctl dispatch 'hl.dsp.workspace.toggle_special("magic")' >/dev/null
 else

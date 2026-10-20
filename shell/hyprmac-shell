@@ -285,7 +285,7 @@ def set_class(widget, cls, on):
 
 
 MENU_CHECK = "\U00100185"      # 􀆅 do SF Pro, o mesmo símbolo do kit (Menus/Checkmark/On)
-MENU_CHEVRON = "\U0010018A"    # 􀆊 do SF Pro (kit Menus/Items - Submenu)
+MENU_CHEVRON = "›"    # glifo Unicode disponível quando SF Symbols não está instalado
 
 
 def menu_check(item, on):
@@ -5589,7 +5589,7 @@ class ShellMenu:
         submenu.connect("unmap", lambda _menu: set_class(item, "submenu-open", False))
 
     def _item(self, menu, text, action=None, markup=False, sensitive=True, submenu=None,
-              shortcut=None, check=None):
+              shortcut=None, check=None, icon_name=None):
         """Item de 24 px; `shortcut` (ex.: "⌘H") vai à direita, em cinza; `check`
         True/False faz dele um item de estado (coluna da marca, menu_check_column)."""
         it = Gtk.MenuItem()
@@ -5606,6 +5606,16 @@ class ShellMenu:
             it.add(lb)
         if check is not None:
             menu_check(it, check)
+        if icon_name:
+            if not Gtk.IconTheme.get_default().has_icon(icon_name):
+                icon_name = "application-x-executable-symbolic"
+            icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.MENU)
+            icon.set_pixel_size(14)
+            icon.set_size_request(16, 16)
+            icon.set_margin_end(8)
+            box = menu_item_box(it)
+            box.pack_start(icon, False, False, 0)
+            box.reorder_child(icon, 0)
         it.set_sensitive(sensitive)
         if submenu is not None:
             self._attach_submenu(it, submenu)
@@ -5749,23 +5759,126 @@ class AppMenu(ShellMenu):
         name = display_name(cls) if has else "App"
         janela = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-janela")
         about = os.path.join(os.path.expanduser("~"), ".local", "bin", "hyprmac-waybar") + " app-about"
-        self._item(m, f"About {name}", lambda: spawn(about), sensitive=has)
+        self._item(m, f"About {name}", lambda: spawn(about), sensitive=has,
+                   icon_name="dialog-information-symbolic")
         self._sep(m)
         # ⌘, do Mac = Ctrl+vírgula nos apps do Linux que têm Preferências
         self._item(m, "Settings…",
                    lambda: dispatch('hl.dsp.send_shortcut({ mods = "CTRL", key = "comma" })'),
-                   sensitive=has, shortcut="⌃,")
+                   sensitive=has, shortcut="⌃,", icon_name="preferences-system-symbolic")
         self._sep(m)
         self._item(m, f"Hide {name}", lambda: spawn(f"{janela} hide-app"), sensitive=has,
-                   shortcut="⌘H")
+                   shortcut="⌘H", icon_name="window-minimize-symbolic")
         self._item(m, "Hide Others", lambda: spawn(f"{janela} hide-others"), sensitive=has,
-                   shortcut="⌥⌘H")
-        self._item(m, "Show All", lambda: spawn(f"{janela} show-all"))
+                   shortcut="⌥⌘H", icon_name="view-conceal-symbolic")
+        self._item(m, "Show All", lambda: spawn(f"{janela} show-all"),
+                   icon_name="view-restore-symbolic")
         self._sep(m)
         self._item(m, f"Quit {name}", lambda: spawn(f"{janela} quit-app"), sensitive=has,
-                   shortcut="⌘Q")
+                   shortcut="⌘Q", icon_name="application-exit-symbolic")
         m.show_all()
         return m
+
+
+class AppleMenu(ShellMenu):
+    """Menu Apple no shell: submenus GTK ficam no mesmo processo que o popup."""
+
+    def _recent_item(self, menu, title, icon, action):
+        item = self._item(menu, title, action)
+        box = menu_item_box(item)
+        if icon:
+            picture = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.MENU)
+            picture.set_pixel_size(16)
+            picture.set_margin_end(7)
+            box.pack_start(picture, False, False, 0)
+            box.reorder_child(picture, 0)
+        child = next((widget for widget in box.get_children()
+                      if isinstance(widget, Gtk.Label)), None)
+        if child:
+            child.set_max_width_chars(48)
+            child.set_ellipsize(Pango.EllipsizeMode.END)
+        return item
+
+    def _recent_menu(self):
+        menu = self._new_menu()
+        manager = Gtk.RecentManager.get_default()
+        recent = sorted(manager.get_items(), key=lambda info: info.get_modified(), reverse=True)
+        try:
+            with open(os.path.expanduser("~/.config/hyprmac/ajustes.json")) as state:
+                limit = int(json.load(state).get("recents", 10))
+        except (OSError, ValueError, TypeError, AttributeError):
+            limit = 10
+        limit = limit if limit in (5, 10, 15) else 10
+        apps, documents, servers = [], [], []
+        seen_apps = set()
+        installed_apps = {app.get_name(): app for app in Gio.AppInfo.get_all()}
+        for info in recent:
+            uri = info.get_uri()
+            if not uri:
+                continue
+            if uri.startswith("file:"):
+                if len(documents) < limit:
+                    documents.append(info)
+            elif len(servers) < limit:
+                servers.append(info)
+            for app_name in info.get_applications():
+                if app_name in seen_apps or len(apps) >= limit:
+                    continue
+                app = installed_apps.get(app_name)
+                if app:
+                    apps.append(app)
+                    seen_apps.add(app_name)
+
+        for title, entries in (("Applications", apps), ("Documents", documents),
+                               ("Servers", servers)):
+            menu.append(menu_header(title))
+            if not entries:
+                self._item(menu, "No Recent Items", sensitive=False)
+            for entry in entries:
+                if title == "Applications":
+                    self._recent_item(menu, entry.get_name(), entry.get_icon(),
+                                      lambda app=entry: app.launch([], None))
+                else:
+                    self._recent_item(menu, entry.get_display_name(), entry.get_gicon(),
+                                      lambda uri=entry.get_uri():
+                                      Gio.AppInfo.launch_default_for_uri(uri, None))
+            self._sep(menu)
+        self._item(menu, "Clear Menu", manager.purge_items,
+                   sensitive=bool(recent))
+        return menu
+
+    def _build(self):
+        menu = self._new_menu()
+        self._item(menu, "About This Mac", lambda: open_settings("about"),
+                   icon_name="dialog-information-symbolic")
+        self._sep(menu)
+        self._item(menu, "System Settings…", open_settings,
+                   icon_name="preferences-system-symbolic")
+        self._item(menu, "App Store", lambda: spawn(os.path.join(HERE, "hyprmac-app")
+                                                   + " dev.hyprmac.AppStore"),
+                   icon_name="system-software-install-symbolic")
+        self._sep(menu)
+        self._item(menu, "Recent Items", submenu=self._recent_menu(),
+                   icon_name="document-open-recent-symbolic")
+        self._sep(menu)
+        self._item(menu, "Force Quit…", lambda: spawn(os.path.join(HERE, "hyprmac-shell")
+                                                    + " force-quit"), shortcut="⌥⌘⎋",
+                   icon_name="process-stop-symbolic")
+        self._sep(menu)
+        self._item(menu, "Sleep", lambda: spawn("systemctl suspend"),
+                   icon_name="weather-clear-night-symbolic")
+        self._item(menu, "Restart…", lambda: spawn("systemctl reboot"),
+                   icon_name="system-reboot-symbolic")
+        self._item(menu, "Shut Down…", lambda: spawn("systemctl poweroff"),
+                   icon_name="system-shutdown-symbolic")
+        self._sep(menu)
+        self._item(menu, "Lock Screen", lambda: spawn(os.path.join(HERE, "hyprmac-lock")),
+                   shortcut="⌃⌘Q", icon_name="system-lock-screen-symbolic")
+        username = os.environ.get("USER", "User").capitalize()
+        self._item(menu, f"Log Out {username}…", lambda: dispatch("hl.dsp.exit()"),
+                   icon_name="system-log-out-symbolic")
+        menu.show_all()
+        return menu
 
 
 class CCContextMenu(ShellMenu):
@@ -6388,11 +6501,19 @@ def main():
     main_mon = by_name.get(CFG["main_monitor"]) or (all_mons[0] if all_mons else None)
     widgets = DesktopWidgets(main_mon, wallpaper)
     desktop_icons = DesktopIcons(main_mon, wallpaper)   # noqa: F841  (arquivos de ~/Desktop, como no Finder)
+
+    def refresh_folders():
+        desktop_icons.refresh()
+        for dock_view in DOCKS:
+            dock_view._pb_cache.clear()
+            dock_view.refresh()
+        return False
     global APPS
     APPS = AppIndex(app_name, _pixbuf_from_icon, SW_ICON)
     cc = ControlCenter()
     wmenu = WindowMenu()
     app_menu = AppMenu()
+    apple_menu = AppleMenu()
     view_menu = ViewMenu()
     cc_menu = CCContextMenu()
     wifi_menu = WifiMenu()
@@ -6433,6 +6554,7 @@ def main():
         "force-quit": force_quit.toggle,
         "toggle-cc": cc.toggle,
         "wallpaper-reload": reload_wallpaper,
+        "refresh-folders": refresh_folders,
         "edit-controls": cc.edit,
         "bar-controls": cc.bar_controls,
         "toggle-sleep": cc._sleep_click,
@@ -6454,6 +6576,7 @@ def main():
         "spotlight": spot.command,
         "window-menu": wmenu.popup,
         "app-menu": app_menu.popup,
+        "apple-menu": apple_menu.popup,
         "view-menu": view_menu.popup,
         "cc-menu": cc_menu.popup,
         "toggle-wifi": wifi_menu.toggle,
