@@ -5811,7 +5811,14 @@ class AppleMenu(ShellMenu):
         limit = limit if limit in (5, 10, 15) else 10
         apps, documents, servers = [], [], []
         seen_apps = set()
-        installed_apps = {app.get_name(): app for app in Gio.AppInfo.get_all()}
+        installed_apps = {}
+        for app in Gio.AppInfo.get_all():
+            app_id = app.get_id()
+            names = (app.get_name(), app.get_display_name(),
+                     app_id, app_id.removesuffix(".desktop") if app_id else None)
+            for name in names:
+                if name:
+                    installed_apps.setdefault(name, app)
         for info in recent:
             uri = info.get_uri()
             if not uri:

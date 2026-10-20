@@ -127,7 +127,7 @@ Dock; não certificar um simples fade/scale como equivalente.
 | BAR-03 | P0 | Ícones de status dos aplicativos via D-Bus/SNI | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-04 | P0 | Menus suspensos com geometria e materiais Tahoe | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-05 | P1 | Trocar imediatamente entre menus abertos ao mover o ponteiro, sem novo clique | A_VERIFICAR | NAO_AVALIADO | — |
-| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-20: menu no shell com Recent Items (apps/documentos/servidores do histórico GTK), App Store e ações anteriores; dez comandos principais com ícones semânticos em coluna, seguindo orientação WWDC25 310. Captura local `/tmp/hyprmac-apple-menu-icons-20261020.png`; submenu e ações ainda sem teste físico, glifos/medidas sem confronto Apple Tahoe 26 equivalente. |
+| BAR-06 | P1 | Menu Apple com ações de sistema | PARCIAL | TESTADO_LOCAL | 2026-10-20: menu no shell com Recent Items (apps/documentos/servidores do histórico GTK), App Store e ações anteriores; dez comandos principais com ícones semânticos em coluna, seguindo orientação WWDC25 310. Nome e ID `.desktop` dos apps são relacionados; limites de 5/10/15 por seção passaram em ensaio isolado. Captura local `/tmp/hyprmac-apple-menu-icons-20261020.png`; submenu e ações ainda sem teste físico, glifos/medidas sem confronto Apple Tahoe 26 equivalente. |
 | BAR-07 | P1 | Indicadores de Wi-Fi, bateria, áudio e Bluetooth | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-08 | P1 | Personalizar e reorganizar controles | A_VERIFICAR | NAO_AVALIADO | — |
 | BAR-09 | P1 | Estados visuais ativo e pressionado dos itens | A_VERIFICAR | NAO_AVALIADO | — |

@@ -1,5 +1,10 @@
 # Estado atual do HyprMac
 
+## Itens recentes do menu Apple — 2026-10-20
+
+- Implementação BAR-06/BAR-17: o submenu Recent Items agora relaciona aplicativos do histórico GTK pelo nome visível e pelo ID `.desktop`. Isso inclui System Settings quando o histórico o registra como `dev.hyprmac.Settings`.
+- Validação BAR-06/BAR-17: o histórico local confirmou a diferença entre o nome e o ID. Um ensaio isolado do método real com 20 documentos e 20 servidores verificou limites de 5, 10 e 15 por seção e a inclusão de System Settings em Applications. O clique físico no submenu e a comparação visual Tahoe 26 permanecem pendentes.
+
 ## Movimento reduzido no bloqueio e cor de pastas em Rust — 2026-10-20
 
 - Implementação MIC-14/SIS-03: o bloqueio consulta a preferência local de movimento reduzido e `org.gnome.desktop.interface enable-animations`. Com a redução ativa, o erro de senha aparece como texto e o campo não treme; a transição do campo e do botão também é desativada. A orientação geral do [HIG Motion](https://developer.apple.com/design/human-interface-guidelines/motion) e de [Adopting Liquid Glass](https://developer.apple.com/documentation/TechnologyOverviews/adopting-liquid-glass) fundamenta a alternativa sem animação, mas não define o estado específico do bloqueio Tahoe 26.
